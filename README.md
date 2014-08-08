@@ -2,7 +2,7 @@
 
 ** Haptix-comm classes and functions for communication.**
 
-Haptix <IGN_PROJECT_NAME> is a component in the Haptix project.
+Haptix-comm is a component in the Haptix project.
 
   [http://haptix.org](http://haptix.org)
 
