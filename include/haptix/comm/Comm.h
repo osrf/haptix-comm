@@ -1,7 +1,7 @@
 #ifndef __MYWRAPPER_H
 #define __MYWRAPPER_H
 
-#include "haptix/comm/Helpers.hh"
+#include "haptix/comm/Helpers.h"
 
 #ifdef __cplusplus
 extern "C" {
