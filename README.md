@@ -24,8 +24,6 @@ source:
  - mercurial
  - C compiler.
 
-**Note:** *if you are using an Ubuntu platform previous to Saucy, you will need to install zeromq from source, since there is no libzmq3-dev*
-
     sudo apt-get install build-essential cmake mercurial
 
     hg clone https://bitbucket.org/ignitionrobotics/ign-transport
