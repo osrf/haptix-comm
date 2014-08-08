@@ -1,6 +1,6 @@
-# Haptix <IGN_PROJECT_NAME>
+# Haptix-comm
 
-** Haptix <IGN_PROJECT_NAME> classes and functions for communication.**
+** Haptix-comm classes and functions for communication.**
 
 Haptix <IGN_PROJECT_NAME> is a component in the Haptix project.
 
