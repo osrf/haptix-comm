@@ -17,9 +17,27 @@
 
 #include <iostream>
 #include <ignition/transport.hh>
+#include "haptix/comm/Arm.pb.h"
 #include "haptix/comm/Comm.h"
 
 extern "C" {
+  //////////////////////////////////////////////////
+  /// \brief Provide an "echo" service.
+  void srvEcho(const std::string &/*_topic*/, const haptix::comm::Arm &_req,
+    haptix::comm::Arm &_rep, bool &_result)
+  {
+    // Set the response's content.
+    _rep.set_pos(_req.pos());
+    _rep.set_vel(_req.vel());
+
+    std::cout << "Service received" << std::endl;
+    std::cout << "Pos: " << _req.pos() << std::endl;
+    std::cout << "Vel: " << _req.vel() << std::endl;
+
+    // The response succeed.
+    _result = true;
+  }
+
   NodePtr newNode()
   {
     std::cout << "Node constructor" << std::endl;
@@ -31,9 +49,37 @@ extern "C" {
     std::cout << "NodeSet" << std::endl;
   }
 
-  int nodeGet(NodePtr /*_n*/)
+  int nodeAdvertise(NodePtr _node)
   {
-    std::cout << "NodeGet" << std::endl;
+    // Advertise a service call.
+    ignition::transport::Node *node =
+      reinterpret_cast<ignition::transport::Node*>(_node);
+
+    node->Advertise("/echo", srvEcho);
+    std::cout << "Advertise" << std::endl;
+    return 0;
+  }
+
+  int nodeRequest(NodePtr _node, char *_service, double _posReq,
+  double _velReq, float _timeout, double *_posRes, double *_velRes, int _result)
+  {
+    std::cout << "nodeRequest" << std::endl;
+
+    haptix::comm::Arm armReq, armRep;
+    armReq.set_pos(_posReq);
+    armReq.set_vel(_velReq);
+    bool result;
+
+    ignition::transport::Node *node =
+      reinterpret_cast<ignition::transport::Node*>(_node);
+    // Request the service.
+    bool executed = node->Request("/echo", armReq, _timeout, armRep, result);
+    *_posRes = armRep.pos();
+    *_velRes = armRep.vel();
+
+    std::cout << "Pos: " << armRep.pos() << std::endl;
+    std::cout << "Vel: " << armRep.vel() << std::endl;
+
     return 0;
   }
 

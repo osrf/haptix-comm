@@ -9,5 +9,8 @@ include_directories(${COMM_INCLUDE_DIRS}
 link_directories(${COMM_LIBRARY_DIRS}
   ${COMM_LIBRARY_DIRS})
 
-add_executable(requester_c requester_c.c)
-target_link_libraries(requester_c ${COMM_LIBRARIES})
+add_executable(requester requester.c)
+target_link_libraries(requester haptix_comm)
+
+add_executable(responser responser.c)
+target_link_libraries(responser haptix_comm)

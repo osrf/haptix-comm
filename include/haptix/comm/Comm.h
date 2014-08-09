@@ -15,8 +15,8 @@
  *
 */
 
-#ifndef __MYWRAPPER_H
-#define __MYWRAPPER_H
+#ifndef __HAPTIX_COMM_COMM_H
+#define __HAPTIX_COMM_COMM_H
 
 #include "haptix/comm/Helpers.h"
 
@@ -30,7 +30,11 @@ HAPTIX_VISIBLE NodePtr newNode();
 
 HAPTIX_VISIBLE void nodeSet(NodePtr n, int i);
 
-HAPTIX_VISIBLE int nodeGet(NodePtr n);
+HAPTIX_VISIBLE int nodeAdvertise(NodePtr n);
+
+HAPTIX_VISIBLE int nodeRequest(NodePtr _node, char *_service, double _posReq,
+  double _velReq, float _timeout, double *_posRes, double *_velRes,
+  int _result);
 
 HAPTIX_VISIBLE void deleteNode(NodePtr n);
 
