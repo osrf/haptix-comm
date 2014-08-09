@@ -6,14 +6,6 @@ Haptix-comm is a component in the Haptix project.
 
   [http://haptix.org](http://haptix.org)
 
-## Continuous integration
-
-Please refer to the [drone.io
-job](https://drone.io/bitbucket.org/osrf/haptix_comm).
-
-[![Build Status](https://drone.io/bitbucket.org/osrf/haptix_comm/status.png)](https://drone.io/bitbucket.org/osrf/haptix_comm/latest)
-
-
 ## Dependencies
 
 The following dependencies are required to compile ignition-transport from
