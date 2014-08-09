@@ -15,6 +15,7 @@
  *
 */
 
+#include <stdio.h>
 #include <haptix/comm/Comm.h>
 
 //////////////////////////////////////////////////
@@ -24,7 +25,12 @@ int main(int argc, char **argv)
   NodePtr n = newNode();
 
   // Make an operation with the node.
-  nodeSet(n, 5);
+  double statePos, stateVel;
+  int result;
+  nodeRequest(n, "/echo", 1.0, 2.0, 5000, &statePos, &stateVel, result);
+
+  printf("Pos received: %f\n", statePos);
+  printf("Vel received: %f\n", stateVel);
 
   // Destroy the node.
   deleteNode(n);
