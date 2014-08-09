@@ -28,8 +28,6 @@ typedef void* NodePtr;
 
 HAPTIX_VISIBLE NodePtr newNode();
 
-HAPTIX_VISIBLE void nodeSet(NodePtr n, int i);
-
 HAPTIX_VISIBLE int nodeAdvertise(NodePtr n);
 
 HAPTIX_VISIBLE int nodeRequest(NodePtr _node, char *_service, double _posReq,

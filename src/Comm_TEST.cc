@@ -25,9 +25,6 @@ TEST(CommTest, BasicUsage)
   // Create a transport node.
   NodePtr n = newNode();
 
-  // Make an operation with the node.
-  nodeSet(n, 5);
-
   // Destroy the node.
   deleteNode(n);
 

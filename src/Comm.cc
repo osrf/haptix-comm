@@ -38,17 +38,14 @@ extern "C" {
     _result = true;
   }
 
+  //////////////////////////////////////////////////
   NodePtr newNode()
   {
     std::cout << "Node constructor" << std::endl;
     return reinterpret_cast<void*>(new ignition::transport::Node());
   }
 
-  void nodeSet(NodePtr /*_n*/, int /*_i*/)
-  {
-    std::cout << "NodeSet" << std::endl;
-  }
-
+  //////////////////////////////////////////////////
   int nodeAdvertise(NodePtr _node)
   {
     // Advertise a service call.
@@ -60,6 +57,7 @@ extern "C" {
     return 0;
   }
 
+  //////////////////////////////////////////////////
   int nodeRequest(NodePtr _node, char *_service, double _posReq,
   double _velReq, float _timeout, double *_posRes, double *_velRes, int _result)
   {
@@ -83,6 +81,7 @@ extern "C" {
     return 0;
   }
 
+  //////////////////////////////////////////////////
   void deleteNode(NodePtr /*_n*/)
   {
     std::cout << "Node destructor" << std::endl;
