@@ -3,6 +3,7 @@ include (${project_cmake_dir}/Utils.cmake)
 set (sources
   Arm.pb.cc
   Comm.cc
+  TestMsg.pb.cc
 )
 
 set (gtest_sources

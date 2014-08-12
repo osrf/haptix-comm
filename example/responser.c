@@ -15,19 +15,32 @@
  *
 */
 
+#include <stdio.h>
+#include "haptix/comm/Api.h"
 #include <haptix/comm/Comm.h>
+
+ //////////////////////////////////////////////////
+ /// \brief Provide an "echo" service.
+ void echo(const char *_service, Arm_t _req, Arm_t *_rep, int *_result)
+ {
+   _rep->pos = _req.pos;
+   _rep->vel = _req.vel;
+   *_result = 0;
+ }
 
 //////////////////////////////////////////////////
 int main(int argc, char **argv)
 {
   // Create a transport node.
-  NodePtr n = newNode();
+  NodePtr node = newNode();
 
-  // Advertise a service.
-  int res = nodeAdvertise(n);
+  // Advertise an "echo" service.
+  nodeAdvertise(node, "/echo", echo);
 
+  // Zzzz.
+  printf("Accepting service calls. Press [ENTER] to exit.");
   getchar();
 
   // Destroy the node.
-  deleteNode(n);
+  deleteNode(node);
 }

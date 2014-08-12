@@ -16,22 +16,40 @@
 */
 
 #include <stdio.h>
+#include "haptix/comm/Api.h"
 #include <haptix/comm/Comm.h>
 
 //////////////////////////////////////////////////
 int main(int argc, char **argv)
 {
   // Create a transport node.
-  NodePtr n = newNode();
+  NodePtr node = newNode();
 
-  // Make an operation with the node.
-  double statePos, stateVel;
+  Arm_t jointCmd, jointState;
   int result;
-  nodeRequest(n, "/echo", 1.0, 2.0, 5000, &statePos, &stateVel, result);
 
-  printf("Pos received: %f\n", statePos);
-  printf("Vel received: %f\n", stateVel);
+  // Fill the input parameter.
+  jointCmd.pos = 1.5;
+  jointCmd.vel = 2.5;
+  int timer = 5000;
+
+  // Request a service call.
+  int done = nodeRequest(node, "/echo", jointCmd, timer, &jointState, &result);
+
+  // Check results.
+  if (done == 0)
+  {
+    if (result == 0)
+    {
+      printf("Pos received: %f\n", jointState.pos);
+      printf("Vel received: %f\n", jointState.vel);
+    }
+    else
+      printf("Request error.");
+  }
+  else
+    printf("Request timed out.");
 
   // Destroy the node.
-  deleteNode(n);
+  deleteNode(node);
 }

@@ -15,26 +15,15 @@
  *
 */
 
-#include <ignition/msgs.hh>
-#include "gtest/gtest.h"
-#include "haptix/comm/Comm.h"
+#ifndef __HAPTIX_COMM_API_H
+#define __HAPTIX_COMM_API_H
 
-//////////////////////////////////////////////////
-/// \brief Check that we can use the C-wrapper.
-TEST(CommTest, BasicUsage)
+#include "haptix/comm/Helpers.h"
+
+typedef struct
 {
-  // Create a transport node.
-  NodePtr n = newNode();
+  double pos;
+  double vel;
+} Arm_t;
 
-  // Destroy the node.
-  deleteNode(n);
-
-  SUCCEED();
-}
-
-//////////////////////////////////////////////////
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
+#endif

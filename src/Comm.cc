@@ -17,22 +17,27 @@
 
 #include <iostream>
 #include <ignition/transport.hh>
+#include "haptix/comm/Api.h"
 #include "haptix/comm/Arm.pb.h"
 #include "haptix/comm/Comm.h"
 
 extern "C" {
+
+  void (*cb)(const char *_service, Arm_t _req, Arm_t *_rep, int *_result);
+
   //////////////////////////////////////////////////
-  /// \brief Provide an "echo" service.
-  void srvEcho(const std::string &/*_topic*/, const haptix::comm::Arm &_req,
-    haptix::comm::Arm &_rep, bool &_result)
+  void internalCallback(const std::string &_service,
+    const haptix::comm::Arm &_req, haptix::comm::Arm &_rep, bool &_result)
   {
+    Arm_t req, rep;
+    int result;
+
+    // Call the user callback.
+    cb(_service.c_str(), req, &rep, &result);
+
     // Set the response's content.
     _rep.set_pos(_req.pos());
     _rep.set_vel(_req.vel());
-
-    std::cout << "Service received" << std::endl;
-    std::cout << "Pos: " << _req.pos() << std::endl;
-    std::cout << "Vel: " << _req.vel() << std::endl;
 
     // The response succeed.
     _result = true;
@@ -41,49 +46,70 @@ extern "C" {
   //////////////////////////////////////////////////
   NodePtr newNode()
   {
-    std::cout << "Node constructor" << std::endl;
     return reinterpret_cast<void*>(new ignition::transport::Node());
   }
 
   //////////////////////////////////////////////////
-  int nodeAdvertise(NodePtr _node)
+  int nodeAdvertise(NodePtr _node, const char *_service,
+    void (*_cb)(const char *_service, Arm_t _req, Arm_t *_rep, int *_result))
   {
+    // Store the user callback.
+    cb = _cb;
+
     // Advertise a service call.
     ignition::transport::Node *node =
       reinterpret_cast<ignition::transport::Node*>(_node);
 
-    node->Advertise("/echo", srvEcho);
-    std::cout << "Advertise" << std::endl;
-    return 0;
+    // Advertise a service call.
+    bool res = node->Advertise(_service, internalCallback);
+
+    if (res)
+      return 0;
+    else
+      return -1;
   }
 
   //////////////////////////////////////////////////
-  int nodeRequest(NodePtr _node, char *_service, double _posReq,
-  double _velReq, float _timeout, double *_posRes, double *_velRes, int _result)
+  int nodeRequest(NodePtr _node, const char *_service, Arm_t _req, int _timeout,
+    Arm_t *_rep, int *_result)
   {
-    std::cout << "nodeRequest" << std::endl;
+    // Prepare the input parameters.
+    haptix::comm::Arm req;
+    req.set_pos(_req.pos);
+    req.set_vel(_req.vel);
 
-    haptix::comm::Arm armReq, armRep;
-    armReq.set_pos(_posReq);
-    armReq.set_vel(_velReq);
+    haptix::comm::Arm rep;
     bool result;
 
     ignition::transport::Node *node =
       reinterpret_cast<ignition::transport::Node*>(_node);
+
     // Request the service.
-    bool executed = node->Request("/echo", armReq, _timeout, armRep, result);
-    *_posRes = armRep.pos();
-    *_velRes = armRep.vel();
+    bool executed = node->Request(_service, req, _timeout, rep, result);
 
-    std::cout << "Pos: " << armRep.pos() << std::endl;
-    std::cout << "Vel: " << armRep.vel() << std::endl;
+    if (executed)
+    {
+      if (result)
+      {
+        _rep->pos = rep.pos();
+        _rep->vel = rep.vel();
+        *_result = 0;
+      }
+      else
+      {
+        std::cerr << "Service call failed" << std::endl;
+        *_result = -1;
+      }
+      return 0;
+    }
+    else
+      std::cerr << "Service call timed out" << std::endl;
 
-    return 0;
+    return -1;
   }
 
   //////////////////////////////////////////////////
-  void deleteNode(NodePtr /*_n*/)
+  void deleteNode(NodePtr /*_node*/)
   {
-    std::cout << "Node destructor" << std::endl;
   }
 }
