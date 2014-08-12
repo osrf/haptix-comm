@@ -18,7 +18,7 @@
 #ifndef __HAPTIX_COMM_COMM_H
 #define __HAPTIX_COMM_COMM_H
 
-#include "haptix/comm/Api.h"
+#include "haptix/comm/AplControlInterface.h"
 #include "haptix/comm/Helpers.h"
 
 #ifdef __cplusplus
@@ -42,7 +42,8 @@ HAPTIX_VISIBLE NodePtr newNode();
 /// \param[out] _rep Struct containing the response.
 /// \param[out] _result Service call result.
 HAPTIX_VISIBLE int nodeAdvertise(NodePtr _node, const char *_service,
-  void (*_cb)(const char *_service, Arm_t _req, Arm_t *_rep, int *_result));
+  void (*_cb)(const char *_service, struct AplRobotCommand _req,
+              struct AplRobotState *_rep, int *_result));
 
 /// \brief Request a new service using a blocking call.
 /// \param[in] _service Service requested.
@@ -51,8 +52,9 @@ HAPTIX_VISIBLE int nodeAdvertise(NodePtr _node, const char *_service,
 /// \param[out] _rep Struct containing the response.
 /// \param[out] _result Result of the service call.
 /// \return 0 when the request was executed or -1 if the timer expired.
-HAPTIX_VISIBLE int nodeRequest(NodePtr _node, const char *_service, Arm_t _req,
-  int _timeout, Arm_t *_rep, int *_result);
+HAPTIX_VISIBLE int nodeRequest(NodePtr _node, const char *_service,
+  struct AplRobotCommand _req, int _timeout, struct AplRobotState *_rep,
+  int *_result);
 
 /// \brief Destroy a transport node.
 /// \param[in] _node Pointer to the node to be destroyed.

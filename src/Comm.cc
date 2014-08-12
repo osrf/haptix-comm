@@ -18,26 +18,47 @@
 #include <iostream>
 #include <ignition/transport.hh>
 #include "haptix/comm/Api.h"
+#include "haptix/comm/AplControlInterface.h"
 #include "haptix/comm/Arm.pb.h"
 #include "haptix/comm/Comm.h"
 
 extern "C" {
 
-  void (*cb)(const char *_service, Arm_t _req, Arm_t *_rep, int *_result);
+  void (*cb)(const char *_service, struct AplRobotCommand _req,
+             struct AplRobotState *_rep, int *_result);
 
   //////////////////////////////////////////////////
   void internalCallback(const std::string &_service,
-    const haptix::comm::Arm &_req, haptix::comm::Arm &_rep, bool &_result)
+    const haptix::comm::AplRobotCommand &_req,
+    haptix::comm::AplRobotState &_rep, bool &_result)
   {
-    Arm_t req, rep;
+    AplRobotCommand req;
+    AplRobotState rep;
     int result;
+
+    // Fill the request.
+    for (int i = 0; i < _req.command_size(); ++i)
+    {
+      req.command[i].position = _req.command(i).position();
+      req.command[i].velocity = _req.command(i).velocity();
+      req.command[i].effort = _req.command(i).effort();
+      req.command[i].kp_position = _req.command(i).kp_position();
+      req.command[i].ki_position = _req.command(i).ki_position();
+      req.command[i].kp_velocity = _req.command(i).kp_velocity();
+      req.command[i].force = _req.command(i).force();
+    }
 
     // Call the user callback.
     cb(_service.c_str(), req, &rep, &result);
 
-    // Set the response's content.
-    _rep.set_pos(_req.pos());
-    _rep.set_vel(_req.vel());
+    // Fill the response.
+    for (int i = 0; i < num_joints; ++i)
+    {
+      haptix::comm::JointState *state = _rep.add_state();
+      state->set_position(rep.state[i].position);
+      state->set_velocity(rep.state[i].velocity);
+      state->set_effort(rep.state[i].effort);
+    }
 
     // The response succeed.
     _result = true;
@@ -51,7 +72,8 @@ extern "C" {
 
   //////////////////////////////////////////////////
   int nodeAdvertise(NodePtr _node, const char *_service,
-    void (*_cb)(const char *_service, Arm_t _req, Arm_t *_rep, int *_result))
+    void (*_cb)(const char *_service, struct AplRobotCommand _req,
+                struct AplRobotState *_rep, int *_result))
   {
     // Store the user callback.
     cb = _cb;
@@ -70,15 +92,26 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
-  int nodeRequest(NodePtr _node, const char *_service, Arm_t _req, int _timeout,
-    Arm_t *_rep, int *_result)
+  int nodeRequest(NodePtr _node, const char *_service,
+    struct AplRobotCommand _req, int _timeout, struct AplRobotState *_rep,
+    int *_result)
   {
-    // Prepare the input parameters.
-    haptix::comm::Arm req;
-    req.set_pos(_req.pos);
-    req.set_vel(_req.vel);
+    // Prepare the robot command.
+    haptix::comm::AplRobotCommand req;
 
-    haptix::comm::Arm rep;
+    for (int i = 0; i < num_joints; ++i)
+    {
+      haptix::comm::JointCommand *cmd = req.add_command();
+      cmd->set_position(_req.command[i].position);
+      cmd->set_velocity(_req.command[i].velocity);
+      cmd->set_effort(_req.command[i].effort);
+      cmd->set_kp_position(_req.command[i].kp_position);
+      cmd->set_ki_position(_req.command[i].ki_position);
+      cmd->set_kp_velocity(_req.command[i].kp_velocity);
+      cmd->set_force(_req.command[i].force);
+    }
+
+    haptix::comm::AplRobotState rep;
     bool result;
 
     ignition::transport::Node *node =
@@ -91,8 +124,13 @@ extern "C" {
     {
       if (result)
       {
-        _rep->pos = rep.pos();
-        _rep->vel = rep.vel();
+        // Fill the response.
+        for (int i = 0; i < rep.state_size(); ++i)
+        {
+          _rep->state[i].position = rep.state(i).position();
+          _rep->state[i].velocity =rep.state(i).velocity();
+          _rep->state[i].effort = rep.state(i).effort();
+        }
         *_result = 0;
       }
       else

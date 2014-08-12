@@ -16,16 +16,23 @@
 */
 
 #include <stdio.h>
-#include "haptix/comm/Api.h"
+#include <haptix/comm/AplControlInterface.h>
 #include <haptix/comm/Comm.h>
 
  //////////////////////////////////////////////////
  /// \brief Provide an "echo" service.
- void echo(const char *_service, Arm_t _req, Arm_t *_rep, int *_result)
+ void callback(const char *_service, struct AplRobotCommand _req,
+    struct AplRobotState *_rep, int *_result)
  {
-   _rep->pos = _req.pos;
-   _rep->vel = _req.vel;
-   *_result = 0;
+    // Do something smart.
+    int i;
+    for (i = 0; i < num_joints; ++i)
+    {
+      _rep->state[i].position = i;
+      _rep->state[i].velocity = i;
+      _rep->state[i].effort = i;
+    }
+    *_result = 0;
  }
 
 //////////////////////////////////////////////////
@@ -34,8 +41,8 @@ int main(int argc, char **argv)
   // Create a transport node.
   NodePtr node = newNode();
 
-  // Advertise an "echo" service.
-  nodeAdvertise(node, "/echo", echo);
+  // Advertise a service.
+  nodeAdvertise(node, "/newJointCmd", callback);
 
   // Zzzz.
   printf("Accepting service calls. Press [ENTER] to exit.");

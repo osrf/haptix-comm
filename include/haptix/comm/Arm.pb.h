@@ -23,6 +23,7 @@
 #include <google/protobuf/message.h>
 #include <google/protobuf/repeated_field.h>
 #include <google/protobuf/extension_set.h>
+#include <google/protobuf/generated_enum_reflection.h>
 #include <google/protobuf/unknown_field_set.h>
 // @@protoc_insertion_point(includes)
 
@@ -35,7 +36,138 @@ void protobuf_AssignDesc_Arm_2eproto();
 void protobuf_ShutdownFile_Arm_2eproto();
 
 class Arm;
+class JointState;
+class JointCommand;
+class AplRobotState;
+class AplRobotCommand;
 
+enum AplLinkId {
+  unknown_link = 0,
+  WristDev = 1,
+  WristShell = 2,
+  MaleForearm = 3,
+  IndDistal = 4,
+  IndMedial = 5,
+  IndMetaCarpal = 6,
+  IndProximal = 7,
+  LittleDistal = 8,
+  LittleMedial = 9,
+  LittleMetaCarpal = 10,
+  LittleProximal = 11,
+  MidDistal = 12,
+  MidMedial = 13,
+  MidMetaCarpal = 14,
+  MidProximal = 15,
+  Palm = 16,
+  PlanetaryAsm = 17,
+  RingDistal = 18,
+  RingMedial = 19,
+  RingMetaCarpal = 20,
+  RingProximal = 21,
+  ThDistal = 22,
+  ThProximal1 = 23,
+  ThProximal2 = 24,
+  num_links = 25
+};
+bool AplLinkId_IsValid(int value);
+const AplLinkId AplLinkId_MIN = unknown_link;
+const AplLinkId AplLinkId_MAX = num_links;
+const int AplLinkId_ARRAYSIZE = AplLinkId_MAX + 1;
+
+const ::google::protobuf::EnumDescriptor* AplLinkId_descriptor();
+inline const ::std::string& AplLinkId_Name(AplLinkId value) {
+  return ::google::protobuf::internal::NameOfEnum(
+    AplLinkId_descriptor(), value);
+}
+inline bool AplLinkId_Parse(
+    const ::std::string& name, AplLinkId* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<AplLinkId>(
+    AplLinkId_descriptor(), name, value);
+}
+enum AplJointId {
+  unknown_joint = 0,
+  wrist_rot = 1,
+  wrist_dev = 2,
+  wrist_fe = 3,
+  index_dip = 4,
+  index_mcp = 5,
+  index_pip = 6,
+  little_dip = 7,
+  little_mcp = 8,
+  little_pip = 9,
+  middle_dip = 10,
+  middle_mcp = 11,
+  middle_pip = 12,
+  thumb_cmc_ab_ad = 13,
+  little_ab_ad = 14,
+  ring_ab_ad = 15,
+  middle_ab_ad = 16,
+  index_ab_ad = 17,
+  thumb_cmc_fe = 18,
+  ring_dip = 19,
+  ring_mcp = 20,
+  ring_pip = 21,
+  thumb_mcp = 22,
+  thumb_dip = 23,
+  num_joints = 24
+};
+bool AplJointId_IsValid(int value);
+const AplJointId AplJointId_MIN = unknown_joint;
+const AplJointId AplJointId_MAX = num_joints;
+const int AplJointId_ARRAYSIZE = AplJointId_MAX + 1;
+
+const ::google::protobuf::EnumDescriptor* AplJointId_descriptor();
+inline const ::std::string& AplJointId_Name(AplJointId value) {
+  return ::google::protobuf::internal::NameOfEnum(
+    AplJointId_descriptor(), value);
+}
+inline bool AplJointId_Parse(
+    const ::std::string& name, AplJointId* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<AplJointId>(
+    AplJointId_descriptor(), name, value);
+}
+enum AplActuatorId {
+  unknown_actuator = 0,
+  wrist_rot_act = 1,
+  wrist_dev_act = 2,
+  wrist_fe_act = 3,
+  index_dip_act = 4,
+  index_mcp_act = 5,
+  index_pip_act = 6,
+  little_dip_act = 7,
+  little_mcp_act = 8,
+  little_pip_act = 9,
+  middle_dip_act = 10,
+  middle_mcp_act = 11,
+  middle_pip_act = 12,
+  thumb_cmc_ab_ad_act = 13,
+  little_ab_ad_act = 14,
+  ring_ab_ad_act = 15,
+  middle_ab_ad_act = 16,
+  index_ab_ad_act = 17,
+  thumb_cmc_fe_act = 18,
+  ring_dip_act = 19,
+  ring_mcp_act = 20,
+  ring_pip_act = 21,
+  thumb_mcp_act = 22,
+  thumb_dip_act = 23,
+  num_actuators = 24
+};
+bool AplActuatorId_IsValid(int value);
+const AplActuatorId AplActuatorId_MIN = unknown_actuator;
+const AplActuatorId AplActuatorId_MAX = num_actuators;
+const int AplActuatorId_ARRAYSIZE = AplActuatorId_MAX + 1;
+
+const ::google::protobuf::EnumDescriptor* AplActuatorId_descriptor();
+inline const ::std::string& AplActuatorId_Name(AplActuatorId value) {
+  return ::google::protobuf::internal::NameOfEnum(
+    AplActuatorId_descriptor(), value);
+}
+inline bool AplActuatorId_Parse(
+    const ::std::string& name, AplActuatorId* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<AplActuatorId>(
+    AplActuatorId_descriptor(), name, value);
+}
 // ===================================================================
 
 class Arm : public ::google::protobuf::Message {
@@ -128,6 +260,420 @@ class Arm : public ::google::protobuf::Message {
   void InitAsDefaultInstance();
   static Arm* default_instance_;
 };
+// -------------------------------------------------------------------
+
+class JointState : public ::google::protobuf::Message {
+ public:
+  JointState();
+  virtual ~JointState();
+
+  JointState(const JointState& from);
+
+  inline JointState& operator=(const JointState& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const JointState& default_instance();
+
+  void Swap(JointState* other);
+
+  // implements Message ----------------------------------------------
+
+  JointState* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const JointState& from);
+  void MergeFrom(const JointState& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required float position = 1;
+  inline bool has_position() const;
+  inline void clear_position();
+  static const int kPositionFieldNumber = 1;
+  inline float position() const;
+  inline void set_position(float value);
+
+  // required float velocity = 2;
+  inline bool has_velocity() const;
+  inline void clear_velocity();
+  static const int kVelocityFieldNumber = 2;
+  inline float velocity() const;
+  inline void set_velocity(float value);
+
+  // required float effort = 3;
+  inline bool has_effort() const;
+  inline void clear_effort();
+  static const int kEffortFieldNumber = 3;
+  inline float effort() const;
+  inline void set_effort(float value);
+
+  // @@protoc_insertion_point(class_scope:haptix.comm.JointState)
+ private:
+  inline void set_has_position();
+  inline void clear_has_position();
+  inline void set_has_velocity();
+  inline void clear_has_velocity();
+  inline void set_has_effort();
+  inline void clear_has_effort();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  float position_;
+  float velocity_;
+  float effort_;
+
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
+
+  friend void  protobuf_AddDesc_Arm_2eproto();
+  friend void protobuf_AssignDesc_Arm_2eproto();
+  friend void protobuf_ShutdownFile_Arm_2eproto();
+
+  void InitAsDefaultInstance();
+  static JointState* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class JointCommand : public ::google::protobuf::Message {
+ public:
+  JointCommand();
+  virtual ~JointCommand();
+
+  JointCommand(const JointCommand& from);
+
+  inline JointCommand& operator=(const JointCommand& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const JointCommand& default_instance();
+
+  void Swap(JointCommand* other);
+
+  // implements Message ----------------------------------------------
+
+  JointCommand* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const JointCommand& from);
+  void MergeFrom(const JointCommand& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required float position = 1;
+  inline bool has_position() const;
+  inline void clear_position();
+  static const int kPositionFieldNumber = 1;
+  inline float position() const;
+  inline void set_position(float value);
+
+  // required float velocity = 2;
+  inline bool has_velocity() const;
+  inline void clear_velocity();
+  static const int kVelocityFieldNumber = 2;
+  inline float velocity() const;
+  inline void set_velocity(float value);
+
+  // required float effort = 3;
+  inline bool has_effort() const;
+  inline void clear_effort();
+  static const int kEffortFieldNumber = 3;
+  inline float effort() const;
+  inline void set_effort(float value);
+
+  // required float kp_position = 4;
+  inline bool has_kp_position() const;
+  inline void clear_kp_position();
+  static const int kKpPositionFieldNumber = 4;
+  inline float kp_position() const;
+  inline void set_kp_position(float value);
+
+  // required float ki_position = 5;
+  inline bool has_ki_position() const;
+  inline void clear_ki_position();
+  static const int kKiPositionFieldNumber = 5;
+  inline float ki_position() const;
+  inline void set_ki_position(float value);
+
+  // required float kp_velocity = 6;
+  inline bool has_kp_velocity() const;
+  inline void clear_kp_velocity();
+  static const int kKpVelocityFieldNumber = 6;
+  inline float kp_velocity() const;
+  inline void set_kp_velocity(float value);
+
+  // required float force = 7;
+  inline bool has_force() const;
+  inline void clear_force();
+  static const int kForceFieldNumber = 7;
+  inline float force() const;
+  inline void set_force(float value);
+
+  // @@protoc_insertion_point(class_scope:haptix.comm.JointCommand)
+ private:
+  inline void set_has_position();
+  inline void clear_has_position();
+  inline void set_has_velocity();
+  inline void clear_has_velocity();
+  inline void set_has_effort();
+  inline void clear_has_effort();
+  inline void set_has_kp_position();
+  inline void clear_has_kp_position();
+  inline void set_has_ki_position();
+  inline void clear_has_ki_position();
+  inline void set_has_kp_velocity();
+  inline void clear_has_kp_velocity();
+  inline void set_has_force();
+  inline void clear_has_force();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  float position_;
+  float velocity_;
+  float effort_;
+  float kp_position_;
+  float ki_position_;
+  float kp_velocity_;
+  float force_;
+
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(7 + 31) / 32];
+
+  friend void  protobuf_AddDesc_Arm_2eproto();
+  friend void protobuf_AssignDesc_Arm_2eproto();
+  friend void protobuf_ShutdownFile_Arm_2eproto();
+
+  void InitAsDefaultInstance();
+  static JointCommand* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class AplRobotState : public ::google::protobuf::Message {
+ public:
+  AplRobotState();
+  virtual ~AplRobotState();
+
+  AplRobotState(const AplRobotState& from);
+
+  inline AplRobotState& operator=(const AplRobotState& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const AplRobotState& default_instance();
+
+  void Swap(AplRobotState* other);
+
+  // implements Message ----------------------------------------------
+
+  AplRobotState* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const AplRobotState& from);
+  void MergeFrom(const AplRobotState& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // repeated .haptix.comm.JointState state = 1;
+  inline int state_size() const;
+  inline void clear_state();
+  static const int kStateFieldNumber = 1;
+  inline const ::haptix::comm::JointState& state(int index) const;
+  inline ::haptix::comm::JointState* mutable_state(int index);
+  inline ::haptix::comm::JointState* add_state();
+  inline const ::google::protobuf::RepeatedPtrField< ::haptix::comm::JointState >&
+      state() const;
+  inline ::google::protobuf::RepeatedPtrField< ::haptix::comm::JointState >*
+      mutable_state();
+
+  // @@protoc_insertion_point(class_scope:haptix.comm.AplRobotState)
+ private:
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::RepeatedPtrField< ::haptix::comm::JointState > state_;
+
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
+
+  friend void  protobuf_AddDesc_Arm_2eproto();
+  friend void protobuf_AssignDesc_Arm_2eproto();
+  friend void protobuf_ShutdownFile_Arm_2eproto();
+
+  void InitAsDefaultInstance();
+  static AplRobotState* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class AplRobotCommand : public ::google::protobuf::Message {
+ public:
+  AplRobotCommand();
+  virtual ~AplRobotCommand();
+
+  AplRobotCommand(const AplRobotCommand& from);
+
+  inline AplRobotCommand& operator=(const AplRobotCommand& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const AplRobotCommand& default_instance();
+
+  void Swap(AplRobotCommand* other);
+
+  // implements Message ----------------------------------------------
+
+  AplRobotCommand* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const AplRobotCommand& from);
+  void MergeFrom(const AplRobotCommand& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // repeated .haptix.comm.JointCommand command = 1;
+  inline int command_size() const;
+  inline void clear_command();
+  static const int kCommandFieldNumber = 1;
+  inline const ::haptix::comm::JointCommand& command(int index) const;
+  inline ::haptix::comm::JointCommand* mutable_command(int index);
+  inline ::haptix::comm::JointCommand* add_command();
+  inline const ::google::protobuf::RepeatedPtrField< ::haptix::comm::JointCommand >&
+      command() const;
+  inline ::google::protobuf::RepeatedPtrField< ::haptix::comm::JointCommand >*
+      mutable_command();
+
+  // @@protoc_insertion_point(class_scope:haptix.comm.AplRobotCommand)
+ private:
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::RepeatedPtrField< ::haptix::comm::JointCommand > command_;
+
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
+
+  friend void  protobuf_AddDesc_Arm_2eproto();
+  friend void protobuf_AssignDesc_Arm_2eproto();
+  friend void protobuf_ShutdownFile_Arm_2eproto();
+
+  void InitAsDefaultInstance();
+  static AplRobotCommand* default_instance_;
+};
 // ===================================================================
 
 
@@ -179,6 +725,292 @@ inline void Arm::set_vel(double value) {
   vel_ = value;
 }
 
+// -------------------------------------------------------------------
+
+// JointState
+
+// required float position = 1;
+inline bool JointState::has_position() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void JointState::set_has_position() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void JointState::clear_has_position() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void JointState::clear_position() {
+  position_ = 0;
+  clear_has_position();
+}
+inline float JointState::position() const {
+  return position_;
+}
+inline void JointState::set_position(float value) {
+  set_has_position();
+  position_ = value;
+}
+
+// required float velocity = 2;
+inline bool JointState::has_velocity() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void JointState::set_has_velocity() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void JointState::clear_has_velocity() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void JointState::clear_velocity() {
+  velocity_ = 0;
+  clear_has_velocity();
+}
+inline float JointState::velocity() const {
+  return velocity_;
+}
+inline void JointState::set_velocity(float value) {
+  set_has_velocity();
+  velocity_ = value;
+}
+
+// required float effort = 3;
+inline bool JointState::has_effort() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void JointState::set_has_effort() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void JointState::clear_has_effort() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void JointState::clear_effort() {
+  effort_ = 0;
+  clear_has_effort();
+}
+inline float JointState::effort() const {
+  return effort_;
+}
+inline void JointState::set_effort(float value) {
+  set_has_effort();
+  effort_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// JointCommand
+
+// required float position = 1;
+inline bool JointCommand::has_position() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void JointCommand::set_has_position() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void JointCommand::clear_has_position() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void JointCommand::clear_position() {
+  position_ = 0;
+  clear_has_position();
+}
+inline float JointCommand::position() const {
+  return position_;
+}
+inline void JointCommand::set_position(float value) {
+  set_has_position();
+  position_ = value;
+}
+
+// required float velocity = 2;
+inline bool JointCommand::has_velocity() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void JointCommand::set_has_velocity() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void JointCommand::clear_has_velocity() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void JointCommand::clear_velocity() {
+  velocity_ = 0;
+  clear_has_velocity();
+}
+inline float JointCommand::velocity() const {
+  return velocity_;
+}
+inline void JointCommand::set_velocity(float value) {
+  set_has_velocity();
+  velocity_ = value;
+}
+
+// required float effort = 3;
+inline bool JointCommand::has_effort() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void JointCommand::set_has_effort() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void JointCommand::clear_has_effort() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void JointCommand::clear_effort() {
+  effort_ = 0;
+  clear_has_effort();
+}
+inline float JointCommand::effort() const {
+  return effort_;
+}
+inline void JointCommand::set_effort(float value) {
+  set_has_effort();
+  effort_ = value;
+}
+
+// required float kp_position = 4;
+inline bool JointCommand::has_kp_position() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void JointCommand::set_has_kp_position() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void JointCommand::clear_has_kp_position() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void JointCommand::clear_kp_position() {
+  kp_position_ = 0;
+  clear_has_kp_position();
+}
+inline float JointCommand::kp_position() const {
+  return kp_position_;
+}
+inline void JointCommand::set_kp_position(float value) {
+  set_has_kp_position();
+  kp_position_ = value;
+}
+
+// required float ki_position = 5;
+inline bool JointCommand::has_ki_position() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void JointCommand::set_has_ki_position() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void JointCommand::clear_has_ki_position() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+inline void JointCommand::clear_ki_position() {
+  ki_position_ = 0;
+  clear_has_ki_position();
+}
+inline float JointCommand::ki_position() const {
+  return ki_position_;
+}
+inline void JointCommand::set_ki_position(float value) {
+  set_has_ki_position();
+  ki_position_ = value;
+}
+
+// required float kp_velocity = 6;
+inline bool JointCommand::has_kp_velocity() const {
+  return (_has_bits_[0] & 0x00000020u) != 0;
+}
+inline void JointCommand::set_has_kp_velocity() {
+  _has_bits_[0] |= 0x00000020u;
+}
+inline void JointCommand::clear_has_kp_velocity() {
+  _has_bits_[0] &= ~0x00000020u;
+}
+inline void JointCommand::clear_kp_velocity() {
+  kp_velocity_ = 0;
+  clear_has_kp_velocity();
+}
+inline float JointCommand::kp_velocity() const {
+  return kp_velocity_;
+}
+inline void JointCommand::set_kp_velocity(float value) {
+  set_has_kp_velocity();
+  kp_velocity_ = value;
+}
+
+// required float force = 7;
+inline bool JointCommand::has_force() const {
+  return (_has_bits_[0] & 0x00000040u) != 0;
+}
+inline void JointCommand::set_has_force() {
+  _has_bits_[0] |= 0x00000040u;
+}
+inline void JointCommand::clear_has_force() {
+  _has_bits_[0] &= ~0x00000040u;
+}
+inline void JointCommand::clear_force() {
+  force_ = 0;
+  clear_has_force();
+}
+inline float JointCommand::force() const {
+  return force_;
+}
+inline void JointCommand::set_force(float value) {
+  set_has_force();
+  force_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// AplRobotState
+
+// repeated .haptix.comm.JointState state = 1;
+inline int AplRobotState::state_size() const {
+  return state_.size();
+}
+inline void AplRobotState::clear_state() {
+  state_.Clear();
+}
+inline const ::haptix::comm::JointState& AplRobotState::state(int index) const {
+  return state_.Get(index);
+}
+inline ::haptix::comm::JointState* AplRobotState::mutable_state(int index) {
+  return state_.Mutable(index);
+}
+inline ::haptix::comm::JointState* AplRobotState::add_state() {
+  return state_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::haptix::comm::JointState >&
+AplRobotState::state() const {
+  return state_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::haptix::comm::JointState >*
+AplRobotState::mutable_state() {
+  return &state_;
+}
+
+// -------------------------------------------------------------------
+
+// AplRobotCommand
+
+// repeated .haptix.comm.JointCommand command = 1;
+inline int AplRobotCommand::command_size() const {
+  return command_.size();
+}
+inline void AplRobotCommand::clear_command() {
+  command_.Clear();
+}
+inline const ::haptix::comm::JointCommand& AplRobotCommand::command(int index) const {
+  return command_.Get(index);
+}
+inline ::haptix::comm::JointCommand* AplRobotCommand::mutable_command(int index) {
+  return command_.Mutable(index);
+}
+inline ::haptix::comm::JointCommand* AplRobotCommand::add_command() {
+  return command_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::haptix::comm::JointCommand >&
+AplRobotCommand::command() const {
+  return command_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::haptix::comm::JointCommand >*
+AplRobotCommand::mutable_command() {
+  return &command_;
+}
+
 
 // @@protoc_insertion_point(namespace_scope)
 
@@ -189,6 +1021,18 @@ inline void Arm::set_vel(double value) {
 namespace google {
 namespace protobuf {
 
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::haptix::comm::AplLinkId>() {
+  return ::haptix::comm::AplLinkId_descriptor();
+}
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::haptix::comm::AplJointId>() {
+  return ::haptix::comm::AplJointId_descriptor();
+}
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::haptix::comm::AplActuatorId>() {
+  return ::haptix::comm::AplActuatorId_descriptor();
+}
 
 }  // namespace google
 }  // namespace protobuf

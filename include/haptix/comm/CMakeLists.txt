@@ -1,7 +1,7 @@
 include (${project_cmake_dir}/Utils.cmake)
 
 set (headers
-  Api.h
+  AplControlInterface.h
   Arm.pb.h
   Comm.h
   Helpers.h
