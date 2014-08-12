@@ -17,9 +17,8 @@
 
 #include <iostream>
 #include <ignition/transport.hh>
-#include "haptix/comm/Api.h"
 #include "haptix/comm/AplControlInterface.h"
-#include "haptix/comm/Arm.pb.h"
+#include "haptix/comm/AplControl.pb.h"
 #include "haptix/comm/Comm.h"
 
 extern "C" {

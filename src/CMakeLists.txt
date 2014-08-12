@@ -1,7 +1,7 @@
 include (${project_cmake_dir}/Utils.cmake)
 
 set (sources
-  Arm.pb.cc
+  AplControl.pb.cc
   Comm.cc
 )
 

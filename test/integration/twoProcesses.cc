@@ -18,7 +18,6 @@
 #include <chrono>
 #include <thread>
 #include "gtest/gtest.h"
-#include "haptix/comm/Api.h"
 #include "haptix/comm/AplControlInterface.h"
 #include "haptix/comm/Comm.h"
 
