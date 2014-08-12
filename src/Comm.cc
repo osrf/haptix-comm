@@ -23,7 +23,6 @@
 #include "haptix/comm/Comm.h"
 
 extern "C" {
-
   void (*cb)(const char *_service, struct AplRobotCommand _req,
              struct AplRobotState *_rep, int *_result);
 

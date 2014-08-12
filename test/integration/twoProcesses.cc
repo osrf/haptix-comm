@@ -25,7 +25,7 @@
 //////////////////////////////////////////////////
 /// \brief Provide a "dummy" service.
 void callback(const char *_service, struct AplRobotCommand _req,
-   struct AplRobotState *_rep, int *_result)
+  struct AplRobotState *_rep, int *_result)
 {
   // Check the name of the service received.
   EXPECT_STREQ(_service, "/test");
@@ -97,7 +97,8 @@ TEST(twoProcesses, SrvTwoProcs)
     NodePtr node1 = newNode();
 
     // Make a valid service call.
-    int done = nodeRequest(node1, "/test", jointCmd, timer, &jointState, &result);
+    int done = nodeRequest(node1, "/test", jointCmd, timer, &jointState,
+      &result);
 
     // The service call should not expire.
     EXPECT_EQ(done, 0);

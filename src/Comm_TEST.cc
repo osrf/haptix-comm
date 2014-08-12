@@ -22,7 +22,7 @@
 //////////////////////////////////////////////////
 /// \brief Provide a "dummy" service.
 void callback(const char *_service, struct AplRobotCommand _req,
-   struct AplRobotState *_rep, int *_result)
+  struct AplRobotState *_rep, int *_result)
 {
   // Check the name of the service received.
   EXPECT_STREQ(_service, "/test");

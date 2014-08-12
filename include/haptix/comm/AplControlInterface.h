@@ -104,7 +104,6 @@ typedef enum
   thumb_mcp_act       = 22,
   thumb_dip_act       = 23,
   num_actuators
-
 } AplActuatorId;
 
 struct JointState
