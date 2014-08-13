@@ -50,7 +50,7 @@ extern "C" {
     cb(_service.c_str(), req, &rep, &result);
 
     // Fill the response.
-    for (int i = 0; i < num_joints; ++i)
+    for (int i = 0; i < ACI_num_joints; ++i)
     {
       haptix::comm::JointState *state = _rep.add_state();
       state->set_position(rep.state[i].position);
@@ -97,7 +97,7 @@ extern "C" {
     // Prepare the robot command.
     haptix::comm::AplRobotCommand req;
 
-    for (int i = 0; i < num_joints; ++i)
+    for (int i = 0; i < ACI_num_joints; ++i)
     {
       haptix::comm::JointCommand *cmd = req.add_command();
       cmd->set_position(_req.command[i].position);

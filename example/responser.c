@@ -26,7 +26,7 @@
  {
     // Do something smart.
     int i;
-    for (i = 0; i < num_joints; ++i)
+    for (i = 0; i < ACI_num_joints; ++i)
     {
       _rep->state[i].position = i;
       _rep->state[i].velocity = i;

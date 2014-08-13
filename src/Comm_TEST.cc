@@ -28,7 +28,7 @@ void callback(const char *_service, struct AplRobotCommand _req,
   EXPECT_STREQ(_service, "/test");
 
   // Check the request parameters.
-  for (int i = 0; i < num_joints; ++i)
+  for (int i = 0; i < ACI_num_joints; ++i)
   {
     EXPECT_FLOAT_EQ(_req.command[i].position, 1.0 * i);
     EXPECT_FLOAT_EQ(_req.command[i].velocity,  2.0 * i + 1.0);
@@ -40,7 +40,7 @@ void callback(const char *_service, struct AplRobotCommand _req,
   }
 
   // Create some dummy response.
-  for (int i = 0; i < num_joints; ++i)
+  for (int i = 0; i < ACI_num_joints; ++i)
   {
     _rep->state[i].position = i;
     _rep->state[i].velocity = i + 1.0;
@@ -64,7 +64,7 @@ TEST(CommTest, BasicUsage)
   int result;
 
   // Fill the joint command.
-  for (int i = 0; i < num_joints; ++i)
+  for (int i = 0; i < ACI_num_joints; ++i)
   {
     jointCmd.command[i].position = 1.0 * i;
     jointCmd.command[i].velocity = 2.0 * i + 1.0;
@@ -83,7 +83,7 @@ TEST(CommTest, BasicUsage)
   EXPECT_EQ(done, 0);
   ASSERT_EQ(result, 0);
 
-  for (int i = 0; i < num_joints; ++i)
+  for (int i = 0; i < ACI_num_joints; ++i)
   {
     EXPECT_FLOAT_EQ(jointState.state[i].position, i);
     EXPECT_FLOAT_EQ(jointState.state[i].velocity, i + 1.0);

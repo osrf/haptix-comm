@@ -31,7 +31,7 @@ int main(int argc, char **argv)
 
   // Fill the joint command.
   int i;
-  for (i = 0; i < num_joints; ++i)
+  for (i = 0; i < ACI_num_joints; ++i)
   {
     jointCmd.command[i].position = 1.0 * i;
     jointCmd.command[i].velocity = 2.0 * i;
@@ -56,7 +56,7 @@ int main(int argc, char **argv)
       printf("State received:\n");
 
       int i;
-      for (i = 0; i < num_joints; ++i)
+      for (i = 0; i < ACI_num_joints; ++i)
       {
         printf("Joint %d\n", i);
         printf("Position: %f\n", jointState.state[i].position);
