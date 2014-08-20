@@ -22,12 +22,14 @@
 //////////////////////////////////////////////////
 int main(int argc, char **argv)
 {
-  // Create a transport node.
-  NodePtr node = newNode();
+  // Create a Haptix transport node.
+  HaptixNodePtr node = HaptixNewNode();
 
   struct AplRobotCommand jointCmd;
   struct AplRobotState jointState;
   int result;
+  // Timeout value for the requests (milliseconds).
+  int timer = 5000;
 
   // Fill the joint command.
   int i;
@@ -42,10 +44,8 @@ int main(int argc, char **argv)
     jointCmd.command[i].force = 7.0 * i;
   }
 
-  int timer = 5000;
-
   // Request a service call.
-  int done = nodeRequest(node, "/newJointCmd", jointCmd, timer,
+  int done = HaptixRequest(node, "/newJointCmd", jointCmd, timer,
     &jointState, &result);
 
   // Check results.
@@ -71,5 +71,5 @@ int main(int argc, char **argv)
     printf("Request timed out.");
 
   // Destroy the node.
-  deleteNode(node);
+  HaptixDeleteNode(node);
 }

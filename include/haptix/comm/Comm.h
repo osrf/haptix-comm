@@ -25,12 +25,12 @@
 extern "C" {
 #endif
 
-/// \brief Pointer to the transport node.
-typedef void* NodePtr;
+/// \brief Pointer to the Haptix transport node.
+typedef void* HaptixNodePtr;
 
-/// \brief Create a new transport node.
+/// \brief Create a new Haptix transport node.
 /// \return A pointer to the new transport node created.
-HAPTIX_VISIBLE NodePtr newNode();
+HAPTIX_VISIBLE HaptixNodePtr HaptixNewNode();
 
 /// \brief Advertise a new service.
 /// \param[in] _node Transport node used to advertise the service.
@@ -41,9 +41,10 @@ HAPTIX_VISIBLE NodePtr newNode();
 /// \param[in] _req Struct containing the request.
 /// \param[out] _rep Struct containing the response.
 /// \param[out] _result Service call result.
-HAPTIX_VISIBLE int nodeAdvertise(NodePtr _node, const char *_service,
-  void (*_cb)(const char *_service, struct AplRobotCommand _req,
-              struct AplRobotState *_rep, int *_result));
+HAPTIX_VISIBLE int HaptixAdvertise(HaptixNodePtr _node,
+                                   const char *_service,
+                                   void (*_cb)(const char *_service,
+  struct AplRobotCommand _req, struct AplRobotState *_rep, int *_result));
 
 /// \brief Request a new service using a blocking call.
 /// \param[in] _service Service requested.
@@ -52,13 +53,16 @@ HAPTIX_VISIBLE int nodeAdvertise(NodePtr _node, const char *_service,
 /// \param[out] _rep Struct containing the response.
 /// \param[out] _result Result of the service call.
 /// \return 0 when the request was executed or -1 if the timer expired.
-HAPTIX_VISIBLE int nodeRequest(NodePtr _node, const char *_service,
-  struct AplRobotCommand _req, int _timeout, struct AplRobotState *_rep,
-  int *_result);
+HAPTIX_VISIBLE int HaptixRequest(HaptixNodePtr _node,
+                                 const char *_service,
+                                 struct AplRobotCommand _req,
+                                 int _timeout,
+                                 struct AplRobotState *_rep,
+                                 int *_result);
 
-/// \brief Destroy a transport node.
+/// \brief Destroy a Haptix transport node.
 /// \param[in] _node Pointer to the node to be destroyed.
-HAPTIX_VISIBLE void deleteNode(NodePtr _node);
+HAPTIX_VISIBLE void HaptixDeleteNode(HaptixNodePtr _node);
 
 #ifdef __cplusplus
 }

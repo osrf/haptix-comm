@@ -20,7 +20,7 @@
 #include <haptix/comm/Comm.h>
 
  //////////////////////////////////////////////////
- /// \brief Provide an "echo" service.
+ /// \brief Provide a service.
  void callback(const char *_service, struct AplRobotCommand _req,
     struct AplRobotState *_rep, int *_result)
  {
@@ -38,16 +38,16 @@
 //////////////////////////////////////////////////
 int main(int argc, char **argv)
 {
-  // Create a transport node.
-  NodePtr node = newNode();
+  // Create a Haptix transport node.
+  HaptixNodePtr node = HaptixNewNode();
 
   // Advertise a service.
-  nodeAdvertise(node, "/newJointCmd", callback);
+  HaptixAdvertise(node, "/newJointCmd", callback);
 
   // Zzzz.
   printf("Accepting service calls. Press [ENTER] to exit.");
   getchar();
 
   // Destroy the node.
-  deleteNode(node);
+  HaptixDeleteNode(node);
 }

@@ -18,8 +18,8 @@
 #include <iostream>
 #include <ignition/transport.hh>
 #include "haptix/comm/AplControlInterface.h"
-#include "haptix/comm/AplControl.pb.h"
 #include "haptix/comm/Comm.h"
+#include "msg/AplControl.pb.h"
 
 extern "C" {
   void (*cb)(const char *_service, struct AplRobotCommand _req,
@@ -27,11 +27,11 @@ extern "C" {
 
   //////////////////////////////////////////////////
   void internalCallback(const std::string &_service,
-    const haptix::comm::AplRobotCommand &_req,
-    haptix::comm::AplRobotState &_rep, bool &_result)
+    const haptix::comm::msgs::AplRobotCommand &_req,
+    haptix::comm::msgs::AplRobotState &_rep, bool &_result)
   {
-    AplRobotCommand req;
-    AplRobotState rep;
+    struct AplRobotCommand req;
+    struct AplRobotState rep;
     int result;
 
     // Fill the request.
@@ -52,7 +52,7 @@ extern "C" {
     // Fill the response.
     for (int i = 0; i < num_joints; ++i)
     {
-      haptix::comm::JointState *state = _rep.add_state();
+      haptix::comm::msgs::JointState *state = _rep.add_state();
       state->set_position(rep.state[i].position);
       state->set_velocity(rep.state[i].velocity);
       state->set_effort(rep.state[i].effort);
@@ -63,13 +63,13 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
-  NodePtr newNode()
+  HaptixNodePtr HaptixNewNode()
   {
     return reinterpret_cast<void*>(new ignition::transport::Node());
   }
 
   //////////////////////////////////////////////////
-  int nodeAdvertise(NodePtr _node, const char *_service,
+  int HaptixAdvertise(HaptixNodePtr _node, const char *_service,
     void (*_cb)(const char *_service, struct AplRobotCommand _req,
                 struct AplRobotState *_rep, int *_result))
   {
@@ -90,16 +90,16 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
-  int nodeRequest(NodePtr _node, const char *_service,
+  int HaptixRequest(HaptixNodePtr _node, const char *_service,
     struct AplRobotCommand _req, int _timeout, struct AplRobotState *_rep,
     int *_result)
   {
     // Prepare the robot command.
-    haptix::comm::AplRobotCommand req;
+    haptix::comm::msgs::AplRobotCommand req;
 
     for (int i = 0; i < num_joints; ++i)
     {
-      haptix::comm::JointCommand *cmd = req.add_command();
+      haptix::comm::msgs::JointCommand *cmd = req.add_command();
       cmd->set_position(_req.command[i].position);
       cmd->set_velocity(_req.command[i].velocity);
       cmd->set_effort(_req.command[i].effort);
@@ -109,7 +109,7 @@ extern "C" {
       cmd->set_force(_req.command[i].force);
     }
 
-    haptix::comm::AplRobotState rep;
+    haptix::comm::msgs::AplRobotState rep;
     bool result;
 
     ignition::transport::Node *node =
@@ -145,7 +145,7 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
-  void deleteNode(NodePtr /*_node*/)
+  void HaptixDeleteNode(HaptixNodePtr /*_node*/)
   {
   }
 }

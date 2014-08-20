@@ -1,4 +1,4 @@
-package haptix.comm;
+package haptix.comm.msgs;
 
 message Arm
 {

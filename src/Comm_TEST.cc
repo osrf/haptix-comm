@@ -54,10 +54,10 @@ void callback(const char *_service, struct AplRobotCommand _req,
 TEST(CommTest, BasicUsage)
 {
   // Create a transport node.
-  NodePtr node = newNode();
+  HaptixNodePtr node = HaptixNewNode();
 
   // Advertise an "test" service.
-  nodeAdvertise(node, "/test", callback);
+  HaptixAdvertise(node, "/test", callback);
 
   struct AplRobotCommand jointCmd;
   struct AplRobotState jointState;
@@ -78,7 +78,8 @@ TEST(CommTest, BasicUsage)
   int timer = 5000;
 
   // Request a service call.
-  int done = nodeRequest(node, "/test", jointCmd, timer, &jointState, &result);
+  int done = HaptixRequest(node, "/test", jointCmd, timer,
+    &jointState, &result);
 
   EXPECT_EQ(done, 0);
   ASSERT_EQ(result, 0);
@@ -91,7 +92,7 @@ TEST(CommTest, BasicUsage)
   }
 
   // Destroy the node.
-  deleteNode(node);
+  HaptixDeleteNode(node);
 }
 
 //////////////////////////////////////////////////

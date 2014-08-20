@@ -55,10 +55,10 @@ void callback(const char *_service, struct AplRobotCommand _req,
 void runReplier()
 {
   // Create a transport node.
-  NodePtr node = newNode();
+  HaptixNodePtr node = HaptixNewNode();
 
   // Advertise an "test" service.
-  nodeAdvertise(node, "/test", callback);
+  HaptixAdvertise(node, "/test", callback);
   std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 }
 
@@ -93,10 +93,10 @@ TEST(twoProcesses, SrvTwoProcs)
     }
 
     // Create a transport node.
-    NodePtr node1 = newNode();
+    HaptixNodePtr node1 = HaptixNewNode();
 
     // Make a valid service call.
-    int done = nodeRequest(node1, "/test", jointCmd, timer, &jointState,
+    int done = HaptixRequest(node1, "/test", jointCmd, timer, &jointState,
       &result);
 
     // The service call should not expire.
@@ -115,7 +115,7 @@ TEST(twoProcesses, SrvTwoProcs)
 
     // Make an invalid service request.
     auto t1 = std::chrono::system_clock::now();
-    done = nodeRequest(node1, "unknown_service", jointCmd, timer, &jointState,
+    done = HaptixRequest(node1, "unknown_service", jointCmd, timer, &jointState,
            &result);
     auto t2 = std::chrono::system_clock::now();
 
