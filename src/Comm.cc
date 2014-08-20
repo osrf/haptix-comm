@@ -69,6 +69,12 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
+  HaptixNodePtr HaptixNewNodeNamespace(const char *_ns)
+  {
+    return reinterpret_cast<void*>(new ignition::transport::Node(_ns));
+  }
+
+  //////////////////////////////////////////////////
   int HaptixAdvertise(HaptixNodePtr _node, const char *_service,
     void (*_cb)(const char *_service, struct AplRobotCommand _req,
                 struct AplRobotState *_rep, int *_result))

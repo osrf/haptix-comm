@@ -32,6 +32,12 @@ typedef void* HaptixNodePtr;
 /// \return A pointer to the new transport node created.
 HAPTIX_VISIBLE HaptixNodePtr HaptixNewNode();
 
+/// \brief Create a new Haptix transport node with a namespace.
+/// \param[in] _ns All the topic names advertised by this node will be prefixed
+/// with the value of '_ns'.
+/// \return A pointer to the new transport node created.
+HAPTIX_VISIBLE HaptixNodePtr HaptixNewNodeNamespace(const char *_ns);
+
 /// \brief Advertise a new service.
 /// \param[in] _node Transport node used to advertise the service.
 /// \param[in] _service Name associated to the service.
