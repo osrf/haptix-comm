@@ -22,6 +22,33 @@
 #include "msg/AplControl.pb.h"
 
 extern "C" {
+
+  //////////////////////////////////////////////////
+  hxResult hx_connect(int /*_target*/)
+  {
+    return hxOK;
+  }
+
+  //////////////////////////////////////////////////
+  hxResult hx_close(int /*_target*/)
+  {
+    return hxOK;
+  }
+
+  //////////////////////////////////////////////////
+  hxResult hx_getdeviceinfo(int /*_target*/, hxDeviceInfo* /*_deviceinfo*/)
+  {
+    return hxOK;
+  }
+
+  //////////////////////////////////////////////////
+  hxResult hx_update(int /*_target*/, const hxCommand* /*_command*/,
+                     hxSensor* /*_sensor*/)
+  {
+    return hxOK;
+  }
+
+  //////////////////////////////////////////////////
   void (*cb)(const char *_service, struct AplRobotCommand _req,
              struct AplRobotState *_rep, int *_result);
 

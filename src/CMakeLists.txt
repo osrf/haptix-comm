@@ -2,6 +2,7 @@ include (${project_cmake_dir}/Utils.cmake)
 
 set (sources
   Comm.cc
+  CommSim.cc
 )
 
 set (gtest_sources
