@@ -169,7 +169,10 @@ extern "C" {
   {
     if (_node != NULL)
     {
-      delete _node;
+      ignition::transport::Node *node =
+        reinterpret_cast<ignition::transport::Node*>(_node);
+
+      delete node;
       _node = NULL;
     }
   }
