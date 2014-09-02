@@ -79,6 +79,13 @@ extern "C" {
     void (*_cb)(const char *_service, struct AplRobotCommand _req,
                 struct AplRobotState *_rep, int *_result))
   {
+    // Sanity check.
+    if (!_node)
+    {
+      std::cerr << "HaptixAdvertise() Error: NULL node." << std::endl;
+      return -1;
+    }
+
     // Store the user callback.
     cb = _cb;
 
@@ -100,6 +107,13 @@ extern "C" {
     struct AplRobotCommand _req, int _timeout, struct AplRobotState *_rep,
     int *_result)
   {
+    // Sanity check.
+    if (!_node)
+    {
+      std::cerr << "HaptixRequest() Error: NULL node." << std::endl;
+      return -1;
+    }
+
     // Prepare the robot command.
     haptix::comm::msgs::AplRobotCommand req;
 
@@ -151,7 +165,12 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
-  void HaptixDeleteNode(HaptixNodePtr /*_node*/)
+  void HaptixDeleteNode(HaptixNodePtr _node)
   {
+    if (_node != NULL)
+    {
+      delete _node;
+      _node = NULL;
+    }
   }
 }
