@@ -17,7 +17,7 @@
 
 #include "gtest/gtest.h"
 #include "haptix/comm/AplControlInterface.h"
-#include "haptix/comm/Comm.h"
+#include "haptix/comm/comm.h"
 
 //////////////////////////////////////////////////
 /// \brief Provide a "dummy" service.
