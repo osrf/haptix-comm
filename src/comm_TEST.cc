@@ -15,161 +15,159 @@
  *
 */
 
+#include <ignition/transport.hh>
 #include "gtest/gtest.h"
-#include "haptix/comm/AplControlInterface.h"
 #include "haptix/comm/comm.h"
+#include "haptix/comm/types.h"
+#include "msg/hxCommand.pb.h"
+#include "msg/hxDevice.pb.h"
+#include "msg/hxSensor.pb.h"
+
+int numMotors = 4;
+int numJoints = 5;
+int numContactSensors = 6;
+int numIMUs = 7;
 
 //////////////////////////////////////////////////
-/// \brief Provide a "dummy" service.
-void callback(const char *_service, struct AplRobotCommand _req,
-  struct AplRobotState *_rep, int *_result)
+/// \brief Provide a "GetDeviceInfo" service.
+void onGetDeviceInfo(const std::string &_service,
+  const haptix::comm::msgs::hxDevice &/*_req*/,
+  haptix::comm::msgs::hxDevice &_rep, bool &_result)
 {
   // Check the name of the service received.
-  EXPECT_STREQ(_service, "/test");
-
-  // Check the request parameters.
-  for (int i = 0; i < num_joints; ++i)
-  {
-    EXPECT_FLOAT_EQ(_req.command[i].position, 1.0 * i);
-    EXPECT_FLOAT_EQ(_req.command[i].velocity,  2.0 * i + 1.0);
-    EXPECT_FLOAT_EQ(_req.command[i].effort, 3.0 * i + 2.0);
-    EXPECT_FLOAT_EQ(_req.command[i].kp_position, 4.0 * i + 3.0);
-    EXPECT_FLOAT_EQ(_req.command[i].ki_position, 5.0 * i + 4.0);
-    EXPECT_FLOAT_EQ(_req.command[i].kp_velocity, 6.0 * i + 5.0);
-    EXPECT_FLOAT_EQ(_req.command[i].force, 7.0 * i + 6.0);
-  }
+  EXPECT_EQ(_service, "/haptix/gazebo/GetDeviceInfo");
 
   // Create some dummy response.
-  for (int i = 0; i < num_joints; ++i)
+  _rep.set_nmotor(numMotors);
+  _rep.set_njoint(numJoints);
+  _rep.set_ncontactsensor(numContactSensors);
+  _rep.set_nimu(numIMUs);
+
+  for (int i = 0; i < numJoints; ++i)
   {
-    _rep->state[i].position = i;
-    _rep->state[i].velocity = i + 1.0;
-    _rep->state[i].effort = i + 2.0;
+    haptix::comm::msgs::hxJointAngle *joint = _rep.add_limit();
+    joint->set_min(-i);
+    joint->set_max(i);
   }
-  *_result = 0;
+
+  _result = true;
 }
 
 //////////////////////////////////////////////////
-/// \brief Provide a "dummy" service.
-void callbackNamespace(const char *_service, struct AplRobotCommand _req,
-  struct AplRobotState *_rep, int *_result)
+/// \brief Provide an "Update" service.
+void onUpdate(const std::string &_service,
+  const haptix::comm::msgs::hxCommand &_req, haptix::comm::msgs::hxSensor &_rep,
+  bool &_result)
 {
   // Check the name of the service received.
-  EXPECT_STREQ(_service, "/myNamespace/test");
+  EXPECT_EQ(_service, "/haptix/gazebo/Update");
 
-  // Check the request parameters.
-  for (int i = 0; i < num_joints; ++i)
+  // Read the request parameters.
+  ASSERT_EQ(_req.ref_pos_size(), hxMAXMOTOR);
+  for (int i = 0; i < numMotors; ++i)
   {
-    EXPECT_FLOAT_EQ(_req.command[i].position, 1.0 * i);
-    EXPECT_FLOAT_EQ(_req.command[i].velocity,  2.0 * i + 1.0);
-    EXPECT_FLOAT_EQ(_req.command[i].effort, 3.0 * i + 2.0);
-    EXPECT_FLOAT_EQ(_req.command[i].kp_position, 4.0 * i + 3.0);
-    EXPECT_FLOAT_EQ(_req.command[i].ki_position, 5.0 * i + 4.0);
-    EXPECT_FLOAT_EQ(_req.command[i].kp_velocity, 6.0 * i + 5.0);
-    EXPECT_FLOAT_EQ(_req.command[i].force, 7.0 * i + 6.0);
+    EXPECT_FLOAT_EQ(_req.ref_pos(i), i);
+    EXPECT_FLOAT_EQ(_req.ref_vel(i), i + 1);
+    EXPECT_FLOAT_EQ(_req.gain_pos(i), i + 2);
+    EXPECT_FLOAT_EQ(_req.gain_vel(i), i + 3);
   }
 
   // Create some dummy response.
-  for (int i = 0; i < num_joints; ++i)
+  for (int i = 0; i < numMotors; ++i)
   {
-    _rep->state[i].position = i;
-    _rep->state[i].velocity = i + 1.0;
-    _rep->state[i].effort = i + 2.0;
+    _rep.add_motor_pos(i);
+    _rep.add_motor_vel(i + 1);
+    _rep.add_motor_torque(i + 2);
   }
-  *_result = 0;
+
+  for (int i = 0; i < numJoints; ++i)
+  {
+    _rep.add_joint_pos(i);
+    _rep.add_joint_vel(i + 1);
+  }
+
+  for (int i = 0; i < numContactSensors; ++i)
+    _rep.add_contact(i);
+
+  for (int i = 0; i < numIMUs; ++i)
+  {
+    haptix::comm::msgs::imu *linacc = _rep.add_imu_linacc();
+    linacc->set_x(i);
+    linacc->set_y(i + 1);
+    linacc->set_z(i + 2);
+    haptix::comm::msgs::imu *angvel = _rep.add_imu_angvel();
+    angvel->set_x(i + 3);
+    angvel->set_y(i + 4);
+    angvel->set_z(i + 5);
+  }
+
+  _result = true;
 }
 
 //////////////////////////////////////////////////
 /// \brief Check that we can use the C-wrapper.
 TEST(CommTest, BasicUsage)
 {
-  // Create a transport node.
-  HaptixNodePtr node = HaptixNewNode();
+  ignition::transport::Node node;
 
-  // Advertise an "test" service.
-  HaptixAdvertise(node, "/test", callback);
+  // Advertise the "getdeviceinfo" service.
+  node.Advertise(std::string("/haptix/gazebo/GetDeviceInfo"), onGetDeviceInfo);
 
-  struct AplRobotCommand jointCmd;
-  struct AplRobotState jointState;
-  int result;
+  // Advertise the "update" service.
+  node.Advertise(std::string("/haptix/gazebo/Update"), onUpdate);
 
+  EXPECT_EQ(hx_connect(hxGAZEBO), hxOK);
+
+  hxDeviceInfo deviceInfo;
+  ASSERT_EQ(hx_getdeviceinfo(hxGAZEBO, &deviceInfo), hxOK);
+
+  ASSERT_EQ(deviceInfo.nmotor, numMotors);
+  ASSERT_EQ(deviceInfo.njoint, numJoints);
+  ASSERT_EQ(deviceInfo.ncontactsensor, numContactSensors);
+  ASSERT_EQ(deviceInfo.nIMU, numIMUs);
+
+  hxCommand cmd;
+  hxSensor sensor;
   // Fill the joint command.
-  for (int i = 0; i < num_joints; ++i)
+
+  for (int i = 0; i < deviceInfo.nmotor; ++i)
   {
-    jointCmd.command[i].position = 1.0 * i;
-    jointCmd.command[i].velocity = 2.0 * i + 1.0;
-    jointCmd.command[i].effort = 3.0 * i + 2.0;
-    jointCmd.command[i].kp_position = 4.0 * i + 3.0;
-    jointCmd.command[i].ki_position = 5.0 * i + 4.0;
-    jointCmd.command[i].kp_velocity = 6.0 * i + 5.0;
-    jointCmd.command[i].force = 7.0 * i + 6.0;
+    cmd.ref_pos[i] = i;
+    cmd.ref_vel[i] = i + 1;
+    cmd.gain_pos[i] = i + 2;
+    cmd.gain_vel[i] = i + 3;
   }
 
-  int timer = 5000;
+  EXPECT_EQ(hx_update(hxGAZEBO, &cmd, &sensor), hxOK);
 
-  // Request a service call.
-  int done = HaptixRequest(node, "/test", jointCmd, timer,
-    &jointState, &result);
-
-  EXPECT_EQ(done, 0);
-  ASSERT_EQ(result, 0);
-
-  for (int i = 0; i < num_joints; ++i)
+  // Check the response.
+  for (int i = 0; i < deviceInfo.nmotor; ++i)
   {
-    EXPECT_FLOAT_EQ(jointState.state[i].position, i);
-    EXPECT_FLOAT_EQ(jointState.state[i].velocity, i + 1.0);
-    EXPECT_FLOAT_EQ(jointState.state[i].effort, i + 2.0);
+    EXPECT_FLOAT_EQ(sensor.motor_pos[i], i);
+    EXPECT_FLOAT_EQ(sensor.motor_vel[i], i + 1);
+    EXPECT_FLOAT_EQ(sensor.motor_torque[i], i + 2);
   }
 
-  // Destroy the node.
-  HaptixDeleteNode(node);
-}
-
-//////////////////////////////////////////////////
-/// \brief Check the namespace usage.
-TEST(CommTest, Namespaces)
-{
-  // Create a transport node with a default namespace.
-  const char *ns = "myNamespace";
-  HaptixNodePtr node = HaptixNewNodeNamespace(ns);
-
-  // Advertise an "test" service.
-  HaptixAdvertise(node, "test", callbackNamespace);
-
-  struct AplRobotCommand jointCmd;
-  struct AplRobotState jointState;
-  int result;
-
-  // Fill the joint command.
-  for (int i = 0; i < num_joints; ++i)
+  for (int i = 0; i < deviceInfo.njoint; ++i)
   {
-    jointCmd.command[i].position = 1.0 * i;
-    jointCmd.command[i].velocity = 2.0 * i + 1.0;
-    jointCmd.command[i].effort = 3.0 * i + 2.0;
-    jointCmd.command[i].kp_position = 4.0 * i + 3.0;
-    jointCmd.command[i].ki_position = 5.0 * i + 4.0;
-    jointCmd.command[i].kp_velocity = 6.0 * i + 5.0;
-    jointCmd.command[i].force = 7.0 * i + 6.0;
+    EXPECT_FLOAT_EQ(sensor.joint_pos[i], i);
+    EXPECT_FLOAT_EQ(sensor.joint_vel[i], i + 1);
   }
 
-  int timer = 5000;
+  for (int i = 0; i < deviceInfo.ncontactsensor; ++i)
+    EXPECT_FLOAT_EQ(sensor.contact[i], i);
 
-  // Request a service call.
-  int done = HaptixRequest(node, "test", jointCmd, timer,
-    &jointState, &result);
-
-  EXPECT_EQ(done, 0);
-  ASSERT_EQ(result, 0);
-
-  for (int i = 0; i < num_joints; ++i)
+  for (int i = 0; i < deviceInfo.nIMU; ++i)
   {
-    EXPECT_FLOAT_EQ(jointState.state[i].position, i);
-    EXPECT_FLOAT_EQ(jointState.state[i].velocity, i + 1.0);
-    EXPECT_FLOAT_EQ(jointState.state[i].effort, i + 2.0);
+    EXPECT_FLOAT_EQ(sensor.IMU_linacc[i][0], i);
+    EXPECT_FLOAT_EQ(sensor.IMU_linacc[i][1], i + 1);
+    EXPECT_FLOAT_EQ(sensor.IMU_linacc[i][2], i + 2);
+    EXPECT_FLOAT_EQ(sensor.IMU_angvel[i][0], i + 3);
+    EXPECT_FLOAT_EQ(sensor.IMU_angvel[i][1], i + 4);
+    EXPECT_FLOAT_EQ(sensor.IMU_angvel[i][2], i + 5);
   }
 
-  // Destroy the node.
-  HaptixDeleteNode(node);
+  EXPECT_EQ(hx_close(hxGAZEBO), hxOK);
 }
 
 //////////////////////////////////////////////////

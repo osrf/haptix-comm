@@ -18,8 +18,6 @@
 #ifndef __HAPTIX_COMM_TYPES_H
 #define __HAPTIX_COMM_TYPES_H
 
-#include "haptix/comm/Helpers.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -37,21 +35,21 @@ extern "C" {
 #define hxMAXIMU                10
 
 /// \brief API return codes.
-enum hxResult
+typedef enum
 {
   hxOK = 0,                               // success
   hxBAD,                                  // a bad thing
   hxHORRIBLE                              // another bad thing
-};
+} hxResult;
 
 /// \brief Communication targets.
-enum hxTarget
+typedef enum
 {
   hxDEKA = 0,                             // DEKA physical arm
   hxMPL,                                  // MPL physical arm
   hxGAZEBO,                               // Gazebo simulator
   hxMUJOCO                                // MuJoCo simulator
-};
+} hxTarget;
 
 /// \brief Device information.
 struct _hxDeviceInfo

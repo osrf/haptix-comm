@@ -1,9 +1,9 @@
 include (${project_cmake_dir}/Utils.cmake)
 
 set (headers
-  AplControlInterface.h
   comm.h
   comm_sim.h
+  types.h
   Helpers.h
 )
 

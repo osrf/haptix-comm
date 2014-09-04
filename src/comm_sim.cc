@@ -19,7 +19,6 @@
 #include "haptix/comm/comm_sim.h"
 
 extern "C" {
-
   //////////////////////////////////////////////////
   hxResult hxs_getdeviceinfo(int /*_target*/, hxsDeviceInfo* /*_deviceinfo*/)
   {

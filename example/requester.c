@@ -16,60 +16,108 @@
 */
 
 #include <stdio.h>
-#include <haptix/comm/AplControlInterface.h>
-#include <haptix/comm/Comm.h>
+#include <time.h>
+#include <haptix/comm/types.h>
+#include <haptix/comm/comm.h>
+
+void printState(const hxDeviceInfo *_deviceInfo, const hxSensor *_sensor)
+{
+  int i;
+
+  printf("\tMotors:\n");
+  for (i = 0; i < _deviceInfo->nmotor; ++i)
+  {
+    printf("\t\tMotor %d\n", i);
+    printf("\t\t\tPosition: %f\n", _sensor->motor_pos[i]);
+    printf("\t\t\tVelocity: %f\n", _sensor->motor_vel[i]);
+    printf("\t\t\tTorque: %f\n" , _sensor->motor_torque[i]);
+  }
+
+  printf("\tJoints:\n");
+  for (i = 0; i < _deviceInfo->njoint; ++i)
+  {
+    printf("\t\tJoint %d\n", i);
+    printf("\t\t\tPosition: %f\n", _sensor->joint_pos[i]);
+    printf("\t\t\tVelocity: %f\n", _sensor->joint_vel[i]);
+  }
+
+  printf("\tContact sensors:\n");
+  for (i = 0; i < _deviceInfo->ncontactsensor; ++i)
+  {
+    printf("\t\t# %d\n", i);
+    printf("\t\t\tvalue: %f\n", _sensor->contact[i]);
+  }
+
+  printf("\tIMUs:\n");
+  for (i = 0; i < _deviceInfo->nIMU; ++i)
+  {
+    printf("\t\t# %d\n", i);
+    printf("\t\t\tLinear acceleration: (%f, %f, %f)\n",
+      _sensor->IMU_linacc[i][0], _sensor->IMU_linacc[i][1],
+      _sensor->IMU_linacc[i][2]);
+    printf("\t\t\tAngular velocity: (%f, %f, %f)\n",
+      _sensor->IMU_angvel[i][0], _sensor->IMU_angvel[i][1],
+      _sensor->IMU_angvel[i][2]);
+  }
+}
 
 //////////////////////////////////////////////////
 int main(int argc, char **argv)
 {
-  // Create a Haptix transport node.
-  HaptixNodePtr node = HaptixNewNode();
-
-  struct AplRobotCommand jointCmd;
-  struct AplRobotState jointState;
-  int result;
-  // Timeout value for the requests (milliseconds).
-  int timer = 5000;
-
-  // Fill the joint command.
   int i;
-  for (i = 0; i < num_joints; ++i)
-  {
-    jointCmd.command[i].position = 1.0 * i;
-    jointCmd.command[i].velocity = 2.0 * i;
-    jointCmd.command[i].effort = 3.0 * i;
-    jointCmd.command[i].kp_position = 4.0 * i;
-    jointCmd.command[i].ki_position = 5.0 * i;
-    jointCmd.command[i].kp_velocity = 6.0 * i;
-    jointCmd.command[i].force = 7.0 * i;
-  }
+  int counter = 0;
+  hxDeviceInfo deviceInfo;
+  hxCommand cmd;
+  hxSensor sensor;
 
-  // Request a service call.
-  int done = HaptixRequest(node, "/newJointCmd", jointCmd, timer,
-    &jointState, &result);
+  printf("\nRequesting device information...\n\n");
+
+  // Requesting device information.
+  if (hx_getdeviceinfo(hxGAZEBO, &deviceInfo) != hxOK)
+  {
+    printf("hx_getdeviceinfo(): Request error.\n");
+    return -1;
+  }
 
   // Check results.
-  if (done == 0)
+  printf("Device information received:\n");
+  printf("Num motors: %d\n", deviceInfo.nmotor);
+  printf("Num joints: %d\n", deviceInfo.njoint);
+  printf("Num contact sensors: %d\n", deviceInfo.ncontactsensor);
+  printf("Num IMUs: %d\n", deviceInfo.nIMU);
+  printf("Joint limits: \n");
+
+  for (i = 0; i < deviceInfo.njoint; ++i)
   {
-    if (result == 0)
-    {
-      printf("State received:\n");
-
-      int i;
-      for (i = 0; i < num_joints; ++i)
-      {
-        printf("Joint %d\n", i);
-        printf("Position: %f\n", jointState.state[i].position);
-        printf("Velocity: %f\n", jointState.state[i].velocity);
-        printf("Effort: %f\n--\n", jointState.state[i].effort);
-      }
-    }
-    else
-      printf("Request error.");
+    printf("\tJoint %d:\n", i);
+    printf("\t\t Min: %f\n", deviceInfo.limit[i][0]);
+    printf("\t\t Max: %f\n", deviceInfo.limit[i][1]);
   }
-  else
-    printf("Request timed out.");
 
-  // Destroy the node.
-  HaptixDeleteNode(node);
+  // Create a command.
+  for (i = 0; i < deviceInfo.nmotor; ++i)
+  {
+    cmd.ref_pos[i] = i;
+    cmd.ref_vel[i] = i + 1;
+    cmd.gain_pos[i] = i + 2;
+    cmd.gain_vel[i] = i + 3;
+  }
+
+  // Send commands at ~20Hz.
+  for (; ;)
+  {
+    if (hx_update(hxGAZEBO, &cmd, &sensor) != hxOK)
+      printf("hx_update(): Request error.\n");
+
+    // Print the state at ~1Hz.
+    if (++counter == 20)
+    {
+      printState(&deviceInfo, &sensor);
+      counter = 0;
+    }
+
+    usleep(50000);
+  }
+
+  return 0;
 }
