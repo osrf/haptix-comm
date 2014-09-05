@@ -17,8 +17,7 @@
 
 #include <stdio.h>
 #include <time.h>
-#include <haptix/comm/types.h>
-#include <haptix/comm/comm.h>
+#include <haptix/comm/haptix.h>
 
 void printState(const hxDeviceInfo *_deviceInfo, const hxSensor *_sensor)
 {

@@ -17,8 +17,7 @@
 
 #include <ignition/transport.hh>
 #include "gtest/gtest.h"
-#include "haptix/comm/comm.h"
-#include "haptix/comm/types.h"
+#include "haptix/comm/haptix.h"
 #include "msg/hxCommand.pb.h"
 #include "msg/hxDevice.pb.h"
 #include "msg/hxSensor.pb.h"

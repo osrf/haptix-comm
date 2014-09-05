@@ -1,10 +1,9 @@
 include (${project_cmake_dir}/Utils.cmake)
 
 set (headers
-  comm.h
-  comm_sim.h
-  types.h
-  Helpers.h
+  haptix.h
+  haptix_sim.h
+  helpers.h
 )
 
 #################################################

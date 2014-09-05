@@ -18,8 +18,7 @@
 #include <cstdlib>
 #include "gtest/gtest.h"
 #include "haptix/comm/config.hh"
-#include "haptix/comm/types.h"
-#include "haptix/comm/comm.h"
+#include "haptix/comm/haptix.h"
 #include "msg/hxCommand.pb.h"
 #include "msg/hxDevice.pb.h"
 #include "msg/hxSensor.pb.h"
@@ -38,21 +37,11 @@ TEST(twoProcesses, SrvTwoProcs)
   std::string command = BUILD_DIR + std::string("/example/responser 1000&");
   ASSERT_EQ(std::system(command.c_str()), 0);
 
-  haptix::comm::msgs::hxDevice req;
-  haptix::comm::msgs::hxDevice rep;
   hxDeviceInfo deviceInfo;
   hxCommand cmd;
   hxSensor sensor;
 
   EXPECT_EQ(hx_connect(hxGAZEBO), hxOK);
-
-  req.set_nmotor(0.0);
-  req.set_njoint(0.0);
-  req.set_ncontactsensor(0.0);
-  req.set_nimu(0.0);
-  haptix::comm::msgs::hxJointAngle *limit = req.add_limit();
-  limit->set_min(0.0);
-  limit->set_max(0.0);
 
   // Request the device information.
   ASSERT_EQ(hx_getdeviceinfo(hxGAZEBO, &deviceInfo), hxOK);

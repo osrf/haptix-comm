@@ -15,8 +15,8 @@
  *
 */
 
-#ifndef __HAPTIX_COMM_HELPERS_HH_INCLUDED__
-#define __HAPTIX_COMM_HELPERS_HH_INCLUDED__
+#ifndef __HAPTIX_COMM_HELPERS_H_INCLUDED__
+#define __HAPTIX_COMM_HELPERS_H_INCLUDED__
 
 /** \def HAPTIX_VISIBLE
  * Use to represent "symbol visible" if supported

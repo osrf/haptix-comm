@@ -15,8 +15,8 @@
  *
 */
 
-#include "haptix/comm/comm.h"
-#include "haptix/comm/comm_sim.h"
+#include "haptix/comm/haptix.h"
+#include "haptix/comm/haptix_sim.h"
 
 extern "C" {
   //////////////////////////////////////////////////
