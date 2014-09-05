@@ -32,8 +32,6 @@ if (NOT PROTOBUF_PROTOC_LIBRARY)
   BUILD_ERROR ("Missing: Google Protobuf Compiler Library (libprotoc-dev)")
 endif()
 
-add_subdirectory(msg)
-
 set_source_files_properties(${PROTO_SRC} ${PROTO_HEADER} PROPERTIES
                             GENERATED TRUE)
 include_directories(${CMAKE_BINARY_DIR})

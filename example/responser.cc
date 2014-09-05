@@ -15,6 +15,8 @@
  *
 */
 
+#include <chrono>
+#include <string>
 #include <stdio.h>
 #include <ignition/transport.hh>
 #include "msg/hxCommand.pb.h"
@@ -32,9 +34,14 @@ std::string updateTopic = "/haptix/gazebo/Update";
 //////////////////////////////////////////////////
 /// \brief Provide a service.
 void onGetDeviceInfo(const std::string &_service,
-  const haptix::comm::msgs::hxDevice &_req,
+  const haptix::comm::msgs::hxDevice &/*_req*/,
   haptix::comm::msgs::hxDevice &_rep, bool &_result)
 {
+  _result = true;
+
+  if (_service != deviceInfoTopic)
+    _result = false;
+
   _rep.set_nmotor(numMotors);
   _rep.set_njoint(numJoints);
   _rep.set_ncontactsensor(numContactSensors);
@@ -46,15 +53,20 @@ void onGetDeviceInfo(const std::string &_service,
     joint->set_min(-i);
     joint->set_max(i);
   }
-  _result = true;
+
 }
 
 //////////////////////////////////////////////////
 /// \brief Provide an "Update" service.
 void onUpdate(const std::string &_service,
-  const haptix::comm::msgs::hxCommand &_req, haptix::comm::msgs::hxSensor &_rep,
-  bool &_result)
+  const haptix::comm::msgs::hxCommand &/*_req*/,
+  haptix::comm::msgs::hxSensor &_rep, bool &_result)
 {
+  _result = true;
+
+  if (_service != updateTopic)
+    _result = false;
+
   // Read the request parameters.
   // Debug output.
   /*std::cout << "Received a new motor command:" << std::endl;
@@ -95,13 +107,32 @@ void onUpdate(const std::string &_service,
     angvel->set_y(i + 4);
     angvel->set_z(i + 5);
   }
-
-  _result = true;
 }
 
 //////////////////////////////////////////////////
 int main(int argc, char **argv)
 {
+  int time = -1;
+
+  if ( argc > 2 )
+  {
+    std::cout << "usage: " << argv[0] << " [TIME_MS]";
+    return -1;
+  }
+  else if (argc == 2)
+  {
+    try
+    {
+      // Read the time parameter.
+      time = std::stoi(argv[1]);
+    }
+    catch(const std::invalid_argument ex)
+    {
+      std::cerr << "<TIME_MS> argument must be a positive integer." << std::endl;
+      return -1;
+    }
+  }
+
   // Create a Haptix transport node.
   ignition::transport::Node node;
 
@@ -119,7 +150,12 @@ int main(int argc, char **argv)
               << std::endl;
   }
 
-  // Zzzz.
-  printf("Accepting service calls. Press [ENTER] to exit.\n");
-  getchar();
+  if (time != -1)
+    std::this_thread::sleep_for(std::chrono::milliseconds(time));
+  else
+  {
+    // Zzzz.
+    printf("Accepting service calls. Press [ENTER] to exit.\n");
+    getchar();
+  }
 }
