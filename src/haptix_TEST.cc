@@ -22,6 +22,9 @@
 #include "msg/hxDevice.pb.h"
 #include "msg/hxSensor.pb.h"
 
+std::string deviceInfoTopic = "/haptix/gazebo/GetDeviceInfo";
+std::string updateTopic = "/haptix/gazebo/Update";
+
 int numMotors = 4;
 int numJoints = 5;
 int numContactSensors = 6;
@@ -34,7 +37,7 @@ void onGetDeviceInfo(const std::string &_service,
   haptix::comm::msgs::hxDevice &_rep, bool &_result)
 {
   // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/GetDeviceInfo");
+  EXPECT_EQ(_service, deviceInfoTopic);
 
   // Create some dummy response.
   _rep.set_nmotor(numMotors);
@@ -59,7 +62,7 @@ void onUpdate(const std::string &_service,
   bool &_result)
 {
   // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/Update");
+  EXPECT_EQ(_service, updateTopic);
 
   // Read the request parameters.
   ASSERT_EQ(_req.ref_pos_size(), hxMAXMOTOR);
@@ -110,10 +113,10 @@ TEST(CommTest, BasicUsage)
   ignition::transport::Node node;
 
   // Advertise the "getdeviceinfo" service.
-  node.Advertise(std::string("/haptix/gazebo/GetDeviceInfo"), onGetDeviceInfo);
+  node.Advertise(deviceInfoTopic, onGetDeviceInfo);
 
   // Advertise the "update" service.
-  node.Advertise(std::string("/haptix/gazebo/Update"), onUpdate);
+  node.Advertise(updateTopic, onUpdate);
 
   EXPECT_EQ(hx_connect(hxGAZEBO), hxOK);
 
