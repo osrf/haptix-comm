@@ -32,14 +32,9 @@ if (NOT PROTOBUF_PROTOC_LIBRARY)
   BUILD_ERROR ("Missing: Google Protobuf Compiler Library (libprotoc-dev)")
 endif()
 
-set_source_files_properties(${PROTO_SRC} ${PROTO_HEADER} PROPERTIES
-                            GENERATED TRUE)
-include_directories(${CMAKE_BINARY_DIR})
-
 ########################################
-add_executable(requester requester.c)
+add_executable(requester hx_requester.c)
 target_link_libraries(requester ${HAPTIX_COMM_LIBRARIES})
 
-add_executable(responser responser.cc ${PROTO_SRC})
-target_link_libraries(responser ${IGNITION-TRANSPORT_LIBRARIES} protobuf)
-add_dependencies(responser protobuf_compilation)
+add_executable(responser hx_responser.cc)
+target_link_libraries(responser ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES})

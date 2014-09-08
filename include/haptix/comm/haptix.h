@@ -18,8 +18,6 @@
 #ifndef __HAPTIX_COMM_HAPTIX_H
 #define __HAPTIX_COMM_HAPTIX_H
 
-#include "haptix/comm/helpers.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -137,19 +135,19 @@ typedef struct _hxCommand hxCommand;
 /// Multile calls to this function are allowed with different targets.
 /// \param[in] _target Device to be connected.
 /// \return 'hxOK' if the connection succeed or an error code otherwise.
-HAPTIX_VISIBLE hxResult hx_connect(int _target);
+hxResult hx_connect(int _target);
 
 /// \brief Close connection to specified device/simulator target.
 /// \param[in] _target Device to be disconnected.
 /// \return 'hxOK' if the disconnection succeed or an error code otherwise.
-HAPTIX_VISIBLE hxResult hx_close(int _target);
+hxResult hx_close(int _target);
 
 /// \brief Get info for specified device/simulator target.
 /// \param[in] _target Requested device.
 /// \param[out] _deviceInfo Device information requested.
 /// \return 'hxOK' if the operation succeed or an error code otherwise.
-HAPTIX_VISIBLE hxResult hx_getdeviceinfo(int _target,
-                                         hxDeviceInfo *_deviceinfo);
+hxResult hx_getdeviceinfo(int _target,
+                          hxDeviceInfo *_deviceinfo);
 
 /// \brief Synchronous update at the rate supported by the device:
 ///   1. set motor command.
@@ -160,9 +158,9 @@ HAPTIX_VISIBLE hxResult hx_getdeviceinfo(int _target,
 /// \param[in] _command New command to be sent.
 /// \param[out] _sensor Sensor data received after the update.
 /// \return 'hxOK' if the operation succeed or an error code otherwise.
-HAPTIX_VISIBLE hxResult hx_update(int _target,
-                                  const hxCommand *_command,
-                                  hxSensor *_sensor);
+hxResult hx_update(int _target,
+                   const hxCommand *_command,
+                   hxSensor *_sensor);
 
 #ifdef __cplusplus
 }

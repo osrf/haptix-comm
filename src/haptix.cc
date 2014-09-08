@@ -23,6 +23,7 @@
 #include "msg/hxSensor.pb.h"
 
 extern "C" {
+  /// \brief Different device/simulators supported.
   std::string ProjectTopic = "haptix";
   std::string DekaTopic    = "deka";
   std::string MPLTopic     = "mpl";
@@ -32,9 +33,11 @@ extern "C" {
   std::array<std::string, 4> DeviceTopics =
       {DekaTopic, MPLTopic, GazeboTopic, MujocoTopic};
 
+  /// \brief ignition transport node.
   ignition::transport::Node hxNode(ProjectTopic);
-  unsigned int Timeout = 500;     // ms.
 
+  /// \brief Timeout used for the service requests (ms.).
+  unsigned int Timeout = 500;
 
   //////////////////////////////////////////////////
   /// \brief Return true if the target is supported or false otherwise.

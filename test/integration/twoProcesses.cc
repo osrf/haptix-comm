@@ -17,7 +17,6 @@
 
 #include <cstdlib>
 #include "gtest/gtest.h"
-#include "haptix/comm/config.hh"
 #include "haptix/comm/haptix.h"
 #include "msg/hxCommand.pb.h"
 #include "msg/hxDevice.pb.h"
@@ -34,7 +33,7 @@ std::string updateTopic = "/haptix/gazebo/Update";
 TEST(twoProcesses, SrvTwoProcs)
 {
   // Launch an ignition transport node that will advertise services.
-  std::string command = BUILD_DIR + std::string("/example/responser 1000&");
+  std::string command = BUILD_DIR + std::string("/tools/hx_responser 1000&");
   ASSERT_EQ(std::system(command.c_str()), 0);
 
   hxDeviceInfo deviceInfo;
