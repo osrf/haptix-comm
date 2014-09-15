@@ -16,21 +16,14 @@ source:
  - mercurial
  - C compiler.
 
-    sudo apt-get install build-essential cmake mercurial
-
-    hg clone https://bitbucket.org/ignitionrobotics/ign-transport
-
-    cd ign-transport
-
-    mkdir build
-
-    cd build
-
-    cmake .. -DCMAKE_INSTALL_PREFIX=/usr
-
-    sudo make install
-
-    cd ..
+ - sudo apt-get install build-essential cmake mercurial
+ - hg clone https://bitbucket.org/ignitionrobotics/ign-transport
+ - cd ign-transport
+ - mkdir build
+ - cd build
+ - cmake .. -DCMAKE_INSTALL_PREFIX=/usr
+ - sudo make install
+ - cd ..
 
 ## Installation
 
