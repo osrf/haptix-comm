@@ -16,6 +16,7 @@ source:
  - mercurial
  - C compiler.
 
+Installation commands:
  - sudo apt-get install build-essential cmake mercurial
  - hg clone https://bitbucket.org/ignitionrobotics/ign-transport
  - cd ign-transport
