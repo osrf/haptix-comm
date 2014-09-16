@@ -94,6 +94,7 @@ int main(int argc, char **argv)
   }
 
   // Create a command.
+  cmd.timestamp = 0;
   for (i = 0; i < deviceInfo.nmotor; ++i)
   {
     cmd.ref_pos[i] = i;
@@ -102,20 +103,22 @@ int main(int argc, char **argv)
     cmd.gain_vel[i] = i + 3;
   }
 
-  // Send commands at ~20Hz.
+  // Send commands at ~100Hz.
   for (; ;)
   {
     if (hx_update(hxGAZEBO, &cmd, &sensor) != hxOK)
       printf("hx_update(): Request error.\n");
+    else
+      cmd.timestamp = sensor.timestamp;
 
     // Print the state at ~1Hz.
-    if (++counter == 20)
+    if (++counter == 100)
     {
       printState(&deviceInfo, &sensor);
       counter = 0;
     }
 
-    usleep(50000);
+    usleep(10000);
   }
 
   return 0;

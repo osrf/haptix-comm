@@ -69,19 +69,19 @@ struct _hxsBody
 struct _hxsJoint
 {
   /// \brief Position.
-  float pos[hxMAXJOINT];
+  float pos[hxAPLJoints::num_joints];
 
   /// \brief Velocity.
-  float vel[hxMAXJOINT];
+  float vel[hxAPLJoints::num_joints];
 
   /// \brief Acceleration.
-  float acc[hxMAXJOINT];
+  float acc[hxAPLJoints::num_joints];
 
   /// \brief Torque due to actuation.
-  float torque_motor[hxMAXJOINT];
+  float torque_motor[hxAPLJoints::num_joints];
 
   /// \brief Torque due to limits, damping, friction.
-  float torque_passive[hxMAXJOINT];
+  float torque_passive[hxAPLJoints::num_joints];
 };
 
 /// \brief Information about contacts.

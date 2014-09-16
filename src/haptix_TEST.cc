@@ -65,7 +65,7 @@ void onUpdate(const std::string &_service,
   EXPECT_EQ(_service, updateTopic);
 
   // Read the request parameters.
-  ASSERT_EQ(_req.ref_pos_size(), hxMAXMOTOR);
+  ASSERT_EQ(_req.ref_pos_size(), num_motors);
   for (int i = 0; i < numMotors; ++i)
   {
     EXPECT_FLOAT_EQ(_req.ref_pos(i), i);

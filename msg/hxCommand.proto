@@ -2,8 +2,9 @@ package haptix.comm.msgs;
 
 message hxCommand
 {
-  repeated float ref_pos  = 1 [packed=true];
-  repeated float ref_vel  = 2 [packed=true];
-  repeated float gain_pos = 3 [packed=true];
-  repeated float gain_vel = 4 [packed=true];
+  required double timestamp = 1;
+  repeated float ref_pos    = 2 [packed=true];
+  repeated float ref_vel    = 3 [packed=true];
+  repeated float gain_pos   = 4 [packed=true];
+  repeated float gain_vel   = 5 [packed=true];
 }

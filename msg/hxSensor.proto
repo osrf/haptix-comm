@@ -9,12 +9,13 @@ message imu
 
 message hxSensor
 {
-  repeated float motor_pos    = 1 [packed=true];
-  repeated float motor_vel    = 2 [packed=true];
-  repeated float motor_torque = 3 [packed=true];
-  repeated float joint_pos    = 4 [packed=true];
-  repeated float joint_vel    = 5 [packed=true];
-  repeated float contact      = 6 [packed=true];
-  repeated imu IMU_linacc     = 7;
-  repeated imu IMU_angvel     = 8;
+  required double timestamp   = 1;
+  repeated float motor_pos    = 2 [packed=true];
+  repeated float motor_vel    = 3 [packed=true];
+  repeated float motor_torque = 4 [packed=true];
+  repeated float joint_pos    = 5 [packed=true];
+  repeated float joint_vel    = 6 [packed=true];
+  repeated float contact      = 7 [packed=true];
+  repeated imu IMU_linacc     = 8;
+  repeated imu IMU_angvel     = 9;
 }

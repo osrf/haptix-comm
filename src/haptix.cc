@@ -37,7 +37,7 @@ extern "C" {
   ignition::transport::Node hxNode(ProjectTopic);
 
   /// \brief Timeout used for the service requests (ms.).
-  unsigned int Timeout = 500;
+  unsigned int Timeout = 100000;
 
   //////////////////////////////////////////////////
   /// \brief Return true if the target is supported or false otherwise.
@@ -135,7 +135,9 @@ extern "C" {
     bool result;
 
     // Fill the message with the request.
-    for (int i = 0; i < hxMAXMOTOR; ++i)
+    req.set_timestamp(_command->timestamp);
+
+    for (int i = 0; i < num_motors; ++i)
     {
       req.add_ref_pos(_command->ref_pos[i]);
       req.add_ref_vel(_command->ref_vel[i]);
@@ -153,6 +155,7 @@ extern "C" {
       if (result)
       {
         // Fill the struct with the response.
+        _sensor->timestamp = rep.timestamp();
         for (int i = 0; i < rep.motor_pos_size(); ++i)
         {
           _sensor->motor_pos[i] = rep.motor_pos(i);

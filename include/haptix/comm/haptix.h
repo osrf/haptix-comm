@@ -23,16 +23,97 @@ extern "C" {
 #endif
 
 /// \brief Maximum number of motors.
-#define hxMAXMOTOR              15
+// #define hxMAXMOTOR              15
 
 /// \brief Maximum number of joints.
-#define hxMAXJOINT              25
+//  Should be equeal to hxAPLJoints::num_joints
+// #define hxMAXJOINT              24
 
 /// \brief Maximum number of contact sensors.
 #define hxMAXCONTACTSENSOR      10
 
 /// \brief Maximum number of IMUs.
 #define hxMAXIMU                10
+
+/// \brief APL Joint enums.
+typedef enum
+{
+  wrist_rot = 0,
+  wrist_dev,
+  wrist_fe,
+  index_dip,
+  index_mcp,
+  index_pip,
+  little_dip,
+  little_mcp,
+  little_pip,
+  middle_dip,
+  middle_mcp,
+  middle_pip,
+  thumb_cmc_ab_ad,
+  little_ab_ad,
+  ring_ab_ad,
+  middle_ab_ad,
+  index_ab_ad,
+  thumb_cmc_fe,
+  ring_dip,
+  ring_mcp,
+  ring_pip,
+  thumb_mcp,
+  thumb_dip,
+  num_joints
+} hxAPLJoints;
+
+/// \brief APL motor enums.
+typedef enum
+{
+  motor_wrist_rot = 0,
+  motor_wrist_dev,
+  motor_wrist_fe,
+  motor_index_dip,
+  motor_index_mcp,
+  motor_index_pip,
+  motor_little_dip,
+  motor_little_mcp,
+  motor_little_pip,
+  motor_middle_dip,
+  motor_middle_mcp,
+  motor_middle_pip,
+  motor_thumb_cmc_ab_ad,
+  motor_little_ab_ad,
+  motor_ring_ab_ad,
+  motor_middle_ab_ad,
+  motor_index_ab_ad,
+  motor_thumb_cmc_fe,
+  motor_ring_dip,
+  motor_ring_mcp,
+  motor_ring_pip,
+  motor_thumb_mcp,
+  motor_thumb_dip,
+  num_motors
+} hxAPLMotors;
+
+/// \brief APL contact sensor enums.
+typedef enum
+{
+  contact_index = 0,
+  contact_little,
+  contact_middle,
+  contact_thumb,
+  contact_ring,
+  num_contact_sensors
+} hxAPLContactSensors;
+
+/// \brief APL IMU enums.
+typedef enum
+{
+  imu_index = 0,
+  imu_little,
+  imu_middle,
+  imu_thumb,
+  imu_ring,
+  num_imu_sensors
+} hxAPLImuSensors;
 
 /// \brief API return codes.
 typedef enum
@@ -67,7 +148,7 @@ struct _hxDeviceInfo
   int nIMU;
 
   /// \brief Minimum and maximum joint angles (rad).
-  float limit[hxMAXJOINT][2];
+  float limit[num_joints][2];
 
   // Anything else we should provide here, as opposed to letting the user
   // extract the data they need from the XML model or robot specs?
@@ -76,20 +157,23 @@ struct _hxDeviceInfo
 /// \brief Sensor data.
 struct _hxSensor
 {
+  /// \brief Timestamp.
+  double timestamp;
+
   /// \brief Motor position (rad).
-  float motor_pos[hxMAXMOTOR];
+  float motor_pos[num_motors];
 
   /// \brief Motor velocity (rad/s).
-  float motor_vel[hxMAXMOTOR];
+  float motor_vel[num_motors];
 
   /// \brief Torque applied by embedded controller (Nm).
-  float motor_torque[hxMAXMOTOR];
+  float motor_torque[num_motors];
 
   /// \brief Joint position (rad).
-  float joint_pos[hxMAXJOINT];
+  float joint_pos[num_joints];
 
   /// \brief Joint velocity (rad/s).
-  float joint_vel[hxMAXJOINT];
+  float joint_vel[num_joints];
 
   /// \brief Contact normal force (N).
   float contact[hxMAXCONTACTSENSOR];
@@ -104,17 +188,20 @@ struct _hxSensor
 /// \brief Motor commands.
 struct _hxCommand
 {
+  /// \brief Timestamp.
+  double timestamp;
+
   /// \brief Reference positions.
-  float ref_pos[hxMAXMOTOR];
+  float ref_pos[num_motors];
 
   /// \brief Reference velocities.
-  float ref_vel[hxMAXMOTOR];
+  float ref_vel[num_motors];
 
   /// \brief Position feedback gains.
-  float gain_pos[hxMAXMOTOR];
+  float gain_pos[num_motors];
 
   /// \brief Velocity feedback gains.
-  float gain_vel[hxMAXMOTOR];
+  float gain_vel[num_motors];
 
   // Do the robots accept any other commands?
 };
