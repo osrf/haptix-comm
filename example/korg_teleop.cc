@@ -78,7 +78,6 @@ int main(int argc, char **argv)
   board.rt_midi_open(1);
   //right now only analog controllers are supported
 
-
   printf("\nRequesting device information...\n\n");
 
   // Requesting device information.
@@ -103,33 +102,88 @@ int main(int argc, char **argv)
     printf("\t\t Max: %f\n", deviceInfo.limit[i][1]);
   }
 
-  if(deviceInfo.nmotor < n){
-    n = deviceInfo.nmotor;
-    printf("Not enough motors to use all sliders\n");
-  } else if (deviceInfo.nmotor > n){
-    printf("Not enough sliders for all motors\n");
-    m = deviceInfo.nmotor - n;
-    m = m > 9 ? 9 : m;
-    printf("Using knobs 1-%d\n", m);
+  //Map of hxAPLMotor, index pairs
+
+  std::map<hxAPLMotors, unsigned int> ctrl_mappings;
+  //Rightmost slider is little finger (right-handed scheme)
+
+  ctrl_mappings[motor_little_ab_ad] = 17;
+  ctrl_mappings[motor_ring_ab_ad]   = 16;
+  ctrl_mappings[motor_middle_ab_ad] = 15;
+  ctrl_mappings[motor_index_ab_ad]  = 14;
+  ctrl_mappings[motor_thumb_cmc_ab_ad]  = 13;
+  ctrl_mappings[motor_thumb_cmc_fe]  = 12;
+
+  ctrl_mappings[motor_little_mcp] = 8;
+  ctrl_mappings[motor_ring_mcp]   = 7;
+  ctrl_mappings[motor_middle_mcp] = 6;
+  ctrl_mappings[motor_index_mcp]  = 5;
+  ctrl_mappings[motor_thumb_mcp]  = 4;
+
+  ctrl_mappings[motor_wrist_rot]  = 3;
+  ctrl_mappings[motor_wrist_dev]  = 2;
+  ctrl_mappings[motor_wrist_fe]  = 1;
+
+  hxAPLMotors mcp_indices[5] = {motor_little_mcp, motor_ring_mcp, motor_middle_mcp, motor_index_mcp, motor_thumb_mcp};
+
+  float sliders_initial[board.NUM_CHANNELS];
+  float knobs_initial[board.NUM_CHANNELS];
+  for(int k = 0; k < board.NUM_CHANNELS; k++){
+    sliders_initial[k] = board.sliders[k];
+    knobs_initial[k] = board.knobs[k];
   }
 
-  cmd.timestamp = 0; //hack
+
+  cmd.timestamp = 0; //hackish
   for (; ;)
   {
     
     //Check the state of the sliders and make a command
 
-    for(int i = 0; i < n; i++){
-      float min = deviceInfo.limit[i][0];
-      float max = deviceInfo.limit[i][1];
-      cmd.ref_pos[i] = (max - min)* board.sliders[i] + min;
+    for(std::map<hxAPLMotors, unsigned int>::iterator it = ctrl_mappings.begin(); it != ctrl_mappings.end(); it++){
+      hxAPLMotors device_idx = it->first;
+      unsigned int slider_idx = it->second;
+      float slider_val;
+      float min = deviceInfo.limit[device_idx][0];
+      float max = deviceInfo.limit[device_idx][1];
+      if(slider_idx < 9){
+        if(board.sliders[slider_idx] == sliders_initial[slider_idx])
+          continue;
+
+        slider_val = board.sliders[slider_idx];
+      } else {
+        slider_idx %= 9;
+        if(board.knobs[slider_idx] == knobs_initial[slider_idx])
+          continue;
+
+        slider_val = board.knobs[slider_idx];
+      }
+      cmd.ref_pos[device_idx] = (max-min)*slider_val + min;
     }
-    for(int j = 0; j < m; j++){
-      float min = deviceInfo.limit[j+n][0];
-      float max = deviceInfo.limit[j+n][1];
-      cmd.ref_pos[j+n] = (max - min)* board.knobs[j] + min;
+
+    //Version 1 Joint Coupling modeling (since this is not yet implemented in Gazebo)
    
-    }
+    for(int k = 0; k < 5; k++){
+      hxAPLMotors mcp = mcp_indices[k];
+      float mcp_commanded = cmd.ref_pos[mcp];
+      if(mcp_commanded <= 0){
+        if(mcp == motor_thumb_mcp){
+          cmd.ref_pos[mcp+1] = 0; //thumb dip
+        } else {
+          cmd.ref_pos[mcp+1] = 0; //pip
+          cmd.ref_pos[mcp-1] = 0; //dip
+        }
+      } else {
+        if(mcp == motor_thumb_mcp){
+          cmd.ref_pos[mcp+1] = 8/9.0*mcp_commanded; //thumb dip
+        } else {
+          cmd.ref_pos[mcp+1] = 10/9.0*mcp_commanded; //pip
+          cmd.ref_pos[mcp-1] = 8/9.0*mcp_commanded; //dip
+        }
+        
+      }
+    } 
+    
 
     //Send the request
     if (hx_update(hxGAZEBO, &cmd, &sensor) != hxOK)
@@ -137,18 +191,9 @@ int main(int argc, char **argv)
     else
       cmd.timestamp = sensor.timestamp;
 
-    // Print the state at ~1Hz.
-    /*if (++counter == 100)
-    {
-      printState(&deviceInfo, &sensor);
-      counter = 0;
-    }*/
 
     usleep(10000);
   }
-
-
-
 
   return 0;
 }

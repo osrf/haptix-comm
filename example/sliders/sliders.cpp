@@ -94,7 +94,7 @@ void onSliderChanged(double _deltatime, std::vector<unsigned char> *_message,
         *digital_control_map->at(control) = value != 0;*/
       //printf("  controller 0x%02x value 0x%02x\n", controller, value);
       
-    } 
+    }
   }
 }
 
