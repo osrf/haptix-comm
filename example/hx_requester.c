@@ -72,7 +72,7 @@ int main(int argc, char **argv)
   printf("\nRequesting device information...\n\n");
 
   // Requesting device information.
-  if (hx_getdeviceinfo(hxGAZEBO, &deviceInfo) != hxOK)
+  if (hx_getdeviceinfo(hxDEKA, &deviceInfo) != hxOK)
   {
     printf("hx_getdeviceinfo(): Request error.\n");
     return -1;
@@ -106,19 +106,22 @@ int main(int argc, char **argv)
   // Send commands at ~100Hz.
   for (; ;)
   {
-    if (hx_update(hxGAZEBO, &cmd, &sensor) != hxOK)
+    if (hx_update(hxDEKA, &cmd, &sensor) != hxOK)
+    {
       printf("hx_update(): Request error.\n");
+      continue;
+    }
     else
       cmd.timestamp = sensor.timestamp;
 
     // Print the state at ~1Hz.
     if (++counter == 100)
     {
-      printState(&deviceInfo, &sensor);
+      //printState(&deviceInfo, &sensor);
       counter = 0;
     }
 
-    usleep(10000);
+    //usleep(10000);
   }
 
   return 0;

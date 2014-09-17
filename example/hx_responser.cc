@@ -29,8 +29,11 @@ int numJoints = 5;
 int numContactSensors = 6;
 int numIMUs = 7;
 
-std::string deviceInfoTopic = "/haptix/gazebo/GetDeviceInfo";
-std::string updateTopic = "/haptix/gazebo/Update";
+std::string deviceInfoTopic = "/haptix/deka/GetDeviceInfo";
+std::string updateTopic = "/haptix/deka/Update";
+
+std::chrono::time_point<std::chrono::system_clock> start, end;
+long counter;
 
 //////////////////////////////////////////////////
 /// \brief Provide a service.
@@ -54,7 +57,6 @@ void onGetDeviceInfo(const std::string &_service,
     joint->set_min(-i);
     joint->set_max(i);
   }
-
 }
 
 //////////////////////////////////////////////////
@@ -81,6 +83,7 @@ void onUpdate(const std::string &_service,
   }*/
 
   // Create some dummy response.
+  _rep.set_timestamp(0);
   for (int i = 0; i < numMotors; ++i)
   {
     _rep.add_motor_pos(i);
@@ -108,12 +111,27 @@ void onUpdate(const std::string &_service,
     angvel->set_y(i + 4);
     angvel->set_z(i + 5);
   }
+
+  end = std::chrono::system_clock::now();
+  std::chrono::duration<double> elapsedSec = end - start;
+  ++counter;
+
+  if (elapsedSec.count() > 1.0)
+  {
+    std::cout << "Receiving messages at " << counter / elapsedSec.count()
+              << "Hz." << std::endl;
+    counter = 0;
+    start = end;
+  }
 }
 
 //////////////////////////////////////////////////
 int main(int argc, char **argv)
 {
   int time = -1;
+  counter = 0;
+
+  start = std::chrono::system_clock::now();
 
   if ( argc > 2 )
   {

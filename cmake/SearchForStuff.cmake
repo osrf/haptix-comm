@@ -18,9 +18,6 @@ endif()
 if (NOT PROTOBUF_PROTOC_EXECUTABLE)
   BUILD_ERROR ("Missing: Google Protobuf Compiler (protobuf-compiler)")
 endif()
-if (NOT PROTOBUF_PROTOC_LIBRARY)
-  BUILD_ERROR ("Missing: Google Protobuf Compiler Library (libprotoc-dev)")
-endif()
 
 ########################################
 # Find the Ignition_Transport library
