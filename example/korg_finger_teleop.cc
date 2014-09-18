@@ -1,3 +1,4 @@
+
 /*
  * Copyright (C) 2014 Open Source Robotics Foundation
  *
@@ -46,11 +47,19 @@ int main(int argc, char **argv)
 
   //TODO: Give some helpful text telling the user what to do
 
-  //Map of hxAPLMotor, index pairs (to make sense of enum)
-  YAML::Node string_mappings = YAML::LoadFile("../motor_indices.yaml");
+  //Map of hxAPLMotor, index pairs
 
-  YAML::Node grasps = YAML::LoadFile("../grasps.yaml");
-  
+  YAML::Node string_mappings = YAML::LoadFile("../motor_indices.yaml");
+  YAML::Node slider_mappings = YAML::LoadFile("../slider_mappings.yaml");
+
+  std::map<unsigned int, unsigned int> ctrl_mappings;
+  //Rightmost slider is little finger (right-handed scheme)
+  for(YAML::const_iterator it=slider_mappings.begin(); it != slider_mappings.end(); it++){
+    //string_mappings[it->first] = key, it->second = value
+    unsigned int key = string_mappings[it->first.as<std::string>()].as<unsigned int>();
+    ctrl_mappings[key] = it->second.as<unsigned int>();
+  }
+
   float sliders_initial[board.NUM_CHANNELS];
   float knobs_initial[board.NUM_CHANNELS];
   for(int k = 0; k < board.NUM_CHANNELS; k++){
@@ -58,23 +67,39 @@ int main(int argc, char **argv)
     knobs_initial[k] = board.knobs[k];
   }
 
+  for(i = 0; i < deviceInfo.nmotor; i++){
+    cmd.ref_pos[i] = 0;
+  }
+
+
   for (; ;)
   {
-   
-    for(i = 0; i < deviceInfo.nmotor; i++){
-      cmd.ref_pos[i] = 0;
-    }   
+    
     //Check the state of the sliders and make a command
 
-    for(YAML::const_iterator it=grasps.begin(); it != grasps.end(); it++){
-      //Get the slider value and interpolate the grasp 
-      unsigned int slider_idx = grasps[it->first]["slider"].as<unsigned int>();
-      float slider_value = board.sliders[slider_idx];
-      std::vector<float> grasp_vec = grasps[it->first]["grasp"].as<std::vector<float> >();
-      for(int j = 0; j < grasp_vec.size(); j++){
-        cmd.ref_pos[j] += slider_value*grasp_vec[j];
+    for(std::map<unsigned int, unsigned int>::iterator it = ctrl_mappings.begin(); it != ctrl_mappings.end(); it++){
+      unsigned int device_idx = it->first;
+      unsigned int slider_idx = it->second;
+      float slider_val;
+      float min = deviceInfo.limit[device_idx][0];
+      float max = deviceInfo.limit[device_idx][1];
+      if(slider_idx < 9){
+        if(board.sliders[slider_idx] == sliders_initial[slider_idx])
+          continue;
+
+        slider_val = board.sliders[slider_idx];
+      } else {
+        slider_idx %= 9;
+        if(board.knobs[slider_idx] == knobs_initial[slider_idx])
+          continue;
+
+        slider_val = board.knobs[slider_idx];
       }
+      cmd.ref_pos[device_idx] = (max-min)*slider_val + min;
     }
+
+    coupling_v1(&cmd);
+    
 
     //Send the request
     if (hx_update(hxGAZEBO, &cmd, &sensor) != hxOK)

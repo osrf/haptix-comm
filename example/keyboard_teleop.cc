@@ -61,13 +61,12 @@ int main(int argc, char **argv)
     return -1;
   }
 
-
   initscr();
 
   //TODO: auto-generate help screen
   raw();
   noecho();
-  printw("Press buttons to control the hand.");
+  printw("Press buttons to control the hand. Press ESC to quit.");
   refresh();
 
   for(int i = 0; i < deviceInfo.nmotor; i++){
@@ -84,7 +83,7 @@ int main(int argc, char **argv)
     char command[1];
     sprintf(command, "%c", c);
     if(!commands[command].IsDefined()){
-      if(c==113){ //q
+      if(c==27){ //q
         break;
       }
       

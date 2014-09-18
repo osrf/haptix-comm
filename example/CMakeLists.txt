@@ -44,12 +44,19 @@ target_link_libraries(requester ${HAPTIX_COMM_LIBRARIES})
 add_executable(responser hx_responser.cc)
 target_link_libraries(responser ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES})
 
-if(NOT RTMIDI-NOTFOUND)
-  add_executable(korg_teleop korg_teleop.cc sliders/sliders.cpp)
-  target_link_libraries(korg_teleop ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${RTMIDI})
-endif()
+if(NOT YAMLCPP-NOTFOUND)
 
-if(NOT YAMLCPP-NOTFOUND AND NOT NCURSES-NOTFOUND)
-  add_executable(keyboard_teleop keyboard_teleop.cc)
-  target_link_libraries(keyboard_teleop ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${YAMLCPP} ${NCURSES})
+  if(NOT RTMIDI-NOTFOUND)
+    add_executable(korg_finger_teleop korg_finger_teleop.cc sliders/sliders.cpp)
+    target_link_libraries(korg_finger_teleop ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${RTMIDI} ${YAMLCPP})
+
+    add_executable(korg_teleop korg_teleop.cc sliders/sliders.cpp)
+    target_link_libraries(korg_teleop ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${RTMIDI} ${YAMLCPP})
+  endif()
+
+  if(NOT NCURSES-NOTFOUND)
+    add_executable(keyboard_teleop keyboard_teleop.cc)
+    target_link_libraries(keyboard_teleop ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${YAMLCPP} ${NCURSES})
+  endif()
+
 endif()
