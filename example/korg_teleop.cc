@@ -20,55 +20,12 @@
 #include <unistd.h>
 #include <haptix/comm/haptix.h>
 #include "sliders/sliders.h"
-
-void printState(const hxDeviceInfo *_deviceInfo, const hxSensor *_sensor)
-{
-  int i;
-
-  printf("\tMotors:\n");
-  for (i = 0; i < _deviceInfo->nmotor; ++i)
-  {
-    printf("\t\tMotor %d\n", i);
-    printf("\t\t\tPosition: %f\n", _sensor->motor_pos[i]);
-    printf("\t\t\tVelocity: %f\n", _sensor->motor_vel[i]);
-    printf("\t\t\tTorque: %f\n" , _sensor->motor_torque[i]);
-  }
-
-  printf("\tJoints:\n");
-  for (i = 0; i < _deviceInfo->njoint; ++i)
-  {
-    printf("\t\tJoint %d\n", i);
-    printf("\t\t\tPosition: %f\n", _sensor->joint_pos[i]);
-    printf("\t\t\tVelocity: %f\n", _sensor->joint_vel[i]);
-  }
-
-  printf("\tContact sensors:\n");
-  for (i = 0; i < _deviceInfo->ncontactsensor; ++i)
-  {
-    printf("\t\t# %d\n", i);
-    printf("\t\t\tvalue: %f\n", _sensor->contact[i]);
-  }
-
-  printf("\tIMUs:\n");
-  for (i = 0; i < _deviceInfo->nIMU; ++i)
-  {
-    printf("\t\t# %d\n", i);
-    printf("\t\t\tLinear acceleration: (%f, %f, %f)\n",
-      _sensor->IMU_linacc[i][0], _sensor->IMU_linacc[i][1],
-      _sensor->IMU_linacc[i][2]);
-    printf("\t\t\tAngular velocity: (%f, %f, %f)\n",
-      _sensor->IMU_angvel[i][0], _sensor->IMU_angvel[i][1],
-      _sensor->IMU_angvel[i][2]);
-  }
-}
-
+#include "teleop.h"
 
 //////////////////////////////////////////////////
 int main(int argc, char **argv)
 {
   int i;
-  int n = 9;
-  int m = 0;
   int counter = 0;
   hxDeviceInfo deviceInfo;
   hxCommand cmd;
@@ -106,7 +63,6 @@ int main(int argc, char **argv)
 
   std::map<hxAPLMotors, unsigned int> ctrl_mappings;
   //Rightmost slider is little finger (right-handed scheme)
-
   ctrl_mappings[motor_little_ab_ad] = 17;
   ctrl_mappings[motor_ring_ab_ad]   = 16;
   ctrl_mappings[motor_middle_ab_ad] = 15;
@@ -124,7 +80,6 @@ int main(int argc, char **argv)
   ctrl_mappings[motor_wrist_dev]  = 2;
   ctrl_mappings[motor_wrist_fe]  = 1;
 
-  hxAPLMotors mcp_indices[5] = {motor_little_mcp, motor_ring_mcp, motor_middle_mcp, motor_index_mcp, motor_thumb_mcp};
 
   float sliders_initial[board.NUM_CHANNELS];
   float knobs_initial[board.NUM_CHANNELS];
@@ -133,11 +88,11 @@ int main(int argc, char **argv)
     knobs_initial[k] = board.knobs[k];
   }
 
-  // initialize ref_pos to 0
-  for(int i = 0; i < deviceInfo.nmotor; ++i)
+  for(i = 0; i < deviceInfo.nmotor; i++){
     cmd.ref_pos[i] = 0;
+  }
 
-  cmd.timestamp = 0; //hackish
+
   for (; ;)
   {
     
@@ -164,35 +119,14 @@ int main(int argc, char **argv)
       cmd.ref_pos[device_idx] = (max-min)*slider_val + min;
     }
 
-    //Version 1 Joint Coupling modeling (since this is not yet implemented in Gazebo)
-   
-    for(int k = 0; k < 5; k++){
-      hxAPLMotors mcp = mcp_indices[k];
-      float mcp_commanded = cmd.ref_pos[mcp];
-      if(mcp_commanded <= 0){
-        if(mcp == motor_thumb_mcp){
-          cmd.ref_pos[mcp+1] = 0; //thumb dip
-        } else {
-          cmd.ref_pos[mcp+1] = 0; //pip
-          cmd.ref_pos[mcp-1] = 0; //dip
-        }
-      } else {
-        if(mcp == motor_thumb_mcp){
-          cmd.ref_pos[mcp+1] = 8/9.0*mcp_commanded; //thumb dip
-        } else {
-          cmd.ref_pos[mcp+1] = 10/9.0*mcp_commanded; //pip
-          cmd.ref_pos[mcp-1] = 8/9.0*mcp_commanded; //dip
-        }
-        
-      }
-    } 
+    coupling_v1(&cmd);
     
+
     //Send the request
     if (hx_update(hxGAZEBO, &cmd, &sensor) != hxOK)
       printf("hx_update(): Request error.\n");
     else
       cmd.timestamp = sensor.timestamp;
-
 
     usleep(10000);
   }

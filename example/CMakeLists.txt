@@ -31,6 +31,11 @@ endif()
 if (NOT PROTOBUF_PROTOC_LIBRARY)
   BUILD_ERROR ("Missing: Google Protobuf Compiler Library (libprotoc-dev)")
 endif()
+########################################
+
+find_library(RTMIDI rtmidi)
+find_library(YAMLCPP yaml-cpp)
+find_library(NCURSES ncurses)
 
 ########################################
 add_executable(requester hx_requester.c)
@@ -39,6 +44,12 @@ target_link_libraries(requester ${HAPTIX_COMM_LIBRARIES})
 add_executable(responser hx_responser.cc)
 target_link_libraries(responser ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES})
 
-add_executable(korg_teleop korg_teleop.cc sliders/sliders.cpp)
-target_link_libraries(korg_teleop ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} /usr/lib/x86_64-linux-gnu/librtmidi.so)
+if(NOT RTMIDI-NOTFOUND)
+  add_executable(korg_teleop korg_teleop.cc sliders/sliders.cpp)
+  target_link_libraries(korg_teleop ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${RTMIDI})
+endif()
 
+if(NOT YAMLCPP-NOTFOUND AND NOT NCURSES-NOTFOUND)
+  add_executable(keyboard_teleop keyboard_teleop.cc)
+  target_link_libraries(keyboard_teleop ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${YAMLCPP} ${NCURSES})
+endif()

@@ -1,0 +1,118 @@
+# Button:
+#   Motor Name, Increment
+
+# e.g.
+
+p:
+  motor_name: 'motor_little_ab_ad'
+  increment: 0.05
+
+P:
+  motor_name: 'motor_little_ab_ad'
+  increment: -0.05
+
+;:
+  motor_name: 'motor_little_mcp'
+  increment: 0.05
+
+::
+  motor_name: 'motor_little_mcp'
+  increment: -0.05
+
+o:
+  motor_name: 'motor_ring_ab_ad'
+  increment: 0.05
+
+O:
+  motor_name: 'motor_ring_ab_ad'
+  increment: -0.05
+
+l:
+  motor_name: 'motor_ring_mcp'
+  increment: 0.05
+
+L:
+  motor_name: 'motor_ring_mcp'
+  increment: -0.05
+
+i:
+  motor_name: 'motor_middle_ab_ad'
+  increment: 0.05
+
+I:
+  motor_name: 'motor_middle_ab_ad'
+  increment: -0.05
+
+k:
+  motor_name: 'motor_middle_mcp'
+  increment: 0.05
+
+K:
+  motor_name: 'motor_middle_mcp'
+  increment: -0.05
+
+u:
+  motor_name: 'motor_index_ab_ad'
+  increment: 0.05
+
+U:
+  motor_name: 'motor_index_ab_ad'
+  increment: -0.05
+
+j:
+  motor_name: 'motor_index_mcp'
+  increment: 0.05
+
+J:
+  motor_name: 'motor_index_mcp'
+  increment: -0.05
+
+y:
+  motor_name: 'motor_thumb_cmc_ab_ad'
+  increment: 0.05
+
+Y:
+  motor_name: 'motor_thumb_cmc_ab_ad'
+  increment: -0.05
+
+t:
+  motor_name: 'motor_thumb_cmc_fe'
+  increment: 0.05
+
+T:
+  motor_name: 'motor_thumb_cmc_fe'
+  increment: -0.05
+
+h:
+  motor_name: 'motor_thumb_mcp'
+  increment: 0.05
+
+H:
+  motor_name: 'motor_thumb_mcp'
+  increment: -0.05
+
+b:
+  motor_name: 'motor_wrist_rot'
+  increment: 0.05
+
+B:
+  motor_name: 'motor_wrist_rot'
+  increment: -0.05
+
+n:
+  motor_name: 'motor_wrist_dev'
+  increment: 0.05
+
+N:
+  motor_name: 'motor_wrist_dev'
+  increment: -0.05
+
+m:
+  motor_name: 'motor_wrist_fe'
+  increment: 0.05
+
+M:
+  motor_name: 'motor_wrist_fe'
+  increment: -0.05
+
+
