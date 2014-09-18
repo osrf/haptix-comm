@@ -73,77 +73,30 @@ bool Sliders::open(const char *midi_dev_name)
   return true;
 }
 
-void onSliderChanged(double _deltatime, std::vector<unsigned char> *_message,
-    void *_userData )
+void Sliders::blockingRead()
 {
-  unsigned int nBytes = _message->size();
-  std::map<uint8_t, float* >* analog_control_map = (std::map<uint8_t, float* >*) _userData;
-  /*for (unsigned int i = 0; i < nBytes; i++)
-    std::cout << "Byte " << i << " = " << (int)_message->at(i) << ", ";
-  if ( nBytes > 0 )
-    std::cout << "stamp = " << _deltatime << std::endl;*/
-  for (unsigned int i = 0; i < nBytes; i++){
-    if ((_message->at(i) & 0xf0) == 0xb0)
-    {
-      // it's a status message hooray
-      uint8_t control = _message->at(i+1);
-      uint8_t value = _message->at(i+2);
-      if (analog_control_map->find(control) != analog_control_map->end())
-        *analog_control_map->at(control) = value / 127.0f;
-      /*else if (digital_control_map.find(control) != digital_control_map.end())
-        *digital_control_map->at(control) = value != 0;*/
-      //printf("  controller 0x%02x value 0x%02x\n", controller, value);
-      
-    }
-  }
-}
-
-bool Sliders::rt_midi_open(int port=1){
- // Check available ports.
-  unsigned int nPorts = midi_in.getPortCount();
-  if (nPorts < 2) {
-    std::cout << "No ports available!\n";
-    return false;
-  }
-
-  midi_in.openPort(port); 
-  midi_in.ignoreTypes(false, false, false);
-  midi_in.setCallback( &onSliderChanged, (void*) &analog_control_map );
-  return true;
-}
-
-
-bool Sliders::poll()
-{
-  static uint8_t b, msg[256] = {0};
-  unsigned msg_wpos = 0;
-  // drain the device
-  for (msg_wpos = 0; 
-       (read(fd, &b, 1) > 0) && msg_wpos < sizeof(msg); 
-       msg_wpos++)
-    msg[msg_wpos] = b;
-  // now, process the messages we drained
-  bool found_something_good = false;
-  for (unsigned msg_rpos = 0; msg_rpos < msg_wpos; )
+  unsigned char ch[3];
+  snd_rawmidi_read(this->midi_in,&ch,3);
+  if ((ch[0] & 0xf0) == 0xb0)
   {
-    // our controller always outputs 3-byte messages
-    //printf("0x%02x 0x%02x 0x%02x\r\n",
-    //       msg[msg_rpos], msg[msg_rpos+1], msg[msg_rpos+2]);
-    if ((msg[msg_rpos] & 0xf0) == 0xb0)
-    {
-      // it's a status message hooray
-      uint8_t control = msg[msg_rpos+1];
-      uint8_t value = msg[msg_rpos+2];
-      if (analog_control_map.find(control) != analog_control_map.end())
-        *analog_control_map[control] = value / 127.0f;
-      else if (digital_control_map.find(control) != digital_control_map.end())
-        *digital_control_map[control] = value != 0;
-      //printf("  controller 0x%02x value 0x%02x\n", controller, value);
-      found_something_good = true;
-    }
-    msg_rpos += 3;
+    // it's a status message hooray
+    uint8_t control = ch[1];
+    uint8_t value = ch[2];
+    // printf("received control[%d] value[%f]\n", control, value/127.0f);
+    if (this->analog_control_map.find(control) != this->analog_control_map.end())
+      *analog_control_map.at(control) = value / 127.0f;
   }
-  return found_something_good;
+}
+
+bool Sliders::midi_open(char *port){
+ // Check available ports.
+  int err = snd_rawmidi_open(&this->midi_in, NULL, port, 0);
+  if (err > 0)
+    printf("err: %d\n", err);
+
+  this->blockingRead();
+
+  return true;
 }
 
 void Sliders::print_state()

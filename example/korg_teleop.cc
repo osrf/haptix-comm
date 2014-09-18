@@ -75,7 +75,8 @@ int main(int argc, char **argv)
   hxSensor sensor;
 
   Sliders board;
-  board.rt_midi_open(1);
+  char port[9] = "hw:2,0,0";
+  board.midi_open(port);
   //right now only analog controllers are supported
 
   printf("\nRequesting device information...\n\n");
@@ -142,6 +143,7 @@ int main(int argc, char **argv)
   {
     
     //Check the state of the sliders and make a command
+    board.blockingRead();
 
     for(std::map<hxAPLMotors, unsigned int>::iterator it = ctrl_mappings.begin(); it != ctrl_mappings.end(); it++){
       hxAPLMotors device_idx = it->first;

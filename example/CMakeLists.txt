@@ -40,5 +40,5 @@ add_executable(responser hx_responser.cc)
 target_link_libraries(responser ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES})
 
 add_executable(korg_teleop korg_teleop.cc sliders/sliders.cpp)
-target_link_libraries(korg_teleop ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} /usr/lib/x86_64-linux-gnu/librtmidi.so)
+target_link_libraries(korg_teleop ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} /usr/lib/x86_64-linux-gnu/libasound.so)
 
