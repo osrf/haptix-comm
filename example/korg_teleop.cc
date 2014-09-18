@@ -133,6 +133,9 @@ int main(int argc, char **argv)
     knobs_initial[k] = board.knobs[k];
   }
 
+  // initialize ref_pos to 0
+  for(int i = 0; i < deviceInfo.nmotor; ++i)
+    cmd.ref_pos[i] = 0;
 
   cmd.timestamp = 0; //hackish
   for (; ;)
@@ -184,7 +187,6 @@ int main(int argc, char **argv)
       }
     } 
     
-
     //Send the request
     if (hx_update(hxGAZEBO, &cmd, &sensor) != hxOK)
       printf("hx_update(): Request error.\n");
