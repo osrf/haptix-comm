@@ -1,5 +1,7 @@
 PROTOBUF_GENERATE_CPP(PROTO_SRC PROTO_HEADER
-  AplControl.proto
+  hxCommand.proto
+  hxDevice.proto
+  hxSensor.proto
 )
 
 # Variables needed to propagate through modules
@@ -11,3 +13,6 @@ set(PROTO_SRC ${PROTO_SRC} PARENT_SCOPE)
 set(PROTO_HEADER ${PROTO_HEADER} PARENT_SCOPE)
 
 add_custom_target(protobuf_compilation DEPENDS ${PROTO_SRC})
+
+# Install the generated protobuf messages.
+install(FILES ${PROTO_HEADER} ${PROTO_SRC} DESTINATION ${INCLUDE_INSTALL_DIR}/comm/msg)

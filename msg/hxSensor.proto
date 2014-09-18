@@ -1,0 +1,21 @@
+package haptix.comm.msgs;
+
+message imu
+{
+  required float x = 1;
+  required float y = 2;
+  required float z = 3;
+}
+
+message hxSensor
+{
+  required double timestamp   = 1;
+  repeated float motor_pos    = 2 [packed=true];
+  repeated float motor_vel    = 3 [packed=true];
+  repeated float motor_torque = 4 [packed=true];
+  repeated float joint_pos    = 5 [packed=true];
+  repeated float joint_vel    = 6 [packed=true];
+  repeated float contact      = 7 [packed=true];
+  repeated imu IMU_linacc     = 8;
+  repeated imu IMU_angvel     = 9;
+}

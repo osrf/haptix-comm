@@ -8,7 +8,7 @@ Haptix-comm is a component in the Haptix project.
 
 ## Dependencies
 
-The following dependencies are required to compile ignition-transport from
+The following dependencies are required to compile haptix-comm from
 source:
 
  - ignition-transport

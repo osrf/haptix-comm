@@ -1,9 +1,8 @@
 include (${project_cmake_dir}/Utils.cmake)
 
 set (headers
-  AplControlInterface.h
-  Comm.h
-  Helpers.h
+  haptix.h
+  haptix_sim.h
 )
 
 #################################################

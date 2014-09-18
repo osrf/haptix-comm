@@ -1,11 +1,12 @@
 include (${project_cmake_dir}/Utils.cmake)
 
 set (sources
-  Comm.cc
+  haptix.cc
+  haptix_sim.cc
 )
 
 set (gtest_sources
-  Comm_TEST.cc
+  haptix_TEST.cc
 )
 
 set_source_files_properties(${PROTO_SRC} PROPERTIES GENERATED TRUE)
