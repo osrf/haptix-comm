@@ -32,7 +32,7 @@ int numIMUs = 7;
 std::string deviceInfoTopic = "/haptix/deka/GetDeviceInfo";
 std::string updateTopic = "/haptix/deka/Update";
 
-std::chrono::time_point<std::chrono::system_clock> start, end;
+std::chrono::time_point<std::chrono::system_clock> start, endTimer;
 long counter;
 
 //////////////////////////////////////////////////
@@ -112,8 +112,8 @@ void onUpdate(const std::string &_service,
     angvel->set_z(i + 5);
   }
 
-  end = std::chrono::system_clock::now();
-  std::chrono::duration<double> elapsedSec = end - start;
+  endTimer = std::chrono::system_clock::now();
+  std::chrono::duration<double> elapsedSec = endTimer - start;
   ++counter;
 
   if (elapsedSec.count() > 1.0)
@@ -121,7 +121,7 @@ void onUpdate(const std::string &_service,
     std::cout << "Receiving messages at " << counter / elapsedSec.count()
               << "Hz." << std::endl;
     counter = 0;
-    start = end;
+    start = endTimer;
   }
 }
 
