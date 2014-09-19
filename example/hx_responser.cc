@@ -16,6 +16,8 @@
 */
 
 #include <chrono>
+#include <fstream>
+#include <iostream>
 #include <string>
 #include <stdio.h>
 #include <ignition/transport.hh>
@@ -32,8 +34,11 @@ int numIMUs = 7;
 std::string deviceInfoTopic = "/haptix/deka/GetDeviceInfo";
 std::string updateTopic = "/haptix/deka/Update";
 
-std::chrono::time_point<std::chrono::system_clock> start, endTimer;
+std::chrono::time_point<std::chrono::system_clock> start, now, last;
 long counter;
+std::vector<double> times;
+
+std::ofstream logFile("/tmp/haptix_net.log");
 
 //////////////////////////////////////////////////
 /// \brief Provide a service.
@@ -112,17 +117,33 @@ void onUpdate(const std::string &_service,
     angvel->set_z(i + 5);
   }
 
-  endTimer = std::chrono::system_clock::now();
-  std::chrono::duration<double> elapsedSec = endTimer - start;
+  now = std::chrono::system_clock::now();
+  auto elapsedRound = now - start;
+  auto elapsedLast = now - last;
+  auto micros =
+    std::chrono::duration_cast<std::chrono::microseconds>(elapsedLast);
+  auto millis =
+    std::chrono::duration_cast<std::chrono::milliseconds>(elapsedRound);
+  times.push_back(micros.count());
+
   ++counter;
 
-  if (elapsedSec.count() > 1.0)
+  //std::cout << millis.count() << std::endl;
+  if (millis.count() > 1000.0)
   {
-    std::cout << "Receiving messages at " << counter / elapsedSec.count()
+    std::cout << "Receiving messages at " << counter * 1000 / millis.count()
               << "Hz." << std::endl;
     counter = 0;
-    start = endTimer;
+    start = now;
+
+    // Dump the content into disk.
+    for (auto value : times)
+      logFile << value << std::endl;
+
+    times.clear();
   }
+
+  last = now;
 }
 
 //////////////////////////////////////////////////
@@ -132,6 +153,7 @@ int main(int argc, char **argv)
   counter = 0;
 
   start = std::chrono::system_clock::now();
+  last = start;
 
   if ( argc > 2 )
   {
@@ -177,4 +199,6 @@ int main(int argc, char **argv)
     printf("Accepting service calls. Press [ENTER] to exit.\n");
     getchar();
   }
+
+  logFile.close();
 }
