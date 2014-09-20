@@ -83,24 +83,32 @@ int main(int argc, char **argv)
     char command[1];
     sprintf(command, "%c", c);
     if(!commands[command].IsDefined()){
-      if(c==27){ //q
+      if(c==27){ //ESC
         break;
       }
       
       continue;
     }
+
     std::string motor_name = commands[command]["motor_name"].as<std::string>();
-    unsigned int motor_index = motors[motor_name].as<int>();
+
     float inc = commands[command]["increment"].as<float>();
+    if(!motors[motor_name].IsDefined(){
+      //Arm control here-construct Gazebo transport message
+      //
+    } else {
 
-    cmd.ref_pos[motor_index] += inc;
+      unsigned int motor_index = motors[motor_name].as<int>();
 
-    coupling_v1(&cmd);
+      cmd.ref_pos[motor_index] += inc;
 
-    if (hx_update(hxGAZEBO, &cmd, &sensor) != hxOK)
-      printf("hx_update(): Request error.\n");
-    else
-      cmd.timestamp = sensor.timestamp;
+      coupling_v1(&cmd);
+
+      if (hx_update(hxGAZEBO, &cmd, &sensor) != hxOK)
+        printf("hx_update(): Request error.\n");
+      else
+        cmd.timestamp = sensor.timestamp;
+    }
 
     usleep(10000);
   }
