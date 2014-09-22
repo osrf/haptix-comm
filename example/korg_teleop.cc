@@ -32,8 +32,7 @@ int main(int argc, char **argv)
   hxSensor sensor;
 
   Sliders board;
-  char port[9] = "hw:2,0,0";
-  board.midi_open(port);
+  board.rt_midi_open(1);
   //right now only analog controllers are supported
 
   printf("\nRequesting device information...\n\n");
@@ -66,7 +65,6 @@ int main(int argc, char **argv)
       cmd.ref_pos[i] = 0;
     }   
     //Check the state of the sliders and make a command
-    board.blockingRead();
 
     for(YAML::const_iterator it=grasps.begin(); it != grasps.end(); it++){
       //Get the slider value and interpolate the grasp 

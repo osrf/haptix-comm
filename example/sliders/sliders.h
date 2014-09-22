@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <map>
 #include <vector>
-#include <alsa/asoundlib.h>
+#include "RtMidi.h"
 
 class Sliders
 {
@@ -12,10 +12,11 @@ public:
   Sliders();
   ~Sliders();
   bool open(const char *midi_dev_name);
-  bool midi_open(char *port);
-  snd_rawmidi_t *midi_in;
+  bool rt_midi_open(int port);
+  RtMidiIn midi_in;
 
-  void blockingRead();
+  //void onSliderChanged(double _deltatime, std::vector<unsigned char> *_message,
+  //  void *_userData );
   bool poll();
   int fd;
   static const unsigned NUM_CHANNELS = 9, NUM_BUTTONS = 6;
