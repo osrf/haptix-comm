@@ -31,6 +31,11 @@ endif()
 if (NOT PROTOBUF_PROTOC_LIBRARY)
   BUILD_ERROR ("Missing: Google Protobuf Compiler Library (libprotoc-dev)")
 endif()
+########################################
+
+find_library(RTMIDI rtmidi)
+find_library(YAMLCPP yaml-cpp)
+find_library(NCURSES ncurses)
 
 ########################################
 add_executable(requester hx_requester.c)
@@ -39,6 +44,23 @@ target_link_libraries(requester ${HAPTIX_COMM_LIBRARIES})
 add_executable(responser hx_responser.cc)
 target_link_libraries(responser ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES})
 
-add_executable(korg_teleop korg_teleop.cc sliders/sliders.cpp)
-target_link_libraries(korg_teleop ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} /usr/lib/x86_64-linux-gnu/libasound.so)
+if(NOT YAMLCPP-NOTFOUND)
 
+  if(NOT RTMIDI-NOTFOUND)
+    add_executable(korg_finger_teleop korg_finger_teleop.cc sliders/sliders.cpp)
+    target_link_libraries(korg_finger_teleop ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${RTMIDI} ${YAMLCPP})
+
+    add_executable(korg_teleop korg_teleop.cc sliders/sliders.cpp)
+    target_link_libraries(korg_teleop ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${RTMIDI} ${YAMLCPP})
+  endif()
+
+  # alsamidi version
+  add_executable(korg_teleop_amidi korg_teleop_amidi.cc sliders/sliders_amidi.cpp)
+  target_link_libraries(korg_teleop_amidi ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} /usr/lib/x86_64-linux-gnu/libasound.so)
+
+  if(NOT NCURSES-NOTFOUND)
+    add_executable(keyboard_teleop keyboard_teleop.cc)
+    target_link_libraries(keyboard_teleop ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${YAMLCPP} ${NCURSES})
+  endif()
+
+endif()
