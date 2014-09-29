@@ -93,7 +93,7 @@ int main(int argc, char **argv)
     std::string motor_name = commands[command]["motor_name"].as<std::string>();
 
     float inc = commands[command]["increment"].as<float>();
-    if(!motors[motor_name].IsDefined(){
+    if(!motors[motor_name].IsDefined()){
       //Arm control here-construct Gazebo transport message
       //
     } else {
