@@ -80,13 +80,15 @@ int main(int argc, char **argv)
   //TODO: auto-generate commands help screen
   raw();
   noecho();
-  printw("Press buttons to control the hand. Press ESC to quit.");
-  printw("Commands:");
-  /*for(YAML::const_iterator it = commands.begin(); it=commands.begin();
-      it != commands.end(); it++){
+  printw("Press buttons to control the hand. Press ESC to quit.\n");
+  printw("Commands:\n");
+  for(YAML::const_iterator it = commands.begin(); it != commands.end(); it++){
     std::string key = it->first.as<std::string>();
-    printf("\t%s: Increment %s by %f\n", key, it->second["motor_name"], it->second["increment"]);
-  }*/
+    std::stringstream ss;
+    ss << "\t" << key << ": Increment " << it->second["motor_name"].as<std::string>() <<" by " << it->second["increment"].as<float>() << endl;
+
+    printw(ss.str().c_str());
+  }
   
   refresh();
 
