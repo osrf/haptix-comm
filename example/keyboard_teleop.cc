@@ -23,6 +23,12 @@
 #include <ncurses.h>
 #include "teleop.h"
 
+#include <ignition/transport.hh>
+//#include <ignition/msgs/pose.pb.h>
+#include <ignition/math.hh>
+
+#include <gazebo/msgs/pose.pb.h>
+
 //////////////////////////////////////////////////
 int main(int argc, char **argv)
 {
@@ -40,6 +46,9 @@ int main(int argc, char **argv)
   char* yaml_str;
   char* buffer;
 
+  ignition::transport::Node node("haptix");
+  node.Advertise("arm_pose_inc");
+
   // Get the keyboard control mappings from .yaml file.
   if(argc > 1){
     strncpy(filename, argv[1], maxnamesize);
@@ -52,6 +61,8 @@ int main(int argc, char **argv)
   
   YAML::Node motors = YAML::LoadFile("../motor_indices.yaml");
 
+  YAML::Node arm_mappings = YAML::LoadFile("../arm_mappings.yaml");
+
   printf("\nRequesting device information...\n\n");
 
   // Requesting device information.
@@ -61,24 +72,35 @@ int main(int argc, char **argv)
     return -1;
   }
 
-  initscr();
+  if( initscr() == NULL ){
+    perror("Could not initialize ncurses.");
+    return -1;
+  }
 
-  //TODO: auto-generate help screen
+  //TODO: auto-generate commands help screen
   raw();
   noecho();
   printw("Press buttons to control the hand. Press ESC to quit.");
+  printw("Commands:");
+  /*for(YAML::const_iterator it = commands.begin(); it=commands.begin();
+      it != commands.end(); it++){
+    std::string key = it->first.as<std::string>();
+    printf("\t%s: Increment %s by %f\n", key, it->second["motor_name"], it->second["increment"]);
+  }*/
+  
   refresh();
 
   for(int i = 0; i < deviceInfo.nmotor; i++){
     cmd.ref_pos[i] = 0;
   }
+
+
   // Send commands at ~100Hz.
   for (; ;)
   {
 
     c = getch();
 
-    //printf("Got input %d\n", c);
     //Convert c to a string so we can use it to index into YAML nodes
     char command[1];
     sprintf(command, "%c", c);
@@ -94,8 +116,28 @@ int main(int argc, char **argv)
 
     float inc = commands[command]["increment"].as<float>();
     if(!motors[motor_name].IsDefined()){
-      //Arm control here-construct Gazebo transport message
-      //
+      //Arm base pose control
+      int index = arm_mappings[motor_name].as<int>();
+
+      float pose_inc_args[6] = {0, 0, 0, 0, 0, 0};
+      pose_inc_args[index] = inc;
+      ignition::math::Pose3<float> pose_inc(pose_inc_args[0], pose_inc_args[1],
+                                            pose_inc_args[2], pose_inc_args[3],
+                                            pose_inc_args[4], pose_inc_args[5]);
+      gazebo::msgs::Pose msg;
+      gazebo::msgs::Vector3d* vec_msg;
+      vec_msg = msg.mutable_position();
+      vec_msg->set_x(pose_inc.Pos().X());
+      vec_msg->set_y(pose_inc.Pos().Y());
+      vec_msg->set_z(pose_inc.Pos().Z());
+      gazebo::msgs::Quaternion* quat_msg;
+      quat_msg = msg.mutable_orientation();
+      quat_msg->set_x(pose_inc.Rot().X());
+      quat_msg->set_y(pose_inc.Rot().Y());
+      quat_msg->set_z(pose_inc.Rot().Z());
+      quat_msg->set_w(pose_inc.Rot().W());
+
+      node.Publish("/haptix/arm_pose_inc", msg);
     } else {
 
       unsigned int motor_index = motors[motor_name].as<int>();

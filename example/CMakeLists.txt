@@ -36,6 +36,9 @@ endif()
 find_library(RTMIDI rtmidi)
 find_library(YAMLCPP yaml-cpp)
 find_library(NCURSES ncurses)
+find_package(ignition-math)
+find_package(ignition-msgs)
+find_package(gazebo)
 
 ########################################
 add_executable(requester hx_requester.c)
@@ -54,9 +57,13 @@ if(NOT YAMLCPP-NOTFOUND)
     target_link_libraries(korg_teleop ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${RTMIDI} ${YAMLCPP})
   endif()
 
-  if(NOT NCURSES-NOTFOUND)
+  if( NOT NCURSES-NOTFOUND)
+    include_directories(${IGNITION-MATH_INCLUDE_DIRS} ${IGNITION-MSGS_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS})
+    link_directories(${IGNITION-MATH_LIBRARY_DIRS} ${GAZEBO_LIBRARY_DIRS})
+
     add_executable(keyboard_teleop keyboard_teleop.cc)
-    target_link_libraries(keyboard_teleop ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${YAMLCPP} ${NCURSES})
+    target_link_libraries(keyboard_teleop ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${YAMLCPP} ${NCURSES} ${IGNITION-MSGS_LIBRARIES} ${GAZEBO_LIBRARIES})
+
   endif()
 
 endif()
