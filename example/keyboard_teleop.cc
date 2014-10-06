@@ -85,7 +85,7 @@ int main(int argc, char **argv)
   for(YAML::const_iterator it = commands.begin(); it != commands.end(); it++){
     std::string key = it->first.as<std::string>();
     std::stringstream ss;
-    ss << "\t" << key << ": Increment " << it->second["motor_name"].as<std::string>() <<" by " << it->second["increment"].as<float>() << endl;
+    ss << "\t" << key << ": Increment " << it->second["motor_name"].as<std::string>() <<" by " << it->second["increment"].as<float>() << std::endl;
 
     printw(ss.str().c_str());
   }
