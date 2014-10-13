@@ -41,7 +41,7 @@ int main(int argc, char **argv)
   printf("\nRequesting device information...\n\n");
 
   // Requesting device information.
-  if (hx_getdeviceinfo(hxMUJOCO, &deviceInfo) != hxOK)
+  if (hx_getdeviceinfo(hxGAZEBO, &deviceInfo) != hxOK)
   {
     printf("hx_getdeviceinfo(): Request error.\n");
     return -1;
@@ -146,7 +146,7 @@ int main(int argc, char **argv)
     coupling_v1(&cmd);
 
     //Send the request
-    if (hx_update(hxMUJOCO, &cmd, &sensor) != hxOK)
+    if (hx_update(hxGAZEBO, &cmd, &sensor) != hxOK)
       printf("hx_update(): Request error.\n");
     else
       cmd.timestamp = sensor.timestamp;
