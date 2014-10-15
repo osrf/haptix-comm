@@ -57,8 +57,8 @@ if(NOT YAMLCPP-NOTFOUND)
   endif()
 
   # alsamidi version
-  # add_executable(korg_teleop_amidi korg_teleop_amidi.cc sliders/sliders_amidi.cpp)
-  # target_link_libraries(korg_teleop_amidi ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} /usr/lib/x86_64-linux-gnu/libasound.so)
+  add_executable(korg_teleop_amidi korg_teleop_amidi.cc sliders/sliders_amidi.cpp)
+  target_link_libraries(korg_teleop_amidi ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} /usr/lib/x86_64-linux-gnu/libasound.so)
 
   if(NOT NCURSES-NOTFOUND)
     include_directories(${IGNITION-MATH_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS})
