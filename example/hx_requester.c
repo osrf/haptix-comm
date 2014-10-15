@@ -94,7 +94,6 @@ int main(int argc, char **argv)
   }
 
   // Create a command.
-  cmd.timestamp = 0;
   for (i = 0; i < deviceInfo.nmotor; ++i)
   {
     cmd.ref_pos[i] = i;
@@ -108,8 +107,6 @@ int main(int argc, char **argv)
   {
     if (hx_update(hxGAZEBO, &cmd, &sensor) != hxOK)
       printf("hx_update(): Request error.\n");
-    else
-      cmd.timestamp = sensor.timestamp;
 
     // Print the state at ~1Hz.
     if (++counter == 100)

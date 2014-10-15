@@ -134,9 +134,6 @@ extern "C" {
     haptix::comm::msgs::hxSensor rep;
     bool result;
 
-    // Fill the message with the request.
-    req.set_timestamp(_command->timestamp);
-
     for (int i = 0; i < num_motors; ++i)
     {
       req.add_ref_pos(_command->ref_pos[i]);
@@ -155,7 +152,6 @@ extern "C" {
       if (result)
       {
         // Fill the struct with the response.
-        _sensor->timestamp = rep.timestamp();
         for (int i = 0; i < rep.motor_pos_size(); ++i)
         {
           _sensor->motor_pos[i] = rep.motor_pos(i);
