@@ -77,7 +77,8 @@ void onSliderChanged(double _deltatime, std::vector<unsigned char> *_message,
     void *_userData )
 {
   unsigned int nBytes = _message->size();
-  std::map<uint8_t, float* >* analog_control_map = (std::map<uint8_t, float* >*) _userData;
+  //std::map<uint8_t, float* >* analog_control_map = (std::map<uint8_t, float* >*) _userData;
+  Sliders* sliders = (Sliders*) _userData;
   /*for (unsigned int i = 0; i < nBytes; i++)
     std::cout << "Byte " << i << " = " << (int)_message->at(i) << ", ";
   if ( nBytes > 0 )
@@ -88,11 +89,10 @@ void onSliderChanged(double _deltatime, std::vector<unsigned char> *_message,
       // it's a status message hooray
       uint8_t control = _message->at(i+1);
       uint8_t value = _message->at(i+2);
-      if (analog_control_map->find(control) != analog_control_map->end())
-        *analog_control_map->at(control) = value / 127.0f;
-      /*else if (digital_control_map.find(control) != digital_control_map.end())
-        *digital_control_map->at(control) = value != 0;*/
-      //printf("  controller 0x%02x value 0x%02x\n", controller, value);
+      if (sliders->analog_control_map.find(control) != sliders->analog_control_map.end())
+        *sliders->analog_control_map[control] = value / 127.0f;
+      else if (sliders->digital_control_map.find(control) != sliders->digital_control_map.end())
+        *sliders->digital_control_map[control] = value != 0;
       
     }
   }
@@ -108,7 +108,7 @@ bool Sliders::rt_midi_open(int port=1){
 
   midi_in.openPort(port); 
   midi_in.ignoreTypes(false, false, false);
-  midi_in.setCallback( &onSliderChanged, (void*) &analog_control_map );
+  midi_in.setCallback( &onSliderChanged, (void*) this );
   return true;
 }
 

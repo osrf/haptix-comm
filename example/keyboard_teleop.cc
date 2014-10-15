@@ -23,6 +23,15 @@
 #include <ncurses.h>
 #include "teleop.h"
 
+#include <ignition/transport.hh>
+//#include <ignition/msgs/pose.pb.h>
+#include <ignition/math.hh>
+
+//#include <gazebo/gazebo.hh>
+//#include <gazebo/transport/transport.hh>
+#include <gazebo/msgs/pose.pb.h>
+#include <gazebo/msgs/joystick.pb.h>
+
 //////////////////////////////////////////////////
 int main(int argc, char **argv)
 {
@@ -40,6 +49,14 @@ int main(int argc, char **argv)
   char* yaml_str;
   char* buffer;
 
+  ignition::transport::Node node("haptix");
+  node.Advertise("arm_pose_inc");
+
+  /*gazebo::setupClient();
+  gazebo::transport::NodePtr gzNode(new gazebo::transport::Node());
+  gzNode->Init();
+  gazebo::transport::PublisherPtr gzSubscriber = gzNode->Advertise<gazebo::msgs::Joystick>("~/spacenav/joy"); */
+
   // Get the keyboard control mappings from .yaml file.
   if(argc > 1){
     strncpy(filename, argv[1], maxnamesize);
@@ -52,6 +69,10 @@ int main(int argc, char **argv)
   
   YAML::Node motors = YAML::LoadFile("../motor_indices.yaml");
 
+  YAML::Node arm_mappings = YAML::LoadFile("../arm_mappings.yaml");
+
+  YAML::Node view_mappings = YAML::LoadFile("../view_mappings.yaml");
+
   printf("\nRequesting device information...\n\n");
 
   // Requesting device information.
@@ -61,46 +82,113 @@ int main(int argc, char **argv)
     return -1;
   }
 
-  initscr();
+  if( initscr() == NULL ){
+    perror("Could not initialize ncurses.");
+    return -1;
+  }
 
-  //TODO: auto-generate help screen
+  //TODO: auto-generate commands help screen
   raw();
   noecho();
-  printw("Press buttons to control the hand. Press ESC to quit.");
+  printw("Press buttons to control the hand. Press ESC to quit.\n");
+  printw("Commands:\n");
+  for(YAML::const_iterator it = commands.begin(); it != commands.end(); it++){
+    std::string key = it->first.as<std::string>();
+    std::stringstream ss;
+    ss << "\t" << key << ": Increment " << it->second["command_name"].as<std::string>() <<" by " << it->second["increment"].as<float>() << std::endl;
+
+    printw(ss.str().c_str());
+  }
+  
   refresh();
 
   for(int i = 0; i < deviceInfo.nmotor; i++){
     cmd.ref_pos[i] = 0;
   }
+
+
   // Send commands at ~100Hz.
   for (; ;)
   {
 
     c = getch();
 
-    //printf("Got input %d\n", c);
     //Convert c to a string so we can use it to index into YAML nodes
     char command[1];
     sprintf(command, "%c", c);
     if(!commands[command].IsDefined()){
-      if(c==27){ //q
+      if(c==27){ //ESC
         break;
       }
       
       continue;
     }
-    std::string motor_name = commands[command]["motor_name"].as<std::string>();
-    unsigned int motor_index = motors[motor_name].as<int>();
+
+    std::string motor_name = commands[command]["command_name"].as<std::string>();
+
     float inc = commands[command]["increment"].as<float>();
+    if(!motors[motor_name].IsDefined()){
+      if(!arm_mappings[motor_name].IsDefined()){
+        if(!view_mappings[motor_name].IsDefined()){
+          continue;
+        }
+        // Viewpoint control
+        // Publish to /spacenav/joy. TODO: create a real topic name for relative viewpoint ctrl
+        gazebo::msgs::Joystick msg;
+        int index = view_mappings[motor_name].as<int>();
 
-    cmd.ref_pos[motor_index] += inc;
+        float pose_inc[6] = {0, 0, 0, 0, 0, 0};
+        pose_inc[index] = inc;
+        gazebo::msgs::Vector3d* translation = new gazebo::msgs::Vector3d();
+        translation->set_x(pose_inc[0]);
+        translation->set_y(pose_inc[1]);
+        translation->set_z(pose_inc[2]);
+        msg.set_allocated_translation(translation);
+        gazebo::msgs::Vector3d* rotation = new gazebo::msgs::Vector3d();
+        rotation->set_x(pose_inc[3]);
+        rotation->set_y(pose_inc[4]);
+        rotation->set_z(pose_inc[5]);
+        msg.set_allocated_rotation(rotation);
+        //node.Publish("/gazebo/default/spacenav/joy", msg);
+        //gzSubscriber->Publish(msg);
+      } else {
 
-    coupling_v1(&cmd);
+        //Arm base pose control
+        int index = arm_mappings[motor_name].as<int>();
 
-    if (hx_update(hxGAZEBO, &cmd, &sensor) != hxOK)
-      printf("hx_update(): Request error.\n");
-    else
-      cmd.timestamp = sensor.timestamp;
+        float pose_inc_args[6] = {0, 0, 0, 0, 0, 0};
+        pose_inc_args[index] = inc;
+        ignition::math::Pose3<float> pose_inc(pose_inc_args[0], pose_inc_args[1],
+                                              pose_inc_args[2], pose_inc_args[3],
+                                              pose_inc_args[4], pose_inc_args[5]);
+        gazebo::msgs::Pose msg;
+        gazebo::msgs::Vector3d* vec_msg;
+        vec_msg = msg.mutable_position();
+        vec_msg->set_x(pose_inc.Pos().X());
+        vec_msg->set_y(pose_inc.Pos().Y());
+        vec_msg->set_z(pose_inc.Pos().Z());
+        gazebo::msgs::Quaternion* quat_msg;
+        quat_msg = msg.mutable_orientation();
+        quat_msg->set_x(pose_inc.Rot().X());
+        quat_msg->set_y(pose_inc.Rot().Y());
+        quat_msg->set_z(pose_inc.Rot().Z());
+        quat_msg->set_w(pose_inc.Rot().W());
+
+        node.Publish("/haptix/arm_pose_inc", msg);
+      }
+    } else {
+
+      unsigned int motor_index = motors[motor_name].as<int>();
+
+      cmd.ref_pos[motor_index] += inc;
+
+      coupling_v1(&cmd);
+
+      if (hx_update(hxGAZEBO, &cmd, &sensor) != hxOK)
+        printf("hx_update(): Request error.\n");
+      else
+        cmd.timestamp = sensor.timestamp;
+    }
 
     usleep(10000);
   }
