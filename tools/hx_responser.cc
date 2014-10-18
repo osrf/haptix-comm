@@ -50,8 +50,8 @@ void onGetDeviceInfo(const std::string &_service,
   for (int i = 0; i < numJoints; ++i)
   {
     haptix::comm::msgs::hxJointAngle *joint = _rep.add_limit();
-    joint->set_min(-i);
-    joint->set_max(i);
+    joint->set_minimum(-i);
+    joint->set_maximum(i);
   }
 
 }
