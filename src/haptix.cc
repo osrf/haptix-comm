@@ -16,6 +16,7 @@
 */
 
 #include <iostream>
+#include <array>
 #include <ignition/transport.hh>
 #include "haptix/comm/haptix.h"
 #include "msg/hxCommand.pb.h"
@@ -87,8 +88,8 @@ extern "C" {
     req.set_ncontactsensor(0.0);
     req.set_nimu(0.0);
     haptix::comm::msgs::hxJointAngle *limit = req.add_limit();
-    limit->set_min(0.0);
-    limit->set_max(0.0);
+    limit->set_minimum(0.0);
+    limit->set_maximum(0.0);
 
     // Request the service.
     std::string service = "/" + ProjectTopic + "/" + DeviceTopics[_target] +
@@ -108,8 +109,8 @@ extern "C" {
         // Fill the limit field.
         for (int i = 0; i < rep.limit_size(); ++i)
         {
-          _deviceinfo->limit[i][0] = rep.limit(i).min();
-          _deviceinfo->limit[i][1] = rep.limit(i).max();
+          _deviceinfo->limit[i][0] = rep.limit(i).minimum();
+          _deviceinfo->limit[i][1] = rep.limit(i).maximum();
         }
 
         return hxOK;

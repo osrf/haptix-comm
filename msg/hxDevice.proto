@@ -2,8 +2,8 @@ package haptix.comm.msgs;
 
 message hxJointAngle
 {
-  required float min = 1;
-  required float max = 2;
+  required float minimum = 1;
+  required float maximum = 2;
 }
 
 message hxDevice
