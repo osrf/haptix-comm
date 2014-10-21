@@ -28,7 +28,7 @@ macro (ign_build_tests)
         ${PROJECT_NAME_LOWER}
         gtest
         gtest_main
-	${PROTOBUF_LIBRARY_DEBUG}
+	${PROTOBUF_LIBRARY}
 	${ZeroMQ_LIBRARIES}
       )
     endif()
