@@ -37,7 +37,7 @@ extern "C" {
   ignition::transport::Node hxNode(ProjectTopic);
 
   /// \brief Timeout used for the service requests (ms.).
-  unsigned int Timeout = 100000;
+  unsigned int Timeout = 1000;
 
   //////////////////////////////////////////////////
   /// \brief Return true if the target is supported or false otherwise.
