@@ -163,39 +163,3 @@ M:
   command_name: 'arm_rot_z'
   increment: -0.025
 
-a:
-  command_name: 'view_pos_x'
-  increment: 0.025
-A:
-  command_name: 'view_pos_x'
-  increment: -0.025
-s:
-  command_name: 'view_pos_y'
-  increment: 0.025
-S:
-  command_name: 'view_pos_y'
-  increment: -0.025
-d:
-  command_name: 'view_pos_z'
-  increment: 0.025
-D:
-  command_name: 'view_pos_z'
-  increment: -0.025
-z:
-  command_name: 'view_rot_x'
-  increment: 0.025
-Z:
-  command_name: 'view_rot_x'
-  increment: -0.025
-x:
-  command_name: 'view_rot_y'
-  increment: 0.025
-X:
-  command_name: 'view_rot_y'
-  increment: -0.025
-c:
-  command_name: 'view_rot_z'
-  increment: 0.025
-C:
-  command_name: 'view_rot_z'
-  increment: -0.025

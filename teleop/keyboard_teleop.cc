@@ -97,7 +97,6 @@ int main(int argc, char **argv)
   }
 
 
-  // Send commands at ~100Hz.
   for (; ;)
   {
 
@@ -127,21 +126,6 @@ int main(int argc, char **argv)
 
       float pose_inc_args[6] = {0, 0, 0, 0, 0, 0};
       pose_inc_args[index] = inc;
-      /*ignition::math::Pose3<float> pose_inc(pose_inc_args[0], pose_inc_args[1],
-                                            pose_inc_args[2], pose_inc_args[3],
-                                            pose_inc_args[4], pose_inc_args[5]);
-      gazebo::msgs::Pose msg;
-      gazebo::msgs::Vector3d* vec_msg;
-      vec_msg = msg.mutable_position();
-      vec_msg->set_x(pose_inc.Pos().X());
-      vec_msg->set_y(pose_inc.Pos().Y());
-      vec_msg->set_z(pose_inc.Pos().Z());
-      gazebo::msgs::Quaternion* quat_msg;
-      quat_msg = msg.mutable_orientation();
-      quat_msg->set_x(pose_inc.Rot().X());
-      quat_msg->set_y(pose_inc.Rot().Y());
-      quat_msg->set_z(pose_inc.Rot().Z());
-      quat_msg->set_w(pose_inc.Rot().W());*/
       
       ignition::msgs::Pose msg;
       msg.mutable_position()->set_x(pose_inc_args[0]);
@@ -170,6 +154,7 @@ int main(int argc, char **argv)
         cmd.timestamp = sensor.timestamp;
     }
 
+    // Send commands at ~100Hz.
     usleep(10000);
   }
 
