@@ -23,6 +23,37 @@
 #include <yaml-cpp/yaml.h>
 #include <climits>
 
+class Grasp
+{
+  public:
+    static const unsigned int grasp_size = 23;
+  private:
+    std::string name;
+    unsigned int index;
+    float grasp_vector[grasp_size];
+  public:
+    Grasp(const std::string n, const unsigned int i) :
+                                                      name(n), index(i){}
+    unsigned int GetIndex() const{
+      return index;
+    }
+    void SetGraspVectorAt(const unsigned int i, const float v){
+      if (i >= grasp_size){
+        printf("Invalid index given in SetGraspVectorAt\n");
+        return;
+      }
+      grasp_vector[i] = v;
+    }
+    float GetGraspVectorAt(const unsigned int i) const{
+      if (i >= grasp_size){
+        printf("Invalid index given in SetGraspVectorAt\n");
+        return -1;
+      }
+      return grasp_vector[i];
+    }
+
+};
+
 //////////////////////////////////////////////////
 int main(int argc, char **argv)
 {
@@ -53,13 +84,36 @@ int main(int argc, char **argv)
   YAML::Node string_mappings = YAML::LoadFile("../motor_indices.yaml");
   YAML::Node slider_mappings = YAML::LoadFile("../slider_mappings.yaml");
   YAML::Node grasps = YAML::LoadFile("../grasps.yaml");
-  std::vector<float> grasp_vec;
 
-  std::map<unsigned int, unsigned int> ctrl_mappings;
-  //Rightmost slider is little finger (right-handed scheme)
-  for(YAML::const_iterator it=slider_mappings.begin(); it != slider_mappings.end(); it++){
-    unsigned int key = string_mappings[it->first.as<std::string>()].as<unsigned int>();
-    ctrl_mappings[key] = it->second.as<unsigned int>();
+  //std::vector<float> grasp_vec;
+  float grasp_vec[board.NUM_CHANNELS];
+  //std::map<std::string, Grasp> grasps_vectors;
+  std::vector<Grasp> grasp_vectors;
+  for(YAML::const_iterator it=grasps.begin(); it != grasps.end(); it++)
+  {
+    const std::string grasp_name = it->first.as<std::string>();
+    std::vector<float> grasp_vector = grasps[grasp_name]["grasp"].
+                                        as<std::vector<float> >();
+    int grasp_index = grasps[grasp_name]["slider"].as<int>();
+
+    Grasp g(grasp_name, grasp_index);
+    for(int i = 0; i < Grasp::grasp_size; i++)
+    {
+      g.SetGraspVectorAt(i, grasp_vector[i]);
+    }
+    grasp_vectors.push_back(g);
+  }
+
+  //std::map<unsigned int, unsigned int> ctrl_mappings;
+  std::vector<std::pair<unsigned int, unsigned int> > ctrl_mappings;
+
+  for(YAML::const_iterator it=slider_mappings.begin();
+      it != slider_mappings.end(); it++)
+  {
+    unsigned int key =
+              string_mappings[it->first.as<std::string>()].as<unsigned int>();
+    ctrl_mappings.push_back(std::pair<unsigned int, unsigned int>(
+                                          key, it->second.as<unsigned int>()));
   }
   
   float sliders_initial[board.NUM_CHANNELS];
@@ -73,7 +127,8 @@ int main(int argc, char **argv)
     cmd.ref_pos[i] = 0;
   }
 
-  printf("Use the sliders and knobs to control the fingers and wrist of the hand. Press the play button to switch between modes.\n");
+  printf("Use the sliders and knobs to control the fingers and wrist of the\
+          hand. Press the play button to switch between modes.\n");
 
   for (; ;)
   {
@@ -86,20 +141,20 @@ int main(int argc, char **argv)
     }
 
     if(mode == 0){ //Finger teleop
-      for(std::map<unsigned int, unsigned int>::iterator it =
+      for(std::vector<std::pair<unsigned int, unsigned int>>::iterator it =
             ctrl_mappings.begin(); it != ctrl_mappings.end(); it++){
         unsigned int device_idx = it->first;
         unsigned int slider_idx = it->second;
         float slider_val;
         float min = deviceInfo.limit[device_idx][0];
         float max = deviceInfo.limit[device_idx][1];
-        if(slider_idx < 9){
+        if(slider_idx < board.NUM_CHANNELS){
           if(board.sliders[slider_idx] == sliders_initial[slider_idx])
             continue;
 
           slider_val = board.sliders[slider_idx];
         } else {
-          slider_idx %= 9;
+          slider_idx %= board.NUM_CHANNELS;
           if(board.knobs[slider_idx] == knobs_initial[slider_idx])
             continue;
 
@@ -115,16 +170,17 @@ int main(int argc, char **argv)
       }
       //Check the state of the sliders and make a command
 
-      for(YAML::const_iterator it=grasps.begin(); it != grasps.end(); it++){
-        //Get the slider value and interpolate the grasp 
-        unsigned int slider_idx = grasps[it->first]["slider"].as<unsigned int>();
+      for(std::vector<Grasp>::iterator it = grasp_vectors.begin();
+          it != grasp_vectors.end(); it++)
+      {
+      //Get the slider value and interpolate the grasp 
+        unsigned int slider_idx = it->GetIndex();
         float slider_value = board.sliders[slider_idx];
-        grasp_vec = grasps[it->first]["grasp"].as<std::vector<float> >();
 
         float max = -INT_MAX;
         float scale = 0;
-        for(int j = 0; j < grasp_vec.size(); j++){
-          cmd.ref_pos[j] += slider_value*grasp_vec[j];
+        for(int j = 0; j < Grasp::grasp_size; j++){
+          cmd.ref_pos[j] += slider_value*it->GetGraspVectorAt(j);
           if(cmd.ref_pos[j] > max){
             max = cmd.ref_pos[j];
             float jointlim = deviceInfo.limit[j][1];
@@ -135,7 +191,7 @@ int main(int argc, char **argv)
         }
 
         if(scale != 0){
-          for(int j = 0; j < grasp_vec.size(); j++){
+          for(int j = 0; j < board.NUM_CHANNELS; j++){
             cmd.ref_pos[j]*=scale;
           }
         }
