@@ -20,17 +20,17 @@
 #include <time.h>
 #include <yaml-cpp/yaml.h>
 #include <haptix/comm/haptix.h>
-#include <ncurses.h>
 #include "teleop.h"
 
 #include <ignition/transport.hh>
-//#include <ignition/msgs/pose.pb.h>
 #include <ignition/math.hh>
 
 //#include <gazebo/gazebo.hh>
 //#include <gazebo/transport/transport.hh>
 #include <gazebo/msgs/pose.pb.h>
 #include <gazebo/msgs/joystick.pb.h>
+
+#include <ncurses.h>
 
 //////////////////////////////////////////////////
 int main(int argc, char **argv)
@@ -52,10 +52,10 @@ int main(int argc, char **argv)
   ignition::transport::Node node("haptix");
   node.Advertise("arm_pose_inc");
 
-  /*gazebo::setupClient();
+  /*gazebo::setupClient(argc, argv);
   gazebo::transport::NodePtr gzNode(new gazebo::transport::Node());
   gzNode->Init();
-  gazebo::transport::PublisherPtr gzSubscriber = gzNode->Advertise<gazebo::msgs::Joystick>("~/spacenav/joy"); */
+  gazebo::transport::PublisherPtr gzPublisher = gzNode->Advertise<gazebo::msgs::Joystick>("/gazebo/default/spacenav/joy");*/
 
   // Get the keyboard control mappings from .yaml file.
   if(argc > 1){
@@ -87,7 +87,6 @@ int main(int argc, char **argv)
     return -1;
   }
 
-  //TODO: auto-generate commands help screen
   raw();
   noecho();
   printw("Press buttons to control the hand. Press ESC to quit.\n");
@@ -129,53 +128,32 @@ int main(int argc, char **argv)
     float inc = commands[command]["increment"].as<float>();
     if(!motors[motor_name].IsDefined()){
       if(!arm_mappings[motor_name].IsDefined()){
-        if(!view_mappings[motor_name].IsDefined()){
           continue;
-        }
-        // Viewpoint control
-        // Publish to /spacenav/joy. TODO: create a real topic name for relative viewpoint ctrl
-        gazebo::msgs::Joystick msg;
-        int index = view_mappings[motor_name].as<int>();
-
-        float pose_inc[6] = {0, 0, 0, 0, 0, 0};
-        pose_inc[index] = inc;
-        gazebo::msgs::Vector3d* translation = new gazebo::msgs::Vector3d();
-        translation->set_x(pose_inc[0]);
-        translation->set_y(pose_inc[1]);
-        translation->set_z(pose_inc[2]);
-        msg.set_allocated_translation(translation);
-        gazebo::msgs::Vector3d* rotation = new gazebo::msgs::Vector3d();
-        rotation->set_x(pose_inc[3]);
-        rotation->set_y(pose_inc[4]);
-        rotation->set_z(pose_inc[5]);
-        msg.set_allocated_rotation(rotation);
-        //node.Publish("/gazebo/default/spacenav/joy", msg);
-        //gzSubscriber->Publish(msg);
-      } else {
-
-        //Arm base pose control
-        int index = arm_mappings[motor_name].as<int>();
-
-        float pose_inc_args[6] = {0, 0, 0, 0, 0, 0};
-        pose_inc_args[index] = inc;
-        ignition::math::Pose3<float> pose_inc(pose_inc_args[0], pose_inc_args[1],
-                                              pose_inc_args[2], pose_inc_args[3],
-                                              pose_inc_args[4], pose_inc_args[5]);
-        gazebo::msgs::Pose msg;
-        gazebo::msgs::Vector3d* vec_msg;
-        vec_msg = msg.mutable_position();
-        vec_msg->set_x(pose_inc.Pos().X());
-        vec_msg->set_y(pose_inc.Pos().Y());
-        vec_msg->set_z(pose_inc.Pos().Z());
-        gazebo::msgs::Quaternion* quat_msg;
-        quat_msg = msg.mutable_orientation();
-        quat_msg->set_x(pose_inc.Rot().X());
-        quat_msg->set_y(pose_inc.Rot().Y());
-        quat_msg->set_z(pose_inc.Rot().Z());
-        quat_msg->set_w(pose_inc.Rot().W());
-
-        node.Publish("/haptix/arm_pose_inc", msg);
       }
+
+      //Arm base pose control
+      int index = arm_mappings[motor_name].as<int>();
+
+      float pose_inc_args[6] = {0, 0, 0, 0, 0, 0};
+      pose_inc_args[index] = inc;
+      ignition::math::Pose3<float> pose_inc(pose_inc_args[0], pose_inc_args[1],
+                                            pose_inc_args[2], pose_inc_args[3],
+                                            pose_inc_args[4], pose_inc_args[5]);
+      gazebo::msgs::Pose msg;
+      gazebo::msgs::Vector3d* vec_msg;
+      vec_msg = msg.mutable_position();
+      vec_msg->set_x(pose_inc.Pos().X());
+      vec_msg->set_y(pose_inc.Pos().Y());
+      vec_msg->set_z(pose_inc.Pos().Z());
+      gazebo::msgs::Quaternion* quat_msg;
+      quat_msg = msg.mutable_orientation();
+      quat_msg->set_x(pose_inc.Rot().X());
+      quat_msg->set_y(pose_inc.Rot().Y());
+      quat_msg->set_z(pose_inc.Rot().Z());
+      quat_msg->set_w(pose_inc.Rot().W());
+
+      node.Publish("/haptix/arm_pose_inc", msg);
+      
     } else {
 
       unsigned int motor_index = motors[motor_name].as<int>();

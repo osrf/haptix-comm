@@ -53,12 +53,11 @@ int main(int argc, char **argv)
   YAML::Node string_mappings = YAML::LoadFile("../motor_indices.yaml");
   YAML::Node slider_mappings = YAML::LoadFile("../slider_mappings.yaml");
   YAML::Node grasps = YAML::LoadFile("../grasps.yaml");
-
+  std::vector<float> grasp_vec;
 
   std::map<unsigned int, unsigned int> ctrl_mappings;
   //Rightmost slider is little finger (right-handed scheme)
   for(YAML::const_iterator it=slider_mappings.begin(); it != slider_mappings.end(); it++){
-    //string_mappings[it->first] = key, it->second = value
     unsigned int key = string_mappings[it->first.as<std::string>()].as<unsigned int>();
     ctrl_mappings[key] = it->second.as<unsigned int>();
   }
@@ -120,7 +119,7 @@ int main(int argc, char **argv)
         //Get the slider value and interpolate the grasp 
         unsigned int slider_idx = grasps[it->first]["slider"].as<unsigned int>();
         float slider_value = board.sliders[slider_idx];
-        std::vector<float> grasp_vec = grasps[it->first]["grasp"].as<std::vector<float> >();
+        grasp_vec = grasps[it->first]["grasp"].as<std::vector<float> >();
 
         float max = -INT_MAX;
         float scale = 0;

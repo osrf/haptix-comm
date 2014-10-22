@@ -62,7 +62,21 @@ if(NOT YAMLCPP-NOTFOUND)
     link_directories(${IGNITION-MATH_LIBRARY_DIRS} ${GAZEBO_LIBRARY_DIRS})
 
     add_executable(keyboard_teleop keyboard_teleop.cc)
-    target_link_libraries(keyboard_teleop ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${YAMLCPP} ${NCURSES} ${IGNITION-MSGS_LIBRARIES} ${GAZEBO_LIBRARIES})
+    
+    include (FindPkgConfig)
+    if (PKG_CONFIG_FOUND)
+      pkg_check_modules(GAZEBO gazebo)
+    endif()
+
+    include(FindBoost)
+    find_package(Boost ${MIN_BOOST_VERSION} REQUIRED system filesystem regex)
+
+    find_package(Protobuf REQUIRED)
+
+    include_directories(${GAZEBO_INCLUDE_DIRS})
+    link_directories(${GAZEBO_LIBRARY_DIRS})
+
+    target_link_libraries(keyboard_teleop ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${YAMLCPP} ${NCURSES} ${IGNITION-MSGS_LIBRARIES} ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 
   endif()
 
