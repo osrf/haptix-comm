@@ -81,7 +81,6 @@ void onUpdate(const std::string &_service,
   }*/
 
   // Create some dummy response.
-  _rep.set_timestamp(0);
   for (int i = 0; i < numMotors; ++i)
   {
     _rep.add_motor_pos(i);

@@ -4,4 +4,4 @@ include_directories(
 
 add_executable(hx_responser hx_responser.cc)
 include_directories(${CMAKE_BINARY_DIR})
-target_link_libraries(hx_responser ${PROJECT_NAME_LOWER} protobuf)
+target_link_libraries(hx_responser ${PROJECT_NAME_LOWER} ${ZeroMQ_LIBRARIES})

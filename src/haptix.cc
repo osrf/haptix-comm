@@ -16,6 +16,7 @@
 */
 
 #include <iostream>
+#include <array>
 #include <ignition/transport.hh>
 #include "haptix/comm/haptix.h"
 #include "msg/hxCommand.pb.h"
@@ -87,8 +88,8 @@ extern "C" {
     req.set_ncontactsensor(0.0);
     req.set_nimu(0.0);
     haptix::comm::msgs::hxJointAngle *limit = req.add_limit();
-    limit->set_min(0.0);
-    limit->set_max(0.0);
+    limit->set_minimum(0.0);
+    limit->set_maximum(0.0);
 
     // Request the service.
     std::string service = "/" + ProjectTopic + "/" + DeviceTopics[_target] +
@@ -108,8 +109,8 @@ extern "C" {
         // Fill the limit field.
         for (int i = 0; i < rep.limit_size(); ++i)
         {
-          _deviceinfo->limit[i][0] = rep.limit(i).min();
-          _deviceinfo->limit[i][1] = rep.limit(i).max();
+          _deviceinfo->limit[i][0] = rep.limit(i).minimum();
+          _deviceinfo->limit[i][1] = rep.limit(i).maximum();
         }
 
         return hxOK;
@@ -134,9 +135,6 @@ extern "C" {
     haptix::comm::msgs::hxSensor rep;
     bool result;
 
-    // Fill the message with the request.
-    req.set_timestamp(_command->timestamp);
-
     for (int i = 0; i < num_motors; ++i)
     {
       req.add_ref_pos(_command->ref_pos[i]);
@@ -155,7 +153,6 @@ extern "C" {
       if (result)
       {
         // Fill the struct with the response.
-        _sensor->timestamp = rep.timestamp();
         for (int i = 0; i < rep.motor_pos_size(); ++i)
         {
           _sensor->motor_pos[i] = rep.motor_pos(i);
