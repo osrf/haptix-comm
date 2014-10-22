@@ -81,9 +81,9 @@ int main(int argc, char **argv)
   //TODO: Give some helpful text telling the user what to do
 
   //Map of hxAPLMotor, index pairs (to make sense of enum)
-  YAML::Node string_mappings = YAML::LoadFile("../motor_indices.yaml");
-  YAML::Node slider_mappings = YAML::LoadFile("../slider_mappings.yaml");
-  YAML::Node grasps = YAML::LoadFile("../grasps.yaml");
+  YAML::Node string_mappings = YAML::LoadFile("../config/motor_indices.yaml");
+  YAML::Node slider_mappings = YAML::LoadFile("../config/slider_mappings.yaml");
+  YAML::Node grasps = YAML::LoadFile("../config/grasps.yaml");
 
   //std::vector<float> grasp_vec;
   float grasp_vec[board.NUM_CHANNELS];
