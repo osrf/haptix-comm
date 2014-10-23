@@ -74,7 +74,7 @@ int main(int argc, char **argv)
   std::vector<Grasp> grasp_vectors;
   std::vector<std::pair<unsigned int, unsigned int> > ctrl_mappings;
 
-  // abstraction of slider board
+  // slider board data
   Sliders board;
   float sliders_initial[board.NUM_CHANNELS];
   float knobs_initial[board.NUM_CHANNELS];
@@ -186,6 +186,14 @@ int main(int argc, char **argv)
         cmd.ref_pos[i] = 0;
       }
       // Check the state of the sliders and make a command
+      float slider_total = 0;
+      for (std::vector<Grasp>::iterator it = grasp_vectors.begin();
+          it != grasp_vectors.end(); it++)
+      {
+        if(board.sliders[it->GetIndex()] > 0)
+          slider_total += 1;
+      }
+      std::cout << "slider total: " << slider_total << std::endl;
 
       for (std::vector<Grasp>::iterator it = grasp_vectors.begin();
           it != grasp_vectors.end(); it++)
@@ -198,25 +206,27 @@ int main(int argc, char **argv)
         float scale = 0;
         for (int j = 0; j < Grasp::grasp_size; j++)
         {
-          cmd.ref_pos[j] += slider_value*it->GetGraspVectorAt(j);
-          if (cmd.ref_pos[j] > max)
+          if(slider_total > 0)
+            cmd.ref_pos[j] += slider_value*it->GetGraspVectorAt(j)/(slider_total);
+          if (cmd.ref_pos[j] > deviceInfo.limit[j][1])
           {
-            max = cmd.ref_pos[j];
+            cmd.ref_pos[j] = deviceInfo.limit[j][1];
+            /*max = cmd.ref_pos[j];
             float jointlim = deviceInfo.limit[j][1];
             if (max > jointlim)
             {
               scale = jointlim/max;
-            }
+            }*/
           }
         }
 
-        if (scale != 0)
+        /*if (scale != 0)
         {
           for (int j = 0; j < board.NUM_CHANNELS; j++)
           {
             cmd.ref_pos[j]*=scale;
           }
-        }
+        }*/
 
       }
     }
