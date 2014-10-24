@@ -156,7 +156,5 @@ int main(int argc, char **argv)
 #endif
   }
 
-  printf("Bye");
-
   return 0;
 }
