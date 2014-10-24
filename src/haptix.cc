@@ -135,7 +135,7 @@ extern "C" {
     haptix::comm::msgs::hxSensor rep;
     bool result;
 
-    for (int i = 0; i < num_motors; ++i)
+    for (int i = 0; i < hxMAXMOTOR; ++i)
     {
       req.add_ref_pos(_command->ref_pos[i]);
       req.add_ref_vel(_command->ref_vel[i]);
