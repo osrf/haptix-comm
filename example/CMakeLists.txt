@@ -19,6 +19,37 @@ set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${IGNITION-TRANSPORT_CXX_FLAGS}")
 include_directories(${IGNITION-TRANSPORT_INCLUDE_DIRS})
 link_directories(${IGNITION-TRANSPORT_LIBRARY_DIRS})
 
+#################################################
+# Find ZeroMQ.
+include (${PROJECT_SOURCE_DIR}/cmake/FindZeroMQ.cmake)
+
+if (NOT ZeroMQ_FOUND)
+  BUILD_ERROR ("zmq not found, Please install zmq")
+else ()
+  include_directories(${ZeroMQ_INCLUDE_DIRS})
+  link_directories(${ZeroMQ_LIBRARY_DIRS})
+endif ()
+
+#################################################
+# Find cppzeromq header (shipped together with zeromq in debian/ubuntu but
+# different upstream projects and tarballs)
+# 
+# Provide the PATH using CPPZMQ_HEADER_PATH
+#
+find_path(cppzmq_INCLUDE_DIRS 
+          zmq.hpp 
+	  PATHS 
+	   ${zmq_INCLUDE_DIRS}
+	   ${CPPZMQ_HEADER_PATH})
+
+if (NOT cppzmq_INCLUDE_DIRS)
+  message(STATUS "cppzmq header file was not found")
+  BUILD_ERROR("cppzmq header file was not found")
+else()
+  message(STATUS "cppzmq file - found")
+  include_directories(${cppzmq_INCLUDE_DIRS})
+endif()
+
 ########################################
 # The Google Protobuf library
 find_package(Protobuf REQUIRED)
@@ -33,9 +64,13 @@ if (NOT PROTOBUF_PROTOC_LIBRARY)
 endif()
 ########################################
 
+if(WIN32)
+  set(EXTRA_LIBRARIES ws2_32 Iphlpapi)
+endif()
+
 ########################################
 add_executable(requester hx_requester.c)
-target_link_libraries(requester ${HAPTIX_COMM_LIBRARIES})
+target_link_libraries(requester ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARIES} ${EXTRA_LIBRARIES})
 
 add_executable(responser hx_responser.cc)
-target_link_libraries(responser ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES})
+target_link_libraries(responser ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARIES} ${EXTRA_LIBRARIES})

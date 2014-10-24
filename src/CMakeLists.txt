@@ -24,7 +24,7 @@ endif()
 target_link_libraries(${PROJECT_NAME_LOWER} 
                       ${IGNITION-TRANSPORT_LIBRARIES})
 if(WIN32)
-  target_link_libraries(${PROJECT_NAME_LOWER} wsock32 ws2_32 Iphlpapi)
+  target_link_libraries(${PROJECT_NAME_LOWER} ws2_32 Iphlpapi)
 endif()
 ign_install_library(${PROJECT_NAME_LOWER})
 
