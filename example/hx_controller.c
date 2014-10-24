@@ -20,12 +20,22 @@
 #define _USE_MATH_DEFINES
 #endif
 #include <math.h>
+#include <signal.h>
 #include <stdio.h>
 #include <time.h>
 #include <haptix/comm/haptix.h>
 #ifdef _WIN32
 #include <windows.h>
 #endif
+
+int running = 1;
+
+//////////////////////////////////////////////////
+void sigHandler(int signo)
+{
+  // Terminate the program.
+  running = 0;
+}
 
 //////////////////////////////////////////////////
 void printState(const hxDeviceInfo *_deviceInfo, const hxSensor *_sensor)
@@ -98,6 +108,14 @@ int main(int argc, char **argv)
   hxCommand cmd;
   hxSensor sensor;
 
+  // Capture SIGINT signal.
+  if (signal(SIGINT, sigHandler) == SIG_ERR)
+    printf("Error catching SIGINT\n");
+
+  // Capture SIGTERM signal.
+  if (signal(SIGTERM, sigHandler) == SIG_ERR)
+    printf("Error catching SIGTERM\n");
+
   // Requesting device information.
   if (hx_getdeviceinfo(hxGAZEBO, &deviceInfo) != hxOK)
   {
@@ -109,7 +127,7 @@ int main(int argc, char **argv)
   printDeviceInfo(&deviceInfo);
 
   // Send commands at ~100Hz.
-  for (; ;)
+  while (running == 1)
   {
     // Create a new command based on a sinusoidal wave.
     for (i = 0; i < deviceInfo.nmotor; ++i)
@@ -137,6 +155,8 @@ int main(int argc, char **argv)
     usleep(sleeptime_us);
 #endif
   }
+
+  printf("Bye");
 
   return 0;
 }
