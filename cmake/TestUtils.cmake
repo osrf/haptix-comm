@@ -14,12 +14,24 @@ macro (ign_build_tests)
       gtest gtest_main
       )
 
-    target_link_libraries(${BINARY_NAME}
-      ${PROJECT_NAME_LOWER}
-      libgtest.a
-      libgtest_main.a
-      pthread
+    if (UNIX)
+      target_link_libraries(${BINARY_NAME}
+        ${PROJECT_NAME_LOWER}
+        libgtest.a
+        libgtest_main.a
+        pthread
+	${PROTOBUF_LIBRARY}
+	${ZeroMQ_LIBRARIES}
       )
+    elseif(WIN32)
+      target_link_libraries(${BINARY_NAME}
+        ${PROJECT_NAME_LOWER}
+        gtest
+        gtest_main
+	${PROTOBUF_LIBRARY}
+	${ZeroMQ_LIBRARIES}
+      )
+    endif()
 
     add_test(${BINARY_NAME} ${CMAKE_CURRENT_BINARY_DIR}/${BINARY_NAME}
 	--gtest_output=xml:${CMAKE_BINARY_DIR}/test_results/${BINARY_NAME}.xml)

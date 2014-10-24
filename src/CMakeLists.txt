@@ -1,18 +1,34 @@
 include (${project_cmake_dir}/Utils.cmake)
 
 set (sources
-  AplControl.pb.cc
-  Comm.cc
+  haptix.cc
+  haptix_sim.cc
 )
 
 set (gtest_sources
-  Comm_TEST.cc
+  haptix_TEST.cc
 )
 
-# Generate the protobuf code.
-# PROTOBUF_GENERATE_C(PROTO_SRCS PROTO_HDRS Arm.proto)
+set_source_files_properties(${PROTO_SRC} PROPERTIES GENERATED TRUE)
+include_directories(${CMAKE_BINARY_DIR})
 
 ign_build_tests(${gtest_sources})
-ign_add_library(${PROJECT_NAME_LOWER} ${sources})
-target_link_libraries(${PROJECT_NAME_LOWER} ignition-transport)
+if (UNIX)
+  ign_add_library(${PROJECT_NAME_LOWER} ${sources} ${PROTO_SRC})
+elseif(WIN32)
+  # Probotuf compilation is recommended and configured for a STATIC .lib
+  # Not mixing static and shared and just build ignition transport as STATIC
+  # on Windows
+  add_library(${PROJECT_NAME_LOWER} STATIC ${sources} ${PROTO_SRC})
+endif()
+target_link_libraries(${PROJECT_NAME_LOWER} 
+                      ${IGNITION-TRANSPORT_LIBRARIES})
+if(WIN32)
+  target_link_libraries(${PROJECT_NAME_LOWER} wsock32 ws2_32 Iphlpapi)
+endif()
 ign_install_library(${PROJECT_NAME_LOWER})
+
+add_dependencies(${PROJECT_NAME_LOWER}
+  gtest gtest_main
+  protobuf_compilation
+)

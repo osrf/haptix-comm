@@ -2037,7 +2037,7 @@ def CheckBraces(filename, clean_lines, linenum, error):
       line = prevline + line
     else:
       break
-  # Disabling this because it's invalid for c++11 
+  # Disabling this because it's invalid for c++11
   # if (Search(r'{.*}\s*;', line) and
   #     line.count('{') == line.count('}') and
   #     not Search(r'struct|class|enum|\s*=\s*{', line)):
@@ -2727,6 +2727,8 @@ def CheckLanguage(filename, clean_lines, linenum, file_extension, include_state,
       if Match(r'\d+', tok): continue
       if Match(r'0[xX][0-9a-fA-F]+', tok): continue
       if Match(r'k[A-Z0-9]\w*', tok): continue
+      # caguero: Allowing an array size not starting with 'k'.
+      if Match(r'[A-z0-9]\w*', tok): continue
       if Match(r'(.+::)?k[A-Z0-9]\w*', tok): continue
       if Match(r'(.+::)?[A-Z][A-Z0-9_]*', tok): continue
       # A catch all for tricky sizeof cases, including 'sizeof expression',

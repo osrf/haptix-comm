@@ -1,0 +1,16 @@
+package haptix.comm.msgs;
+
+message hxJointAngle
+{
+  required float minimum = 1;
+  required float maximum = 2;
+}
+
+message hxDevice
+{
+  required int32 nmotor         = 1;
+  required int32 njoint         = 2;
+  required int32 ncontactsensor = 3;
+  required int32 nIMU           = 4;
+  repeated hxJointAngle limit   = 5;
+}

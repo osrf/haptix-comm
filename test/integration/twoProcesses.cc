@@ -15,52 +15,15 @@
  *
 */
 
-#include <chrono>
-#include <thread>
+#include <cstdlib>
 #include "gtest/gtest.h"
-#include "haptix/comm/AplControlInterface.h"
-#include "haptix/comm/Comm.h"
+#include "haptix/comm/haptix.h"
+#include "msg/hxCommand.pb.h"
+#include "msg/hxDevice.pb.h"
+#include "msg/hxSensor.pb.h"
 
-//////////////////////////////////////////////////
-/// \brief Provide a "dummy" service.
-void callback(const char *_service, struct AplRobotCommand _req,
-  struct AplRobotState *_rep, int *_result)
-{
-  // Check the name of the service received.
-  EXPECT_STREQ(_service, "/test");
-
-  // Check the request parameters.
-  for (int i = 0; i < ACI_num_joints; ++i)
-  {
-    EXPECT_FLOAT_EQ(_req.command[i].position, 1.0 * i);
-    EXPECT_FLOAT_EQ(_req.command[i].velocity,  2.0 * i + 1.0);
-    EXPECT_FLOAT_EQ(_req.command[i].effort, 3.0 * i + 2.0);
-    EXPECT_FLOAT_EQ(_req.command[i].kp_position, 4.0 * i + 3.0);
-    EXPECT_FLOAT_EQ(_req.command[i].ki_position, 5.0 * i + 4.0);
-    EXPECT_FLOAT_EQ(_req.command[i].kp_velocity, 6.0 * i + 5.0);
-    EXPECT_FLOAT_EQ(_req.command[i].force, 7.0 * i + 6.0);
-  }
-
-  // Create some dummy response.
-  for (int i = 0; i < ACI_num_joints; ++i)
-  {
-    _rep->state[i].position = i;
-    _rep->state[i].velocity = i + 1.0;
-    _rep->state[i].effort = i + 2.0;
-  }
-  *_result = 0;
-}
-
-//////////////////////////////////////////////////
-void runReplier()
-{
-  // Create a transport node.
-  NodePtr node = newNode();
-
-  // Advertise an "test" service.
-  nodeAdvertise(node, "/test", callback);
-  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-}
+std::string deviceInfoTopic = "/haptix/gazebo/GetDeviceInfo";
+std::string updateTopic = "/haptix/gazebo/Update";
 
 //////////////////////////////////////////////////
 /// \brief Three different nodes running in two different processes. In the
@@ -69,71 +32,57 @@ void runReplier()
 /// node receives the message.
 TEST(twoProcesses, SrvTwoProcs)
 {
-  pid_t pid = fork();
+  // Launch an ignition transport node that will advertise services.
+  std::string command = BUILD_DIR + std::string("/tools/hx_responser 1000&");
+  ASSERT_EQ(std::system(command.c_str()), 0);
 
-  if (pid == 0)
-    runReplier();
-  else
+  hxDeviceInfo deviceInfo;
+  hxCommand cmd;
+  hxSensor sensor;
+
+  EXPECT_EQ(hx_connect(hxGAZEBO), hxOK);
+
+  // Request the device information.
+  ASSERT_EQ(hx_getdeviceinfo(hxGAZEBO, &deviceInfo), hxOK);
+
+  // Fill the joint command.
+  for (int i = 0; i < deviceInfo.nmotor; ++i)
   {
-    struct AplRobotCommand jointCmd;
-    struct AplRobotState jointState;
-    int result;
-    int timer = 5000;
-
-    // Fill the joint command.
-    for (int i = 0; i < ACI_num_joints; ++i)
-    {
-      jointCmd.command[i].position = 1.0 * i;
-      jointCmd.command[i].velocity = 2.0 * i + 1.0;
-      jointCmd.command[i].effort = 3.0 * i + 2.0;
-      jointCmd.command[i].kp_position = 4.0 * i + 3.0;
-      jointCmd.command[i].ki_position = 5.0 * i + 4.0;
-      jointCmd.command[i].kp_velocity = 6.0 * i + 5.0;
-      jointCmd.command[i].force = 7.0 * i + 6.0;
-    }
-
-    // Create a transport node.
-    NodePtr node1 = newNode();
-
-    // Make a valid service call.
-    int done = nodeRequest(node1, "/test", jointCmd, timer, &jointState,
-      &result);
-
-    // The service call should not expire.
-    EXPECT_EQ(done, 0);
-
-    // The remote service call returned succesfully.
-    ASSERT_EQ(result, 0);
-
-    // Check the response.
-    for (int i = 0; i < ACI_num_joints; ++i)
-    {
-      EXPECT_FLOAT_EQ(jointState.state[i].position, i);
-      EXPECT_FLOAT_EQ(jointState.state[i].velocity, i + 1.0);
-      EXPECT_FLOAT_EQ(jointState.state[i].effort, i + 2.0);
-    }
-
-    // Make an invalid service request.
-    auto t1 = std::chrono::system_clock::now();
-    done = nodeRequest(node1, "unknown_service", jointCmd, timer, &jointState,
-           &result);
-    auto t2 = std::chrono::system_clock::now();
-
-    double elapsed =
-      std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
-
-    // Check if the elapsed time was close to the timeout.
-    EXPECT_NEAR(elapsed, timer, 5.0);
-
-    // Wait for the child process to return.
-    int status;
-    waitpid(pid, &status, 0);
+    cmd.ref_pos[i] = i;
+    cmd.ref_vel[i] = i + 1;
+    cmd.gain_pos[i] = i + 2;
+    cmd.gain_vel[i] = i + 3;
   }
-}
 
-//////////////////////////////////////////////////
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+  // Request an update.
+  EXPECT_EQ(hx_update(hxGAZEBO, &cmd, &sensor), hxOK);
+
+  // Check the response.
+  for (int i = 0; i < deviceInfo.nmotor; ++i)
+  {
+    EXPECT_FLOAT_EQ(sensor.motor_pos[i], i);
+    EXPECT_FLOAT_EQ(sensor.motor_vel[i], i + 1);
+    EXPECT_FLOAT_EQ(sensor.motor_torque[i], i + 2);
+  }
+
+  for (int i = 0; i < deviceInfo.njoint; ++i)
+  {
+    EXPECT_FLOAT_EQ(sensor.joint_pos[i], i);
+    EXPECT_FLOAT_EQ(sensor.joint_vel[i], i + 1);
+  }
+
+  for (int i = 0; i < deviceInfo.ncontactsensor; ++i)
+    EXPECT_FLOAT_EQ(sensor.contact[i], i);
+
+  for (int i = 0; i < deviceInfo.nIMU; ++i)
+  {
+    EXPECT_FLOAT_EQ(sensor.IMU_linacc[i][0], i);
+    EXPECT_FLOAT_EQ(sensor.IMU_linacc[i][1], i + 1);
+    EXPECT_FLOAT_EQ(sensor.IMU_linacc[i][2], i + 2);
+    EXPECT_FLOAT_EQ(sensor.IMU_angvel[i][0], i + 3);
+    EXPECT_FLOAT_EQ(sensor.IMU_angvel[i][1], i + 4);
+    EXPECT_FLOAT_EQ(sensor.IMU_angvel[i][2], i + 5);
+  }
+
+  EXPECT_EQ(hx_close(hxGAZEBO), hxOK);
 }

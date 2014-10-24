@@ -230,8 +230,8 @@ else (build_errors)
   # Write the config.h file
   configure_file (${project_cmake_dir}/config.hh.in
     ${PROJECT_BINARY_DIR}/include/haptix/${IGN_PROJECT_NAME}/config.hh)
-  ign_install_includes(${IGN_PROJECT_NAME}
-    ${PROJECT_BINARY_DIR}/include/haptix/${IGN_PROJECT_NAME}/config.hh)
+  #ign_install_includes(${IGN_PROJECT_NAME}
+  #  ${PROJECT_BINARY_DIR}/include/haptix/${IGN_PROJECT_NAME}/config.hh)
 
   include_directories(
     ${PROJECT_SOURCE_DIR}/include
@@ -250,8 +250,10 @@ else (build_errors)
 
   if (BUILD_IGNITION)
     set(TEST_TYPE "UNIT")
+    add_subdirectory(msg)
     add_subdirectory(src)
     add_subdirectory(include)
+    add_subdirectory(tools)
     add_subdirectory(test)
   endif (BUILD_IGNITION)
 
