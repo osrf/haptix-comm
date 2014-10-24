@@ -33,12 +33,12 @@ endif ()
 #################################################
 # Find cppzeromq header (shipped together with zeromq in debian/ubuntu but
 # different upstream projects and tarballs)
-# 
+#
 # Provide the PATH using CPPZMQ_HEADER_PATH
 #
-find_path(cppzmq_INCLUDE_DIRS 
-          zmq.hpp 
-	  PATHS 
+find_path(cppzmq_INCLUDE_DIRS
+          zmq.hpp
+	  PATHS
 	   ${zmq_INCLUDE_DIRS}
 	   ${CPPZMQ_HEADER_PATH})
 
@@ -74,3 +74,6 @@ target_link_libraries(requester ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LI
 
 add_executable(responser hx_responser.cc)
 target_link_libraries(responser ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARIES} ${EXTRA_LIBRARIES})
+
+add_executable(controller hx_controller.c)
+target_link_libraries(controller ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARIES} ${EXTRA_LIBRARIES} m)
