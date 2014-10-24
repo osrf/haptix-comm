@@ -66,6 +66,8 @@ endif()
 
 if(WIN32)
   set(EXTRA_LIBRARIES ws2_32 Iphlpapi)
+else()
+  set(EXTRA_LIBRARIES m)
 endif()
 
 ########################################
@@ -76,4 +78,4 @@ add_executable(responser hx_responser.cc)
 target_link_libraries(responser ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARIES} ${EXTRA_LIBRARIES})
 
 add_executable(controller hx_controller.c)
-target_link_libraries(controller ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARIES} ${EXTRA_LIBRARIES} m)
+target_link_libraries(controller ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARIES} ${EXTRA_LIBRARIES})
