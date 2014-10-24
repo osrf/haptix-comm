@@ -202,8 +202,6 @@ int main(int argc, char **argv)
         unsigned int slider_idx = it->GetIndex();
         float slider_value = board.sliders[slider_idx];
 
-        float max = -INT_MAX;
-        float scale = 0;
         for (int j = 0; j < Grasp::grasp_size; j++)
         {
           if(slider_total > 0)
@@ -211,23 +209,8 @@ int main(int argc, char **argv)
           if (cmd.ref_pos[j] > deviceInfo.limit[j][1])
           {
             cmd.ref_pos[j] = deviceInfo.limit[j][1];
-            /*max = cmd.ref_pos[j];
-            float jointlim = deviceInfo.limit[j][1];
-            if (max > jointlim)
-            {
-              scale = jointlim/max;
-            }*/
           }
         }
-
-        /*if (scale != 0)
-        {
-          for (int j = 0; j < board.NUM_CHANNELS; j++)
-          {
-            cmd.ref_pos[j]*=scale;
-          }
-        }*/
-
       }
     }
     coupling_v1(&cmd);
