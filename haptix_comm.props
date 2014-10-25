@@ -7,11 +7,12 @@
   <PropertyGroup />
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(HaptixSDKRoot)\haptix_comm\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)'=='Debug'">$(HaptixSDKRoot)\haptix_comm\Debug\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)'!='Debug'">$(HaptixSDKRoot)\haptix_comm\Release\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories Condition="'$(Configuration)'=='Debug'">$(HaptixSDKRoot)\haptix_comm\build\install\lib;$(HaptixSDKRoot)\ign-transport\build\install\lib;$(HaptixSDKRoot)\ZeroMQ 3.2.4\lib;$(HaptixSDKRoot)\protobuf-2.6.0-win32-vc12\vsprojects\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalLibraryDirectories Condition="'$(Configuration)'!='Debug'">$(HaptixSDKRoot)\haptix_comm\build\install\lib;$(HaptixSDKRoot)\ign-transport\build\install\lib;$(HaptixSDKRoot)\ZeroMQ 3.2.4\lib;$(HaptixSDKRoot)\protobuf-2.6.0-win32-vc12\vsprojects\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories Condition="'$(Configuration)'=='Debug'">$(HaptixSDKRoot)\haptix_comm\Debug\lib;$(HaptixSDKRoot)\deps\ign-transport\Debug\lib;$(HaptixSDKRoot)\deps\ZeroMQ 3.2.4\lib;$(HaptixSDKRoot)\deps\protobuf-2.6.0-win32-vc12\vsprojects\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories Condition="'$(Configuration)'!='Debug'">$(HaptixSDKRoot)\haptix_comm\Release\lib;$(HaptixSDKRoot)\deps\ign-transport\Release\lib;$(HaptixSDKRoot)\deps\ZeroMQ 3.2.4\lib;$(HaptixSDKRoot)\deps\protobuf-2.6.0-win32-vc12\vsprojects\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies Condition="'$(Configuration)'=='Debug'">haptix_comm.lib;ignition-transport.lib;libzmq-v120-mt-gd-3_2_4.lib;libprotobuf.lib;ws2_32.lib;Iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalDependencies Condition="'$(Configuration)'!='Debug'">haptix_comm.lib;ignition-transport.lib;libzmq-v120-mt-3_2_4.lib;libprotobuf.lib;ws2_32.lib;Iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
