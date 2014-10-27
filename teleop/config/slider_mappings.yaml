@@ -2,8 +2,8 @@ motor_little_ab_ad:    17
 motor_ring_ab_ad:      16
 motor_middle_ab_ad:    15
 motor_index_ab_ad:     14
-motor_thumb_cmc_ab_ad: 13
-motor_thumb_cmc_fe:    12
+motor_thumb_cmc_ab_ad: 12
+motor_thumb_cmc_fe:    13
 motor_little_mcp: 8
 motor_ring_mcp:   7
 motor_middle_mcp: 6
