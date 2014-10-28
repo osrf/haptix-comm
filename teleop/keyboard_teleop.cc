@@ -23,7 +23,6 @@
 
 #include <ignition/transport.hh>
 #include <ignition/msgs.hh>
-#include <ignition/math.hh>
 
 #include <ncurses.h>
 
@@ -130,7 +129,7 @@ int main(int argc, char **argv)
       msg.mutable_position()->set_x(pose_inc_args[0]);
       msg.mutable_position()->set_y(pose_inc_args[1]);
       msg.mutable_position()->set_z(pose_inc_args[2]);
-      ignition::math::Quaternion<float> q(pose_inc_args[3], pose_inc_args[4],
+      ignition::msgs::Quaternion<float> q(pose_inc_args[3], pose_inc_args[4],
                                  pose_inc_args[5]);
       msg.mutable_orientation()->set_x(q.X());
       msg.mutable_orientation()->set_y(q.Y());

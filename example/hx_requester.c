@@ -96,10 +96,10 @@ int main(int argc, char **argv)
   // Create a command.
   for (i = 0; i < deviceInfo.nmotor; ++i)
   {
-    cmd.ref_pos[i] = i;
-    cmd.ref_vel[i] = i + 1;
-    cmd.gain_pos[i] = i + 2;
-    cmd.gain_vel[i] = i + 3;
+    cmd.ref_pos[i] = 1;
+    cmd.ref_vel[i] = 0;
+    cmd.gain_pos[i] = 1;
+    cmd.gain_vel[i] = 0;
   }
 
   // Send commands at ~100Hz.
