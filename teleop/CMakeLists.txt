@@ -49,7 +49,7 @@ if(NOT YAMLCPP-NOTFOUND)
   endif()
 
   if( NOT NCURSES-NOTFOUND)
-    if (IGNITION-MSGS)
+    if (NOT IGNITION-MSGS-NOTFOUND)
       include_directories(${IGNITION-MATH_INCLUDE_DIRS}
                           ${IGNITION-MSGS_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS})
       link_directories(${IGNITION-MATH_LIBRARY_DIRS} ${GAZEBO_LIBRARY_DIRS})
