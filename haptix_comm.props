@@ -4,7 +4,6 @@
   <PropertyGroup Label="UserMacros">
     <HaptixSDKRoot>$([System.IO.Path]::GetFullPath( "$(MSBuildThisFileDirectory)" ) )</HaptixSDKRoot>
   </PropertyGroup>
-  <PropertyGroup />
   <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalIncludeDirectories Condition="'$(Configuration)'=='Debug'">$(HaptixSDKRoot)\haptix_comm\Debug\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -16,6 +15,18 @@
       <AdditionalDependencies Condition="'$(Configuration)'=='Debug'">haptix_comm.lib;ignition-transport.lib;libzmq-v120-mt-gd-3_2_4.lib;libprotobuf.lib;ws2_32.lib;Iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalDependencies Condition="'$(Configuration)'!='Debug'">haptix_comm.lib;ignition-transport.lib;libzmq-v120-mt-3_2_4.lib;libprotobuf.lib;ws2_32.lib;Iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent Condition="'$(Configuration)'=='Debug'">
+      <Command>xcopy "$(HaptixSDKRoot)\deps\ZeroMQ 3.2.4\bin\libzmq-v120-mt-gd-3_2_4.dll" "$(OutputPath)" /Y</Command>
+    </PostBuildEvent>
+    <PostBuildEvent Condition="'$(Configuration)'=='Debug'">
+      <Message>Copy required DLL into directory with executable.</Message>
+    </PostBuildEvent>
+    <PostBuildEvent Condition="'$(Configuration)'!='Debug'">
+      <Command>xcopy "$(HaptixSDKRoot)\deps\ZeroMQ 3.2.4\bin\libzmq-v120-mt-3_2_4.dll" "$(OutputPath)" /Y</Command>
+    </PostBuildEvent>
+    <PostBuildEvent Condition="'$(Configuration)'!='Debug'">
+      <Message>Copy required DLL into directory with executable.</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <BuildMacro Include="HaptixSDKRoot">
