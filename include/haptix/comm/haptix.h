@@ -68,17 +68,11 @@ struct _hxDeviceInfo
 
   /// \brief Minimum and maximum joint angles (rad).
   float limit[hxMAXJOINT][2];
-
-  // Anything else we should provide here, as opposed to letting the user
-  // extract the data they need from the XML model or robot specs?
 };
 
 /// \brief Sensor data.
 struct _hxSensor
 {
-  /// \brief Timestamp.
-  double timestamp;
-
   /// \brief Motor position (rad).
   float motor_pos[hxMAXMOTOR];
 
@@ -121,8 +115,6 @@ struct _hxCommand
 
   /// \brief Velocity feedback gains.
   float gain_vel[hxMAXMOTOR];
-
-  // Do the robots accept any other commands?
 };
 
 /// \def hxDeviceInfo
