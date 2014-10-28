@@ -143,7 +143,7 @@ int main(int argc, char **argv)
       printf("hx_update(): Request error.\n");
 
     // Debug output: Print the state.
-    printState(&deviceInfo, &sensor);
+    // printState(&deviceInfo, &sensor);
 
     if (++counter == 10000)
       counter = 0;
