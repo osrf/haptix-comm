@@ -67,7 +67,7 @@ struct _hxDeviceInfo
   int nIMU;
 
   /// \brief Minimum and maximum joint angles (rad).
-  float limit[hxMAXJOINT][2];
+  float limit[hxMAXMOTOR][2];
 };
 
 /// \brief Sensor data.
