@@ -12,11 +12,11 @@ _:
   increment: -0.05
 
 p:
-  command_name: 'motor_little_mcp'
+  command_name: 'motor_little'
   increment: 0.05
 
 P:
-  command_name: 'motor_little_mcp'
+  command_name: 'motor_little'
   increment: -0.05
 
 0:
@@ -28,11 +28,11 @@ P:
   increment: -0.05
 
 o:
-  command_name: 'motor_ring_mcp'
+  command_name: 'motor_ring'
   increment: 0.05
 
 O:
-  command_name: 'motor_ring_mcp'
+  command_name: 'motor_ring'
   increment: -0.05
 
 9:
@@ -44,11 +44,11 @@ O:
   increment: -0.05
 
 i:
-  command_name: 'motor_middle_mcp'
+  command_name: 'motor_middle'
   increment: 0.05
 
 I:
-  command_name: 'motor_middle_mcp'
+  command_name: 'motor_middle'
   increment: -0.05
 
 8:
@@ -60,11 +60,11 @@ I:
   increment: -0.05
 
 u:
-  command_name: 'motor_index_mcp'
+  command_name: 'motor_index'
   increment: 0.05
 
 U:
-  command_name: 'motor_index_mcp'
+  command_name: 'motor_index'
   increment: -0.05
 
 7:
@@ -84,11 +84,11 @@ U:
   increment: -0.05
 
 y:
-  command_name: 'motor_thumb_mcp'
+  command_name: 'motor_thumb'
   increment: 0.05
 
 Y:
-  command_name: 'motor_thumb_mcp'
+  command_name: 'motor_thumb'
   increment: -0.05
 
 k:

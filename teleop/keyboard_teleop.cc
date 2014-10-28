@@ -20,7 +20,6 @@
 #include <time.h>
 #include <yaml-cpp/yaml.h>
 #include <haptix/comm/haptix.h>
-#include "teleop.h"
 
 #include <ignition/transport.hh>
 #include <ignition/msgs.hh>
@@ -145,8 +144,6 @@ int main(int argc, char **argv)
       unsigned int motor_index = motors[motor_name].as<int>();
 
       cmd.ref_pos[motor_index] += inc;
-
-      coupling_v1(&cmd);
 
       if (hx_update(hxGAZEBO, &cmd, &sensor) != hxOK)
         printf("hx_update(): Request error.\n");
