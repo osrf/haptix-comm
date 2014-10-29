@@ -66,7 +66,7 @@ int main(int argc, char **argv)
 
   // haptix_comm abstractions
   hxDeviceInfo deviceInfo;
-  hxCommand cmd;
+  hxCommand handCmd;
   hxSensor sensor;
 
   // Data structures for managing command information
@@ -126,7 +126,7 @@ int main(int argc, char **argv)
 
   for (i = 0; i < deviceInfo.nmotor; i++)
   {
-    cmd.ref_pos[i] = 0;
+    handCmd.ref_pos[i] = 0;
   }
 
   printf("Use the sliders and knobs to control the fingers and wrist of the\
@@ -142,6 +142,12 @@ int main(int argc, char **argv)
     else if (board.buttons[1])
     {
       pressed = true;
+    }
+    hxCommand newCmd;
+
+    for (i = 0; i < deviceInfo.nmotor; i++)
+    {
+      newCmd.ref_pos[i] = 0;
     }
 
     // Finger teleop
@@ -170,7 +176,7 @@ int main(int argc, char **argv)
 
           slider_val = board.knobs[slider_idx];
         }
-        cmd.ref_pos[device_idx] = (max-min)*slider_val + min;
+        handCmd.ref_pos[device_idx] = (max-min)*slider_val + min;
       }
 
  
@@ -179,11 +185,6 @@ int main(int argc, char **argv)
     {
       // Command pre-defined grasps
 
-      // Reset the command
-      for(i = 0; i < deviceInfo.nmotor; i++)
-      {
-        cmd.ref_pos[i] = 0;
-      }
       // Check the state of the sliders and make a command
       float slider_total = 0;
       for (std::vector<Grasp>::iterator it = grasp_vectors.begin();
@@ -192,7 +193,6 @@ int main(int argc, char **argv)
         if(board.sliders[it->GetIndex()] > 0)
           slider_total += 1;
       }
-      std::cout << "slider total: " << slider_total << std::endl;
 
       for (std::vector<Grasp>::iterator it = grasp_vectors.begin();
           it != grasp_vectors.end(); it++)
@@ -204,23 +204,24 @@ int main(int argc, char **argv)
         for (int j = 0; j < Grasp::grasp_size; j++)
         {
           if(slider_total > 0)
-            cmd.ref_pos[j] += slider_value*it->GetGraspVectorAt(j)/(slider_total);
-          if (cmd.ref_pos[j] > deviceInfo.limit[j][1])
+            newCmd.ref_pos[j] += slider_value*it->GetGraspVectorAt(j)/(slider_total);
+          if (newCmd.ref_pos[j] > deviceInfo.limit[j][1])
           {
-            cmd.ref_pos[j] = deviceInfo.limit[j][1];
+            newCmd.ref_pos[j] = deviceInfo.limit[j][1];
           }
         }
       }
     }
+    
+    for (i = 0; i < deviceInfo.nmotor; i++)
+    {
+      newCmd.ref_pos[i] += handCmd.ref_pos[i];
+    }
 
     // Send the request
-    if (hx_update(hxGAZEBO, &cmd, &sensor) != hxOK)
+    if (hx_update(hxGAZEBO, &newCmd, &sensor) != hxOK)
     {
       printf("hx_update(): Request error.\n");
-    }
-    else
-    {
-      cmd.timestamp = sensor.timestamp;
     }
   }
 

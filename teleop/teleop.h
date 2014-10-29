@@ -12,7 +12,7 @@ void coupling_v1(_hxCommand* cmd){
     
     //this relies on the ordering of enums, bit messy
     for(unsigned int k = 0; k < 5; k++){
-      //Check if slider was changeded
+      //Check if slider was changed
       
       hxAPLMotors mcp = mcp_indices[k];
       
