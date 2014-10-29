@@ -48,7 +48,7 @@ if(NOT YAMLCPP-NOTFOUND)
     target_link_libraries(korg_teleop ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${RTMIDI} ${YAMLCPP})
   endif()
 
-  if(ignition-msgs_FOUND)
+  if(ignition-msgs_FOUND AND ignition-math_FOUND)
     if (NOT NCURSES-NOTFOUND)
       include_directories(${IGNITION-MSGS_INCLUDE_DIRS})
       link_directories(${IGNITION-MATH_LIBRARY_DIRS})
