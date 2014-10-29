@@ -21,8 +21,8 @@ unzip protobuf-2.6.0-win32-vc12.zip
 hg clone https://bitbucket.org/ignitionrobotics/ign-transport
 cd ign-transport
 cd ..
-hg clone https://bitbucket.org/osrf/haptix-comm haptix_comm
-cd haptix_comm
+hg clone https://bitbucket.org/osrf/haptix-comm haptix-comm
+cd haptix-comm
 cd ..
 
 @rem Build ign-transport in Debug
@@ -34,8 +34,8 @@ nmake VERBOSE=1
 nmake install
 cd ..\..
 
-@rem Build haptix_comm in Debug
-cd haptix_comm
+@rem Build haptix-comm in Debug
+cd haptix-comm
 mkdir build
 cd build
 call ..\configure Debug
@@ -52,8 +52,8 @@ nmake VERBOSE=1
 nmake install
 cd ..\..
 
-@rem Build haptix_comm in Release
-cd haptix_comm
+@rem Build haptix-comm in Release
+cd haptix-comm
 cd build
 del CMakeCache.txt
 call ..\configure Release
@@ -63,7 +63,7 @@ cd ..\..
 
 @rem Package it all up
 @rem Our goal here is to create an "install" layout for all the stuff
-@rem needed to use haptix_comm.  That layout can be then be zipped and
+@rem needed to use haptix-comm.  That layout can be then be zipped and
 @rem distributed.  Lots of assumptions are being made here.
 
 set installdir=%cwd%\hx_gz_sdk
@@ -75,9 +75,9 @@ xcopy "ZeroMQ 3.2.4" "%installdir%\deps\ZeroMQ 3.2.4" /s /e /i
 mkdir "%installdir%\deps\ign-transport"
 xcopy "ign-transport\build\install\Release" "%installdir%\deps\ign-transport\Release" /s /e /i
 xcopy "ign-transport\build\install\Debug" "%installdir%\deps\ign-transport\Debug" /s /e /i
-mkdir "%installdir%\haptix_comm"
-xcopy "haptix_comm\build\install\Release" "%installdir%\haptix_comm\Release" /s /e /i
-xcopy "haptix_comm\build\install\Debug" "%installdir%\haptix_comm\Debug" /s /e /i
-xcopy "haptix_comm\haptix_comm.props" "%installdir%"
+mkdir "%installdir%\haptix-comm"
+xcopy "haptix-comm\build\install\Release" "%installdir%\haptix-comm\Release" /s /e /i
+xcopy "haptix-comm\build\install\Debug" "%installdir%\haptix-comm\Debug" /s /e /i
+xcopy "haptix-comm\haptix-comm.props" "%installdir%"
 cd ..
 "%tmpdir%\zip" -r hx_gz_sdk-0.0.0.zip hx_gz_sdk

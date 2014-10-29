@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
 ########################################
-# Find the haptix_comm library
-find_package(haptix_comm QUIET REQUIRED)
-if (NOT haptix_comm_FOUND)
+# Find the haptix-comm library
+find_package(haptix-comm QUIET REQUIRED)
+if (NOT haptix-comm_FOUND)
   BUILD_ERROR ("Missing: Haptix Comm (libhaptix-comm-dev)")
 endif()
 
