@@ -30,7 +30,7 @@ cd ign-transport
 mkdir build
 cd build
 call ..\configure Debug
-nmake VERBOSE=1 > build_log
+nmake VERBOSE=1
 nmake install
 cd ..\..
 
@@ -39,7 +39,7 @@ cd haptix_comm
 mkdir build
 cd build
 call ..\configure Debug
-nmake VERBOSE=1 > build_log
+nmake VERBOSE=1
 nmake install
 cd ..\..
 
@@ -48,7 +48,7 @@ cd ign-transport
 cd build
 del CMakeCache.txt
 call ..\configure Release
-nmake VERBOSE=1 > build_log
+nmake VERBOSE=1
 nmake install
 cd ..\..
 
@@ -57,7 +57,7 @@ cd haptix_comm
 cd build
 del CMakeCache.txt
 call ..\configure Release
-nmake VERBOSE=1 > build_log
+nmake VERBOSE=1
 nmake install
 cd ..\..
 
