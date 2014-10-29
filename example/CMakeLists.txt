@@ -1,15 +1,15 @@
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
 ########################################
-# Find the haptix_comm library
-find_package(haptix_comm QUIET REQUIRED)
-if (NOT haptix_comm_FOUND)
+# Find the haptix-comm library
+find_package(haptix-comm QUIET REQUIRED)
+if (NOT haptix-comm_FOUND)
   BUILD_ERROR ("Missing: Haptix Comm (libhaptix-comm-dev)")
 endif()
 
-set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${HAPTIX_COMM_CFLAGS}")
-include_directories(${HAPTIX_COMM_INCLUDE_DIRS})
-link_directories(${HAPTIX_COMM_LIBRARY_DIRS})
+set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${HAPTIX-COMM_CFLAGS}")
+include_directories(${HAPTIX-COMM_INCLUDE_DIRS})
+link_directories(${HAPTIX-COMM_LIBRARY_DIRS})
 
 ########################################
 # Find the Ignition_Transport library
@@ -72,10 +72,10 @@ endif()
 
 ########################################
 add_executable(requester hx_requester.c)
-target_link_libraries(requester ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARIES} ${EXTRA_LIBRARIES})
+target_link_libraries(requester ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARIES} ${EXTRA_LIBRARIES})
 
 add_executable(responser hx_responser.cc)
-target_link_libraries(responser ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARIES} ${EXTRA_LIBRARIES})
+target_link_libraries(responser ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARIES} ${EXTRA_LIBRARIES})
 
 add_executable(controller hx_controller.c)
-target_link_libraries(controller ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARIES} ${EXTRA_LIBRARIES})
+target_link_libraries(controller ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARIES} ${EXTRA_LIBRARIES})

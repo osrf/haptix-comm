@@ -64,7 +64,7 @@ int main(int argc, char **argv)
   int mode = 0;
   bool pressed = false;
 
-  // haptix_comm abstractions
+  // haptix-comm abstractions
   hxDeviceInfo deviceInfo;
   hxCommand handCmd;
   hxSensor sensor;

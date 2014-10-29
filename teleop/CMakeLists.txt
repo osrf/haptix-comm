@@ -1,15 +1,15 @@
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
 ########################################
-# Find the haptix_comm library
-find_package(haptix_comm QUIET REQUIRED)
-if (NOT haptix_comm_FOUND)
+# Find the haptix-comm library
+find_package(haptix-comm QUIET REQUIRED)
+if (NOT haptix-comm_FOUND)
   BUILD_ERROR ("Missing: Haptix Comm (libhaptix-comm-dev)")
 endif()
 
-set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${HAPTIX_COMM_CFLAGS}")
-include_directories(${HAPTIX_COMM_INCLUDE_DIRS})
-link_directories(${HAPTIX_COMM_LIBRARY_DIRS})
+set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${HAPTIX-COMM_CFLAGS}")
+include_directories(${HAPTIX-COMM_INCLUDE_DIRS})
+link_directories(${HAPTIX-COMM_LIBRARY_DIRS})
 
 ########################################
 # Find the Ignition_Transport library
@@ -42,7 +42,7 @@ if(NOT YAMLCPP-NOTFOUND)
   if(NOT RTMIDI-NOTFOUND)
 
     add_executable(korg_teleop korg_teleop.cc sliders/sliders.cpp)
-    target_link_libraries(korg_teleop ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${RTMIDI} ${YAMLCPP})
+    target_link_libraries(korg_teleop ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${RTMIDI} ${YAMLCPP})
   endif()
 
 endif()
