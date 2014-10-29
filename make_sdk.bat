@@ -20,13 +20,9 @@ unzip protobuf-2.6.0-win32-vc12.zip
 @rem Clone stuff
 hg clone https://bitbucket.org/ignitionrobotics/ign-transport
 cd ign-transport
-hg up windows_linux_fixes
 cd ..
-@rem This repository requires a username and password.  Don't know 
-@rem whether SSH keys work in Windows.
-hg clone https://bitbucket.org/osrf/haptix_comm
+hg clone https://bitbucket.org/osrf/haptix-comm haptix_comm
 cd haptix_comm
-hg up more_windows
 cd ..
 
 @rem Build ign-transport in Debug
