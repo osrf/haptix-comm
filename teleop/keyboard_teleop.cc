@@ -20,11 +20,10 @@
 #include <time.h>
 #include <yaml-cpp/yaml.h>
 #include <haptix/comm/haptix.h>
-#include "teleop.h"
 
 #include <ignition/transport.hh>
-#include <ignition/msgs.hh>
 #include <ignition/math.hh>
+#include <ignition/msgs.hh>
 
 #include <ncurses.h>
 
@@ -131,6 +130,8 @@ int main(int argc, char **argv)
       msg.mutable_position()->set_x(pose_inc_args[0]);
       msg.mutable_position()->set_y(pose_inc_args[1]);
       msg.mutable_position()->set_z(pose_inc_args[2]);
+
+      
       ignition::math::Quaternion<float> q(pose_inc_args[3], pose_inc_args[4],
                                  pose_inc_args[5]);
       msg.mutable_orientation()->set_x(q.X());
@@ -145,8 +146,6 @@ int main(int argc, char **argv)
       unsigned int motor_index = motors[motor_name].as<int>();
 
       cmd.ref_pos[motor_index] += inc;
-
-      coupling_v1(&cmd);
 
       if (hx_update(hxGAZEBO, &cmd, &sensor) != hxOK)
         printf("hx_update(): Request error.\n");

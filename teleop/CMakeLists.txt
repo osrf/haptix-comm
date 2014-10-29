@@ -48,18 +48,18 @@ if(NOT YAMLCPP-NOTFOUND)
     target_link_libraries(korg_teleop ${HAPTIX_COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${RTMIDI} ${YAMLCPP})
   endif()
 
-  if( NOT NCURSES-NOTFOUND)
-    include_directories(${IGNITION-MATH_INCLUDE_DIRS}
-                        ${IGNITION-MSGS_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS})
-    link_directories(${IGNITION-MATH_LIBRARY_DIRS} ${GAZEBO_LIBRARY_DIRS})
+  if(ignition-msgs_FOUND AND ignition-math_FOUND)
+    if (NOT NCURSES-NOTFOUND)
+      include_directories(${IGNITION-MSGS_INCLUDE_DIRS})
+      link_directories(${IGNITION-MATH_LIBRARY_DIRS})
 
-    add_executable(keyboard_teleop keyboard_teleop.cc)
+      add_executable(keyboard_teleop keyboard_teleop.cc)
 
-    target_link_libraries(keyboard_teleop ${HAPTIX_COMM_LIBRARIES}
-                          ${IGNITION-TRANSPORT_LIBRARIES} ${YAMLCPP}
-                          ${NCURSES} ${IGNITION-MSGS_LIBRARIES}
-                          ${IGNITION-MATH-LIBRARIES})
+      target_link_libraries(keyboard_teleop ${HAPTIX_COMM_LIBRARIES}
+                            ${IGNITION-TRANSPORT_LIBRARIES} ${YAMLCPP}
+                            ${NCURSES} ${IGNITION-MSGS_LIBRARIES})
 
+    endif()
   endif()
 
 endif()

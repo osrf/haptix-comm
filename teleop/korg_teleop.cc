@@ -19,7 +19,6 @@
 #include <unistd.h>
 #include <haptix/comm/haptix.h>
 #include "sliders/sliders.h"
-#include "teleop.h"
 #include <yaml-cpp/yaml.h>
 #include <climits>
 
@@ -213,7 +212,6 @@ int main(int argc, char **argv)
         }
       }
     }
-    coupling_v1(&cmd);
 
     // Send the request
     if (hx_update(hxGAZEBO, &cmd, &sensor) != hxOK)
