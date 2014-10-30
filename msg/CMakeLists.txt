@@ -2,6 +2,7 @@ PROTOBUF_GENERATE_CPP(PROTO_SRC PROTO_HEADER
   hxCommand.proto
   hxDevice.proto
   hxSensor.proto
+  hxGrasp.proto
 )
 
 # Variables needed to propagate through modules
