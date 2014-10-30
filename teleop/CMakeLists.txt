@@ -35,14 +35,19 @@ endif()
 
 find_library(RTMIDI rtmidi)
 find_library(YAMLCPP yaml-cpp)
+find_library(NCURSES ncurses)
 
 ########################################
 if(NOT YAMLCPP-NOTFOUND)
 
   if(NOT RTMIDI-NOTFOUND)
-
     add_executable(korg_teleop korg_teleop.cc sliders/sliders.cpp)
     target_link_libraries(korg_teleop ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${RTMIDI} ${YAMLCPP})
+  endif()
+
+  if(NOT NCURSES-NOTFOUND)
+    add_executable(keyboard_teleop keyboard_teleop.cc)
+    target_link_libraries(keyboard_teleop ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${NCURSES} ${YAMLCPP})
   endif()
 
 endif()
