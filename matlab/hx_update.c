@@ -30,7 +30,7 @@ mexFunction (int nlhs, mxArray *plhs[],
   // good. We should check the lenth of the arrays inside each field too.
 
   // Set the hxCommand struct.
-  for (i = 0; i < num_motors; ++i)
+  for (i = 0; i < hxMAXMOTOR; ++i)
   {
     v = mxGetField(prhs[0], 0, "ref_pos");
     data = mxGetPr(v);
@@ -63,11 +63,11 @@ mexFunction (int nlhs, mxArray *plhs[],
   mxArray *s = mxCreateStructMatrix (1, 1, 8, keys);
 
   // Create the empty mxArrays for the structure array.
-  mxArray *motorPosArray = mxCreateDoubleMatrix(num_motors, 1, mxREAL);
-  mxArray *motorVelArray = mxCreateDoubleMatrix(num_motors, 1, mxREAL);
-  mxArray *motorTorqueArray = mxCreateDoubleMatrix(num_motors, 1, mxREAL);
-  mxArray *jointPosArray = mxCreateDoubleMatrix(num_joints, 1, mxREAL);
-  mxArray *jointVelArray = mxCreateDoubleMatrix(num_joints, 1, mxREAL);
+  mxArray *motorPosArray = mxCreateDoubleMatrix(hxMAXMOTOR, 1, mxREAL);
+  mxArray *motorVelArray = mxCreateDoubleMatrix(hxMAXMOTOR, 1, mxREAL);
+  mxArray *motorTorqueArray = mxCreateDoubleMatrix(hxMAXMOTOR, 1, mxREAL);
+  mxArray *jointPosArray = mxCreateDoubleMatrix(hxMAXJOINT, 1, mxREAL);
+  mxArray *jointVelArray = mxCreateDoubleMatrix(hxMAXJOINT, 1, mxREAL);
   mxArray *contactArray = mxCreateDoubleMatrix(hxMAXCONTACTSENSOR, 1, mxREAL);
   mxArray *imuLinAccArray = mxCreateDoubleMatrix(hxMAXIMU, 3, mxREAL);
   mxArray *imuAngVelArray = mxCreateDoubleMatrix(hxMAXIMU, 3, mxREAL);
@@ -83,7 +83,7 @@ mexFunction (int nlhs, mxArray *plhs[],
   double *imuAngVelData = mxGetPr(imuAngVelArray);
 
   // Fill the motor fields.
-  for (i = 0; i < num_motors; ++i)
+  for (i = 0; i < hxMAXMOTOR; ++i)
   {
     motorPosData[i] = (double)sensor.motor_pos[i];
     motorVelData[i] = (double)sensor.motor_vel[i];
@@ -91,7 +91,7 @@ mexFunction (int nlhs, mxArray *plhs[],
   }
 
   // Fill the joint fields.
-  for (i = 0; i < num_joints; ++i)
+  for (i = 0; i < hxMAXJOINT; ++i)
   {
     jointPosData[i] = (double)sensor.joint_pos[i];
     jointVelData[i] = (double)sensor.joint_vel[i];
