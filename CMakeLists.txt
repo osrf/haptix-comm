@@ -3,13 +3,13 @@ cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 set(IGN_PROJECT_NAME "comm")
 
 
-project (haptix_${IGN_PROJECT_NAME})
+project (haptix-${IGN_PROJECT_NAME})
 string (TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 string (TOUPPER ${PROJECT_NAME} PROJECT_NAME_UPPER)
 
 set (PROJECT_MAJOR_VERSION 0)
 set (PROJECT_MINOR_VERSION 1)
-set (PROJECT_PATCH_VERSION 0)
+set (PROJECT_PATCH_VERSION 1)
 
 set (PROJECT_VERSION ${PROJECT_MAJOR_VERSION}.${PROJECT_MINOR_VERSION})
 set (PROJECT_VERSION_FULL ${PROJECT_MAJOR_VERSION}.${PROJECT_MINOR_VERSION}.${PROJECT_PATCH_VERSION})
@@ -90,7 +90,6 @@ endif()
 
 set (INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_INCLUDEDIR}/haptix")
 set (LIB_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR})
-set (LIB_INSTALL_DIR_ARCH_INDEPENDENT "lib/")
 set (BIN_INSTALL_DIR ${CMAKE_INSTALL_BINDIR})
 
 set (USE_FULL_RPATH OFF CACHE BOOL "Set to true to enable full rpath")
@@ -263,8 +262,7 @@ else (build_errors)
     ${CMAKE_SOURCE_DIR}/cmake/pkgconfig/haptix.in
     ${CMAKE_CURRENT_BINARY_DIR}/cmake/pkgconfig/${PROJECT_NAME_LOWER}.pc @ONLY)
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cmake/pkgconfig/${PROJECT_NAME_LOWER}.pc
-    DESTINATION ${LIB_INSTALL_DIR_ARCH_INDEPENDENT}/pkgconfig
-    COMPONENT pkgconfig)
+    DESTINATION ${LIB_INSTALL_DIR}/pkgconfig COMPONENT pkgconfig)
 
   ########################################
   # Make the cmake config files

@@ -19,6 +19,10 @@
 #include <time.h>
 #include <haptix/comm/haptix.h>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 void printState(const hxDeviceInfo *_deviceInfo, const hxSensor *_sensor)
 {
   int i;
@@ -115,7 +119,12 @@ int main(int argc, char **argv)
       counter = 0;
     }
 
-    usleep(10000);
+    unsigned int sleeptime_us = 10000;
+#ifdef _WIN32
+    Sleep(sleeptime_us / 1e3);
+#else
+    usleep(sleeptime_us);
+#endif
   }
 
   return 0;

@@ -19,11 +19,11 @@ Totally experimental, using pre-compiled binaries in a local workspace.
 instructions](https://bitbucket.org/ignitionrobotics/ign-transport/src/default/INSTALL_WIN32.md?at=win_support)
 to build and install `ign-transport`.
 
-1. Add `haptix_comm` to that workspace:
+1. Add `haptix-comm` to that workspace:
 
         cd ign-ws
-	hg clone https://bitbucket.org/osrf/haptix_comm
-        cd haptix_comm
+	hg clone https://bitbucket.org/osrf/haptix-comm
+        cd haptix-comm
 
 1. Configure and build:
 
@@ -33,4 +33,4 @@ to build and install `ign-transport`.
 	nmake
 	nmake install
 
-You should now have an installation of `haptix_comm` in `ign-ws/haptix_comm/build/install`.
+You should now have an installation of `haptix-comm` in `ign-ws/haptix-comm/build/install`.
