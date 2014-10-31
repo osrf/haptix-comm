@@ -73,9 +73,9 @@ extern "C" {
     // Test some zmq stuff.
     void *context = zmq_ctx_new();
     void *responder = zmq_socket(context, ZMQ_REP);
-    zmq_bind (responder, "tcp://*:5555");
+    zmq_bind(responder, "tcp://*:5555");
 
-    return 4;
+    return 5;
   }
 
   //////////////////////////////////////////////////

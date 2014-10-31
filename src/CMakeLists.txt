@@ -22,7 +22,8 @@ elseif(WIN32)
   #ign_add_library(${PROJECT_NAME_LOWER} ${sources} ${PROTO_SRC})
   ign_add_static_library(${PROJECT_NAME_LOWER} ${sources} ${PROTO_SRC})
 endif()
-# target_link_libraries(${PROJECT_NAME_LOWER}
+target_link_libraries(${PROJECT_NAME_LOWER}
+                      ${ZeroMQ_LIBRARIES})
 #                      ${IGNITION-TRANSPORT_LIBRARIES})
 target_link_libraries(${PROJECT_NAME_LOWER} ${PROTOBUF_LIBRARY})
 if(WIN32)
