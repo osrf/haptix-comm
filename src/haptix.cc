@@ -69,7 +69,7 @@ extern "C" {
     printf("Hello haptix_comm 0.1\n");
     printf("%s\n",req.DebugString().c_str());
 
-    return 2;
+    return 3;
   }
 
   //////////////////////////////////////////////////
