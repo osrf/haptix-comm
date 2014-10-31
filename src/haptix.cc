@@ -17,11 +17,11 @@
 
 #include <iostream>
 #include <array>
-#include <ignition/transport.hh>
+// #include <ignition/transport.hh>
 #include "haptix/comm/haptix.h"
-#include "msg/hxCommand.pb.h"
-#include "msg/hxDevice.pb.h"
-#include "msg/hxSensor.pb.h"
+// #include "msg/hxCommand.pb.h"
+// #include "msg/hxDevice.pb.h"
+// #include "msg/hxSensor.pb.h"
 
 extern "C" {
   /// \brief Different device/simulators supported.
@@ -35,7 +35,7 @@ extern "C" {
       {DekaTopic, MPLTopic, GazeboTopic, MujocoTopic};
 
   /// \brief ignition transport node.
-  ignition::transport::Node hxNode(ProjectTopic);
+  // ignition::transport::Node hxNode(ProjectTopic);
 
   /// \brief Timeout used for the service requests (ms.).
   unsigned int Timeout = 1000;
@@ -63,7 +63,7 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
-  hxResult hx_close(int _target)
+  /*hxResult hx_close(int _target)
   {
     // Sanity check.
     if (checkTarget(_target))
@@ -188,5 +188,5 @@ extern "C" {
       std::cerr << "hx_update() Service call timed out." << std::endl;
 
     return hxBAD;
-  }
+  }*/
 }   // end extern "C"
