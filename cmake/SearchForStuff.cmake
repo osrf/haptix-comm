@@ -35,14 +35,14 @@ include_directories(${PROTOBUF_INCLUDE_DIR})
 
 #################################################
 # Find ZeroMQ.
-#include (${project_cmake_dir}/FindZeroMQ.cmake)
+include (${project_cmake_dir}/FindZeroMQ.cmake)
 
-#if (NOT ZeroMQ_FOUND)
-#  BUILD_ERROR ("zmq not found, Please install zmq")
-#else ()
-#  include_directories(${ZeroMQ_INCLUDE_DIRS})
-#  link_directories(${ZeroMQ_LIBRARY_DIRS})
-#endif ()
+if (NOT ZeroMQ_FOUND)
+  BUILD_ERROR ("zmq not found, Please install zmq")
+else ()
+  include_directories(${ZeroMQ_INCLUDE_DIRS})
+  link_directories(${ZeroMQ_LIBRARY_DIRS})
+endif ()
 
 #################################################
 # Find cppzeromq header (shipped together with zeromq in debian/ubuntu but

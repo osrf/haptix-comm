@@ -17,6 +17,7 @@
 
 #include <iostream>
 #include <array>
+#include <zmq.h>
 // #include <ignition/transport.hh>
 #include "haptix/comm/haptix.h"
 #include "msg/hxCommand.pb.h"
@@ -37,7 +38,7 @@ extern "C" {
   /// \brief ignition transport node.
   // ignition::transport::Node hxNode(ProjectTopic);
 
-  /// \brief Timeout used for the service requests (ms.).
+    /// \brief Timeout used for the service requests (ms.).
   unsigned int Timeout = 1000;
 
   //////////////////////////////////////////////////
@@ -69,7 +70,12 @@ extern "C" {
     printf("Hello haptix_comm 0.1\n");
     printf("%s\n",req.DebugString().c_str());
 
-    return 3;
+    // Test some zmq stuff.
+    void *context = zmq_ctx_new();
+    void *responder = zmq_socket(context, ZMQ_REP);
+    zmq_bind (responder, "tcp://*:5555");
+
+    return 4;
   }
 
   //////////////////////////////////////////////////
