@@ -66,9 +66,8 @@ extern "C" {
     limit->set_minimum(0.0);
     limit->set_maximum(0.0);
 
-    std::cout << "Hello haptix_comm 0.1" << std::endl;
-
-    std::cout << req.DebugString() << std::endl;
+    printf("Hello haptix_comm 0.1\n");
+    printf("%s\n",req.DebugString().c_str());
 
     // Sanity check.
     if (checkTarget(_target))
