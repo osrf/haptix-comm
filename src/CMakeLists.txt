@@ -14,25 +14,22 @@ include_directories(${CMAKE_BINARY_DIR})
 
 #ign_build_tests(${gtest_sources})
 if (UNIX)
-   # ign_add_library(${PROJECT_NAME_LOWER} ${sources} ${PROTO_SRC})
-   ign_add_library(${PROJECT_NAME_LOWER} ${sources})
+   ign_add_library(${PROJECT_NAME_LOWER} ${sources} ${PROTO_SRC})
 elseif(WIN32)
   # Probotuf compilation is recommended and configured for a STATIC .lib
   # Not mixing static and shared and just build ignition transport as STATIC
   # on Windows
-  # add_library(${PROJECT_NAME_LOWER} STATIC ${sources} ${PROTO_SRC})
-  # add_library(${PROJECT_NAME_LOWER} STATIC ${sources})
-  ign_add_library(${PROJECT_NAME_LOWER} ${sources})
+  add_library(${PROJECT_NAME_LOWER} STATIC ${sources} ${PROTO_SRC})
 endif()
 # target_link_libraries(${PROJECT_NAME_LOWER}
 #                      ${IGNITION-TRANSPORT_LIBRARIES})
-target_link_libraries(${PROJECT_NAME_LOWER})
+target_link_libraries(${PROJECT_NAME_LOWER} ${PROTOBUF_LIBRARY})
 if(WIN32)
-  target_link_libraries(${PROJECT_NAME_LOWER} ws2_32 Iphlpapi)
+  target_link_libraries(${PROJECT_NAME_LOWER} ws2_32 Iphlpapi ${PROTOBUF_LIBRARY})
 endif()
 ign_install_library(${PROJECT_NAME_LOWER})
 
-#add_dependencies(${PROJECT_NAME_LOWER}
+add_dependencies(${PROJECT_NAME_LOWER}
 #  gtest gtest_main
-#  protobuf_compilation
-#)
+  protobuf_compilation
+)

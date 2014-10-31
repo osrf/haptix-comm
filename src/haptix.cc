@@ -19,9 +19,9 @@
 #include <array>
 // #include <ignition/transport.hh>
 #include "haptix/comm/haptix.h"
-// #include "msg/hxCommand.pb.h"
-// #include "msg/hxDevice.pb.h"
-// #include "msg/hxSensor.pb.h"
+#include "msg/hxCommand.pb.h"
+#include "msg/hxDevice.pb.h"
+#include "msg/hxSensor.pb.h"
 
 extern "C" {
   /// \brief Different device/simulators supported.
@@ -55,6 +55,19 @@ extern "C" {
   //////////////////////////////////////////////////
   hxResult hx_connect(int _target)
   {
+    // Test some protobuf stuff.
+    haptix::comm::msgs::hxDevice req;
+
+    req.set_nmotor(0);
+    req.set_njoint(0);
+    req.set_ncontactsensor(0);
+    req.set_nimu(0);
+    haptix::comm::msgs::hxJointAngle *limit = req.add_limit();
+    limit->set_minimum(0.0);
+    limit->set_maximum(0.0);
+
+    req.DebugString();
+
     // Sanity check.
     if (checkTarget(_target))
       return hxOK;
