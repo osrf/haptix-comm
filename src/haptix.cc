@@ -75,7 +75,7 @@ extern "C" {
     void *responder = zmq_socket(context, ZMQ_REP);
     zmq_bind(responder, "tcp://*:5555");
 
-    return 5;
+    return 6;
   }
 
   //////////////////////////////////////////////////
