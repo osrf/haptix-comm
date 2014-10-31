@@ -19,7 +19,7 @@ elseif(WIN32)
   # Probotuf compilation is recommended and configured for a STATIC .lib
   # Not mixing static and shared and just build ignition transport as STATIC
   # on Windows
-  add_library(${PROJECT_NAME_LOWER} STATIC ${sources} ${PROTO_SRC})
+  ign_add_library(${PROJECT_NAME_LOWER} ${sources} ${PROTO_SRC})
 endif()
 # target_link_libraries(${PROJECT_NAME_LOWER}
 #                      ${IGNITION-TRANSPORT_LIBRARIES})
