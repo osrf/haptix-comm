@@ -53,7 +53,7 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
-  hxResult hx_connect(int _target)
+  int hx_connect(int /*_target*/)
   {
     // Test some protobuf stuff.
     haptix::comm::msgs::hxDevice req;
@@ -69,11 +69,7 @@ extern "C" {
     printf("Hello haptix_comm 0.1\n");
     printf("%s\n",req.DebugString().c_str());
 
-    // Sanity check.
-    if (checkTarget(_target))
-      return hxOK;
-    else
-      return hxBAD;
+    return 2;
   }
 
   //////////////////////////////////////////////////

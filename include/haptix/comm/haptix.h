@@ -228,7 +228,7 @@ typedef struct _hxCommand hxCommand;
 /// Multile calls to this function are allowed with different targets.
 /// \param[in] _target Device to be connected.
 /// \return 'hxOK' if the connection succeed or an error code otherwise.
-VISIBLE hxResult hx_connect(int _target);
+VISIBLE int hx_connect(int _target);
 
 /// \brief Close connection to specified device/simulator target.
 /// \param[in] _target Device to be disconnected.
