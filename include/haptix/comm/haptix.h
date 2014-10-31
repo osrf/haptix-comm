@@ -18,6 +18,12 @@
 #ifndef __HAPTIX_COMM_HAPTIX_H
 #define __HAPTIX_COMM_HAPTIX_H
 
+#ifdef _WIN32
+ #define VISIBLE __declspec(dllexport)
+#else
+ #define VISIBLE
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -222,7 +228,7 @@ typedef struct _hxCommand hxCommand;
 /// Multile calls to this function are allowed with different targets.
 /// \param[in] _target Device to be connected.
 /// \return 'hxOK' if the connection succeed or an error code otherwise.
-hxResult hx_connect(int _target);
+VISIBLE hxResult hx_connect(int _target);
 
 /// \brief Close connection to specified device/simulator target.
 /// \param[in] _target Device to be disconnected.
