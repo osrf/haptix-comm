@@ -18,11 +18,11 @@
 counter = 0;
 
 [deviceInfo, result] = hx_getdeviceinfo();
-if result != 0
+if result ~= 0
   exit;
 end
 
-while true
+while counter < 2000
   % Initialize the command scalar structure.
   cmd.ref_pos  = [];
   cmd.ref_vel  = [];
@@ -38,12 +38,9 @@ while true
   end
 
   % Send the new joint command and receive the state update.
-  [state, res] = hx_update(cmd)
+  [state, res] = hx_update(cmd);
 
   counter = counter + 1;
-  if counter == 10000
-    counter = 0;
-  end
 
   pause(0.001);
 end
