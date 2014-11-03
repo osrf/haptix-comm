@@ -35,7 +35,7 @@ extern "C" {
       {DekaTopic, MPLTopic, GazeboTopic, MujocoTopic};
 
   /// \brief ignition transport node.
-  ignition::transport::Node hxNode(ProjectTopic);
+  ignition::transport::Node *hxNode; //(ProjectTopic);
 
   /// \brief Timeout used for the service requests (ms.).
   unsigned int Timeout = 1000;
@@ -44,6 +44,10 @@ extern "C" {
   /// \brief Return true if the target is supported or false otherwise.
   bool checkTarget(int _target)
   {
+    if (!hxNode)
+    {
+      hxNode = new ignition::transport::Node(ProjectTopic);
+    }
     if (_target < hxDEKA || _target > hxMUJOCO)
     {
       std::cerr << "Unsupported target [" << _target << "]." << std::endl;
@@ -94,7 +98,7 @@ extern "C" {
     // Request the service.
     std::string service = "/" + ProjectTopic + "/" + DeviceTopics[_target] +
         "/GetDeviceInfo";
-    bool executed = hxNode.Request(service, req, Timeout, rep, result);
+    bool executed = hxNode->Request(service, req, Timeout, rep, result);
 
     if (executed)
     {
@@ -146,7 +150,7 @@ extern "C" {
     // Request the service.
     std::string service = "/" + ProjectTopic + "/" + DeviceTopics[_target] +
         "/Update";
-    bool executed = hxNode.Request(service, req, Timeout, rep, result);
+    bool executed = hxNode->Request(service, req, Timeout, rep, result);
 
     if (executed)
     {
