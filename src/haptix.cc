@@ -35,10 +35,21 @@ extern "C" {
       {DekaTopic, MPLTopic, GazeboTopic, MujocoTopic};
 
   /// \brief ignition transport node.
-  ignition::transport::Node hxNode(ProjectTopic);
+  ignition::transport::Node *haptixNode = NULL;
 
   /// \brief Timeout used for the service requests (ms.).
   unsigned int Timeout = 1000;
+
+  //////////////////////////////////////////////////
+  /// \brief Create an Ignition Transport node or return a pointer to it if
+  /// has been already created.
+  ignition::transport::Node *getHxNodeInstance()
+  {
+    if (!haptixNode)
+      haptixNode = new ignition::transport::Node(ProjectTopic);
+
+    return haptixNode;
+  }
 
   //////////////////////////////////////////////////
   /// \brief Return true if the target is supported or false otherwise.
@@ -82,6 +93,7 @@ extern "C" {
     haptix::comm::msgs::hxDevice req;
     haptix::comm::msgs::hxDevice rep;
     bool result;
+    ignition::transport::Node *hxNode = getHxNodeInstance();
 
     req.set_nmotor(0.0);
     req.set_njoint(0.0);
@@ -94,7 +106,7 @@ extern "C" {
     // Request the service.
     std::string service = "/" + ProjectTopic + "/" + DeviceTopics[_target] +
         "/GetDeviceInfo";
-    bool executed = hxNode.Request(service, req, Timeout, rep, result);
+    bool executed = hxNode->Request(service, req, Timeout, rep, result);
 
     if (executed)
     {
@@ -134,6 +146,7 @@ extern "C" {
     haptix::comm::msgs::hxCommand req;
     haptix::comm::msgs::hxSensor rep;
     bool result;
+    ignition::transport::Node *hxNode = getHxNodeInstance();
 
     for (int i = 0; i < hxMAXMOTOR; ++i)
     {
@@ -146,7 +159,7 @@ extern "C" {
     // Request the service.
     std::string service = "/" + ProjectTopic + "/" + DeviceTopics[_target] +
         "/Update";
-    bool executed = hxNode.Request(service, req, Timeout, rep, result);
+    bool executed = hxNode->Request(service, req, Timeout, rep, result);
 
     if (executed)
     {
