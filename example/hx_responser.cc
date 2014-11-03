@@ -29,8 +29,8 @@ int numJoints = 5;
 int numContactSensors = 6;
 int numIMUs = 7;
 
-std::string deviceInfoTopic = "/haptix/gazebo/GetDeviceInfo";
-std::string updateTopic = "/haptix/gazebo/Update";
+std::string deviceInfoTopic = "/haptix/gazebo/get_device_info";
+std::string updateTopic = "/haptix/gazebo/update";
 
 //////////////////////////////////////////////////
 /// \brief Provide a service.
@@ -58,7 +58,7 @@ void onGetDeviceInfo(const std::string &_service,
 }
 
 //////////////////////////////////////////////////
-/// \brief Provide an "Update" service.
+/// \brief Provide an "update" service.
 void onUpdate(const std::string &_service,
   const haptix::comm::msgs::hxCommand &/*_req*/,
   haptix::comm::msgs::hxSensor &_rep, bool &_result)

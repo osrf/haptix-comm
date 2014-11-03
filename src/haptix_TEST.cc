@@ -22,8 +22,8 @@
 #include "msg/hxDevice.pb.h"
 #include "msg/hxSensor.pb.h"
 
-std::string deviceInfoTopic = "/haptix/gazebo/GetDeviceInfo";
-std::string updateTopic = "/haptix/gazebo/Update";
+std::string deviceInfoTopic = "/haptix/gazebo/get_device_info";
+std::string updateTopic = "/haptix/gazebo/update";
 
 int numMotors = 4;
 int numJoints = 5;
@@ -31,7 +31,7 @@ int numContactSensors = 6;
 int numIMUs = 7;
 
 //////////////////////////////////////////////////
-/// \brief Provide a "GetDeviceInfo" service.
+/// \brief Provide a "get_device_info" service.
 void onGetDeviceInfo(const std::string &_service,
   const haptix::comm::msgs::hxDevice &/*_req*/,
   haptix::comm::msgs::hxDevice &_rep, bool &_result)
@@ -56,7 +56,7 @@ void onGetDeviceInfo(const std::string &_service,
 }
 
 //////////////////////////////////////////////////
-/// \brief Provide an "Update" service.
+/// \brief Provide an "update" service.
 void onUpdate(const std::string &_service,
   const haptix::comm::msgs::hxCommand &_req, haptix::comm::msgs::hxSensor &_rep,
   bool &_result)

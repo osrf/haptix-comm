@@ -93,7 +93,7 @@ extern "C" {
 
     // Request the service.
     std::string service = "/" + ProjectTopic + "/" + DeviceTopics[_target] +
-        "/GetDeviceInfo";
+        "/get_device_info";
     bool executed = hxNode.Request(service, req, Timeout, rep, result);
 
     if (executed)
@@ -145,7 +145,7 @@ extern "C" {
 
     // Request the service.
     std::string service = "/" + ProjectTopic + "/" + DeviceTopics[_target] +
-        "/Update";
+        "/update";
     bool executed = hxNode.Request(service, req, Timeout, rep, result);
 
     if (executed)

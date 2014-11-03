@@ -22,8 +22,8 @@
 #include "msg/hxDevice.pb.h"
 #include "msg/hxSensor.pb.h"
 
-std::string deviceInfoTopic = "/haptix/gazebo/GetDeviceInfo";
-std::string updateTopic = "/haptix/gazebo/Update";
+std::string deviceInfoTopic = "/haptix/gazebo/get_device_info";
+std::string updateTopic = "/haptix/gazebo/update";
 
 //////////////////////////////////////////////////
 /// \brief Three different nodes running in two different processes. In the
