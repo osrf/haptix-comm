@@ -46,34 +46,34 @@ void printState(const hxDeviceInfo *_deviceInfo, const hxSensor *_sensor)
   for (i = 0; i < _deviceInfo->nmotor; ++i)
   {
     printf("\t\tMotor %d\n", i);
-    printf("\t\t\tPosition: %f\n", _sensor->motor_pos[i]);
-    printf("\t\t\tVelocity: %f\n", _sensor->motor_vel[i]);
-    printf("\t\t\tTorque: %f\n" , _sensor->motor_torque[i]);
+    printf("\t\t\tPosition: %f rads.\n", _sensor->motor_pos[i]);
+    printf("\t\t\tVelocity: %f rads./sec.\n", _sensor->motor_vel[i]);
+    printf("\t\t\tTorque: %f N. m.\n" , _sensor->motor_torque[i]);
   }
 
   printf("\tJoints:\n");
   for (i = 0; i < _deviceInfo->njoint; ++i)
   {
     printf("\t\tJoint %d\n", i);
-    printf("\t\t\tPosition: %f\n", _sensor->joint_pos[i]);
-    printf("\t\t\tVelocity: %f\n", _sensor->joint_vel[i]);
+    printf("\t\t\tPosition: %f rads.\n", _sensor->joint_pos[i]);
+    printf("\t\t\tVelocity: %f rads./sec.\n", _sensor->joint_vel[i]);
   }
 
   printf("\tContact sensors:\n");
   for (i = 0; i < _deviceInfo->ncontactsensor; ++i)
   {
     printf("\t\t# %d\n", i);
-    printf("\t\t\tvalue: %f\n", _sensor->contact[i]);
+    printf("\t\t\tvalue: %f N.\n", _sensor->contact[i]);
   }
 
   printf("\tIMUs:\n");
   for (i = 0; i < _deviceInfo->nIMU; ++i)
   {
     printf("\t\t# %d\n", i);
-    printf("\t\t\tLinear acceleration: (%f, %f, %f)\n",
+    printf("\t\t\tLinear acceleration: (%f, %f, %f) m./seg2.\n",
       _sensor->IMU_linacc[i][0], _sensor->IMU_linacc[i][1],
       _sensor->IMU_linacc[i][2]);
-    printf("\t\t\tAngular velocity: (%f, %f, %f)\n",
+    printf("\t\t\tAngular velocity: (%f, %f, %f) rads./sec.\n",
       _sensor->IMU_angvel[i][0], _sensor->IMU_angvel[i][1],
       _sensor->IMU_angvel[i][2]);
   }
@@ -87,15 +87,15 @@ void printDeviceInfo(const hxDeviceInfo *_deviceInfo)
   printf("Num joints: %d\n", _deviceInfo->njoint);
   printf("Num contact sensors: %d\n", _deviceInfo->ncontactsensor);
   printf("Num IMUs: %d\n", _deviceInfo->nIMU);
-  printf("Joint limits: \n");
+  printf("Actuated joint limits: \n");
 
   // Print joint limits.
   int i;
-  for (i = 0; i < _deviceInfo->njoint; ++i)
+  for (i = 0; i < _deviceInfo->nmotor; ++i)
   {
-    printf("\tJoint %d:\n", i);
-    printf("\t\t Min: %f\n", _deviceInfo->limit[i][0]);
-    printf("\t\t Max: %f\n", _deviceInfo->limit[i][1]);
+    printf("\tJoint associated to motor %d:\n", i);
+    printf("\t\t Min: %f rads.\n", _deviceInfo->limit[i][0]);
+    printf("\t\t Max: %f rads.\n", _deviceInfo->limit[i][1]);
   }
 }
 
