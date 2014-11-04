@@ -25,10 +25,11 @@ end
 
 while counter < 2000
   % Initialize the command scalar structure.
-  cmd.ref_pos  = [];
-  cmd.ref_vel  = [];
-  cmd.gain_pos = [];
-  cmd.gain_vel = [];
+  cmd = struct();
+  cmd.ref_pos = zeros(deviceInfo.nmotor, 1);
+  cmd.ref_vel = cmd.ref_pos;
+  cmd.gain_pos = cmd.ref_pos;
+  cmd.gain_vel = cmd.ref_pos;
 
   % Create a new command based on a sinusoidal wave.
   for n = 0:deviceInfo.nmotor
