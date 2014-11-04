@@ -19,6 +19,7 @@ counter = 0;
 
 [deviceInfo, result] = hx_getdeviceinfo();
 if result ~= 0
+  disp("hx_getdeviceinfo(): Request error.");
   exit;
 end
 
