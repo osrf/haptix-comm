@@ -48,7 +48,7 @@ void printState(const hxDeviceInfo *_deviceInfo, const hxSensor *_sensor)
     printf("\t\tMotor %d\n", i);
     printf("\t\t\tPosition: %f rads.\n", _sensor->motor_pos[i]);
     printf("\t\t\tVelocity: %f rads./sec.\n", _sensor->motor_vel[i]);
-    printf("\t\t\tTorque: %f N.\n" , _sensor->motor_torque[i]);
+    printf("\t\t\tTorque: %f N. m.\n" , _sensor->motor_torque[i]);
   }
 
   printf("\tJoints:\n");
