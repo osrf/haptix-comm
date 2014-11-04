@@ -19,7 +19,7 @@ counter = 0;
 
 [deviceInfo, result] = hx_getdeviceinfo();
 if result ~= 0
-  disp("hx_getdeviceinfo(): Request error.");
+  disp('hx_getdeviceinfo(): Request error.');
   exit;
 end
 
@@ -41,7 +41,7 @@ while counter < 2000
   % Send the new joint command and receive the state update.
   [state, result] = hx_update(cmd);
   if result ~= 0
-    disp("hx_update(): Request error.");
+    disp('hx_update(): Request error.');
   end
 
   counter = counter + 1;
