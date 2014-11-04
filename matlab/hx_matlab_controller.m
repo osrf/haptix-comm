@@ -38,7 +38,10 @@ while counter < 2000
   end
 
   % Send the new joint command and receive the state update.
-  [state, res] = hx_update(cmd);
+  [state, result] = hx_update(cmd);
+  if result ~= 0
+    disp("hx_update(): Request error.");
+  end
 
   counter = counter + 1;
 

@@ -30,7 +30,8 @@ mexFunction (int nlhs, mxArray *plhs[],
   // good. We should check the lenth of the arrays inside each field too.
 
   // Set the hxCommand struct.
-  for (i = 0; i < hxMAXMOTOR; ++i)
+  int cmdSize = sizeof(cmd.ref_pos) / sizeof(cmd.ref_pos[0]);
+  for (i = 0; i < cmdSize; ++i)
   {
     v = mxGetField(prhs[0], 0, "ref_pos");
     data = mxGetPr(v);
