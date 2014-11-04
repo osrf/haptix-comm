@@ -29,9 +29,12 @@ mexFunction (int nlhs, mxArray *plhs[],
   // ToDo: Use mxGetFieldNameByNumber() to verify that the fields names are
   // good. We should check the lenth of the arrays inside each field too.
 
+  // Get the number of elements based on the size of the 'ref_pos' array.
+  v = mxGetField(prhs[0], 0, "ref_pos");
+  mwSize *cmdSize = mxGetDimensions(v);
+
   // Set the hxCommand struct.
-  int cmdSize = sizeof(cmd.ref_pos) / sizeof(cmd.ref_pos[0]);
-  for (i = 0; i < cmdSize; ++i)
+  for (i = 0; i < cmdSize[1]; ++i)
   {
     v = mxGetField(prhs[0], 0, "ref_pos");
     data = mxGetPr(v);
