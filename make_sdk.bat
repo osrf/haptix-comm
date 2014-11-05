@@ -112,27 +112,35 @@ cd ..\..
 @rem needed to use haptix-comm.  That layout can be then be zipped and
 @rem distributed.  Lots of assumptions are being made here.
 
-set installdir=%cwd%\hx_gz_sdk
+set installdir=%cwd%\hx_gz_sdk_release
 rmdir "%installdir%" /S /Q
 mkdir "%installdir%"
-mkdir "%installdir%\deps"
-xcopy "protobuf-2.6.0-win%BITNESS%-vc12" "%installdir%\deps\protobuf-2.6.0-win%BITNESS%-vc12" /s /e /i
-xcopy "ZeroMQ 3.2.4" "%installdir%\deps\ZeroMQ 3.2.4" /s /e /i
-mkdir "%installdir%\deps\ign-transport"
-xcopy "ign-transport\build\install\Release" "%installdir%\deps\ign-transport\Release" /s /e /i
-xcopy "ign-transport\build\install\Debug" "%installdir%\deps\ign-transport\Debug" /s /e /i
-xcopy "ign-transport\ignition-transport.info" "%installdir%"
-mkdir "%installdir%\haptix-comm"
-xcopy "haptix-comm\build\install\Release" "%installdir%\haptix-comm\Release" /s /e /i
-xcopy "haptix-comm\build\install\Debug" "%installdir%\haptix-comm\Debug" /s /e /i
-xcopy "haptix-comm\haptix-comm.props" "%installdir%"
-xcopy "haptix-comm\haptix-comm.info" "%installdir%"
-cd ..
 
-set sdk_zip_file=hx_gz_sdk-%haptix_hash%-win%BITNESS%.zip
+mkdir "%installdir%\deps\protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\Release"
+:: Protobuf
+xcopy "protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\Release\*.lib" "%installdir%\deps\protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\Release" /s /e /i
+xcopy "protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\google" "%installdir%\deps\protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\google" /s /e /i
+:: ZeroMQ
+xcopy "ZeroMQ 3.2.4\COPYING*" "%installdir%\deps\ZeroMQ 3.2.4" /s /e /i
+xcopy "ZeroMQ 3.2.4\bin\libzmq-v120-mt-3*" "%installdir%\deps\ZeroMQ 3.2.4\bin" /s /e /i
+::xcopy "ZeroMQ 3.2.4\bin\msvc*" "%installdir%\deps\ZeroMQ 3.2.4\bin" /s /e /i
+xcopy "ZeroMQ 3.2.4\include" "%installdir%\deps\ZeroMQ 3.2.4\include" /s /e /i
+xcopy "ZeroMQ 3.2.4\lib\libzmq-v120-mt-3*" "%installdir%\deps\ZeroMQ 3.2.4\lib" /s /e /i
+:: Ignition transport
+mkdir "%installdir%\deps\ign-transport"
+xcopy "ign-transport\build\install\Release\include" "%installdir%\deps\ign-transport\Release\include" /s /e /i
+xcopy "ign-transport\build\install\Release\lib" "%installdir%\deps\ign-transport\Release\lib" /s /e /i
+xcopy "ign-transport\ignition-transport.info" "%installdir%"
+:: haptix-comm
+mkdir "%installdir%\haptix-comm"
+xcopy "haptix-comm\build\install\Release\include" "%installdir%\haptix-comm\Release\include" /s /e /i
+xcopy "haptix-comm\build\install\Release\lib" "%installdir%\haptix-comm\Release\lib" /s /e /i
+xcopy "haptix-comm\haptix-comm.props" "%installdir%"
+
+set sdk_zip_file=hx_gz_sdk-Release-%haptix_hash%-win%BITNESS%.zip
 
 echo "Generating SDK zip file: %sdk_zip_file%"
-"%tmpdir%\7za.exe" a -tzip ../%sdk_zip_file% hx_gz_sdk\
+"%tmpdir%\7za.exe" a -tzip ../%sdk_zip_file% hx_gz_sdk_release\
 
 goto :EOF
 
