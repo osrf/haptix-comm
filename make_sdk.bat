@@ -60,7 +60,15 @@ bitsadmin /transfer "Download 7zip" http://packages.osrfoundation.org/win32/deps
 
 @rem Clone stuff
 hg clone https://bitbucket.org/ignitionrobotics/ign-transport
+cd ign-transport
+hg tip > ignition-transport.info
+cd ..
+
 hg clone https://bitbucket.org/osrf/haptix-comm haptix-comm
+cd haptix-comm
+set haptix_hash=`hg id -i`
+hg tip > haptix-comm.info
+cd ..
 
 @rem Build ign-transport in Debug
 cd ign-transport
@@ -117,7 +125,9 @@ xcopy "haptix-comm\build\install\Release" "%installdir%\haptix-comm\Release" /s 
 xcopy "haptix-comm\build\install\Debug" "%installdir%\haptix-comm\Debug" /s /e /i
 xcopy "haptix-comm\haptix-comm.props" "%installdir%"
 cd ..
-"%tmpdir%\7za.exe" a -tzip ../hx_gz_sdk-0.0.0-win%BITNESS%.zip hx_gz_sdk\
+xcopy "haptix-comm\haptix-comm.info" "%installdir%"
+xcopy "ignition-transport\ignition-transport.info" "%installdir%"
+"%tmpdir%\7za.exe" a -tzip ../hx_gz_sdk-%haptix_hash%-win%BITNESS%.zip hx_gz_sdk\
 
 goto :EOF
 
