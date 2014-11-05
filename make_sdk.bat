@@ -121,7 +121,9 @@ xcopy "haptix-comm\build\install\Release" "%installdir%\haptix-comm\Release" /s 
 xcopy "haptix-comm\build\install\Debug" "%installdir%\haptix-comm\Debug" /s /e /i
 xcopy "haptix-comm\haptix-comm.props" "%installdir%"
 cd ..
-"%tmpdir%\zip" -r hx_gz_sdk-0.0.0.zip hx_gz_sdk
+
+call :creation_zip_script
+call :zip hx_gz_sdk-0.0.0.zip hx_gz_sdk
 
 :: ##################################
 :create_unzip_script - Create the unzip script to run unzip command
