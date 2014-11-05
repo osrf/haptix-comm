@@ -51,13 +51,12 @@ set protobuf_zip_name=protobuf-2.6.0-win%BITNESS%-vc12.zip
 bitsadmin /transfer "Download ZeroMQ" http://packages.osrfoundation.org/win32/deps/%zeromq_zip_name% "%tmpdir%\%zeromq_zip_name%" || goto :error
 bitsadmin /transfer "Download cppzmq" http://packages.osrfoundation.org/win32/deps/cppzmq-noarch.zip "%tmpdir%\cppzmq-noarch.zip"  || goto :error
 bitsadmin /transfer "Download Protobuf" http://packages.osrfoundation.org/win32/deps/%protobuf_zip_name% "%tmpdir%\%protobuf_zip_name%"  || goto :error
-bitsadmin /transfer "Download unzip" http://stahlworks.com/dev/unzip.exe "%tmpdir%\unzip.exe"
-bitsadmin /transfer "Download zip" http://stahlworks.com/dev/zip.exe "%tmpdir%\zip.exe"
+bitsadmin /transfer "Download 7zip" http://packages.osrfoundation.org/win32/deps/7za.exe "%tmpdir%\7za.exe"
 
 @rem Unzip stuff
-unzip %zeromq_zip_name%
-unzip cppzmq-noarch.zip
-unzip %protobuf_zip_name%
+7za x %zeromq_zip_name%
+7za x cppzmq-noarch.zip
+7za x %protobuf_zip_name%
 
 @rem Clone stuff
 hg clone https://bitbucket.org/ignitionrobotics/ign-transport
@@ -122,7 +121,7 @@ xcopy "haptix-comm\build\install\Release" "%installdir%\haptix-comm\Release" /s 
 xcopy "haptix-comm\build\install\Debug" "%installdir%\haptix-comm\Debug" /s /e /i
 xcopy "haptix-comm\haptix-comm.props" "%installdir%"
 cd ..
-"%tmpdir%\zip" -r hx_gz_sdk-0.0.0.zip hx_gz_sdk
+"%tmpdir%\7za.exe" a -tzip hx_gz_sdk-0.0.0.zip hx_gz_sdk\
 
 :error
 echo "The program is stopping with errors! Check the log" 
