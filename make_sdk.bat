@@ -120,13 +120,13 @@ xcopy "ZeroMQ 3.2.4" "%installdir%\deps\ZeroMQ 3.2.4" /s /e /i
 mkdir "%installdir%\deps\ign-transport"
 xcopy "ign-transport\build\install\Release" "%installdir%\deps\ign-transport\Release" /s /e /i
 xcopy "ign-transport\build\install\Debug" "%installdir%\deps\ign-transport\Debug" /s /e /i
+xcopy "ign-transport\ignition-transport.info" "%installdir%"
 mkdir "%installdir%\haptix-comm"
 xcopy "haptix-comm\build\install\Release" "%installdir%\haptix-comm\Release" /s /e /i
 xcopy "haptix-comm\build\install\Debug" "%installdir%\haptix-comm\Debug" /s /e /i
 xcopy "haptix-comm\haptix-comm.props" "%installdir%"
-cd ..
 xcopy "haptix-comm\haptix-comm.info" "%installdir%"
-xcopy "ignition-transport\ignition-transport.info" "%installdir%"
+cd ..
 "%tmpdir%\7za.exe" a -tzip ../hx_gz_sdk-%haptix_hash%-win%BITNESS%.zip hx_gz_sdk\
 
 goto :EOF
