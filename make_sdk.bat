@@ -29,9 +29,9 @@ set MSVC_ON_WIN64=c:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsa
 set MSVC_ON_WIN32=c:\Program Files\Microsoft Visual Studio 12.0\VC\vcvarsall.bat
 
 IF exist "%MSVC_ON_WIN64%" ( 
-   call "%MSVC_ON_WIN64%" %MSVC_KEYWORD% || goto %win_lib% :error
+   call "%MSVC_ON_WIN64%" %MSVC_KEYWORD% || goto :error
 ) ELSE IF exist "%MSVC_ON_WIN32%" (
-   call "%MSVC_ON_WIN32%" %MSVC_KEYWORD% || goto %win_lib% :error
+   call "%MSVC_ON_WIN32%" %MSVC_KEYWORD% || goto :error
 ) ELSE (
    echo "Could not find the vcvarsall.bat file"
    exit -1
@@ -48,9 +48,9 @@ set zeromq_zip_name=zeromq-3.2.4-%PLATFORM_TO_BUILD%.zip
 set protobuf_zip_name=protobuf-2.6.0-win%BITNESS%-vc12.zip
 
 @rem Download stuff.  Note that bitsadmin requires an absolute path.
-bitsadmin /transfer "Download ZeroMQ" http://packages.osrfoundation.org/win32/deps/%zeromq_zip_name% "%tmpdir%\"%zeromq_zip_name%"
-bitsadmin /transfer "Download cppzmq" http://packages.osrfoundation.org/win32/deps/cppzmq-noarch.zip "%tmpdir%\cppzmq-noarch.zip"
-bitsadmin /transfer "Download Protobuf" http://packages.osrfoundation.org/win32/deps/%protobuf_zip_name% "%tmpdir%\"%protobuf_zip_name%"
+bitsadmin /transfer "Download ZeroMQ" http://packages.osrfoundation.org/win32/deps/%zeromq_zip_name% "%tmpdir%\"%zeromq_zip_name%" || goto :error
+bitsadmin /transfer "Download cppzmq" http://packages.osrfoundation.org/win32/deps/cppzmq-noarch.zip "%tmpdir%\cppzmq-noarch.zip"  || goto :error
+bitsadmin /transfer "Download Protobuf" http://packages.osrfoundation.org/win32/deps/%protobuf_zip_name% "%tmpdir%\"%protobuf_zip_name%"  || goto :error
 bitsadmin /transfer "Download unzip" http://stahlworks.com/dev/unzip.exe "%tmpdir%\unzip.exe"
 bitsadmin /transfer "Download zip" http://stahlworks.com/dev/zip.exe "%tmpdir%\zip.exe"
 
@@ -123,3 +123,6 @@ xcopy "haptix-comm\build\install\Debug" "%installdir%\haptix-comm\Debug" /s /e /
 xcopy "haptix-comm\haptix-comm.props" "%installdir%"
 cd ..
 "%tmpdir%\zip" -r hx_gz_sdk-0.0.0.zip hx_gz_sdk
+
+:error
+echo "The program is stopping with errors! Check the log" 
