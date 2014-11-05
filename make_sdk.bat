@@ -166,10 +166,44 @@ REM This script upzip's files...
 >> j_unzip.vbs ECHO.
 goto :EOF
 
+::
+:creation_zip_script - Create the zip
+::
+> zip.vbs ECHO '
+>> zip.vbs ECHO 'Get command-line arguments.
+>> zip.vbs ECHO Set objArgs = WScript.Arguments
+>> zip.vbs ECHO InputFolder = objArgs(0)
+>> zip.vbs ECHO ZipFile = objArgs(1)
+>> zip.vbs ECHO 
+>> zip.vbs ECHO 'Create empty ZIP file.
+>> zip.vbs ECHO CreateObject("Scripting.FileSystemObject").CreateTextFile(ZipFile, True).Write "PK" & Chr(5) & Chr(6) & String(18, vbNullChar)
+>> zip.vbs ECHO 
+>> zip.vbs ECHO Set objShell = CreateObject("Shell.Application")
+>> zip.vbs ECHO 
+>> zip.vbs ECHO Set source = objShell.NameSpace(InputFolder).Items
+>> zip.vbs ECHO 
+>> zip.vbs ECHO objShell.NameSpace(ZipFile).CopyHere(source)
+>> zip.vbs ECHO 
+>> zip.vbs ECHO 'Required!
+>> zip.vbs ECHO wScript.Sleep 2000
+>> zip.vbs ECHO.
+goto :EOF
+
+:: ##################################
+:zip - Compress a file
+:: arg1 directory to compress 
+:: arg2 file to compress
+
+@ echo "Zipping %~2 (compressing %~1)"
+cscript zip.vbs %~1 %~2
+goto :EOF
+
 :: ##################################
 :unzip - Unizp a file
 ::
 :: arg1 path to the zip file to uncompress
+
+@echo "Unzip %~1 ..."
 cscript //B j_unzip.vbs %~1 || goto:error
 goto :EOF
 
