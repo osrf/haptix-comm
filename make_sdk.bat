@@ -123,7 +123,7 @@ xcopy "haptix-comm\haptix-comm.props" "%installdir%"
 cd ..
 
 call :creation_zip_script
-call :zip %cd%hx_gz_sdk %cd%hx_gz_sdk-0.0.0.zip
+call :zip %cd%\hx_gz_sdk %cd%\hx_gz_sdk-0.0.0.zip
 
 :: ##################################
 :create_unzip_script - Create the unzip script to run unzip command
