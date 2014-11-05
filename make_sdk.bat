@@ -17,11 +17,11 @@ IF %PLATFORM_TO_BUILD% == x86 (
   set PLATFORM_TO_BUILD=amd64
 )
 
-@echo
+@echo ""
 @echo "======================="
 @echo "%bitness%bits SDK Generation  "
 @echo "======================="
-@echo
+@echo ""
 
 @echo " - Configure the VC++ compilation"
 
@@ -51,13 +51,12 @@ set protobuf_zip_name=protobuf-2.6.0-win%BITNESS%-vc12.zip
 bitsadmin /transfer "Download ZeroMQ" http://packages.osrfoundation.org/win32/deps/%zeromq_zip_name% "%tmpdir%\%zeromq_zip_name%" || goto :error
 bitsadmin /transfer "Download cppzmq" http://packages.osrfoundation.org/win32/deps/cppzmq-noarch.zip "%tmpdir%\cppzmq-noarch.zip"  || goto :error
 bitsadmin /transfer "Download Protobuf" http://packages.osrfoundation.org/win32/deps/%protobuf_zip_name% "%tmpdir%\%protobuf_zip_name%"  || goto :error
-bitsadmin /transfer "Download unzip" http://stahlworks.com/dev/unzip.exe "%tmpdir%\unzip.exe"
-bitsadmin /transfer "Download zip" http://stahlworks.com/dev/zip.exe "%tmpdir%\zip.exe"
 
 @rem Unzip stuff
-unzip %zeromq_zip_name%
-unzip cppzmq-noarch.zip
-unzip %protobuf_zip_name%
+call :create_unzip_script
+call :unzip %zeromq_zip_name%
+call :unzip cppzmq-noarch.zip
+call :unzip %protobuf_zip_name%
 
 @rem Clone stuff
 hg clone https://bitbucket.org/ignitionrobotics/ign-transport
@@ -123,6 +122,56 @@ xcopy "haptix-comm\build\install\Debug" "%installdir%\haptix-comm\Debug" /s /e /
 xcopy "haptix-comm\haptix-comm.props" "%installdir%"
 cd ..
 "%tmpdir%\zip" -r hx_gz_sdk-0.0.0.zip hx_gz_sdk
+
+:: ##################################
+:create_unzip_script - Create the unzip script to run unzip command
+::
+REM Unzip script from http://jagaroth.livejournal.com/69147.html 
+
+REM This script upzip's files...
+> j_unzip.vbs ECHO '
+>> j_unzip.vbs ECHO ' Dim ArgObj, var1, var2
+>> j_unzip.vbs ECHO Set ArgObj = WScript.Arguments
+>> j_unzip.vbs ECHO.
+>> j_unzip.vbs ECHO If (Wscript.Arguments.Count ^> 0) Then
+>> j_unzip.vbs ECHO. var1 = ArgObj(0)
+>> j_unzip.vbs ECHO Else
+>> j_unzip.vbs ECHO. var1 = ""
+>> j_unzip.vbs ECHO End if
+>> j_unzip.vbs ECHO.
+>> j_unzip.vbs ECHO If var1 = "" then
+>> j_unzip.vbs ECHO. strFileZIP = "example.zip"
+>> j_unzip.vbs ECHO Else
+>> j_unzip.vbs ECHO. strFileZIP = var1
+>> j_unzip.vbs ECHO End if
+>> j_unzip.vbs ECHO.
+>> j_unzip.vbs ECHO 'The location of the zip file.
+>> j_unzip.vbs ECHO REM Set WshShell = CreateObject("Wscript.Shell")
+>> j_unzip.vbs ECHO REM CurDir = WshShell.ExpandEnvironmentStrings("%%cd%%")
+>> j_unzip.vbs ECHO Dim sCurPath
+>> j_unzip.vbs ECHO sCurPath = CreateObject("Scripting.FileSystemObject").GetAbsolutePathName(".")
+>> j_unzip.vbs ECHO strZipFile = sCurPath ^& "\" ^& strFileZIP
+>> j_unzip.vbs ECHO 'The folder the contents should be extracted to.
+>> j_unzip.vbs ECHO outFolder = sCurPath ^& "\"
+>> j_unzip.vbs ECHO.
+>> j_unzip.vbs ECHO. WScript.Echo ( "Extracting file " ^& strFileZIP)
+>> j_unzip.vbs ECHO.
+>> j_unzip.vbs ECHO Set objShell = CreateObject( "Shell.Application" )
+>> j_unzip.vbs ECHO Set objSource = objShell.NameSpace(strZipFile).Items()
+>> j_unzip.vbs ECHO Set objTarget = objShell.NameSpace(outFolder)
+>> j_unzip.vbs ECHO intOptions = 256
+>> j_unzip.vbs ECHO objTarget.CopyHere objSource, intOptions
+>> j_unzip.vbs ECHO.
+>> j_unzip.vbs ECHO. WScrip.Echo ( "Extracted." )
+>> j_unzip.vbs ECHO.
+goto :EOF
+
+:: ##################################
+:unzip - Unizp a file
+::
+:: arg1 path to the zip file to uncompress
+cscript //B j_unzip.vbs %~1 || goto:error
+goto :EOF
 
 :error
 echo "The program is stopping with errors! Check the log" 
