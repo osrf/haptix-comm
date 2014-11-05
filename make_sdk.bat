@@ -1,3 +1,11 @@
+:: SDK Creation script
+:: arg1 bitness [ 32 | 64 ]
+
+
+@set build_bitness=32
+@if not "%2"=="" set build_bitness=%2
+
+
 @rem Setup directories
 set cwd=%cd%
 set tmpdir=%cwd%\hx_gz_sdk_tmp
@@ -8,7 +16,7 @@ cd "%tmpdir%"
 @rem Download stuff.  Note that bitsadmin requires an absolute path.
 bitsadmin /transfer "Download ZeroMQ" http://packages.osrfoundation.org/win32/deps/zeromq-3.2.4-x86.zip "%tmpdir%\zeromq-3.2.4-x86.zip"
 bitsadmin /transfer "Download cppzmq" http://packages.osrfoundation.org/win32/deps/cppzmq-noarch.zip "%tmpdir%\cppzmq-noarch.zip"
-bitsadmin /transfer "Download Protobuf" http://packages.osrfoundation.org/win32/deps/protobuf-2.6.0-win32-vc12.zip "%tmpdir%\protobuf-2.6.0-win32-vc12.zip"
+bitsadmin /transfer "Download Protobuf" http://packages.osrfoundation.org/win32/deps/protobuf-2.6.0-win%build_bitness%-vc12.zip "%tmpdir%\protobuf-2.6.0-win%build_bitness%-vc12.zip"
 bitsadmin /transfer "Download unzip" http://stahlworks.com/dev/unzip.exe "%tmpdir%\unzip.exe"
 bitsadmin /transfer "Download zip" http://stahlworks.com/dev/zip.exe "%tmpdir%\zip.exe"
 
