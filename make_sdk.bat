@@ -123,7 +123,7 @@ xcopy "haptix-comm\haptix-comm.props" "%installdir%"
 cd ..
 
 call :creation_zip_script
-call :zip hx_gz_sdk-0.0.0.zip hx_gz_sdk
+call :zip %cd%hx_gz_sdk %cd%hx_gz_sdk-0.0.0.zip
 
 :: ##################################
 :create_unzip_script - Create the unzip script to run unzip command
@@ -170,25 +170,17 @@ goto :EOF
 
 ::
 :creation_zip_script - Create the zip
-::
-> zip.vbs ECHO '
->> zip.vbs ECHO 'Get command-line arguments.
->> zip.vbs ECHO Set objArgs = WScript.Arguments
->> zip.vbs ECHO InputFolder = objArgs(0)
->> zip.vbs ECHO ZipFile = objArgs(1)
->> zip.vbs ECHO 
->> zip.vbs ECHO 'Create empty ZIP file.
->> zip.vbs ECHO CreateObject("Scripting.FileSystemObject").CreateTextFile(ZipFile, True).Write "PK" & Chr(5) & Chr(6) & String(18, vbNullChar)
->> zip.vbs ECHO 
->> zip.vbs ECHO Set objShell = CreateObject("Shell.Application")
->> zip.vbs ECHO 
->> zip.vbs ECHO Set source = objShell.NameSpace(InputFolder).Items
->> zip.vbs ECHO 
->> zip.vbs ECHO objShell.NameSpace(ZipFile).CopyHere(source)
->> zip.vbs ECHO 
->> zip.vbs ECHO 'Required!
->> zip.vbs ECHO wScript.Sleep 2000
->> zip.vbs ECHO.
+:: arg1 input folder (ABSOLUTE PATH)
+:: arg2 output zip file (ABSOLUTE PATH)
+
+echo Set objArgs = WScript.Arguments > _zipIt.vbs
+echo InputFolder = objArgs(0) >> _zipIt.vbs
+echo ZipFile = objArgs(1) >> _zipIt.vbs
+echo CreateObject("Scripting.FileSystemObject").CreateTextFile(ZipFile, True).Write "PK" ^& Chr(5) ^& Chr(6) ^& String(18, vbNullChar) >> _zipIt.vbs
+echo Set objShell = CreateObject("Shell.Application") >> _zipIt.vbs
+echo Set source = objShell.NameSpace(InputFolder).Items >> _zipIt.vbs
+echo objShell.NameSpace(ZipFile).CopyHere(source) >> _zipIt.vbs
+echo wScript.Sleep 2000 >> _zipIt.vbs
 goto :EOF
 
 :: ##################################
@@ -197,7 +189,7 @@ goto :EOF
 :: arg2 file to compress
 
 @ echo "Zipping %~2 (compressing %~1)"
-cscript zip.vbs %~1 %~2
+cscript _zipIt.vbs %~1 %~2
 goto :EOF
 
 :: ##################################
