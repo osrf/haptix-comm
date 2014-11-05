@@ -71,55 +71,38 @@ for /f "delims=" %%a in ('hg id -i') do @set haptix_hash=%%a
 hg tip > haptix-comm.info
 cd ..
 
-@rem Build ign-transport in Debug
-cd ign-transport
-mkdir build
-cd build
-call ..\configure Debug %BITNESS%
-nmake VERBOSE=1 || goto :error
-nmake install
-cd ..\..
-
-@rem Build haptix-comm in Debug
-cd haptix-comm
-mkdir build
-cd build
-call ..\configure Debug %BITNESS%
-nmake VERBOSE=1 || goto :error
-nmake install
-cd ..\..
-
-@rem Build ign-transport in Release
-cd ign-transport
-cd build
-del CMakeCache.txt
-call ..\configure Release %BITNESS%
-nmake VERBOSE=1 || goto :error
-nmake install
-cd ..\..
-
-@rem Build haptix-comm in Release
-cd haptix-comm
-cd build
-del CMakeCache.txt
-call ..\configure Release %BITNESS%
-nmake VERBOSE=1 || goto :error
-nmake install
-cd ..\..
-
-@rem Package it all up
-@rem Our goal here is to create an "install" layout for all the stuff
-@rem needed to use haptix-comm.  That layout can be then be zipped and
-@rem distributed.  Lots of assumptions are being made here.
-
 for %%build_type IN (Debug, Release) do (
-    set installdir="%cwd%\hx_gz_sdk_%build_type%"
+
+    @rem Build ign-transport in %%build_type
+    cd ign-transport
+    cd build
+    del CMakeCache.txt
+    call ..\configure %%build_type %BITNESS%
+    nmake VERBOSE=1 || goto :error
+    nmake install
+    cd ..\..
+
+    @rem Build haptix-comm in %%build_type
+    cd haptix-comm
+    cd build
+    del CMakeCache.txt
+    call ..\configure %%build_type %BITNESS%
+    nmake VERBOSE=1 || goto :error
+    nmake install
+    cd ..\..
+
+    :: Package it all up
+    :: Our goal here is to create an "install" layout for all the stuff
+    :: needed to use haptix-comm.  That layout can be then be zipped and
+    :: distributed.  Lots of assumptions are being made here.
+
+    set installdir="%cwd%\hx_gz_sdk_%%build_type"
     rmdir "%installdir%" /S /Q
     mkdir "%installdir%"
 
-    mkdir "%installdir%\deps\protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\%build_type%"
+    mkdir "%installdir%\deps\protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\%%build_type"
     :: Protobuf
-    xcopy "protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\%build_type%\*.lib" "%installdir%\deps\protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\%build_type%" /s /e /i
+    xcopy "protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\%%build_type\*.lib" "%installdir%\deps\protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\%%build_type" /s /e /i
     xcopy "protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\google" "%installdir%\deps\protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\google" /s /e /i
     :: ZeroMQ
     xcopy "ZeroMQ 3.2.4\COPYING*" "%installdir%\deps\ZeroMQ 3.2.4" /s /e /i
@@ -129,19 +112,19 @@ for %%build_type IN (Debug, Release) do (
     xcopy "ZeroMQ 3.2.4\lib\libzmq-v120-mt-3*" "%installdir%\deps\ZeroMQ 3.2.4\lib" /s /e /i
     :: Ignition transport
     mkdir "%installdir%\deps\ign-transport"
-    xcopy "ign-transport\build\install\%build_type%\include" "%installdir%\deps\ign-transport\%build_type%\include" /s /e /i
-    xcopy "ign-transport\build\install\%build_type%\lib" "%installdir%\deps\ign-transport\%build_type%\lib" /s /e /i
+    xcopy "ign-transport\build\install\%%build_type\include" "%installdir%\deps\ign-transport\%%build_type\include" /s /e /i
+    xcopy "ign-transport\build\install\%%build_type\lib" "%installdir%\deps\ign-transport\%%build_type\lib" /s /e /i
     xcopy "ign-transport\ignition-transport.info" "%installdir%"
     :: haptix-comm
     mkdir "%installdir%\haptix-comm"
-    xcopy "haptix-comm\build\install\%build_type%\include" "%installdir%\haptix-comm\%build_type%\include" /s /e /i
-    xcopy "haptix-comm\build\install\%build_type%\lib" "%installdir%\haptix-comm\%build_type%\lib" /s /e /i
+    xcopy "haptix-comm\build\install\%%build_type\include" "%installdir%\haptix-comm\%%build_type\include" /s /e /i
+    xcopy "haptix-comm\build\install\%%build_type\lib" "%installdir%\haptix-comm\%%build_type\lib" /s /e /i
     xcopy "haptix-comm\haptix-comm.props" "%installdir%"
 
-    set sdk_zip_file=hx_gz_sdk-%build_type%-%haptix_hash%-win%BITNESS%.zip
+    set sdk_zip_file=hx_gz_sdk-%%build_type-%haptix_hash%-win%BITNESS%.zip
 
     echo "Generating SDK zip file: %sdk_zip_file%"
-    "%tmpdir%\7za.exe" a -tzip ../%sdk_zip_file% "hx_gz_sdk_%build_type%" \
+    "%tmpdir%\7za.exe" a -tzip ../%sdk_zip_file% "hx_gz_sdk_%%build_type" \
 )
 
 goto :EOF
