@@ -66,7 +66,8 @@ cd ..
 
 hg clone https://bitbucket.org/osrf/haptix-comm haptix-comm
 cd haptix-comm
-set haptix_hash=`hg id -i`
+REM set haptix_hash variable. Yes, we need need to do this for structure
+for /f "delims=" %%a in ('hg id -i') do @set haptix_hash=%%a
 hg tip > haptix-comm.info
 cd ..
 
@@ -127,7 +128,11 @@ xcopy "haptix-comm\build\install\Debug" "%installdir%\haptix-comm\Debug" /s /e /
 xcopy "haptix-comm\haptix-comm.props" "%installdir%"
 xcopy "haptix-comm\haptix-comm.info" "%installdir%"
 cd ..
-"%tmpdir%\7za.exe" a -tzip ../hx_gz_sdk-%haptix_hash%-win%BITNESS%.zip hx_gz_sdk\
+
+set sdk_zip_file=hx_gz_sdk-%haptix_hash%-win%BITNESS%.zip
+
+echo "Generating SDK zip file: %sdk_zip_file%"
+"%tmpdir%\7za.exe" a -tzip ../%sdk_zip_file% hx_gz_sdk\
 
 goto :EOF
 
