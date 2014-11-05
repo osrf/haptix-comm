@@ -17,11 +17,11 @@ IF %PLATFORM_TO_BUILD% == x86 (
   set PLATFORM_TO_BUILD=amd64
 )
 
-@echo
+@echo ""
 @echo "======================="
 @echo "%bitness%bits SDK Generation  "
 @echo "======================="
-@echo
+@echo ""
 
 @echo " - Configure the VC++ compilation"
 
@@ -60,18 +60,14 @@ bitsadmin /transfer "Download 7zip" http://packages.osrfoundation.org/win32/deps
 
 @rem Clone stuff
 hg clone https://bitbucket.org/ignitionrobotics/ign-transport
-cd ign-transport
-cd ..
 hg clone https://bitbucket.org/osrf/haptix-comm haptix-comm
-cd haptix-comm
-cd ..
 
 @rem Build ign-transport in Debug
 cd ign-transport
 mkdir build
 cd build
 call ..\configure Debug
-nmake VERBOSE=1
+nmake VERBOSE=1 || goto :error
 nmake install
 cd ..\..
 
@@ -80,7 +76,7 @@ cd haptix-comm
 mkdir build
 cd build
 call ..\configure Debug
-nmake VERBOSE=1
+nmake VERBOSE=1 || goto :error
 nmake install
 cd ..\..
 
@@ -89,7 +85,7 @@ cd ign-transport
 cd build
 del CMakeCache.txt
 call ..\configure Release
-nmake VERBOSE=1
+nmake VERBOSE=1 || goto :error
 nmake install
 cd ..\..
 
@@ -98,7 +94,7 @@ cd haptix-comm
 cd build
 del CMakeCache.txt
 call ..\configure Release
-nmake VERBOSE=1
+nmake VERBOSE=1 || goto :error
 nmake install
 cd ..\..
 
@@ -121,7 +117,9 @@ xcopy "haptix-comm\build\install\Release" "%installdir%\haptix-comm\Release" /s 
 xcopy "haptix-comm\build\install\Debug" "%installdir%\haptix-comm\Debug" /s /e /i
 xcopy "haptix-comm\haptix-comm.props" "%installdir%"
 cd ..
-"%tmpdir%\7za.exe" a -tzip hx_gz_sdk-0.0.0.zip hx_gz_sdk\
+"%tmpdir%\7za.exe" a -tzip ../hx_gz_sdk-0.0.0-win%BITNESS%.zip hx_gz_sdk\
+
+goto :EOF
 
 :error
 echo "The program is stopping with errors! Check the log" 
