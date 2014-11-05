@@ -64,7 +64,7 @@ cd ign-transport
 hg tip > ignition-transport.info
 cd ..
 
-hg clone https://bitbucket.org/osrf/haptix-comm haptix-comm
+hg clone https://bitbucket.org/osrf/haptix-comm haptix-comm -b parametrize_configure
 cd haptix-comm
 REM set haptix_hash variable. Yes, we need need to do this for structure
 for /f "delims=" %%a in ('hg id -i') do @set haptix_hash=%%a
@@ -75,7 +75,7 @@ cd ..
 cd ign-transport
 mkdir build
 cd build
-call ..\configure Debug
+call ..\configure Debug %BITNESS%
 nmake VERBOSE=1 || goto :error
 nmake install
 cd ..\..
@@ -84,7 +84,7 @@ cd ..\..
 cd haptix-comm
 mkdir build
 cd build
-call ..\configure Debug
+call ..\configure Debug %BITNESS%
 nmake VERBOSE=1 || goto :error
 nmake install
 cd ..\..
@@ -93,7 +93,7 @@ cd ..\..
 cd ign-transport
 cd build
 del CMakeCache.txt
-call ..\configure Release
+call ..\configure Release %BITNESS%
 nmake VERBOSE=1 || goto :error
 nmake install
 cd ..\..
@@ -102,7 +102,7 @@ cd ..\..
 cd haptix-comm
 cd build
 del CMakeCache.txt
-call ..\configure Release
+call ..\configure Release %BITNESS%
 nmake VERBOSE=1 || goto :error
 nmake install
 cd ..\..
