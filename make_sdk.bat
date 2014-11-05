@@ -17,13 +17,14 @@ IF %PLATFORM_TO_BUILD% == x86 (
   set PLATFORM_TO_BUILD=amd64
 )
 
-echo
-echo "======================="
-echo "%bitness%bits SDK Generation  "
-echo "======================="
-echo
+@echo
+@echo "======================="
+@echo "%bitness%bits SDK Generation  "
+@echo "======================="
+@echo
 
-echo " - Configure the VC++ compilation"
+@echo " - Configure the VC++ compilation"
+
 set MSVC_ON_WIN64=c:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat
 set MSVC_ON_WIN32=c:\Program Files\Microsoft Visual Studio 12.0\VC\vcvarsall.bat
 
@@ -44,7 +45,7 @@ mkdir "%tmpdir%"
 cd "%tmpdir%"
 
 set zeromq_zip_name=zeromq-3.2.4-%PLATFORM_TO_BUILD%.zip
-set protobuf_zip_name=protobuf-2.6.0-win%build_bitness%-vc12.zip
+set protobuf_zip_name=protobuf-2.6.0-win%BITNESS%-vc12.zip
 
 @rem Download stuff.  Note that bitsadmin requires an absolute path.
 bitsadmin /transfer "Download ZeroMQ" http://packages.osrfoundation.org/win32/deps/%zeromq_zip_name% "%tmpdir%\"%zeromq_zip_name%"
