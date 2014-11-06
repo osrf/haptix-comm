@@ -71,7 +71,7 @@ for /f "delims=" %%a in ('hg id -i') do @set haptix_hash=%%a
 hg tip > haptix-comm.info
 cd ..
 
-for %%build_type IN (Debug, Release) do (
+for %%build_type in (Debug, Release) do (
 
     @rem Build ign-transport in %%build_type
     cd ign-transport
@@ -124,7 +124,7 @@ for %%build_type IN (Debug, Release) do (
     set sdk_zip_file=hx_gz_sdk-%%build_type-%haptix_hash%-win%BITNESS%.zip
 
     echo "Generating SDK zip file: %sdk_zip_file%"
-    "%tmpdir%\7za.exe" a -tzip ../%sdk_zip_file% "hx_gz_sdk_%%build_type" \
+    "%tmpdir%\7za.exe" a -tzip ../%sdk_zip_file% "hx_gz_sdk_%%build_type\"
 )
 
 goto :EOF
