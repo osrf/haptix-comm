@@ -73,11 +73,11 @@ cd ..
 
 for %%build_type in (Debug, Release) do (
 
-    @rem Build ign-transport in %%build_type
+    echo "Build ign-transport in %%build_type"
     cd ign-transport
     cd build
     del CMakeCache.txt
-    call ..\configure %%build_type %BITNESS%
+    call ..\configure "%%build_type" %BITNESS%
     nmake VERBOSE=1 || goto :error
     nmake install
     cd ..\..
@@ -86,7 +86,7 @@ for %%build_type in (Debug, Release) do (
     cd haptix-comm
     cd build
     del CMakeCache.txt
-    call ..\configure %%build_type %BITNESS%
+    call ..\configure "%%build_type" %BITNESS%
     nmake VERBOSE=1 || goto :error
     nmake install
     cd ..\..
