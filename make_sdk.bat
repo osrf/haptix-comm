@@ -78,7 +78,7 @@ for %%b in (Debug, Release) do (
     mkdir build
     cd build
     del CMakeCache.txt
-    call ..\configure "%%b" %BITNESS%
+    call ..\configure %%b %BITNESS%
     nmake VERBOSE=1 || goto :error
     nmake install
     cd ..\..
@@ -88,7 +88,7 @@ for %%b in (Debug, Release) do (
     mkdir build
     cd build
     del CMakeCache.txt
-    call ..\configure "%%b" %BITNESS%
+    call ..\configure %%b %BITNESS%
     nmake VERBOSE=1 || goto :error
     nmake install
     cd ..\..
