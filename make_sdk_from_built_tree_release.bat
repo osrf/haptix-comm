@@ -1,11 +1,17 @@
+:: Filter SDKs
+:: arg1 bitness [ 32 | 64 ] (default 32)
+
+@set build_bitness=32
+@if not "%1"=="" set build_bitness=%1
+
 set cwd=%cd%
 set installdir=%cwd%\hx_gz_sdk
 rmdir "%installdir%" /S /Q
 mkdir "%installdir%"
-mkdir "%installdir%\deps\protobuf-2.6.0-win32-vc12\vsprojects\Release"
+mkdir "%installdir%\deps\protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\Release"
 :: Protobuf
-xcopy "protobuf-2.6.0-win32-vc12\vsprojects\Release\*.lib" "%installdir%\deps\protobuf-2.6.0-win32-vc12\vsprojects\Release" /s /e /i
-xcopy "protobuf-2.6.0-win32-vc12\vsprojects\google" "%installdir%\deps\protobuf-2.6.0-win32-vc12\vsprojects\google" /s /e /i
+xcopy "protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\Release\*.lib" "%installdir%\deps\protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\Release" /s /e /i
+xcopy "protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\google" "%installdir%\deps\protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\google" /s /e /i
 :: ZeroMQ
 xcopy "ZeroMQ 3.2.4\COPYING*" "%installdir%\deps\ZeroMQ 3.2.4" /s /e /i
 xcopy "ZeroMQ 3.2.4\bin\libzmq-v120-mt-3*" "%installdir%\deps\ZeroMQ 3.2.4\bin" /s /e /i
