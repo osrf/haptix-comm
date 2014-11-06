@@ -108,7 +108,7 @@ for %%b in (Debug, Release) do (
     rmdir !installdir! /S /Q
     mkdir !installdir! || goto :error
 
-    mkdir "!%installdir!\deps\protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\!build_type!" || goto :error
+    mkdir "!installdir!\deps\protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\!build_type!" || goto :error
     :: Protobuf
     echo "Current directory is: %cd%"
     echo "Try to run: protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\!build_type!\*.lib" "!installdir!\deps\protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\!build_type!"
