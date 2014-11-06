@@ -71,6 +71,7 @@ for /f "delims=" %%a in ('hg id -i') do @set haptix_hash=%%a
 hg tip > haptix-comm.info
 cd ..
 
+setLocal Enabledelayedexpansion
 for %%b in (Debug, Release) do (
 
     echo "Build ign-transport in %%b"
@@ -98,7 +99,11 @@ for %%b in (Debug, Release) do (
     :: needed to use haptix-comm.  That layout can be then be zipped and
     :: distributed.  Lots of assumptions are being made here.
 
-    set installdir="%cwd%\hx_gz_sdk_%%b"
+    :: BIG HACK to concatenate the loop index
+    set "installdir=%cwd%\hx_gz_sdk_%%b"
+    echo.!installdir!
+    @echo "Installation directory is: %installdir%"
+      
     rmdir "%installdir%" /S /Q
     mkdir "%installdir%"
 
@@ -128,6 +133,7 @@ for %%b in (Debug, Release) do (
     echo "Generating SDK zip file: %sdk_zip_file%"
     "%tmpdir%\7za.exe" a -tzip ../%sdk_zip_file% "hx_gz_sdk_%%b\"
 )
+setlocal disabledelayedexpansion
 
 goto :EOF
 
