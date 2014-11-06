@@ -1,6 +1,8 @@
 :: SDK Creation script
 :: arg1 bitness [ x86 | amd64 ]
 
+:: remove previous packages
+del %WORKSPACE%\*.zip
 
 @set PLATFORM_TO_BUILD=x86
 @if not "%1"=="" set PLATFORM_TO_BUILD=%1
