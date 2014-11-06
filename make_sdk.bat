@@ -75,6 +75,7 @@ for %%b in (Debug, Release) do (
 
     echo "Build ign-transport in %%b"
     cd ign-transport
+    mkdir build
     cd build
     del CMakeCache.txt
     call ..\configure "%%b" %BITNESS%
@@ -84,6 +85,7 @@ for %%b in (Debug, Release) do (
 
     echo "Build haptix-comm in %%b"
     cd haptix-comm
+    mkdir build
     cd build
     del CMakeCache.txt
     call ..\configure "%%b" %BITNESS%
