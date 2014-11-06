@@ -101,8 +101,6 @@ for %%b in (Debug, Release) do (
 
     :: BIG HACK to concatenate the loop index
     set "build_type=%%b"
-    echo.!build_type!
-
     set "installdir=%cwd%\hx_gz_sdk_!build_type!"
     
     echo "Installation directory is: !installdir!"
@@ -112,6 +110,8 @@ for %%b in (Debug, Release) do (
 
     mkdir "!%installdir!\deps\protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\!build_type!" || goto :error
     :: Protobuf
+    echo "Current directory is: %cd%"
+    echo "Try to run: protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\!build_type!\*.lib" "!installdir!\deps\protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\!build_type!"
     xcopy "protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\!build_type!\*.lib" "!installdir!\deps\protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\!build_type!" /s /e /i || goto :error
     xcopy "protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\google" "!installdir!\deps\protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\google" /s /e /i
     :: ZeroMQ
