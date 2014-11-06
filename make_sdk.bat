@@ -104,14 +104,15 @@ for %%b in (Debug, Release) do (
     echo.!build_type!
 
     set "installdir=%cwd%\hx_gz_sdk_!build_type!"
-    @echo "Installation directory is: !installdir!"
+    
+    echo "Installation directory is: !installdir!"
       
     rmdir !installdir! /S /Q
     mkdir !installdir! || goto :error
 
-    mkdir "!%installdir!\deps\protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\%build_type%" || goto :error
+    mkdir "!%installdir!\deps\protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\!build_type!" || goto :error
     :: Protobuf
-    xcopy "protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\%build_type%\*.lib" "!installdir!\deps\protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\%build_type%" /s /e /i || goto :error
+    xcopy "protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\!build_type!\*.lib" "!installdir!\deps\protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\!build_type!" /s /e /i || goto :error
     xcopy "protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\google" "!installdir!\deps\protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\google" /s /e /i
     :: ZeroMQ
     xcopy "ZeroMQ 3.2.4\COPYING*" "!installdir!\deps\ZeroMQ 3.2.4" /s /e /i
@@ -121,19 +122,19 @@ for %%b in (Debug, Release) do (
     xcopy "ZeroMQ 3.2.4\lib\libzmq-v120-mt-3*" "!installdir!\deps\ZeroMQ 3.2.4\lib" /s /e /i
     :: Ignition transport
     mkdir "!installdir!\deps\ign-transport"
-    xcopy "ign-transport\build\install\%build_type%\include" "!installdir!\deps\ign-transport\%build_type%\include" /s /e /i
-    xcopy "ign-transport\build\install\%build_type%\lib" "!installdir!\deps\ign-transport\%build_type%\lib" /s /e /i
+    xcopy "ign-transport\build\install\!build_type!\include" "!installdir!\deps\ign-transport\!build_type!\include" /s /e /i
+    xcopy "ign-transport\build\install\!build_type!\lib" "!installdir!\deps\ign-transport\!build_type!\lib" /s /e /i
     xcopy "ign-transport\ignition-transport.info" "!installdir!"
     :: haptix-comm
     mkdir "!installdir!\haptix-comm"
-    xcopy "haptix-comm\build\install\%build_type%\include" "!installdir!\haptix-comm\%build_type%\include" /s /e /i
-    xcopy "haptix-comm\build\install\%build_type%\lib" "!installdir!\haptix-comm\%build_type%\lib" /s /e /i
+    xcopy "haptix-comm\build\install\!build_type!\include" "!installdir!\haptix-comm\!build_type!\include" /s /e /i
+    xcopy "haptix-comm\build\install\!build_type!\lib" "!installdir!\haptix-comm\!build_type!\lib" /s /e /i
     xcopy "haptix-comm\haptix-comm.props" "!installdir!"
 
-    set sdk_zip_file=hx_gz_sdk-%build_type%-%haptix_hash%-win%BITNESS%.zip
+    set sdk_zip_file=hx_gz_sdk-!build_type!-%haptix_hash%-win%BITNESS%.zip
 
     echo "Generating SDK zip file: %sdk_zip_file%"
-    "%tmpdir%\7za.exe" a -tzip ../%sdk_zip_file% "hx_gz_sdk_%build_type%\"
+    "%tmpdir%\7za.exe" a -tzip ../%sdk_zip_file% "hx_gz_sdk_!build_type!\"
 )
 setlocal disabledelayedexpansion
 
