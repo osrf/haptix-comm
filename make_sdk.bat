@@ -108,12 +108,12 @@ for %%b in (Debug, Release) do (
     rmdir !installdir! /S /Q
     mkdir !installdir! || goto :error
 
-    mkdir "!installdir!\deps\protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\!build_type!" || goto :error
+    mkdir "!installdir!\deps\protobuf-2.6.0-win%BITNESS%-vc12\vsprojects\!build_type!" || goto :error
     :: Protobuf
     echo "Current directory is: %cd%"
-    echo "Try to run: protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\!build_type!\*.lib" "!installdir!\deps\protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\!build_type!"
-    xcopy "protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\!build_type!\*.lib" "!installdir!\deps\protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\!build_type!" /s /e /i || goto :error
-    xcopy "protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\google" "!installdir!\deps\protobuf-2.6.0-win%build_bitness%-vc12\vsprojects\google" /s /e /i
+    echo "Try to run: protobuf-2.6.0-win%BITNESS%-vc12\vsprojects\!build_type!\*.lib !installdir!\deps\protobuf-2.6.0-win%BITNESS%-vc12\vsprojects\!build_type!"
+    xcopy "protobuf-2.6.0-win%BITNESS%-vc12\vsprojects\!build_type!\*.lib" "!installdir!\deps\protobuf-2.6.0-win%BITNESS%-vc12\vsprojects\!build_type!" /s /e /i || goto :error
+    xcopy "protobuf-2.6.0-win%BITNESS%-vc12\vsprojects\google" "!installdir!\deps\protobuf-2.6.0-win%BITNESS%-vc12\vsprojects\google" /s /e /i
     :: ZeroMQ
     xcopy "ZeroMQ 3.2.4\COPYING*" "!installdir!\deps\ZeroMQ 3.2.4" /s /e /i
     xcopy "ZeroMQ 3.2.4\bin\libzmq-v120-mt-3*" "!installdir!\deps\ZeroMQ 3.2.4\bin" /s /e /i
