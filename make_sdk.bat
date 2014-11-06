@@ -54,9 +54,9 @@ bitsadmin /transfer "Download Protobuf" http://packages.osrfoundation.org/win32/
 bitsadmin /transfer "Download 7zip" http://packages.osrfoundation.org/win32/deps/7za.exe "%tmpdir%\7za.exe"
 
 @rem Unzip stuff
-7za x %zeromq_zip_name%
-7za x cppzmq-noarch.zip
-7za x %protobuf_zip_name%
+7za x %zeromq_zip_name% > zeromq_7z.log
+7za x cppzmq-noarch.zip > cppzmq_7z.log
+7za x %protobuf_zip_name% > protobuf_7z.lob
 
 @rem Clone stuff
 hg clone https://bitbucket.org/ignitionrobotics/ign-transport
@@ -80,7 +80,7 @@ for %%b in (Debug, Release) do (
     cd build
     del CMakeCache.txt
     call ..\configure %%b %BITNESS%
-    nmake VERBOSE=1 || goto :error
+    nmake VERBOSE=1 > ign-transport.log || goto :error
     nmake install
     cd ..\..
 
@@ -90,7 +90,7 @@ for %%b in (Debug, Release) do (
     cd build
     del CMakeCache.txt
     call ..\configure %%b %BITNESS%
-    nmake VERBOSE=1 || goto :error
+    nmake VERBOSE=1 > haptix.log || goto :error
     nmake install
     cd ..\..
 
