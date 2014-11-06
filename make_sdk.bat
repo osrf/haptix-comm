@@ -134,6 +134,7 @@ for %%b in (Debug, Release) do (
     xcopy "haptix-comm\build\install\!build_type!\include" "!installdir!\haptix-comm\!build_type!\include" /s /e /i
     xcopy "haptix-comm\build\install\!build_type!\lib" "!installdir!\haptix-comm\!build_type!\lib" /s /e /i
     xcopy "haptix-comm\haptix-comm.props" "!installdir!"
+    xcopy "haptix-comm\haptix-comm.info" "!installdir!"
 
     set sdk_zip_file=hx_gz_sdk-!build_type!-%haptix_hash%-win%BITNESS%.zip
 
