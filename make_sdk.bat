@@ -82,7 +82,7 @@ for %%build_type in (Debug, Release) do (
     nmake install
     cd ..\..
 
-    @rem Build haptix-comm in %%build_type
+    echo "Build haptix-comm in %%build_type"
     cd haptix-comm
     cd build
     del CMakeCache.txt
