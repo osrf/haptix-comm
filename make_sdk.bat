@@ -103,7 +103,9 @@ for %%b in (Debug, Release) do (
     :: needed to use haptix-comm.  That layout can be then be zipped and
     :: distributed.  Lots of assumptions are being made here.
 
-    :: BIG HACK to concatenate the loop index
+    :: We need to use expansion at runtime values for variables inside the loop this is
+    :: why the !var! is being used. For more information, please read:
+    :: http://ss64.com/nt/delayedexpansion.html
     set "build_type=%%b"
     set "installdir=%cwd%\hx_gz_sdk_!build_type!"
     
