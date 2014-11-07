@@ -76,6 +76,12 @@ extern "C" {
   //////////////////////////////////////////////////
   hxResult hx_close(int _target)
   {
+    if (haptixNode)
+    {
+      delete haptixNode;
+      haptixNode = NULL;
+    }
+
     // Sanity check.
     if (checkTarget(_target))
       return hxOK;
