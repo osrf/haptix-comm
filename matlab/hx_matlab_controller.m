@@ -23,6 +23,7 @@ if result ~= 0
   exit;
 end
 
+start = tic;
 while counter < 2000
   % Initialize the command scalar structure.
   cmd.ref_pos  = [];
@@ -46,5 +47,9 @@ while counter < 2000
 
   counter = counter + 1;
 
-  pause(0.001);
+  pause(0.01);
 end
+
+elapsed = toc(start);
+disp('Frequency:');
+disp(2000 / elapsed);
