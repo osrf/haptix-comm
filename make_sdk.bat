@@ -9,7 +9,7 @@ del %WORKSPACE%\*.zip
 
 :: Default branches
 @if "%IGN_TRANSPORT_BRANCH%" == "" set IGN_TRANSPORT_BRANCH=default
-@if "%HAPTIX_COMM_BRANCH% == "" set HAPTIX_COMM_BRANCH=default
+@if "%HAPTIX_COMM_BRANCH%" == "" set HAPTIX_COMM_BRANCH=default
 
 IF %PLATFORM_TO_BUILD% == x86 (
   set BITNESS=32
