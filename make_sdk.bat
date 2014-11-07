@@ -7,6 +7,10 @@ del %WORKSPACE%\*.zip
 @set PLATFORM_TO_BUILD=x86
 @if not "%1"=="" set PLATFORM_TO_BUILD=%1
 
+:: Default branches
+@if "%IGN_TRANSPORT_BRANCH%" == "" set IGN_TRANSPORT_BRANCH=default
+@if "%HAPTIX_COMM_BRANCH% == "" set HAPTIX_COMM_BRANCH=default
+
 IF %PLATFORM_TO_BUILD% == x86 (
   set BITNESS=32
 ) ELSE (
@@ -22,6 +26,9 @@ IF %PLATFORM_TO_BUILD% == x86 (
 @echo ""
 @echo "======================="
 @echo "%bitness%bits SDK Generation  "
+@echo ""
+@echo " ign-transport branch: %IGN_TRANSPORT_BRANCH%"
+@echo " haptix-comm   branch: %HAPTIX_COMM_BRANCH%"
 @echo "======================="
 @echo ""
 
@@ -61,12 +68,12 @@ bitsadmin /transfer "Download 7zip" http://packages.osrfoundation.org/win32/deps
 7za x %protobuf_zip_name% > protobuf_7z.lob
 
 @rem Clone stuff
-hg clone https://bitbucket.org/ignitionrobotics/ign-transport
+hg clone https://bitbucket.org/ignitionrobotics/ign-transport -b %IGN_TRANSPORT_BRANCH%
 cd ign-transport
 hg tip > ignition-transport.info
 cd ..
 
-hg clone https://bitbucket.org/osrf/haptix-comm haptix-comm 
+hg clone https://bitbucket.org/osrf/haptix-comm haptix-comm -b %HAPTIX_COMM_BRANCH%
 cd haptix-comm
 REM set haptix_hash variable. Yes, we need need to do this for structure
 for /f "delims=" %%a in ('hg id -i') do @set haptix_hash=%%a
