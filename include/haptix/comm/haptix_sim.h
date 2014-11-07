@@ -14,6 +14,8 @@
  * limitations under the License.
  *
 */
+/// \file haptix_sim.h
+/// \brief Structures and functions for simulation specific functionality.
 
 #ifndef __HAPTIX_COMM_HAPTIX_SIM_H
 #define __HAPTIX_COMM_HAPTIX_SIM_H
