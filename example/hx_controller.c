@@ -22,6 +22,7 @@
 #include <math.h>
 #include <signal.h>
 #include <stdio.h>
+#include <sys/timeb.h>
 #include <time.h>
 #include <haptix/comm/haptix.h>
 #ifdef _WIN32
@@ -108,6 +109,10 @@ int main(int argc, char **argv)
   hxCommand cmd;
   hxSensor sensor;
 
+  // Performance test.
+  struct timeb start, end;
+  int diff;
+
   // Capture SIGINT signal.
   if (signal(SIGINT, sigHandler) == SIG_ERR)
     printf("Error catching SIGINT\n");
@@ -126,8 +131,13 @@ int main(int argc, char **argv)
   // Print the device information.
   printDeviceInfo(&deviceInfo);
 
+  // Start timer.
+  ftime(&start);
+
+  counter = 0;
+
   // Send commands at ~100Hz.
-  while (running == 1)
+  while (counter < 2000)
   {
     // Create a new command based on a sinusoidal wave.
     for (i = 0; i < deviceInfo.nmotor; ++i)
@@ -145,8 +155,9 @@ int main(int argc, char **argv)
     // Debug output: Print the state.
     // printState(&deviceInfo, &sensor);
 
-    if (++counter == 10000)
-      counter = 0;
+    //if (++counter == 10000)
+    //  counter = 0;
+    counter++;
 
     unsigned int sleeptime_us = 10000;
 #ifdef _WIN32
@@ -155,6 +166,12 @@ int main(int argc, char **argv)
     usleep(sleeptime_us);
 #endif
   }
+
+  ftime(&end);
+  diff = (int) (1000.0 * (end.time - start.time)
+    + (end.millitm - start.millitm));
+
+  printf("Frequency: %d\n", counter / diff);
 
   return 0;
 }
