@@ -160,6 +160,12 @@ hxResult hx_update(int _target,
                    const hxCommand *_command,
                    hxSensor *_sensor);
 
+/// \brief Synchronous read-only update supported by the device.
+/// Advances simulation state and sleep for remainder of update step,
+/// or wait for physical device to finish update.
+/// Return sensor data.
+hxResult hx_readsensors(int _target, hxSensor *_sensor);
+
 #ifdef __cplusplus
 }
 #endif

@@ -24,6 +24,7 @@
 
 std::string deviceInfoTopic = "/haptix/gazebo/GetDeviceInfo";
 std::string updateTopic = "/haptix/gazebo/Update";
+std::string readTopic = "/haptix/gazebo/Read";
 
 int numMotors = 4;
 int numJoints = 5;
@@ -107,6 +108,48 @@ void onUpdate(const std::string &_service,
 }
 
 //////////////////////////////////////////////////
+/// \brief Provide an "Read" service.
+void onRead(const std::string &_service,
+  const haptix::comm::msgs::hxSensor &/*_req*/,
+  haptix::comm::msgs::hxSensor &_rep,
+  bool &_result)
+{
+  // Check the name of the service received.
+  EXPECT_EQ(_service, readTopic);
+
+  // Create some dummy response.
+  for (int i = 0; i < numMotors; ++i)
+  {
+    _rep.add_motor_pos(i);
+    _rep.add_motor_vel(i + 1);
+    _rep.add_motor_torque(i + 2);
+  }
+
+  for (int i = 0; i < numJoints; ++i)
+  {
+    _rep.add_joint_pos(i);
+    _rep.add_joint_vel(i + 1);
+  }
+
+  for (int i = 0; i < numContactSensors; ++i)
+    _rep.add_contact(i);
+
+  for (int i = 0; i < numIMUs; ++i)
+  {
+    haptix::comm::msgs::imu *linacc = _rep.add_imu_linacc();
+    linacc->set_x(i);
+    linacc->set_y(i + 1);
+    linacc->set_z(i + 2);
+    haptix::comm::msgs::imu *angvel = _rep.add_imu_angvel();
+    angvel->set_x(i + 3);
+    angvel->set_y(i + 4);
+    angvel->set_z(i + 5);
+  }
+
+  _result = true;
+}
+
+//////////////////////////////////////////////////
 /// \brief Check that we can use the C-wrapper.
 TEST(CommTest, BasicUsage)
 {
@@ -117,6 +160,9 @@ TEST(CommTest, BasicUsage)
 
   // Advertise the "update" service.
   node.Advertise(updateTopic, onUpdate);
+
+  // Advertise the "read" service.
+  node.Advertise(readTopic, onRead);
 
   EXPECT_EQ(hx_connect(hxGAZEBO), hxOK);
 
@@ -141,6 +187,36 @@ TEST(CommTest, BasicUsage)
   }
 
   EXPECT_EQ(hx_update(hxGAZEBO, &cmd, &sensor), hxOK);
+
+  // Check the response.
+  for (int i = 0; i < deviceInfo.nmotor; ++i)
+  {
+    EXPECT_FLOAT_EQ(sensor.motor_pos[i], i);
+    EXPECT_FLOAT_EQ(sensor.motor_vel[i], i + 1);
+    EXPECT_FLOAT_EQ(sensor.motor_torque[i], i + 2);
+  }
+
+  for (int i = 0; i < deviceInfo.njoint; ++i)
+  {
+    EXPECT_FLOAT_EQ(sensor.joint_pos[i], i);
+    EXPECT_FLOAT_EQ(sensor.joint_vel[i], i + 1);
+  }
+
+  for (int i = 0; i < deviceInfo.ncontactsensor; ++i)
+    EXPECT_FLOAT_EQ(sensor.contact[i], i);
+
+  for (int i = 0; i < deviceInfo.nIMU; ++i)
+  {
+    EXPECT_FLOAT_EQ(sensor.IMU_linacc[i][0], i);
+    EXPECT_FLOAT_EQ(sensor.IMU_linacc[i][1], i + 1);
+    EXPECT_FLOAT_EQ(sensor.IMU_linacc[i][2], i + 2);
+    EXPECT_FLOAT_EQ(sensor.IMU_angvel[i][0], i + 3);
+    EXPECT_FLOAT_EQ(sensor.IMU_angvel[i][1], i + 4);
+    EXPECT_FLOAT_EQ(sensor.IMU_angvel[i][2], i + 5);
+  }
+
+  // Test hx_readsensors
+  EXPECT_EQ(hx_readsensors(hxGAZEBO, &sensor), hxOK);
 
   // Check the response.
   for (int i = 0; i < deviceInfo.nmotor; ++i)
