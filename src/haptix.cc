@@ -46,7 +46,7 @@ extern "C" {
   ignition::transport::Node *getHxNodeInstance()
   {
     if (!haptixNode)
-      haptixNode = new ignition::transport::Node(ProjectTopic);
+      haptixNode = new ignition::transport::Node();
 
     return haptixNode;
   }
@@ -128,10 +128,10 @@ extern "C" {
         return hxOK;
       }
       else
-        std::cerr << "hx_getdevicefo() Service call failed." << std::endl;
+        std::cerr << "hx_getdeviceinfo() Service call failed." << std::endl;
     }
     else
-      std::cerr << "hx_getdevicefo() Service call timed out." << std::endl;
+      std::cerr << "hx_getdeviceinfo() Service call timed out." << std::endl;
 
     return hxBAD;
   }

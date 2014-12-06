@@ -15,6 +15,9 @@
  *
 */
 
+/// \file haptix.h
+/// \brief Structures and functions for the primary HAPTIX API.
+
 #ifndef __HAPTIX_COMM_HAPTIX_H
 #define __HAPTIX_COMM_HAPTIX_H
 
