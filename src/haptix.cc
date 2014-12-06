@@ -215,14 +215,6 @@ extern "C" {
     bool result;
     ignition::transport::Node *hxNode = getHxNodeInstance();
 
-    /*for (int i = 0; i < hxMAXMOTOR; ++i)
-    {
-      req.add_ref_pos(_command->ref_pos[i]);
-      req.add_ref_vel(_command->ref_vel[i]);
-      req.add_gain_pos(_command->gain_pos[i]);
-      req.add_gain_vel(_command->gain_vel[i]);
-    }*/
-
     // Request the service.
     // TODO: Create new service in HaptixControlPlugin, "Read"
     std::string service = "/" + ProjectTopic + "/" + DeviceTopics[_target] +
