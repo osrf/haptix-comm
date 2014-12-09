@@ -28,27 +28,27 @@ extern "C" {
 /// \brief Maximum number of motors.
 /// Defines the maximum number of motors across any particular device.
 /// It is used when allocating sensor and command objects related to the motors.
-/// The number of motors for a particular device is defined in _hxDeviceInfo.
+/// The number of motors for a particular device is defined in #_hxDeviceInfo.
 #define hxMAXMOTOR              32
 
 /// \brief Maximum number of joints.
 /// Defines the maximum number of joints across any particular device.
 /// It is used when allocating sensor properties related to the joints.
-/// number of joints for a particular device is defined in _hxDeviceInfo.
+/// number of joints for a particular device is defined in #_hxDeviceInfo.
 #define hxMAXJOINT              32
 
 /// \brief Maximum number of contact sensors.
 /// Defines the maximum number of contact sensors across any particular device.
 /// It is used when allocating an hxSensor.contact object.
 /// The number of contact sensors for a particular device is defined in
-/// _hxDeviceInfo.
+/// #_hxDeviceInfo.
 #define hxMAXCONTACTSENSOR      32
 
 /// \brief Maximum number of IMUs.
 /// Defines the maximum number of inertial measurement units across any
 /// particular device.
 /// It is used when allocating sensor objects related to IMUs.
-/// The number of IMUs for a particular device is defined in _hxDeviceInfo.
+/// The number of IMUs for a particular device is defined in #_hxDeviceInfo.
 #define hxMAXIMU                32
 
 /// \brief API return codes.
@@ -71,7 +71,7 @@ typedef enum
 typedef enum
 {
   /// DEKA physical arm
-  hxDEKA = 0,                            
+  hxDEKA = 0,
   /// JHU APL MPL physical arm
   hxMPL,
   /// Gazebo simulator
@@ -134,17 +134,17 @@ struct _hxSensor
 {
   /// \brief Motor position (rad).
   /// An array of floats of size #hxMAXMOTOR. Entries 0 through
-  /// _hxDeviceInfo::nmotors-1 contain the angular positions for each motor.
+  /// hxDeviceInfo::nmotors-1 contain the angular positions for each motor.
   /// The ordering of these motor values is consistent across the different
-  /// motor-related properties of _hxSensor.
+  /// motor-related properties of #hxSensor.
   ///
   /// These values cannot exceed the minimum and maximum values specified in
-  /// _hxDeviceInfo::limit.
+  /// hxDeviceInfo::limit.
   float motor_pos[hxMAXMOTOR];
 
   /// \brief Motor velocity (rad/s).
   /// An array of floats of size #hxMAXMOTOR. Entries 0 through
-  /// _hxDeviceInfo::nmotors-1 contain the angular velocity for
+  /// hxDeviceInfo::nmotors-1 contain the angular velocity for
   /// each motor. The ordering of
   /// these motor values is consistent across the different motor-related
   /// properties of hxSensor.
@@ -152,30 +152,30 @@ struct _hxSensor
 
   /// \brief Torque applied by embedded controller (Nm).
   /// An array of floats of size #hxMAXMOTOR. Entries 0 through
-  /// _hxDeviceInfo::nmotors-1 contain the torque for each motor.
+  /// hxDeviceInfo::nmotors-1 contain the torque for each motor.
   /// The ordering of
   /// these motor values is consistent across the different motor-related
-  /// properties of _hxSensor.
+  /// properties of #hxSensor.
   float motor_torque[hxMAXMOTOR];
 
   /// \brief Joint position (rad).
   /// An array of floats of size #hxMAXJOINT. Entries 0 through
-  /// _hxDeviceInfo::njoint-1 contain the angular position for each joint.
+  /// hxDeviceInfo::njoint-1 contain the angular position for each joint.
   /// The ordering of these joint values is consistent with
-  /// _hxSensor::joint_vel.
+  /// hxSensor::joint_vel.
   float joint_pos[hxMAXJOINT];
 
   /// \brief Joint velocity (rad/s).
   /// An array of floats of size #hxMAXJOINT.
-  /// Entries 0 through _hxDeviceInfo::njoint-1 contain the angular position
+  /// Entries 0 through hxDeviceInfo::njoint-1 contain the angular position
   /// for each joint.
   /// The ordering of these joint values is consistent with
-  /// _hxSensor::joint_pos.
+  /// hxSensor::joint_pos.
   float joint_vel[hxMAXJOINT];
 
   /// \brief Contact normal force (N).
   /// An array of floats of size #hxMAXCONTACTSENSOR. Entries 0 through
-  /// _hxDeviceInfo::ncontactsensor contain the contact magnitude for each
+  /// hxDeviceInfo::ncontactsensor contain the contact magnitude for each
   /// contact sensor.
   float contact[hxMAXCONTACTSENSOR];
 
@@ -183,38 +183,55 @@ struct _hxSensor
   /// An array of floats of size #hxMAXIMUx3 where each row is a 3-dimensional
   /// linear acceleration vector. The entries of each row are measured in
   /// meters per second squared and ordered (x, y, z).
-  /// Entries 0 through _hxDeviceInfo::nimu-1 contain the acceleration vectors
+  /// Entries 0 through hxDeviceInfo::nimu-1 contain the acceleration vectors
   /// for each IMU.\n
-  /// The ordering of these IMU values is consistent with _hxSensor::IMU_angvel.
+  /// The ordering of these IMU values is consistent with hxSensor::IMU_angvel.
   float IMU_linacc[hxMAXIMU][3];
 
   /// \brief 3D angular velocity (rad/s).
   /// An array of floats of size #hxMAXIMUx3 where each row is a 3-dimensional
   /// angular velocity vector. The entries of each row are measured in
   /// radians per second and ordered (x, y, z).
-  /// Entries 0 through _hxDeviceInfo::nimu-1 contain the velocity vectors
+  /// Entries 0 through hxDeviceInfo::nimu-1 contain the velocity vectors
   /// for each IMU.
   ///
-  /// The ordering of these IMU values is consistent with _hxSensor::IMU_linacc.
+  /// The ordering of these IMU values is consistent with hxSensor::IMU_linacc.
   float IMU_angvel[hxMAXIMU][3];
 };
 
-/// \brief Motor commands.
+/// \brief Motor command data.
+/// This data structure specifies the next request to be send to the simulated
+/// limb model.
+///
+/// It is an input of the function hx_update(int, const hxCommand*, hxSensor*).
 struct _hxCommand
 {
   /// \brief Timestamp.
+  /// This field is not used.
   double timestamp;
 
-  /// \brief Reference positions.
+  /// \brief Target reference positions (rad).
+  /// An array of floats of size #hxMAXMOTOR. Entries 0 through
+  /// hxDeviceInfo::nmotors-1 contain the desired angular positions for each
+  /// motor.
   float ref_pos[hxMAXMOTOR];
 
-  /// \brief Reference velocities.
+  /// \brief Target reference velocities (rad/s).
+  /// An array of floats of size #hxMAXMOTOR. Entries 0 through
+  /// hxDeviceInfo::nmotors-1 contain the desired angular velocities for each
+  /// motor.
   float ref_vel[hxMAXMOTOR];
 
-  /// \brief Position feedback gains.
+  /// \brief Target position feedback gains.
+  /// An array of floats of size #hxMAXMOTOR. Entries 0 through
+  /// hxDeviceInfo::nmotors-1 contain the position gain that will be
+  /// applied during the update phase of the model controller.
   float gain_pos[hxMAXMOTOR];
 
-  /// \brief Velocity feedback gains.
+  /// \brief Target velocity feedback gains.
+  /// An array of floats of size #hxMAXMOTOR. Entries 0 through
+  /// hxDeviceInfo::nmotors-1 contain the velocity gain that will be
+  /// applied during the update phase of the model controller.
   float gain_vel[hxMAXMOTOR];
 };
 
@@ -231,31 +248,44 @@ typedef struct _hxSensor hxSensor;
 typedef struct _hxCommand hxCommand;
 
 /// \brief Connect to specified device/simulator target.
-/// Multile calls to this function are allowed with different targets.
-/// \param[in] _target Device to be connected.
+/// Multiple calls to this function are allowed with different targets.
+///
+/// This function is not needed for use with Gazebo but added for code
+/// compatibility with other simulators.
+/// \param[in] _target Device to be connected. The valid targets are defined in
+/// #hxTarget.
 /// \return 'hxOK' if the connection succeed or an error code otherwise.
 hxResult hx_connect(int _target);
 
 /// \brief Close connection to specified device/simulator target.
-/// \param[in] _target Device to be disconnected.
+///
+/// This function is not needed for use with Gazebo but added for code
+/// compatibility with other simulators.
+/// \param[in] _target Device to be disconnected. The valid targets are defined
+/// in #hxTarget.
 /// \return 'hxOK' if the disconnection succeed or an error code otherwise.
 hxResult hx_close(int _target);
 
-/// \brief Get info for specified device/simulator target.
-/// \param[in] _target Requested device.
-/// \param[out] _deviceInfo Device information requested.
+/// \brief Get information for a specified device/simulator target.
+/// \param[in] _target Requested device. The valid targets are defined in
+/// #hxTarget.
+/// \param[out] _deviceInfo Device information requested. See #_hxDeviceInfo
+/// for a list of available fields.
 /// \return 'hxOK' if the operation succeed or an error code otherwise.
 hxResult hx_getdeviceinfo(int _target,
                           hxDeviceInfo *_deviceinfo);
 
-/// \brief Synchronous update at the rate supported by the device:
-///   1. set motor command.
+/// \brief Synchronous command update at the rate supported by the device:
+///   1. Set the new motor command.
 ///   2. Advance simulation state and sleep for remainder of update step,
 ///      or wait for physical device to finish update.
 ///   3. Return simulated or physical sensor data.
-/// \param[in] _target Device to update.
-/// \param[in] _command New command to be sent.
-/// \param[out] _sensor Sensor data received after the update.
+/// \param[in] _target Device to update. The valid targets are defined in
+/// #hxTarget.
+/// \param[in] _command New command to be sent. See #_hxCommand for the full
+/// description of fields contained in a command request.
+/// \param[out] _sensor Sensor data received after the update. See #_hxSensor
+/// for the full description of fields contained the state response.
 /// \return 'hxOK' if the operation succeed or an error code otherwise.
 hxResult hx_update(int _target,
                    const hxCommand *_command,
