@@ -83,14 +83,16 @@ typedef enum
 /// \brief Device information.
 /// This data structure specifies inherent properties of the device that
 /// do not change during simulation (for
-/// example, the number of joints in the robot arm).\n
+/// example, the number of joints in the robot arm).
+///
 /// It can be retrieved from a communication target by calling
 /// hx_getdeviceinfo(int, hxDeviceInfo*).
 struct _hxDeviceInfo
 {
   /// \brief Number of motors.
   /// Motors are commanded through filling an hxCommand struct and calling
-  /// hx_update(int, const hxCommand*, hxSensor*).\n
+  /// hx_update(int, const hxCommand*, hxSensor*).
+  ///
   /// The number of motors is less than or equal to the number of
   /// joints. For example, one motor may control several joints through
   /// kinematic joint coupling.
@@ -99,7 +101,8 @@ struct _hxDeviceInfo
   /// \brief Number of hinge joints.
   /// The joints are passive and are moved as a side effect of commanding
   /// the motors. A joint may correspond directly to the movement of a motor,
-  /// or it may be commanded indirectly through joint coupling.\n
+  /// or it may be commanded indirectly through joint coupling.
+  ///
   /// The number of joints is greater than or equal to the number of
   /// motors.
   int njoint;
@@ -124,16 +127,17 @@ struct _hxDeviceInfo
 
 /// \brief Sensor data.
 /// This data structure specifies the sensor information gained in a simulation
-/// update.\n
+/// update.
+///
 /// It is an output of the function hx_update(int, const hxCommand*, hxSensor*).
 struct _hxSensor
 {
   /// \brief Motor position (rad).
   /// An array of floats of size #hxMAXMOTOR. Entries 0 through
   /// _hxDeviceInfo::nmotors-1 contain the angular positions for each motor.
-  /// The ordering of
-  /// these motor values is consistent across the different motor-related
-  /// properties of _hxSensor.\n
+  /// The ordering of these motor values is consistent across the different
+  /// motor-related properties of _hxSensor.
+  ///
   /// These values cannot exceed the minimum and maximum values specified in
   /// _hxDeviceInfo::limit.
   float motor_pos[hxMAXMOTOR];
@@ -189,7 +193,8 @@ struct _hxSensor
   /// angular velocity vector. The entries of each row are measured in
   /// radians per second and ordered (x, y, z).
   /// Entries 0 through _hxDeviceInfo::nimu-1 contain the velocity vectors
-  /// for each IMU.\n
+  /// for each IMU.
+  ///
   /// The ordering of these IMU values is consistent with _hxSensor::IMU_linacc.
   float IMU_angvel[hxMAXIMU][3];
 };
