@@ -26,78 +26,168 @@ extern "C" {
 #endif
 
 /// \brief Maximum number of motors.
+/// Defines the maximum number of motors across any particular device.
+/// It is used when allocating sensor and command objects related to the motors.
+/// The number of motors for a particular device is defined in hxDeviceInfo.
 #define hxMAXMOTOR              32
 
 /// \brief Maximum number of joints.
+/// Defines the maximum number of joints across any particular device.
+/// It is used when allocating sensor properties related to the joints.
+/// number of joints for a particular device is defined in hxDeviceInfo.
 #define hxMAXJOINT              32
 
 /// \brief Maximum number of contact sensors.
+/// Defines the maximum number of contact sensors across any particular device.
+/// It is used when allocating an hxSensor.contact object.
+/// The number of contact sensors for a particular device is defined in
+/// hxDeviceInfo.
 #define hxMAXCONTACTSENSOR      32
 
 /// \brief Maximum number of IMUs.
+/// Defines the maximum number of inertial measurement units across any
+/// particular device.
+/// It is used when allocating sensor objects related to IMUs.
+/// The number of IMUs for a particular device is defined in hxDeviceInfo.
 #define hxMAXIMU                32
 
 /// \brief API return codes.
+/// These return codes are used to specify the outcome of a haptix-comm
+/// function (e.g. success or failure).
 typedef enum
 {
-  hxOK = 0,                               // success
-  hxBAD,                                  // a bad thing
-  hxHORRIBLE                              // another bad thing
+  /// success
+  hxOK = 0,
+  /// a bad thing
+  hxBAD,
+  /// another bad thing
+  hxHORRIBLE
 } hxResult;
 
 /// \brief Communication targets.
+/// This enumeration specifies the possible devices (physical or simulated)
+/// that communicate over the HAPTIX API. Specifying the target may be important
+/// in case a controller has different behavior across different devices.
 typedef enum
 {
-  hxDEKA = 0,                             // DEKA physical arm
-  hxMPL,                                  // MPL physical arm
-  hxGAZEBO,                               // Gazebo simulator
-  hxMUJOCO                                // MuJoCo simulator
+  /// DEKA physical arm
+  hxDEKA = 0,                            
+  /// JHU APL MPL physical arm
+  hxMPL,
+  /// Gazebo simulator
+  hxGAZEBO,
+  /// MuJoCo simulator
+  hxMUJOCO
 } hxTarget;
 
 /// \brief Device information.
+/// This data structure specifies inherent properties of the device that
+/// do not change during simulation (for
+/// example, the number of joints in the robot arm).\n
+/// It can be retrieved from a communication target by calling
+/// hx_getdeviceinfo.
 struct _hxDeviceInfo
 {
   /// \brief Number of motors.
+  /// Motors are commanded through filling an hxCommand struct and calling
+  /// hx_update.\n
+  /// The number of motors is less than or equal to the number of
+  /// joints. For example, one motor may control several joints through
+  /// kinematic joint coupling.
   int nmotor;
 
   /// \brief Number of hinge joints.
+  /// The joints are passive and are moved as a side effect of commanding
+  /// the motors. A joint may correspond directly to the movement of a motor,
+  /// or it may be commanded indirectly through joint coupling.\n
+  /// The number of joints is greater than or equal to the number of
+  /// motors.
   int njoint;
 
   /// \brief Number of contact sensors.
+  /// A contact sensor measures the magnitude of the force on that sensor.
   int ncontactsensor;
 
-  /// \brief Number of IMUs.
+  /// \brief Number of IMUs (inertial measurement units).
+  /// An IMU or inertial measurement unit measures the 3-dimensional linear
+  /// acceleration vector and the 3-dimensional angular velocity vector
+  /// experienced by the sensor.
   int nIMU;
 
-  /// \brief Minimum and maximum joint angles (rad).
+  /// \brief Minimum and maximum motor angles (rad).
+  /// An m by 2 array representing the angular limits of each motor in the
+  /// device, where m is the maximum number of motors. Each 1x2 row of the array
+  /// corresponds to a motor. The first entry in the row is the lower limit
+  /// of the motor. The second entry is the upper limit of the motor.
   float limit[hxMAXMOTOR][2];
 };
 
 /// \brief Sensor data.
+/// This data structure specifies the sensor information gained in a simulation
+/// update.\n
+/// It is an output of the function hx_update.
 struct _hxSensor
 {
   /// \brief Motor position (rad).
+  /// An array of floats of size hxMAXMOTOR. Entries 0 through
+  /// hxDeviceInfo.nmotors-1 contain the angular positions for each motor.
+  /// The ordering of
+  /// these motor values is consistent across the different motor-related
+  /// properties of hxSensor.\n
+  /// These values cannot exceed the minimum and maximum values specified in
+  /// hxDeviceInfo.limit.
   float motor_pos[hxMAXMOTOR];
 
   /// \brief Motor velocity (rad/s).
+  /// An array of floats of size hxMAXMOTOR. Entries 0 through
+  /// hxDeviceInfo.nmotors-1 contain the angular velocity for
+  /// each motor. The ordering of
+  /// these motor values is consistent across the different motor-related
+  /// properties of hxSensor.
   float motor_vel[hxMAXMOTOR];
 
   /// \brief Torque applied by embedded controller (Nm).
+  /// An array of floats of size hxMAXMOTOR. Entries 0 through
+  /// hxDeviceInfo.nmotors-1 contain the torque for each motor. The ordering of
+  /// these motor values is consistent across the different motor-related
+  /// properties of hxSensor.
   float motor_torque[hxMAXMOTOR];
 
   /// \brief Joint position (rad).
+  /// An array of floats of size hxMAXJOINT. Entries 0 through
+  /// hxDeviceInfo.njoint-1 contain the angular position for each joint.
+  /// The ordering of these joint values is consistent with hxSensor.joint_vel.
   float joint_pos[hxMAXJOINT];
 
   /// \brief Joint velocity (rad/s).
+  /// An array of floats of size hxMAXJOINT.
+  /// Entries 0 through hxDeviceInfo.njoint-1 contain the angular position
+  /// for each joint.
+  /// The ordering of these joint values is consistent with hxSensor.joint_pos.
   float joint_vel[hxMAXJOINT];
 
   /// \brief Contact normal force (N).
+  /// An array of floats of size hxMAXCONTACTSENSOR. Entries 0 through
+  /// hxDeviceInfo.ncontactsensor contain the contact magnitude for each
+  /// contact sensor.
   float contact[hxMAXCONTACTSENSOR];
 
   /// \brief 3D linear acceleration (m/s^2).
+  /// An array of floats of size hxMAXIMUx3 where each row is a 3-dimensional
+  /// linear acceleration vector. The entries of each row are measured in
+  /// meters per second squared and ordered (x, y, z).
+  /// Entries 0 through hxDeviceInfo.nimu-1 contain the acceleration vectors
+  /// for each IMU.\n
+  /// The ordering of these IMU values is consistent with hxSensor.IMU_angvel.
   float IMU_linacc[hxMAXIMU][3];
 
   /// \brief 3D angular velocity (rad/s).
+  /// An array of floats of size hxMAXIMUx3 where each row is a 3-dimensional
+  /// angular velocity vector. The entries of each row are measured in
+  /// radians per second and ordered (x, y, z).
+  /// Entries 0 through hxDeviceInfo.nimu-1 contain the velocity vectors
+  /// for each IMU.\n
+  /// The ordering of these IMU values is consistent with hxSensor.IMU_linacc.
   float IMU_angvel[hxMAXIMU][3];
 };
 
