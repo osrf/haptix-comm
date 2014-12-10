@@ -16,6 +16,8 @@
 */
 /// \file haptix_sim.h
 /// \brief Structures and functions for simulation specific functionality.
+/// This header is not needed for use with Gazebo but added for code
+/// compatibility with other simulators.
 
 #ifndef __HAPTIX_COMM_HAPTIX_SIM_H
 #define __HAPTIX_COMM_HAPTIX_SIM_H
