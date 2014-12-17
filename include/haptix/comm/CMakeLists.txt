@@ -9,6 +9,7 @@ set (headers
 ### Do not change the following
 set (ign_headers "" CACHE INTERNAL "Ignition headers" FORCE)
 foreach (hdr ${headers})
+  install(FILES ${hdr} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
   APPEND_TO_CACHED_STRING(ign_headers
     "Ignition headers" "#include <ignition/${IGN_PROJECT_NAME}/${hdr}>\n")
 endforeach()
