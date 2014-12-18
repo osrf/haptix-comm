@@ -16,6 +16,11 @@ link_directories(${HAPTIX-COMM_LIBRARY_DIRS})
 find_package(ignition-transport QUIET REQUIRED)
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${IGNITION-TRANSPORT_CXX_FLAGS}")
 
+# Visual Studio enables c++11 support by default
+if (NOT MSVC)
+  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE_UPPERCASE}} -std=c++11")
+endif()
+
 include_directories(${IGNITION-TRANSPORT_INCLUDE_DIRS})
 link_directories(${IGNITION-TRANSPORT_LIBRARY_DIRS})
 
@@ -79,3 +84,6 @@ target_link_libraries(responser ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPORT_LI
 
 add_executable(controller hx_controller.c)
 target_link_libraries(controller ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARIES} ${EXTRA_LIBRARIES})
+
+add_executable(packetClient packetClient.cc)
+target_link_libraries(packetClient pthread)
