@@ -128,6 +128,9 @@ for %%b in (Debug, Release) do (
     ::xcopy "ZeroMQ 3.2.4\bin\msvc*" "!installdir!\deps\ZeroMQ 3.2.4\bin" /s /e /i
     xcopy "ZeroMQ 3.2.4\include" "!installdir!\deps\ZeroMQ 3.2.4\include" /s /e /i
     xcopy "ZeroMQ 3.2.4\lib\libzmq-v120-mt-3*" "!installdir!\deps\ZeroMQ 3.2.4\lib" /s /e /i
+    :: - zeromq matlab stuff
+    mkdir "!installdir!\matlab\"
+    xcopy "ZeroMQ 3.2.4\bin\libzmq-v120-mt-3*.dll" "!installdir!\matlab" /s /e /i
     :: Ignition transport
     mkdir "!installdir!\deps\ign-transport"
     xcopy "ign-transport\build\install\!build_type!\include" "!installdir!\deps\ign-transport\!build_type!\include" /s /e /i
@@ -139,6 +142,8 @@ for %%b in (Debug, Release) do (
     xcopy "haptix-comm\build\install\!build_type!\lib" "!installdir!\haptix-comm\!build_type!\lib" /s /e /i
     xcopy "haptix-comm\haptix-comm.props" "!installdir!"
     xcopy "haptix-comm\haptix-comm.info" "!installdir!"
+    :: - haptix-comm MATLAB stuff
+    xcopy "haptix-comm\matlab\*" "!installdir!\matlab"
 
     set sdk_zip_file=hx_gz_sdk-!build_type!-%haptix_hash%-win%BITNESS%.zip
 
