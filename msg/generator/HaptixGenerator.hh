@@ -33,15 +33,15 @@ class HaptixGenerator : public CodeGenerator
 
   public: virtual ~HaptixGenerator();
 
-  public: virtual bool Generate(const FileDescriptor* file,
-                const string& parameter,
-                OutputDirectory *directory,
-                string* error) const;
+  public: virtual bool Generate(const FileDescriptor* _file,
+                const string& _parameter,
+                OutputDirectory *_generator_context,
+                string* _error) const;
 
   // private: GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(HaptixGenerator);
 };
-}
-}
-}
-}
+} // namespace cpp
+} // namespace compiler
+} // namespace protobuf
+} // namespace google
 #endif

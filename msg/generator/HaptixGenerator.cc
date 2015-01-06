@@ -36,7 +36,7 @@ namespace cpp {
 HaptixGenerator::HaptixGenerator(const std::string &/*_name*/) {}
 HaptixGenerator::~HaptixGenerator() {}
 bool HaptixGenerator::Generate(const FileDescriptor *_file,
-                               const string &/*parameter*/,
+                               const string &/*_parameter*/,
                                OutputDirectory *_generator_context,
                                std::string * /*_error*/) const
 {
@@ -46,7 +46,7 @@ bool HaptixGenerator::Generate(const FileDescriptor *_file,
   std::string sourceFilename = _file->name();
   boost::replace_last(sourceFilename, ".proto", ".pb.cc");
 
-  // Add boost shared point include
+  // GCC system_header pragma: treat the rest of this file as a system header
   {
     scoped_ptr<io::ZeroCopyOutputStream> output(
         _generator_context->OpenForInsert(headerFilename, "includes"));
@@ -55,7 +55,7 @@ bool HaptixGenerator::Generate(const FileDescriptor *_file,
     printer.Print("#pragma GCC system_header", "name", "includes");
   }
 
-  // Add boost shared point include
+  // Ignore -Wshadow diagnostic
   {
     scoped_ptr<io::ZeroCopyOutputStream> output(
         _generator_context->OpenForInsert(sourceFilename, "includes"));
@@ -65,7 +65,7 @@ bool HaptixGenerator::Generate(const FileDescriptor *_file,
                   "includes");
   }
 
-
+  // Add boost shared point include
   {
     scoped_ptr<io::ZeroCopyOutputStream> output(
         _generator_context->OpenForInsert(headerFilename, "includes"));
@@ -108,7 +108,8 @@ bool HaptixGenerator::Generate(const FileDescriptor *_file,
 
   return true;
 }
-}
-}
-}
-}
+
+} // namespace cpp
+} // namespace compiler
+} // namespace protobuf
+} // namespace google
