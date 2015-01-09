@@ -126,6 +126,11 @@ message (STATUS "\n\n====== Finding 3rd Party Packages ======")
 include (${project_cmake_dir}/SearchForStuff.cmake)
 message (STATUS "----------------------------------------\n")
 
+if (OCTAVE_SUPPORT_FOUND)
+  add_subdirectory(matlab)
+endif()
+
+
 #####################################
 MESSAGE(STATUS "Checking ignition build type")
 # Set the default build type
