@@ -15,6 +15,7 @@
  *
 */
 
+#include <cstring>
 #include <iostream>
 #include <array>
 #include <ignition/transport.hh>
@@ -86,6 +87,9 @@ extern "C" {
   //////////////////////////////////////////////////
   hxResult hx_getdeviceinfo(int _target, hxDeviceInfo* _deviceinfo)
   {
+    // Initialize the C struct.
+    memset(_deviceinfo, 0, sizeof(hxDeviceInfo));
+
     // Sanity check.
     if (!checkTarget(_target))
       return hxBAD;
@@ -139,6 +143,9 @@ extern "C" {
   //////////////////////////////////////////////////
   hxResult hx_update(int _target, const hxCommand* _command, hxSensor* _sensor)
   {
+    // Initialize the C struct.
+    memset(_sensor, 0, sizeof(hxSensor));
+
     // Sanity check.
     if (!checkTarget(_target))
       return hxBAD;
