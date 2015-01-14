@@ -79,3 +79,6 @@ target_link_libraries(responser ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPORT_LI
 
 add_executable(controller hx_controller.c)
 target_link_libraries(controller ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARIES} ${EXTRA_LIBRARIES})
+
+add_executable(sensor hx_sensor.c)
+target_link_libraries(sensor ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARIES} ${EXTRA_LIBRARIES})
