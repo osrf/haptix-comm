@@ -15,6 +15,7 @@
  *
 */
 
+#include <cstring>
 #include <iostream>
 #include <array>
 #include <ignition/transport.hh>
@@ -86,6 +87,9 @@ extern "C" {
   //////////////////////////////////////////////////
   hxResult hx_getdeviceinfo(int _target, hxDeviceInfo* _deviceinfo)
   {
+    // Initialize the C struct.
+    memset(_deviceinfo, 0, sizeof(hxDeviceInfo));
+
     // Sanity check.
     if (!checkTarget(_target))
       return hxBAD;
@@ -139,6 +143,9 @@ extern "C" {
   //////////////////////////////////////////////////
   hxResult hx_update(int _target, const hxCommand* _command, hxSensor* _sensor)
   {
+    // Initialize the C struct.
+    memset(_sensor, 0, sizeof(hxSensor));
+
     // Sanity check.
     if (!checkTarget(_target))
       return hxBAD;
@@ -207,8 +214,11 @@ extern "C" {
   hxResult hx_readsensors(int _target, hxSensor *_sensor)
   {
     // Sanity check.
-    if (!checkTarget(_target))
+    if (!checkTarget(_target) || !_sensor)
       return hxBAD;
+
+    // Initialize the C struct.
+    memset(_sensor, 0, sizeof(hxSensor));
 
     haptix::comm::msgs::hxSensor req;
     haptix::comm::msgs::hxSensor rep;
@@ -221,46 +231,44 @@ extern "C" {
         "/Read";
     bool executed = hxNode->Request(service, req, Timeout, rep, result);
 
-    if (executed)
+    if (!executed)
     {
-      if (result)
-      {
-        // Fill the struct with the response.
-        for (int i = 0; i < rep.motor_pos_size(); ++i)
-        {
-          _sensor->motor_pos[i] = rep.motor_pos(i);
-          _sensor->motor_vel[i] = rep.motor_vel(i);
-          _sensor->motor_torque[i] = rep.motor_torque(i);
-        }
-
-        for (int i = 0; i < rep.joint_pos_size(); ++i)
-        {
-          _sensor->joint_pos[i] = rep.joint_pos(i);
-          _sensor->joint_vel[i] = rep.joint_vel(i);
-        }
-
-        for (int i = 0; i < rep.contact_size(); ++i)
-          _sensor->contact[i] = rep.contact(i);
-
-        for (int i = 0; i < rep.imu_linacc_size(); ++i)
-        {
-          _sensor->IMU_linacc[i][0] = rep.imu_linacc(i).x();
-          _sensor->IMU_linacc[i][1] = rep.imu_linacc(i).y();
-          _sensor->IMU_linacc[i][2] = rep.imu_linacc(i).z();
-          _sensor->IMU_angvel[i][0] = rep.imu_angvel(i).x();
-          _sensor->IMU_angvel[i][1] = rep.imu_angvel(i).y();
-          _sensor->IMU_angvel[i][2] = rep.imu_angvel(i).z();
-        }
-
-        return hxOK;
-      }
-      else
-        std::cerr << "hx_readsensors() Service call failed." << std::endl;
-    }
-    else
       std::cerr << "hx_readsensors() Service call timed out." << std::endl;
+      return hxBAD;
+    }
 
-    return hxBAD;
+    if (!result)
+    {
+      std::cerr << "hx_readsensors() Service call failed." << std::endl;
+      return hxBAD;
+    }
+
+    for (int i = 0; i < rep.motor_pos_size(); ++i)
+    {
+      _sensor->motor_pos[i] = rep.motor_pos(i);
+      _sensor->motor_vel[i] = rep.motor_vel(i);
+      _sensor->motor_torque[i] = rep.motor_torque(i);
+    }
+
+    for (int i = 0; i < rep.joint_pos_size(); ++i)
+    {
+      _sensor->joint_pos[i] = rep.joint_pos(i);
+      _sensor->joint_vel[i] = rep.joint_vel(i);
+    }
+
+    for (int i = 0; i < rep.contact_size(); ++i)
+      _sensor->contact[i] = rep.contact(i);
+
+    for (int i = 0; i < rep.imu_linacc_size(); ++i)
+    {
+      _sensor->IMU_linacc[i][0] = rep.imu_linacc(i).x();
+      _sensor->IMU_linacc[i][1] = rep.imu_linacc(i).y();
+      _sensor->IMU_linacc[i][2] = rep.imu_linacc(i).z();
+      _sensor->IMU_angvel[i][0] = rep.imu_angvel(i).x();
+      _sensor->IMU_angvel[i][1] = rep.imu_angvel(i).y();
+      _sensor->IMU_angvel[i][2] = rep.imu_angvel(i).z();
+    }
+
+    return hxOK;
   }
-
 }   // end extern "C"
