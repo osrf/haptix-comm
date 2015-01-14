@@ -13,6 +13,7 @@ foreach(mex_src ${mex_srcs})
     add_custom_command(
 	OUTPUT ${OCTAVE_OUTPUT_FILE}
 	COMMAND ${MKOCTFILE} --mex -I${CMAKE_SOURCE_DIR}/include -l${PROJECT_NAME_LOWER} -L${CMAKE_BINARY_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/${mex_src}
+	DEPENDS ${mex_srcs}
 	COMMENT "Generating mex file ${OCTAVE_NAME}"
 	VERBATIM)
 endforeach()
