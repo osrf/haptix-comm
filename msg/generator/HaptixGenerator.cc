@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2014 Open Source Robotics Foundation
+ * Copyright (C) 2015 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,87 +28,100 @@
 
 #include "HaptixGenerator.hh"
 
-namespace google {
-namespace protobuf {
-namespace compiler {
-namespace cpp {
-
-HaptixGenerator::HaptixGenerator(const std::string &/*_name*/) {}
-HaptixGenerator::~HaptixGenerator() {}
-bool HaptixGenerator::Generate(const FileDescriptor *_file,
-                               const string &/*parameter*/,
-                               OutputDirectory *_generator_context,
-                               std::string * /*_error*/) const
+namespace google
 {
-  std::string headerFilename = _file->name();
-  boost::replace_last(headerFilename, ".proto", ".pb.h");
-
-  std::string sourceFilename = _file->name();
-  boost::replace_last(sourceFilename, ".proto", ".pb.cc");
-
-  // Add boost shared point include
+  namespace protobuf
   {
-    scoped_ptr<io::ZeroCopyOutputStream> output(
-        _generator_context->OpenForInsert(headerFilename, "includes"));
-    io::Printer printer(output.get(), '$');
+    namespace compiler
+    {
+      namespace cpp
+      {
 
-    printer.Print("#pragma GCC system_header", "name", "includes");
+        HaptixGenerator::HaptixGenerator(const std::string &/*_name*/) {}
+        HaptixGenerator::~HaptixGenerator() {}
+        bool HaptixGenerator::Generate(const FileDescriptor *_file,
+            const string &/*_parameter*/,
+            OutputDirectory *_generatorContext,
+            std::string * /*_error*/) const
+        {
+          std::string headerFilename = _file->name();
+          boost::replace_last(headerFilename, ".proto", ".pb.h");
+
+          std::string sourceFilename = _file->name();
+          boost::replace_last(sourceFilename, ".proto", ".pb.cc");
+
+          // GCC system_header pragma:
+          // treat the rest of this file as a system header
+          {
+            scoped_ptr<io::ZeroCopyOutputStream> output(
+                _generatorContext->OpenForInsert(headerFilename, "includes"));
+            io::Printer printer(output.get(), '$');
+
+            printer.Print("#pragma GCC system_header", "name", "includes");
+          }
+
+          // Ignore -Wshadow diagnostic
+          {
+            scoped_ptr<io::ZeroCopyOutputStream> output(
+                _generatorContext->OpenForInsert(sourceFilename, "includes"));
+            io::Printer printer(output.get(), '$');
+
+            printer.Print("#pragma GCC diagnostic ignored \"-Wshadow\"",
+                "name", "includes");
+          }
+
+          // Add boost shared point include
+          {
+            scoped_ptr<io::ZeroCopyOutputStream> output(
+                _generatorContext->OpenForInsert(headerFilename, "includes"));
+            io::Printer printer(output.get(), '$');
+
+            printer.Print("#include <boost/shared_ptr.hpp>\n",
+                "name", "includes");
+          }
+
+          // Add boost shared typedef
+          {
+            scoped_ptr<io::ZeroCopyOutputStream> output(
+                _generatorContext->OpenForInsert(headerFilename,
+                  "namespace_scope"));
+            io::Printer printer(output.get(), '$');
+
+            std::string package = _file->package();
+            boost::replace_all(package, ".", "::");
+
+            std::string ptrType = "typedef boost::shared_ptr<" + package
+              + "::" + _file->message_type(0)->name() + "> "
+              + _file->message_type(0)->name() + "Ptr;\n";
+
+            printer.Print(ptrType.c_str(), "name", "namespace_scope");
+          }
+
+          // Add const boost shared typedef
+          {
+            scoped_ptr<io::ZeroCopyOutputStream> output(
+                _generatorContext->OpenForInsert(headerFilename,
+                  "global_scope"));
+
+            io::Printer printer(output.get(), '$');
+
+            std::string package = _file->package();
+            boost::replace_all(package, ".", "::");
+
+            std::string constType = "typedef const boost::shared_ptr<"
+              + package + "::" + _file->message_type(0)->name()
+              + " const> Const" + _file->message_type(0)->name() + "Ptr;";
+
+            printer.Print(constType.c_str(), "name", "global_scope");
+          }
+
+          return true;
+        }
+      // namespace cpp
+      }
+    // namespace compiler
+    }
+  // namespace protobuf
   }
-
-  // Add boost shared point include
-  {
-    scoped_ptr<io::ZeroCopyOutputStream> output(
-        _generator_context->OpenForInsert(sourceFilename, "includes"));
-    io::Printer printer(output.get(), '$');
-
-    printer.Print("#pragma GCC diagnostic ignored \"-Wshadow\"", "name",
-                  "includes");
-  }
-
-
-  {
-    scoped_ptr<io::ZeroCopyOutputStream> output(
-        _generator_context->OpenForInsert(headerFilename, "includes"));
-    io::Printer printer(output.get(), '$');
-
-    printer.Print("#include <boost/shared_ptr.hpp>\n", "name", "includes");
-  }
-
-  // Add boost shared typedef
-  {
-    scoped_ptr<io::ZeroCopyOutputStream> output(
-        _generator_context->OpenForInsert(headerFilename, "namespace_scope"));
-    io::Printer printer(output.get(), '$');
-
-    std::string package = _file->package();
-    boost::replace_all(package, ".", "::");
-
-    std::string ptrType = "typedef boost::shared_ptr<" + package
-      + "::" + _file->message_type(0)->name() + "> "
-      + _file->message_type(0)->name() + "Ptr;\n";
-
-    printer.Print(ptrType.c_str(), "name", "namespace_scope");
-  }
-
-  // Add const boost shared typedef
-  {
-    scoped_ptr<io::ZeroCopyOutputStream> output(
-        _generator_context->OpenForInsert(headerFilename, "global_scope"));
-    io::Printer printer(output.get(), '$');
-
-    std::string package = _file->package();
-    boost::replace_all(package, ".", "::");
-
-    std::string constType = "typedef const boost::shared_ptr<" + package
-      + "::" + _file->message_type(0)->name() + " const> Const"
-      + _file->message_type(0)->name() + "Ptr;";
-
-    printer.Print(constType.c_str(), "name", "global_scope");
-  }
-
-  return true;
-}
-}
-}
-}
+// namespace google
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2014 Open Source Robotics Foundation
+ * Copyright (C) 2015 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,28 +20,36 @@
 #include <google/protobuf/compiler/code_generator.h>
 #include <string>
 
-namespace google {
-namespace protobuf {
-namespace compiler {
-namespace cpp {
-class GeneratorContext;
-
-/// \brief Google protobuf message generator for haptix::msgs
-class HaptixGenerator : public CodeGenerator
+namespace google
 {
-  public: HaptixGenerator(const std::string &_name);
+  namespace protobuf
+  {
+    namespace compiler
+    {
+      namespace cpp
+      {
+        class GeneratorContext;
 
-  public: virtual ~HaptixGenerator();
+        /// \brief Google protobuf message generator for haptix::msgs
+        class HaptixGenerator : public CodeGenerator
+        {
+          public: HaptixGenerator(const std::string &_name);
 
-  public: virtual bool Generate(const FileDescriptor* file,
-                const string& parameter,
-                OutputDirectory *directory,
-                string* error) const;
+          public: virtual ~HaptixGenerator();
 
-  // private: GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(HaptixGenerator);
-};
-}
-}
-}
+          public: virtual bool Generate(const FileDescriptor *_file,
+                      const string &_parameter,
+                      OutputDirectory *_generatorContext,
+                      string *_error) const;
+
+          // private: GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(HaptixGenerator);
+        };
+        // namespace cpp
+      }
+      // namespace compiler
+    }
+    // namespace protobuf
+  }
+  // namespace google
 }
 #endif
