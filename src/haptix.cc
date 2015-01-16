@@ -271,4 +271,5 @@ extern "C" {
 
     return hxOK;
   }
-}   // end extern "C"
+// end extern "C"
+}
