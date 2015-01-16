@@ -64,6 +64,11 @@ else()
 endif()
 
 #################################################
+# Find octave support (mkoctfile)
+#
+include (${project_cmake_dir}/FindOctaveOctFile.cmake)
+
+#################################################
 # Macro to check for visibility capability in compiler
 # Original idea from: https://gitorious.org/ferric-cmake-stuff/
 macro (check_gcc_visibility)

@@ -32,3 +32,7 @@ add_dependencies(${PROJECT_NAME_LOWER}
   gtest gtest_main
   protobuf_compilation
 )
+
+if (OCTAVE_SUPPORT_FOUND)
+  add_dependencies(${PROJECT_NAME_LOWER} mex_generation)
+endif()
