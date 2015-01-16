@@ -1,19 +1,38 @@
-PROTOBUF_GENERATE_CPP(PROTO_SRC PROTO_HEADER
+set(msgs
   hxCommand.proto
   hxDevice.proto
   hxSensor.proto
   hxGrasp.proto
 )
 
-# Variables needed to propagate through modules
-# If more than one layer of cmake use CACHE INTERNAL ...
-#set (PROTO_SRCS_VAR ${PROTO_SRCS} CACHE INTERNAL "Sources variable")
-set(PROTOBUF_INCLUDE_DIRS ${PROTOBUF_INCLUDE_DIRS} PARENT_SCOPE)
-set(PROTOBUF_LIBRARIES ${PROTOBUF_LIBRARIES} PARENT_SCOPE)
-set(PROTO_SRC ${PROTO_SRC} PARENT_SCOPE)
-set(PROTO_HEADER ${PROTO_HEADER} PARENT_SCOPE)
+add_executable(haptixmsgs_out generator/HaptixGenerator.cc generator/haptix_generator.cc)
+target_link_libraries(haptixmsgs_out ${PROTOBUF_LIBRARY} ${PROTOBUF_PROTOC_LIBRARY} pthread)
 
-add_custom_target(protobuf_compilation DEPENDS ${PROTO_SRC})
+set(PROTO_SRCS)
+set(PROTO_HDRS)
+foreach(FIL ${msgs})
+  get_filename_component(ABS_FIL ${FIL} ABSOLUTE)
+  get_filename_component(FIL_WE ${FIL} NAME_WE)
+
+  list(APPEND PROTO_SRCS "${CMAKE_CURRENT_BINARY_DIR}/${FIL_WE}.pb.cc")
+  list(APPEND PROTO_HDRS "${CMAKE_CURRENT_BINARY_DIR}/${FIL_WE}.pb.h")
+
+  add_custom_command(
+    OUTPUT
+      "${CMAKE_CURRENT_BINARY_DIR}/${FIL_WE}.pb.cc"
+      "${CMAKE_CURRENT_BINARY_DIR}/${FIL_WE}.pb.h"
+    COMMAND  ${PROTOBUF_PROTOC_EXECUTABLE}
+    ARGS --plugin=protoc-gen-haptixmsgs=${CMAKE_CURRENT_BINARY_DIR}/haptixmsgs_out --cpp_out ${CMAKE_CURRENT_BINARY_DIR} --haptixmsgs_out ${CMAKE_CURRENT_BINARY_DIR} --proto_path ${CMAKE_CURRENT_SOURCE_DIR} ${ABS_FIL}
+    DEPENDS ${ABS_FIL} haptixmsgs_out
+    COMMENT "Running C++ protocol buffer compiler on ${FIL}"
+    VERBATIM )
+endforeach()
+
+set_source_files_properties(${PROTO_SRCS} ${PROTO_HDRS} PROPERTIES GENERATED TRUE)
+
+ign_add_library(haptix_msgs ${PROTO_SRCS})
+ign_install_library(haptix_msgs)
+add_dependencies(haptix_msgs haptixmsgs_out)
 
 # Install the generated protobuf messages.
-install(FILES ${PROTO_HEADER} ${PROTO_SRC} DESTINATION ${INCLUDE_INSTALL_DIR}/comm/msg)
+install(FILES ${PROTO_HDRS} ${PROTO_SRCS} DESTINATION ${INCLUDE_INSTALL_DIR}/comm/msg)
