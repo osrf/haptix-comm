@@ -24,23 +24,24 @@
 #include <haptix/comm/msg/hxDevice.pb.h>
 #include <haptix/comm/msg/hxSensor.pb.h>
 
-int numMotors = 4;
-int numJoints = 5;
-int numContactSensors = 6;
-int numIMUs = 7;
+const static int numMotors         = 4;
+const static int numJoints         = 5;
+const static int numContactSensors = 6;
+const static int numIMUs           = 7;
 
-std::string deviceInfoTopic = "/haptix/gazebo/GetDeviceInfo";
-std::string updateTopic = "/haptix/gazebo/Update";
+const static std::string DeviceInfoTopic = "/haptix/gazebo/GetDeviceInfo";
+const static std::string UpdateTopic     = "/haptix/gazebo/Update";
+const static std::string SensorInfoTopic = "/haptix/gazebo/Read";
 
 //////////////////////////////////////////////////
-/// \brief Provide a service.
+/// \brief Provide a "getDeviceInfo" service.
 void onGetDeviceInfo(const std::string &_service,
   const haptix::comm::msgs::hxDevice &/*_req*/,
   haptix::comm::msgs::hxDevice &_rep, bool &_result)
 {
   _result = true;
 
-  if (_service != deviceInfoTopic)
+  if (_service != DeviceInfoTopic)
     _result = false;
 
   _rep.set_nmotor(numMotors);
@@ -65,7 +66,7 @@ void onUpdate(const std::string &_service,
 {
   _result = true;
 
-  if (_service != updateTopic)
+  if (_service != UpdateTopic)
     _result = false;
 
   // Read the request parameters.
@@ -79,6 +80,47 @@ void onUpdate(const std::string &_service,
     std::cout << "\t\t" << _req.gain_pos(i) << std::endl;
     std::cout << "\t\t" << _req.gain_vel(i) << std::endl;
   }*/
+
+  // Create some dummy response.
+  for (int i = 0; i < numMotors; ++i)
+  {
+    _rep.add_motor_pos(i);
+    _rep.add_motor_vel(i + 1);
+    _rep.add_motor_torque(i + 2);
+  }
+
+  for (int i = 0; i < numJoints; ++i)
+  {
+    _rep.add_joint_pos(i);
+    _rep.add_joint_vel(i + 1);
+  }
+
+  for (int i = 0; i < numContactSensors; ++i)
+    _rep.add_contact(i);
+
+  for (int i = 0; i < numIMUs; ++i)
+  {
+    haptix::comm::msgs::imu *linacc = _rep.add_imu_linacc();
+    linacc->set_x(i);
+    linacc->set_y(i + 1);
+    linacc->set_z(i + 2);
+    haptix::comm::msgs::imu *angvel = _rep.add_imu_angvel();
+    angvel->set_x(i + 3);
+    angvel->set_y(i + 4);
+    angvel->set_z(i + 5);
+  }
+}
+
+//////////////////////////////////////////////////
+/// \brief Provide an "sensor update" service.
+void onRead(const std::string &_service,
+  const haptix::comm::msgs::hxSensor &/*_unused*/,
+  haptix::comm::msgs::hxSensor &_rep, bool &_result)
+{
+  _result = true;
+
+  if (_service != SensorInfoTopic)
+    _result = false;
 
   // Create some dummy response.
   for (int i = 0; i < numMotors; ++i)
@@ -127,9 +169,10 @@ int main(int argc, char **argv)
       // Read the time parameter.
       time = std::stoi(argv[1]);
     }
-    catch(const std::invalid_argument ex)
+    catch(const std::invalid_argument &_ex)
     {
-      std::cerr << "<TIME_MS> argument must be a positive integer." << std::endl;
+      std::cerr << "<TIME_MS> argument must be a positive integer."
+                << std::endl;
       return -1;
     }
   }
@@ -138,16 +181,16 @@ int main(int argc, char **argv)
   ignition::transport::Node node;
 
   // Advertise the "getdeviceinfo" service.
-  if (!node.Advertise(deviceInfoTopic, onGetDeviceInfo))
+  if (!node.Advertise(DeviceInfoTopic, onGetDeviceInfo))
   {
-    std::cerr << "Error advertising the [" << deviceInfoTopic << "] service."
+    std::cerr << "Error advertising the [" << DeviceInfoTopic << "] service."
               << std::endl;
   }
 
   // Advertise the "update" service.
-  if (!node.Advertise(updateTopic, onUpdate))
+  if (!node.Advertise(UpdateTopic, onUpdate))
   {
-    std::cerr << "Error advertising the [" << updateTopic << "] service."
+    std::cerr << "Error advertising the [" << UpdateTopic << "] service."
               << std::endl;
   }
 
