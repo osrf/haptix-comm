@@ -112,8 +112,8 @@ void onUpdate(const std::string &_service,
 }
 
 //////////////////////////////////////////////////
-/// \brief Provide an "sensor update" service.
-void onRead(const std::string &_service,
+/// \brief Provide a "sensor update" service.
+void onSensorRequest(const std::string &_service,
   const haptix::comm::msgs::hxSensor &/*_unused*/,
   haptix::comm::msgs::hxSensor &_rep, bool &_result)
 {
@@ -191,6 +191,13 @@ int main(int argc, char **argv)
   if (!node.Advertise(UpdateTopic, onUpdate))
   {
     std::cerr << "Error advertising the [" << UpdateTopic << "] service."
+              << std::endl;
+  }
+
+  // Advertise the "readsensors" service.
+  if (!node.Advertise(SensorInfoTopic, onSensorRequest))
+  {
+    std::cerr << "Error advertising the [" << SensorInfoTopic << "] service."
               << std::endl;
   }
 
