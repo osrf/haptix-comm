@@ -30,9 +30,9 @@ endforeach()
 
 set_source_files_properties(${PROTO_SRCS} ${PROTO_HDRS} PROPERTIES GENERATED TRUE)
 
-ign_add_library(haptix_msgs ${PROTO_SRCS})
-ign_install_library(haptix_msgs)
-add_dependencies(haptix_msgs haptixmsgs_out)
+ign_add_library(${PROJECT_MSGS_NAME} ${PROTO_SRCS})
+ign_install_library(${PROJECT_MSGS_NAME})
+add_dependencies(${PROJECT_MSGS_NAME} haptixmsgs_out)
 
 # Install the generated protobuf messages.
 install(FILES ${PROTO_HDRS} ${PROTO_SRCS} DESTINATION ${INCLUDE_INSTALL_DIR}/comm/msg)
