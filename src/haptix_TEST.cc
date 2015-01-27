@@ -22,31 +22,34 @@
 #include "msg/hxDevice.pb.h"
 #include "msg/hxSensor.pb.h"
 
-std::string deviceInfoTopic = "/haptix/gazebo/GetDeviceInfo";
-std::string updateTopic = "/haptix/gazebo/Update";
-std::string readTopic = "/haptix/gazebo/Read";
+static const std::string DeviceInfoTopic = "/haptix/gazebo/GetDeviceInfo";
+static const std::string UpdateTopic     = "/haptix/gazebo/Update";
+static const std::string ReadTopic       = "/haptix/gazebo/Read";
 
-int numMotors = 4;
-int numJoints = 5;
-int numContactSensors = 6;
-int numIMUs = 7;
+static const int NumMotors         = 4;
+static const int NumJoints         = 5;
+static const int NumContactSensors = 6;
+static const int NumIMUs           = 7;
 
 //////////////////////////////////////////////////
 /// \brief Provide a "GetDeviceInfo" service.
 void onGetDeviceInfo(const std::string &_service,
   const haptix::comm::msgs::hxDevice &/*_req*/,
-  haptix::comm::msgs::hxDevice &_rep, bool &_result)
+  haptix::comm::msgs::hxDevice &_rep,
+  bool &_result)
 {
+  _rep.Clear();
+
   // Check the name of the service received.
-  EXPECT_EQ(_service, deviceInfoTopic);
+  EXPECT_EQ(_service, DeviceInfoTopic);
 
   // Create some dummy response.
-  _rep.set_nmotor(numMotors);
-  _rep.set_njoint(numJoints);
-  _rep.set_ncontactsensor(numContactSensors);
-  _rep.set_nimu(numIMUs);
+  _rep.set_nmotor(NumMotors);
+  _rep.set_njoint(NumJoints);
+  _rep.set_ncontactsensor(NumContactSensors);
+  _rep.set_nimu(NumIMUs);
 
-  for (int i = 0; i < numJoints; ++i)
+  for (int i = 0; i < NumJoints; ++i)
   {
     haptix::comm::msgs::hxJointAngle *joint = _rep.add_limit();
     joint->set_minimum(-i);
@@ -59,15 +62,18 @@ void onGetDeviceInfo(const std::string &_service,
 //////////////////////////////////////////////////
 /// \brief Provide an "Update" service.
 void onUpdate(const std::string &_service,
-  const haptix::comm::msgs::hxCommand &_req, haptix::comm::msgs::hxSensor &_rep,
+  const haptix::comm::msgs::hxCommand &_req,
+  haptix::comm::msgs::hxSensor &_rep,
   bool &_result)
 {
+  _rep.Clear();
+
   // Check the name of the service received.
-  EXPECT_EQ(_service, updateTopic);
+  EXPECT_EQ(_service, UpdateTopic);
 
   // Read the request parameters.
   ASSERT_EQ(_req.ref_pos_size(), hxMAXMOTOR);
-  for (int i = 0; i < numMotors; ++i)
+  for (int i = 0; i < NumMotors; ++i)
   {
     EXPECT_FLOAT_EQ(_req.ref_pos(i), i);
     EXPECT_FLOAT_EQ(_req.ref_vel(i), i + 1);
@@ -76,23 +82,23 @@ void onUpdate(const std::string &_service,
   }
 
   // Create some dummy response.
-  for (int i = 0; i < numMotors; ++i)
+  for (int i = 0; i < NumMotors; ++i)
   {
     _rep.add_motor_pos(i);
     _rep.add_motor_vel(i + 1);
     _rep.add_motor_torque(i + 2);
   }
 
-  for (int i = 0; i < numJoints; ++i)
+  for (int i = 0; i < NumJoints; ++i)
   {
     _rep.add_joint_pos(i);
     _rep.add_joint_vel(i + 1);
   }
 
-  for (int i = 0; i < numContactSensors; ++i)
+  for (int i = 0; i < NumContactSensors; ++i)
     _rep.add_contact(i);
 
-  for (int i = 0; i < numIMUs; ++i)
+  for (int i = 0; i < NumIMUs; ++i)
   {
     haptix::comm::msgs::imu *linacc = _rep.add_imu_linacc();
     linacc->set_x(i);
@@ -108,33 +114,35 @@ void onUpdate(const std::string &_service,
 }
 
 //////////////////////////////////////////////////
-/// \brief Provide an "Read" service.
+/// \brief Provide a "Read" service.
 void onRead(const std::string &_service,
   const haptix::comm::msgs::hxSensor &/*_req*/,
   haptix::comm::msgs::hxSensor &_rep,
   bool &_result)
 {
+  _rep.Clear();
+
   // Check the name of the service received.
-  EXPECT_EQ(_service, readTopic);
+  EXPECT_EQ(_service, ReadTopic);
 
   // Create some dummy response.
-  for (int i = 0; i < numMotors; ++i)
+  for (int i = 0; i < NumMotors; ++i)
   {
     _rep.add_motor_pos(i);
     _rep.add_motor_vel(i + 1);
     _rep.add_motor_torque(i + 2);
   }
 
-  for (int i = 0; i < numJoints; ++i)
+  for (int i = 0; i < NumJoints; ++i)
   {
     _rep.add_joint_pos(i);
     _rep.add_joint_vel(i + 1);
   }
 
-  for (int i = 0; i < numContactSensors; ++i)
+  for (int i = 0; i < NumContactSensors; ++i)
     _rep.add_contact(i);
 
-  for (int i = 0; i < numIMUs; ++i)
+  for (int i = 0; i < NumIMUs; ++i)
   {
     haptix::comm::msgs::imu *linacc = _rep.add_imu_linacc();
     linacc->set_x(i);
@@ -156,28 +164,28 @@ TEST(CommTest, BasicUsage)
   ignition::transport::Node node;
 
   // Advertise the "getdeviceinfo" service.
-  node.Advertise(deviceInfoTopic, onGetDeviceInfo);
+  node.Advertise(DeviceInfoTopic, onGetDeviceInfo);
 
   // Advertise the "update" service.
-  node.Advertise(updateTopic, onUpdate);
+  node.Advertise(UpdateTopic, onUpdate);
 
   // Advertise the "read" service.
-  node.Advertise(readTopic, onRead);
+  node.Advertise(ReadTopic, onRead);
 
   EXPECT_EQ(hx_connect(hxGAZEBO), hxOK);
 
   hxDeviceInfo deviceInfo;
   ASSERT_EQ(hx_getdeviceinfo(hxGAZEBO, &deviceInfo), hxOK);
 
-  ASSERT_EQ(deviceInfo.nmotor, numMotors);
-  ASSERT_EQ(deviceInfo.njoint, numJoints);
-  ASSERT_EQ(deviceInfo.ncontactsensor, numContactSensors);
-  ASSERT_EQ(deviceInfo.nIMU, numIMUs);
+  ASSERT_EQ(deviceInfo.nmotor, NumMotors);
+  ASSERT_EQ(deviceInfo.njoint, NumJoints);
+  ASSERT_EQ(deviceInfo.ncontactsensor, NumContactSensors);
+  ASSERT_EQ(deviceInfo.nIMU, NumIMUs);
 
   hxCommand cmd;
   hxSensor sensor;
-  // Fill the joint command.
 
+  // Fill the joint command.
   for (int i = 0; i < deviceInfo.nmotor; ++i)
   {
     cmd.ref_pos[i] = i;
@@ -215,7 +223,7 @@ TEST(CommTest, BasicUsage)
     EXPECT_FLOAT_EQ(sensor.IMU_angvel[i][2], i + 5);
   }
 
-  // Test hx_readsensors
+  // Test hx_readsensors.
   EXPECT_EQ(hx_readsensors(hxGAZEBO, &sensor), hxOK);
 
   // Check the response.
