@@ -140,7 +140,10 @@ int main(int argc, char **argv)
 
     // Send the new joint command and receive the state update.
     if (hx_update(hxGAZEBO, &cmd, &sensor) != hxOK)
+    {
       printf("hx_update(): Request error.\n");
+      continue;
+    }
 
     // Debug output: Print the state.
     // printState(&deviceInfo, &sensor);

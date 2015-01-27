@@ -42,9 +42,44 @@ extern "C" {
   unsigned int Timeout = 1000;
 
   //////////////////////////////////////////////////
-  /// \brief Create an Ignition Transport node or return a pointer to it if
-  /// has been already created.
-  ignition::transport::Node *getHxNodeInstance()
+  /// \brief Private function that converts a protobuf hxSensor message to a
+  /// C struct hxSensor.
+  static void convert(const haptix::comm::msgs::hxSensor _in, hxSensor *_out)
+  {
+    // Initialize the C struct.
+    memset(_out, 0, sizeof(hxSensor));
+
+    for (int i = 0; i < _in.motor_pos_size(); ++i)
+    {
+      _out->motor_pos[i] = _in.motor_pos(i);
+      _out->motor_vel[i] = _in.motor_vel(i);
+      _out->motor_torque[i] = _in.motor_torque(i);
+    }
+
+    for (int i = 0; i < _in.joint_pos_size(); ++i)
+    {
+      _out->joint_pos[i] = _in.joint_pos(i);
+      _out->joint_vel[i] = _in.joint_vel(i);
+    }
+
+    for (int i = 0; i < _in.contact_size(); ++i)
+      _out->contact[i] = _in.contact(i);
+
+    for (int i = 0; i < _in.imu_linacc_size(); ++i)
+    {
+      _out->IMU_linacc[i][0] = _in.imu_linacc(i).x();
+      _out->IMU_linacc[i][1] = _in.imu_linacc(i).y();
+      _out->IMU_linacc[i][2] = _in.imu_linacc(i).z();
+      _out->IMU_angvel[i][0] = _in.imu_angvel(i).x();
+      _out->IMU_angvel[i][1] = _in.imu_angvel(i).y();
+      _out->IMU_angvel[i][2] = _in.imu_angvel(i).z();
+    }
+  }
+
+  //////////////////////////////////////////////////
+  /// \brief Private function that creates an Ignition Transport node
+  /// or return a pointer to it if has been already created.
+  static ignition::transport::Node *getHxNodeInstance()
   {
     if (!haptixNode)
       haptixNode = new ignition::transport::Node();
@@ -53,8 +88,9 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
-  /// \brief Return true if the target is supported or false otherwise.
-  bool checkTarget(int _target)
+  /// \brief Private function that returns true if the target is supported
+  /// or false otherwise.
+  static bool checkTarget(int _target)
   {
     if (_target < hxDEKA || _target > hxMUJOCO)
     {
@@ -173,31 +209,7 @@ extern "C" {
       if (result)
       {
         // Fill the struct with the response.
-        for (int i = 0; i < rep.motor_pos_size(); ++i)
-        {
-          _sensor->motor_pos[i] = rep.motor_pos(i);
-          _sensor->motor_vel[i] = rep.motor_vel(i);
-          _sensor->motor_torque[i] = rep.motor_torque(i);
-        }
-
-        for (int i = 0; i < rep.joint_pos_size(); ++i)
-        {
-          _sensor->joint_pos[i] = rep.joint_pos(i);
-          _sensor->joint_vel[i] = rep.joint_vel(i);
-        }
-
-        for (int i = 0; i < rep.contact_size(); ++i)
-          _sensor->contact[i] = rep.contact(i);
-
-        for (int i = 0; i < rep.imu_linacc_size(); ++i)
-        {
-          _sensor->IMU_linacc[i][0] = rep.imu_linacc(i).x();
-          _sensor->IMU_linacc[i][1] = rep.imu_linacc(i).y();
-          _sensor->IMU_linacc[i][2] = rep.imu_linacc(i).z();
-          _sensor->IMU_angvel[i][0] = rep.imu_angvel(i).x();
-          _sensor->IMU_angvel[i][1] = rep.imu_angvel(i).y();
-          _sensor->IMU_angvel[i][2] = rep.imu_angvel(i).z();
-        }
+        convert(rep, _sensor);
 
         return hxOK;
       }
@@ -209,4 +221,41 @@ extern "C" {
 
     return hxBAD;
   }
-}   // end extern "C"
+
+  //////////////////////////////////////////////////
+  hxResult hx_readsensors(int _target, hxSensor *_sensor)
+  {
+    // Sanity check.
+    if (!checkTarget(_target) || !_sensor)
+      return hxBAD;
+
+    haptix::comm::msgs::hxSensor req;
+    haptix::comm::msgs::hxSensor rep;
+    bool result;
+    ignition::transport::Node *hxNode = getHxNodeInstance();
+
+    // Request the service.
+    std::string service = "/" + ProjectTopic + "/" + DeviceTopics[_target] +
+        "/Read";
+    bool executed = hxNode->Request(service, req, Timeout, rep, result);
+
+    if (!executed)
+    {
+      std::cerr << "hx_readsensors() Service call timed out." << std::endl;
+      return hxBAD;
+    }
+
+    if (!result)
+    {
+      std::cerr << "hx_readsensors() Service call failed." << std::endl;
+      return hxBAD;
+    }
+
+    // Fill the struct with the response.
+    convert(rep, _sensor);
+
+    return hxOK;
+  }
+
+// end extern "C"
+}
