@@ -7,6 +7,8 @@ project (haptix-${IGN_PROJECT_NAME})
 string (TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 string (TOUPPER ${PROJECT_NAME} PROJECT_NAME_UPPER)
 
+set (PROJECT_MSGS_NAME haptix-msgs)
+
 set (PROJECT_MAJOR_VERSION 0)
 set (PROJECT_MINOR_VERSION 3)
 set (PROJECT_PATCH_VERSION 0)
@@ -272,7 +274,7 @@ else (build_errors)
   ########################################
   # Make the cmake config files
   set(PKG_NAME ${PROJECT_NAME_UPPER})
-  set(PKG_LIBRARIES ${PROJECT_NAME_LOWER})
+  set(PKG_LIBRARIES ${PROJECT_NAME_LOWER} ${PROJECT_MSGS_NAME})
 
   set(PKG_DEPENDS)
 
