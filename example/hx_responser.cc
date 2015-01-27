@@ -44,6 +44,8 @@ void onGetDeviceInfo(const std::string &_service,
   if (_service != DeviceInfoTopic)
     _result = false;
 
+  _rep.Clear();
+
   _rep.set_nmotor(numMotors);
   _rep.set_njoint(numJoints);
   _rep.set_ncontactsensor(numContactSensors);
@@ -80,6 +82,8 @@ void onUpdate(const std::string &_service,
     std::cout << "\t\t" << _req.gain_pos(i) << std::endl;
     std::cout << "\t\t" << _req.gain_vel(i) << std::endl;
   }*/
+
+  _rep.Clear();
 
   // Create some dummy response.
   for (int i = 0; i < numMotors; ++i)
@@ -121,6 +125,8 @@ void onSensorRequest(const std::string &_service,
 
   if (_service != SensorInfoTopic)
     _result = false;
+
+  _rep.Clear();
 
   // Create some dummy response.
   for (int i = 0; i < numMotors; ++i)
