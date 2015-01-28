@@ -120,6 +120,7 @@ int main(int argc, char **argv)
     if (++counter == 100)
     {
       // Show the sensor output after hx_update().
+      printf("Sensor state after hx_update():\n");
       printState(&deviceInfo, &sensor);
 
       if (hx_readsensors(hxGAZEBO, &sensor) != hxOK)
@@ -129,6 +130,7 @@ int main(int argc, char **argv)
       }
 
       // Show the sensor output after hx_readsensors().
+      printf("Sensor state after hx_readsensors():\n");
       printState(&deviceInfo, &sensor);
 
       counter = 0;
