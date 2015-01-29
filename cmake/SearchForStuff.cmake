@@ -49,6 +49,12 @@ if (NOT Boost_FOUND)
   BUILD_ERROR ("Boost not found")
 endif()
 
+# Boost is needed not only in the haptixmsgs_out target but also during
+# .pb.h compilation and other target including this header (like haptix lib). 
+# This is the reason not to use target_include_directories and expand the
+# include to all the project scope
+include_directories(${Boost_INCLUDE_DIRS})
+
 #################################################
 # Find ZeroMQ.
 include (${project_cmake_dir}/FindZeroMQ.cmake)
