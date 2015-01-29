@@ -25,8 +25,8 @@ endif()
 # Need to use _DEBUG postfix variables on windows to match the library
 IF ((WIN32) AND (CMAKE_BUILD_TYPE MATCHES Debug))
   message(STATUS " - Using debug protobuf libraries on Windows")
-  set(PROTOBUF_LIBRARY ${PROTOBUF_LIBRARY_DEBUG})
-  set(PROTOBUF_PROTOC_LIBRARY ${PROTOBUF_PROTOC_LIBRARY_DEBUG})
+  set(PROTOBUF_LIBRARY ${PROTOBUF_LIBRARY_DEBUG} CACHE FILEPATH "" FORCE)
+  set(PROTOBUF_PROTOC_LIBRARY ${PROTOBUF_PROTOC_LIBRARY_DEBUG} CACHE FILEPATH "" FORCE)
 endif()
 
 ########################################
