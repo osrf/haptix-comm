@@ -23,6 +23,7 @@
 #include <windows.h>
 #endif
 
+//////////////////////////////////////////////////
 void printState(const hxDeviceInfo *_deviceInfo, const hxSensor *_sensor)
 {
   int i;
@@ -110,12 +111,28 @@ int main(int argc, char **argv)
   for (; ;)
   {
     if (hx_update(hxGAZEBO, &cmd, &sensor) != hxOK)
+    {
       printf("hx_update(): Request error.\n");
+      continue;
+    }
 
     // Print the state at ~1Hz.
     if (++counter == 100)
     {
+      // Show the sensor output after hx_update().
+      printf("Sensor state after hx_update():\n");
       printState(&deviceInfo, &sensor);
+
+      if (hx_readsensors(hxGAZEBO, &sensor) != hxOK)
+      {
+        printf("hx_update(): Request error.\n");
+        continue;
+      }
+
+      // Show the sensor output after hx_readsensors().
+      printf("Sensor state after hx_readsensors():\n");
+      printState(&deviceInfo, &sensor);
+
       counter = 0;
     }
 
