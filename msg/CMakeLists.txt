@@ -48,6 +48,7 @@ endforeach()
 set_source_files_properties(${PROTO_SRCS} ${PROTO_HDRS} PROPERTIES GENERATED TRUE)
 
 ign_add_library(haptix_msgs ${PROTO_SRCS})
+target_link_libraries(haptix_msgs ${PROTOBUF_LIBRARY} ${PROTOBUF_PROTOC_LIBRARY})
 ign_install_library(haptix_msgs)
 add_dependencies(haptix_msgs haptixmsgs_out)
 
