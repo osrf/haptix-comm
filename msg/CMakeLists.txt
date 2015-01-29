@@ -5,8 +5,11 @@ set(msgs
   hxGrasp.proto
 )
 
+# Boost is needed not only in the haptixmsgs_out target but also during
+# .pb.h compilation. This is the reason not to use target_include_directories
+include_directories(${Boost_INCLUDE_DIRS})
+
 add_executable(haptixmsgs_out generator/HaptixGenerator.cc generator/haptix_generator.cc)
-target_include_directories(haptixmsgs_out PUBLIC ${Boost_INCLUDE_DIRS})
 
 target_link_libraries(haptixmsgs_out ${PROTOBUF_LIBRARY} ${PROTOBUF_PROTOC_LIBRARY})
 
