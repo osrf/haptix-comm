@@ -22,6 +22,12 @@ if (NOT PROTOBUF_PROTOC_LIBRARY)
   BUILD_ERROR ("Missing: Google Protobuf Compiler Library (libprotoc-dev)")
 endif()
 
+# Need to use _DEBUG postfix variables on windows to match the library
+IF ((WIN32) AND (CMAKE_BUILD_TYPE MATCHES DEBUG))
+  set(PROTOBUF_LIBRARY ${PROTOBUF_LIBRARY_DEBUG})
+  set(PROTOBUF_PROTOC_LIBRARY ${PROTOBUF_PROTOC_LIBRARY_DEBUG})
+endif()
+
 ########################################
 # Find the Ignition_Transport library
 find_package(ignition-transport QUIET REQUIRED)
