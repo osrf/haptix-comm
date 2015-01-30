@@ -20,15 +20,16 @@ macro (ign_build_tests)
         libgtest.a
         libgtest_main.a
         pthread
-	${PROTOBUF_LIBRARY}
-	${ZeroMQ_LIBRARIES}
+        ${PROTOBUF_LIBRARY}
+        ${ZeroMQ_LIBRARIES}
       )
     elseif(WIN32)
       target_link_libraries(${BINARY_NAME}
         ${PROJECT_NAME_LOWER}
         gtest
         gtest_main
-	${ZeroMQ_LIBRARIES}
+        ${ZeroMQ_LIBRARIES}
+        ${PROJECT_MSGS_NAME}
       )
       if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         target_link_libraries(${BINARY_NAME} ${PROTOBUF_LIBRARY_DEBUG})
