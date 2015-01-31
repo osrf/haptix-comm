@@ -43,7 +43,7 @@ endforeach()
 
 set_source_files_properties(${PROTO_SRCS} ${PROTO_HDRS} PROPERTIES GENERATED TRUE)
 
-ign_add_library(${PROJECT_MSGS_NAME} ${PROTO_SRCS})
+ign_add_static_library(${PROJECT_MSGS_NAME} ${PROTO_SRCS})
 target_link_libraries(${PROJECT_MSGS_NAME} ${PROTOBUF_LIBRARY} ${PROTOBUF_PROTOC_LIBRARY})
 ign_install_library(${PROJECT_MSGS_NAME})
 add_dependencies(${PROJECT_MSGS_NAME} haptixmsgs_out)
