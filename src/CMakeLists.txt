@@ -21,8 +21,9 @@ elseif(WIN32)
   # on Windows
   add_library(${PROJECT_NAME_LOWER} STATIC ${sources})
 endif()
-target_link_libraries(${PROJECT_NAME_LOWER}
-                      ${IGNITION-TRANSPORT_LIBRARIES} ${PROJECT_MSGS_NAME})
+target_link_libraries(${PROJECT_NAME_LOWER} ${IGNITION-TRANSPORT_LIBRARIES}
+                      ${PROJECT_MSGS_NAME})
+
 if(WIN32)
   target_link_libraries(${PROJECT_NAME_LOWER} ws2_32 Iphlpapi)
 endif()

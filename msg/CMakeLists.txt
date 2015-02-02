@@ -6,7 +6,20 @@ set(msgs
 )
 
 add_executable(haptixmsgs_out generator/HaptixGenerator.cc generator/haptix_generator.cc)
-target_link_libraries(haptixmsgs_out ${PROTOBUF_LIBRARY} ${PROTOBUF_PROTOC_LIBRARY} pthread)
+
+target_link_libraries(haptixmsgs_out ${PROTOBUF_LIBRARY} ${PROTOBUF_PROTOC_LIBRARY})
+
+if (UNIX)
+  target_link_libraries(haptixmsgs_out pthread)
+endif()
+
+
+# Need to add .exe to executable in windows
+if (WIN32)
+   set(haptixmsgs_out_binary "haptixmsgs_out.exe")
+else()
+   set(haptixmsgs_out_binary "haptixmsgs_out")
+endif()
 
 set(PROTO_SRCS)
 set(PROTO_HDRS)
@@ -22,7 +35,7 @@ foreach(FIL ${msgs})
       "${CMAKE_CURRENT_BINARY_DIR}/${FIL_WE}.pb.cc"
       "${CMAKE_CURRENT_BINARY_DIR}/${FIL_WE}.pb.h"
     COMMAND  ${PROTOBUF_PROTOC_EXECUTABLE}
-    ARGS --plugin=protoc-gen-haptixmsgs=${CMAKE_CURRENT_BINARY_DIR}/haptixmsgs_out --cpp_out ${CMAKE_CURRENT_BINARY_DIR} --haptixmsgs_out ${CMAKE_CURRENT_BINARY_DIR} --proto_path ${CMAKE_CURRENT_SOURCE_DIR} ${ABS_FIL}
+    ARGS --plugin=protoc-gen-haptixmsgs=${CMAKE_CURRENT_BINARY_DIR}/${haptixmsgs_out_binary} --cpp_out ${CMAKE_CURRENT_BINARY_DIR} --haptixmsgs_out ${CMAKE_CURRENT_BINARY_DIR} --proto_path ${CMAKE_CURRENT_SOURCE_DIR} ${ABS_FIL}
     DEPENDS ${ABS_FIL} haptixmsgs_out
     COMMENT "Running C++ protocol buffer compiler on ${FIL}"
     VERBATIM )
@@ -30,7 +43,8 @@ endforeach()
 
 set_source_files_properties(${PROTO_SRCS} ${PROTO_HDRS} PROPERTIES GENERATED TRUE)
 
-ign_add_library(${PROJECT_MSGS_NAME} ${PROTO_SRCS})
+ign_add_static_library(${PROJECT_MSGS_NAME} ${PROTO_SRCS})
+target_link_libraries(${PROJECT_MSGS_NAME} ${PROTOBUF_LIBRARY} ${PROTOBUF_PROTOC_LIBRARY})
 ign_install_library(${PROJECT_MSGS_NAME})
 add_dependencies(${PROJECT_MSGS_NAME} haptixmsgs_out)
 
