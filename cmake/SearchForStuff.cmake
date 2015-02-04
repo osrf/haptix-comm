@@ -92,9 +92,22 @@ endif()
 include (${project_cmake_dir}/FindOctaveOctFile.cmake)
 
 #################################################
+# Find MATLAB support (mex files)
+#
+find_package(Matlab)
+
+if (Matlab_FOUND)
+  message(STATUS "MATLAB mex compiler found")
+else()
+  message(STATUS "MATLAB mex compiler not found'- no mex file generation")
+  BUILD_WARNING("MATLAB mex compiler not found'- no mex file generation")
+endif()
+
+#################################################
 # Macro to check for visibility capability in compiler
 # Original idea from: https://gitorious.org/ferric-cmake-stuff/
 macro (check_gcc_visibility)
   include (CheckCXXCompilerFlag)
   check_cxx_compiler_flag(-fvisibility=hidden GCC_SUPPORTS_VISIBILITY)
 endmacro()
+
