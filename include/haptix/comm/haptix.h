@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Open Source Robotics Foundation
+ * Copyright (C) 2015 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@
 /// \file haptix.h
 /// \brief Structures and functions for the primary HAPTIX API.
 
-#ifndef __HAPTIX_COMM_HAPTIX_H
-#define __HAPTIX_COMM_HAPTIX_H
+#ifndef __HAPTIX_COMM_HAPTIX_H__
+#define __HAPTIX_COMM_HAPTIX_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -80,6 +80,16 @@ typedef enum
   hxMUJOCO
 } hxTarget;
 
+/// \brief A representation of time
+struct _hxTime
+{
+  /// Seconds
+  int sec;
+
+  /// Nanoseconds
+  int nsec;
+};
+
 /// \brief Device information.
 /// This data structure specifies inherent properties of the device that
 /// do not change during simulation (for
@@ -91,7 +101,7 @@ struct _hxDeviceInfo
 {
   /// \brief Number of motors.
   /// Motors are commanded through filling an hxCommand struct and calling
-  /// hx_update(int, const hxCommand*, hxSensor*).
+  /// hx_update(int, const hxCommand*, hxSensor*, hxTime*).
   ///
   /// The number of motors is less than or equal to the number of
   /// joints. For example, one motor may control several joints through
@@ -123,13 +133,17 @@ struct _hxDeviceInfo
   /// corresponds to a motor. The first entry in the row is the lower limit
   /// of the motor. The second entry is the upper limit of the motor.
   float limit[hxMAXMOTOR][2];
+
+  /// \brief Hz rate at which the device will update.
+  float updateRate;
 };
 
 /// \brief Sensor data.
 /// This data structure specifies the sensor information gained in a simulation
 /// update.
 ///
-/// It is an output of the function hx_update(int, const hxCommand*, hxSensor*).
+/// It is an output of the function
+/// hx_update(int, const hxCommand*, hxSensor*, hxTime*).
 struct _hxSensor
 {
   /// \brief Motor position (rad).
@@ -203,7 +217,8 @@ struct _hxSensor
 /// This data structure specifies the next request to be send to the simulated
 /// limb model.
 ///
-/// It is an input of the function hx_update(int, const hxCommand*, hxSensor*).
+/// It is an input of the function
+/// hx_update(int, const hxCommand*, hxSensor*, hxTime*).
 struct _hxCommand
 {
   /// \brief Timestamp.
@@ -235,6 +250,10 @@ struct _hxCommand
   float gain_vel[hxMAXMOTOR];
 };
 
+/// \def hxTime
+/// \brief Time representation.
+typedef struct _hxTime hxTime;
+
 /// \def hxDeviceInfo
 /// \brief Robot information.
 typedef struct _hxDeviceInfo hxDeviceInfo;
@@ -254,8 +273,12 @@ typedef struct _hxCommand hxCommand;
 /// compatibility with other simulators.
 /// \param[in] _target Device to be connected. The valid targets are defined in
 /// #hxTarget.
+/// \param[in] _host When connecting to a simulator, use _host to specify
+/// the machine that is running the simulator.
+/// \param[in] _port When connecting to a simulator, use _port to specify
+/// what port the simulator is running on.
 /// \return 'hxOK' if the connection succeed or an error code otherwise.
-hxResult hx_connect(int _target);
+hxResult hx_connect(int _target, const char *_host = "", int _port = 0);
 
 /// \brief Close connection to specified device/simulator target.
 ///
@@ -275,21 +298,21 @@ hxResult hx_close(int _target);
 hxResult hx_getdeviceinfo(int _target,
                           hxDeviceInfo *_deviceinfo);
 
-/// \brief Synchronous command update at the rate supported by the device:
+/// \brief Asynchronous command update at the rate supported by the device:
 ///   1. Set the new motor command.
-///   2. Advance simulation state and sleep for remainder of update step,
-///      or wait for physical device to finish update.
-///   3. Return simulated or physical sensor data.
+///   2. Return simulated or physical sensor data.
 /// \param[in] _target Device to update. The valid targets are defined in
 /// #hxTarget.
 /// \param[in] _command New command to be sent. See #_hxCommand for the full
 /// description of fields contained in a command request.
 /// \param[out] _sensor Sensor data received after the update. See #_hxSensor
 /// for the full description of fields contained the state response.
+/// \param[out] _timestamp The timestamp associated with the sensor data.
 /// \return 'hxOK' if the operation succeed or an error code otherwise.
 hxResult hx_update(int _target,
                    const hxCommand *_command,
-                   hxSensor *_sensor);
+                   hxSensor *_sensor,
+                   hxTime *_timestamp);
 
 /// \brief Synchronous read-only update supported by the device.
 /// Advances simulation state and sleep for remainder of update step,
@@ -297,7 +320,14 @@ hxResult hx_update(int _target,
 /// Return sensor data.
 /// \param[in] _target Device to update.
 /// \param[out] _sensor Sensor data received after the update.
-hxResult hx_readsensors(int _target, hxSensor *_sensor);
+/// \param[out] _timestamp The timestamp associated with the sensor data.
+hxResult hx_readsensors(int _target, hxSensor *_sensor, hxTime *_timestamp);
+
+/// \brief Return a string that describes the last result.
+/// \sa hxResult.
+/// \param[in] _target Target device.
+/// \return String that describes the last result.
+const char *hx_lastresult(hxTarget _target);
 
 #ifdef __cplusplus
 }

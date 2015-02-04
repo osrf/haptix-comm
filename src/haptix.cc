@@ -101,7 +101,7 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
-  hxResult hx_connect(int _target)
+  hxResult hx_connect(int _target, const char *_host, int _port)
   {
     // Sanity check.
     if (checkTarget(_target))
@@ -177,7 +177,8 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
-  hxResult hx_update(int _target, const hxCommand* _command, hxSensor* _sensor)
+  hxResult hx_update(int _target, const hxCommand* _command, hxSensor* _sensor,
+      hxTime *_timestamp)
   {
     // Initialize the C struct.
     memset(_sensor, 0, sizeof(hxSensor));
@@ -223,7 +224,7 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
-  hxResult hx_readsensors(int _target, hxSensor *_sensor)
+  hxResult hx_readsensors(int _target, hxSensor *_sensor, hxTime *_timestamp)
   {
     // Sanity check.
     if (!checkTarget(_target) || !_sensor)

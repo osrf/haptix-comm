@@ -184,6 +184,7 @@ TEST(CommTest, BasicUsage)
 
   hxCommand cmd;
   hxSensor sensor;
+  hxTime timestamp;
 
   // Fill the joint command.
   for (int i = 0; i < deviceInfo.nmotor; ++i)
@@ -194,7 +195,7 @@ TEST(CommTest, BasicUsage)
     cmd.gain_vel[i] = i + 3;
   }
 
-  EXPECT_EQ(hx_update(hxGAZEBO, &cmd, &sensor), hxOK);
+  EXPECT_EQ(hx_update(hxGAZEBO, &cmd, &sensor, &timestamp), hxOK);
 
   // Check the response.
   for (int i = 0; i < deviceInfo.nmotor; ++i)
@@ -224,7 +225,7 @@ TEST(CommTest, BasicUsage)
   }
 
   // Test hx_readsensors.
-  EXPECT_EQ(hx_readsensors(hxGAZEBO, &sensor), hxOK);
+  EXPECT_EQ(hx_readsensors(hxGAZEBO, &sensor, &timestamp), hxOK);
 
   // Check the response.
   for (int i = 0; i < deviceInfo.nmotor; ++i)

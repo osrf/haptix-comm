@@ -211,6 +211,11 @@ hxResult hxs_updatedirect(int _target,
                           hxSensor *_sensor,
                           int _flg_sleep);
 
+/// \brief Display a text message in the simulator
+/// \param[in] _message Message to display.
+/// \return 'hxOK' if the operation succeeded or an error code otherwise.
+hxResult hxs_message(const char *_message);
+
 #ifdef __cplusplus
 }
 #endif

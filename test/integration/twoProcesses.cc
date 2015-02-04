@@ -39,6 +39,7 @@ TEST(twoProcesses, SrvTwoProcs)
   hxDeviceInfo deviceInfo;
   hxCommand cmd;
   hxSensor sensor;
+  hxTime timestamp;
 
   EXPECT_EQ(hx_connect(hxGAZEBO), hxOK);
 
@@ -55,7 +56,7 @@ TEST(twoProcesses, SrvTwoProcs)
   }
 
   // Request an update.
-  EXPECT_EQ(hx_update(hxGAZEBO, &cmd, &sensor), hxOK);
+  EXPECT_EQ(hx_update(hxGAZEBO, &cmd, &sensor, &timestamp), hxOK);
 
   // Check the response.
   for (int i = 0; i < deviceInfo.nmotor; ++i)

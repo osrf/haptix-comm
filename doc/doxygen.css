@@ -773,3 +773,9 @@ div.submenu dd {
 div.submenu dd .secondline {
   margin-left: 12px;
 }
+
+.diagram {
+  width: 600px;
+  padding: 4px;
+  border: 1px solid #dddddd;
+}
