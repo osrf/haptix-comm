@@ -1,68 +1,30 @@
-# BuildMex.cmake
-# Author: Kent Williams norman-k-williams at uiowa.edu
-include(CMakeParseArguments)
+# BuildMex.cmake 
+# 
+# Needs: 
+# - MATLAB_ROOT pointing to MATLAB/R20XXZ/
+#
 
-if(NOT MATLAB_FOUND)
-  find_package(MATLAB REQUIRED)
-endif()
-# CMake 2.8.12 & earlier apparently don't define the
-# Mex script path, so find it.
 if(NOT MATLAB_MEX_PATH)
   find_program( MATLAB_MEX_PATH mex
     HINTS ${MATLAB_ROOT}/bin
     PATHS ${MATLAB_ROOT}/bin
-    DOC "The mex program path"
-    )
-  if(NOT MATLAB_MEX_PATH)
-    message(FATAL_ERROR "Can't find Matlab MEX compiler")
-  endif()
+    DOC "The mex program path")
 endif()
 
-include_directories(${MATLAB_INCLUDE_DIR})
-#
-# mex -v outputs all the settings used for building MEX files, so it
-# we can use it to grab the important variables needed to generate
-# a well formed mex file.
-execute_process(COMMAND ${MATLAB_MEX_PATH} -v
-  OUTPUT_VARIABLE mexOut
-  ERROR_VARIABLE mexErr)
+if(NOT MATLAB_MEX_PATH)
+  message(STATUS "MATLAB mex compiler not found - no mex file generation")
+  BUILD_WARNING("MATLAB mex compiler not found - no mex file generation")
+else()
+  message(STATUS "MATLAB mex compiler found")
+  find_path(MATLAB_INCLUDE_DIR
+     "mex.h"
+     ${MATLAB_ROOT}/extern/include)
+endif()
 
-# parse mex output line by line by turning file into CMake list of lines
-string(REGEX REPLACE "\r?\n" ";" _mexOut "${mexOut}")
-foreach(line ${_mexOut})  if("${line}" MATCHES " CXXFLAGS *=")
-    string(REGEX REPLACE " *CXXFLAGS *= *" "" mexCxxFlags "${line}")
-  elseif("${line}" MATCHES " CXXLIBS *=")
-    string(REGEX REPLACE " *CXXLIBS *= *" "" mexCxxLibs "${line}")
-  elseif("${line}" MATCHES " LDFLAGS *=")
-    string(REGEX REPLACE " *LDFLAGS *= *" "" mexLdFlags "${line}")
-  elseif("${line}" MATCHES " LDEXTENSION *=")
-    string(REGEX REPLACE " *LDEXTENSION *= *" "" mexLdExtension "${line}")
-  endif()
-endforeach()
-
-list(APPEND mexCxxFlags "-DMATLAB_MEX_FILE")
-
-#
-# BuildMex -- arguments
-# MEXNAME = root of mex library name
-# TARGETDIR = location for the mex library files to be created
-# SOURCE = list of source files
-# LIBRARIES = libraries needed to link mex library
-macro(BuildMex)
-  set(oneValueArgs MEXNAME TARGETDIR)
-  set(multiValueArgs SOURCE LIBRARIES)
-  cmake_parse_arguments(BuildMex "" "${oneValueArgs}" "${multiValueArgs}"
-${ARGN})
-  set_source_files_properties(${BuildMex_SOURCE}    COMPILE_DEFINITIONS
-${mexCxxFlags}
-    )
-  add_library(${BuildMex_MEXNAME} SHARED ${BuildMex_SOURCE})
-  set_target_properties(${BuildMex_MEXNAME} PROPERTIES
-    SUFFIX "${mexLdExtension}"
-    RUNTIME_OUTPUT_DIRECTORY "${BuildMex_TARGETDIR}"
-    ARCHIVE_OUTPUT_DIRECTORY "${BuildMex_TARGETDIR}"
-    LIBRARY_OUTPUT_DIRECTORY "${BuildMex_TARGETDIR}"
-    )
-  target_link_libraries(${BuildMex_MEXNAME} ${BuildMex_LIBRARIES}
-${mexCxxLibs})
-endmacro(BuildMex)
+macro (build_mex_file)
+  # CMake 2.8.12 & earlier apparently don't define the
+  # Mex script path, so find it.
+   execute_process(COMMAND ${MATLAB_MEX_PATH} ${SOURCE_FILE} -I${CMAKE_BINARY_DIR} -L${CMAKE_BINARY_DIR}/src -L${CMAKE_BINARY_DIR}/msg -lhaptix-comm  -lhaptix-mgs -L${PROTOBUF_SRC_ROOT_FOLDER}/include -l${PROTOBUF_LIBRARY} -L${ZeroMQ_libzmq_LIBDIR} -l${ZeroMQ_LIBRARIES} -I${ignition-transport_DIR} -L${ignition-transport_DIR} -lignition-transport -lws2_32 -lIphlpapi
+    OUTPUT_VARIABLE mexOut
+    ERROR_VARIABLE mexErr)
+endmacro()
