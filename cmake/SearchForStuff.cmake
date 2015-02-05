@@ -97,10 +97,11 @@ include (${project_cmake_dir}/FindOctaveOctFile.cmake)
 find_package(Matlab)
 
 if (Matlab_FOUND)
+  include (${project_cmake_dir}/BuildMex.cmake)
   message(STATUS "MATLAB mex compiler found")
 else()
-  message(STATUS "MATLAB mex compiler not found'- no mex file generation")
-  BUILD_WARNING("MATLAB mex compiler not found'- no mex file generation")
+  message(STATUS "MATLAB mex compiler not found - no mex file generation")
+  BUILD_WARNING("MATLAB mex compiler not found - no mex file generation")
 endif()
 
 #################################################
