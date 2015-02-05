@@ -26,20 +26,20 @@
 
 extern "C" {
   /// \brief Different device/simulators supported.
-  std::string ProjectTopic = "haptix";
-  std::string DekaTopic    = "deka";
-  std::string MPLTopic     = "mpl";
-  std::string GazeboTopic  = "gazebo";
-  std::string MujocoTopic  = "mujoco";
+  static const std::string kProjectTopic = "haptix";
+  static const std::string kDekaTopic    = "deka";
+  static const std::string kMPLTopic     = "mpl";
+  static const std::string kGazeboTopic  = "gazebo";
+  static const std::string kMujocoTopic  = "mujoco";
+
+  /// \brief Timeout used for the service requests (ms.).
+  static unsigned int kTimeout = 1000;
 
   std::array<std::string, 4> DeviceTopics =
-      {DekaTopic, MPLTopic, GazeboTopic, MujocoTopic};
+      {kDekaTopic, kMPLTopic, kGazeboTopic, kMujocoTopic};
 
   /// \brief ignition transport node.
   ignition::transport::Node *haptixNode = NULL;
-
-  /// \brief Timeout used for the service requests (ms.).
-  unsigned int Timeout = 1000;
 
   //////////////////////////////////////////////////
   /// \brief Private function that converts a protobuf hxSensor message to a
@@ -101,7 +101,7 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
-  hxResult hx_connect(int _target, const char *_host, int _port)
+  hxResult hx_connect(int _target, const char * /*_host*/, int /*_port*/)
   {
     // Sanity check.
     if (checkTarget(_target))
@@ -144,9 +144,9 @@ extern "C" {
     limit->set_maximum(0.0);
 
     // Request the service.
-    std::string service = "/" + ProjectTopic + "/" + DeviceTopics[_target] +
+    std::string service = "/" + kProjectTopic + "/" + DeviceTopics[_target] +
         "/GetDeviceInfo";
-    bool executed = hxNode->Request(service, req, Timeout, rep, result);
+    bool executed = hxNode->Request(service, req, kTimeout, rep, result);
 
     if (executed)
     {
@@ -178,7 +178,7 @@ extern "C" {
 
   //////////////////////////////////////////////////
   hxResult hx_update(int _target, const hxCommand* _command, hxSensor* _sensor,
-      hxTime *_timestamp)
+      hxTime * /*_timestamp*/)
   {
     // Initialize the C struct.
     memset(_sensor, 0, sizeof(hxSensor));
@@ -201,9 +201,9 @@ extern "C" {
     }
 
     // Request the service.
-    std::string service = "/" + ProjectTopic + "/" + DeviceTopics[_target] +
+    std::string service = "/" + kProjectTopic + "/" + DeviceTopics[_target] +
         "/Update";
-    bool executed = hxNode->Request(service, req, Timeout, rep, result);
+    bool executed = hxNode->Request(service, req, kTimeout, rep, result);
 
     if (executed)
     {
@@ -224,7 +224,8 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
-  hxResult hx_readsensors(int _target, hxSensor *_sensor, hxTime *_timestamp)
+  hxResult hx_readsensors(int _target, hxSensor *_sensor,
+    hxTime * /*_timestamp*/)
   {
     // Sanity check.
     if (!checkTarget(_target) || !_sensor)
@@ -236,9 +237,9 @@ extern "C" {
     ignition::transport::Node *hxNode = getHxNodeInstance();
 
     // Request the service.
-    std::string service = "/" + ProjectTopic + "/" + DeviceTopics[_target] +
+    std::string service = "/" + kProjectTopic + "/" + DeviceTopics[_target] +
         "/Read";
-    bool executed = hxNode->Request(service, req, Timeout, rep, result);
+    bool executed = hxNode->Request(service, req, kTimeout, rep, result);
 
     if (!executed)
     {

@@ -278,7 +278,7 @@ typedef struct _hxCommand hxCommand;
 /// \param[in] _port When connecting to a simulator, use _port to specify
 /// what port the simulator is running on.
 /// \return 'hxOK' if the connection succeed or an error code otherwise.
-hxResult hx_connect(int _target, const char *_host = "", int _port = 0);
+hxResult hx_connect(int _target, const char *_host, int _port);
 
 /// \brief Close connection to specified device/simulator target.
 ///

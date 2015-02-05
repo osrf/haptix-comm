@@ -22,8 +22,7 @@
 #include "msg/hxDevice.pb.h"
 #include "msg/hxSensor.pb.h"
 
-std::string deviceInfoTopic = "/haptix/gazebo/GetDeviceInfo";
-std::string updateTopic = "/haptix/gazebo/Update";
+static const int kUnused = 0;
 
 //////////////////////////////////////////////////
 /// \brief Three different nodes running in two different processes. In the
@@ -41,7 +40,7 @@ TEST(twoProcesses, SrvTwoProcs)
   hxSensor sensor;
   hxTime timestamp;
 
-  EXPECT_EQ(hx_connect(hxGAZEBO), hxOK);
+  EXPECT_EQ(hx_connect(hxGAZEBO, "Unused", kUnused), hxOK);
 
   // Request the device information.
   ASSERT_EQ(hx_getdeviceinfo(hxGAZEBO, &deviceInfo), hxOK);

@@ -8,6 +8,7 @@ mexFunction (int nlhs, mxArray *plhs[],
 {
   hxCommand cmd;
   hxSensor sensor;
+  hxTime timestamp;
   int i;
   mxArray *v;
   double *data;
@@ -54,7 +55,7 @@ mexFunction (int nlhs, mxArray *plhs[],
   }
 
   // Request device information.
-  if (hx_update(hxGAZEBO, &cmd, &sensor) != hxOK)
+  if (hx_update(hxGAZEBO, &cmd, &sensor, &timestamp) != hxOK)
   {
     mexPrintf("hx_update(): Request error.\n");
     resultData[0] = -1.0;

@@ -24,9 +24,14 @@
 #endif
 
 //////////////////////////////////////////////////
-void printState(const hxDeviceInfo *_deviceInfo, const hxSensor *_sensor)
+void printState(const hxDeviceInfo *_deviceInfo, const hxSensor *_sensor,
+  const hxTime *_timestamp)
 {
   int i;
+
+  printf("\tTimestamp:\n");
+  printf("\t\tSeconds: %d\n", _timestamp->sec);
+  printf("\t\tNanoseconds: %d\n", _timestamp->nsec);
 
   printf("\tMotors:\n");
   for (i = 0; i < _deviceInfo->nmotor; ++i)
@@ -73,6 +78,7 @@ int main(int argc, char **argv)
   hxDeviceInfo deviceInfo;
   hxCommand cmd;
   hxSensor sensor;
+  hxTime timestamp;
 
   printf("\nRequesting device information...\n\n");
 
@@ -110,7 +116,7 @@ int main(int argc, char **argv)
   // Send commands at ~100Hz.
   for (; ;)
   {
-    if (hx_update(hxGAZEBO, &cmd, &sensor) != hxOK)
+    if (hx_update(hxGAZEBO, &cmd, &sensor, &timestamp) != hxOK)
     {
       printf("hx_update(): Request error.\n");
       continue;
@@ -121,9 +127,9 @@ int main(int argc, char **argv)
     {
       // Show the sensor output after hx_update().
       printf("Sensor state after hx_update():\n");
-      printState(&deviceInfo, &sensor);
+      printState(&deviceInfo, &sensor, &timestamp);
 
-      if (hx_readsensors(hxGAZEBO, &sensor) != hxOK)
+      if (hx_readsensors(hxGAZEBO, &sensor, &timestamp) != hxOK)
       {
         printf("hx_update(): Request error.\n");
         continue;
@@ -131,7 +137,7 @@ int main(int argc, char **argv)
 
       // Show the sensor output after hx_readsensors().
       printf("Sensor state after hx_readsensors():\n");
-      printState(&deviceInfo, &sensor);
+      printState(&deviceInfo, &sensor, &timestamp);
 
       counter = 0;
     }
