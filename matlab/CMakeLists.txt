@@ -31,8 +31,11 @@ endif()
 
 #
 # MATLAB generation if support found
+# 
+# Only tested on Windows. It could work on Linux but there is
+# no guarantee or test done.
 #
-if (MATLAB_FOUND)
+if (WIN32 AND MATLAB_FOUND)
   set (MATLAB_OUTPUT_FILE_SET)
 
   if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
@@ -49,14 +52,14 @@ if (MATLAB_FOUND)
 
     add_custom_command(
       OUTPUT ${MEX_OUTPUT_FILE}
-      COMMAND ${MATLAB_MEX_PATH} ${SOURCE_FILE} -I${CMAKE_BINARY_DIR} -L${CMAKE_BINARY_DIR}/src -L${CMAKE_BINARY_DIR}/msg -lhaptix-comm  -lhaptix-mgs -L${PROTOBUF_SRC_ROOT_FOLDER}/include -l${PROTOBUF_LIBRARY} -L${ZeroMQ_libzmq_LIBDIR} -l${ZeroMQ_LIBRARIES} -I${ignition-transport_DIR} -L${ignition-transport_DIR} -lignition-transport -lws2_32 -lIphlpapi
+      COMMAND ${MATLAB_MEX_PATH} ${SOURCE_FILE} -I${CMAKE_BINARY_DIR} -L${CMAKE_BINARY_DIR}/src -L${CMAKE_BINARY_DIR}/msg -lhaptix-comm  -lhaptix-mgs -L${PROTOBUF_SRC_ROOT_FOLDER}/include -l${PROTOBUF_LIBRARY} -L${ZeroMQ_LIBRARY_DIRS} -l${ZeroMQ_LIBRARIES} -I${ignition-transport_DIR} -L${ignition-transport_DIR} -lignition-transport -lws2_32 -lIphlpapi
       DEPENDS ${mex_srcs} ${PROJECT_NAME_LOWER} haptix-msgs
       COMMENT "Generating MATLAB mex file ${MEX_NAME}"
       VERBATIM)
-    endforeach()
+  endforeach()
 
-    install(FILES ${MEX_OUTPUT_FILE_SET}
+  install(FILES ${MEX_OUTPUT_FILE_SET}
           DESTINATION ${CMAKE_INSTALL_LIBDIR}/mex)
 
-    add_custom_target(matlab_generation ALL DEPENDS ${MEX_OUTPUT_FILE_SET})
+  add_custom_target(matlab_generation ALL DEPENDS ${MEX_OUTPUT_FILE_SET})
 endif()
