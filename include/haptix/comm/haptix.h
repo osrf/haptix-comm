@@ -281,9 +281,14 @@ typedef struct _hxCommand hxCommand;
 /// \param[in] _target Device to be connected. The valid targets are defined in
 /// #hxTarget.
 /// \param[in] _host When connecting to a simulator, use _host to specify
-/// the machine that is running the simulator.
+/// the machine that is running the simulator. The default value is blank,
+/// which indicates that automatic detection of the device/simulator
+/// should be attempted.
 /// \param[in] _port When connecting to a simulator, use _port to specify
-/// what port the simulator is running on.
+/// what port the simulator is running on. This may be used in conjunction
+/// with the _host paramter. Leave undefined of zero for automatic
+/// detection.
+
 /// \return 'hxOK' if the connection succeed or an error code otherwise.
 hxResult hx_connect(int _target, const char *_host = "", int _port = 0);
 
