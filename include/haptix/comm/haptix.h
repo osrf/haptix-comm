@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Open Source Robotics Foundation
+ * Copyright (C) 2014-2015 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
 */
 
+#pragma once
 /// \file haptix.h
 /// \brief Structures and functions for the primary HAPTIX API.
 
@@ -24,6 +25,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+//-------------------------------- constants --------------------------------------------
 
 /// \brief Maximum number of motors.
 /// Defines the maximum number of motors across any particular device.
@@ -79,6 +82,8 @@ typedef enum
   /// MuJoCo simulator
   hxMUJOCO
 } hxTarget;
+
+//-------------------------------- data structures --------------------------------------
 
 /// \brief A representation of time
 struct _hxTime
@@ -223,7 +228,7 @@ struct _hxCommand
 {
   /// \brief Timestamp.
   /// This field is not used.
-  double timestamp;
+  hxTime timestamp;
 
   /// \brief Target reference positions (rad).
   /// An array of floats of size #hxMAXMOTOR. Entries 0 through
@@ -265,6 +270,8 @@ typedef struct _hxSensor hxSensor;
 /// \def hxCommand
 /// \brief Motor commands.
 typedef struct _hxCommand hxCommand;
+
+//-------------------------------- API functions ----------------------------------------
 
 /// \brief Connect to specified device/simulator target.
 /// Multiple calls to this function are allowed with different targets.
