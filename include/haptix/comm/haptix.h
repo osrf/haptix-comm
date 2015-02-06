@@ -328,6 +328,7 @@ hxResult hx_update(int _target,
 /// \param[in] _target Device to update.
 /// \param[out] _sensor Sensor data received after the update.
 /// \param[out] _timestamp The timestamp associated with the sensor data.
+/// \return 'hxOK' if the operation succeed or an error code otherwise.
 hxResult hx_readsensors(int _target, hxSensor *_sensor, hxTime *_timestamp);
 
 /// \brief Return a string that describes the last result.
