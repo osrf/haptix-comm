@@ -55,7 +55,7 @@ if (WIN32 AND MATLAB_FOUND)
     # mex hack.
 
     # ignition-transport_DIR points to the cmake module location
-    set (mex_ignition_transport_root ${ignition-transport_DIR}../../../)
+    set (mex_ignition_transport_root ${ignition-transport_DIR}/../../..)
     set (mex_ignition_transport_include ${mex_ignition_transport_root}/include)
     set (mex_ignition_transport_lib ${mex_ignition_transport_root}/lib)
 
