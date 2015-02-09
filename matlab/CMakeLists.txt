@@ -40,7 +40,7 @@ if (WIN32 AND MATLAB_FOUND)
 
   # TODO: save check to be sure that variables needed for the hack
   # below is working
-  if (not defined ignition-transport_DIR)
+  if (not (defined ignition-transport_DIR))
      BUILD_ERROR("MATLAB support found but there is no ignition-transport_DIR variable")
   endif()
 
