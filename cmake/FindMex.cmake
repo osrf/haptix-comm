@@ -1,7 +1,12 @@
-# BuildMex.cmake 
+# FindMex.cmake 
 # 
 # Needs: 
 # - MATLAB_ROOT pointing to MATLAB/R20XXZ/
+#
+# It will look for mex.bat script and provide the following variables:
+#    - MATLAB_MEX_PATH    : full path to MEX script
+#    - MATLAB_FOUND       : 0/1 -> support not found / found
+#    - MATLAB_INCLUDE_DIR : full path to extern/include. Mex headers.
 #
 
 if(NOT MATLAB_MEX_PATH)

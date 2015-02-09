@@ -94,7 +94,7 @@ include (${project_cmake_dir}/FindOctaveOctFile.cmake)
 #################################################
 # Find MATLAB support (mex files)
 #
-include (${project_cmake_dir}/BuildMex.cmake)
+include (${project_cmake_dir}/FindMex.cmake)
 
 #################################################
 # Macro to check for visibility capability in compiler
