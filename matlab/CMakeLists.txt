@@ -50,9 +50,18 @@ if (WIN32 AND MATLAB_FOUND)
     set(MEX_OUTPUT_FILE "${CMAKE_CURRENT_BINARY_DIR}/${MEX_BINARY_NAME}")
     set(MEX_OUTPUT_FILE_SET ${MEX_OUTPUT_FILE_SET} ${MEX_OUTPUT_FILE})
 
+    # TODO: IGNITION cmake variables can not be directly used, they stored 
+    # several paths separated by an space which will break this whole
+    # mex hack.
+
+    # ignition-transport_DIR points to the cmake module location
+    set (mex_ignition_transport_root ${ignition-transport_DIR}..\..\..\)
+    set (mex_ignition_transport_include ${mex_ignition_transport_root}\include)
+    set (mex_ignition_transport_lib ${mex_ignition_transport_root}\lib)
+
     add_custom_command(
       OUTPUT ${MEX_OUTPUT_FILE}
-      COMMAND ${MATLAB_MEX_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/${mex_src} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARY_RELEASE} -I${CMAKE_BINARY_DIR} -L${CMAKE_BINARY_DIR}/src -L${CMAKE_BINARY_DIR}/msg -lhaptix-comm -I${IGNITION-TRANSPORT_INCLUDE_DIRS} -L${IGNITION-TRANSPORT_LIBRARY_DIRS} -lignition-transport -lws2_32 -lIphlpapi
+      COMMAND ${MATLAB_MEX_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/${mex_src} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARY_RELEASE} -I${CMAKE_BINARY_DIR} -L${CMAKE_BINARY_DIR}/src -L${CMAKE_BINARY_DIR}/msg -lhaptix-comm -I${mex_ignition_transport_include} -L${mex_ignition_transport_lib} -lignition-transport -lws2_32 -lIphlpapi
       DEPENDS ${mex_srcs} ${PROJECT_NAME_LOWER} haptix-msgs
       COMMENT "Generating MATLAB mex file ${MEX_NAME}"
       VERBATIM)
