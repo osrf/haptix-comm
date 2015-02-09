@@ -52,7 +52,7 @@ if (WIN32 AND MATLAB_FOUND)
 
     add_custom_command(
       OUTPUT ${MEX_OUTPUT_FILE}
-      COMMAND ${MATLAB_MEX_PATH} ${SOURCE_FILE} -I${CMAKE_BINARY_DIR} -L${CMAKE_BINARY_DIR}/src -L${CMAKE_BINARY_DIR}/msg -lhaptix-comm  -lhaptix-mgs -L${PROTOBUF_SRC_ROOT_FOLDER}/include -l${PROTOBUF_LIBRARY} -L${ZeroMQ_LIBRARY_DIRS} -l${ZeroMQ_LIBRARIES} -I${ignition-transport_DIR} -L${ignition-transport_DIR} -lignition-transport -lws2_32 -lIphlpapi
+      COMMAND ${MATLAB_MEX_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/${mex_src} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARY_RELEASE} -I${CMAKE_BINARY_DIR} -L${CMAKE_BINARY_DIR}/src -L${CMAKE_BINARY_DIR}/msg -lhaptix-comm -I${IGNITION-TRANSPORT_INCLUDE_DIRS} -L${IGNITION-TRANSPORT_LIBRARY_DIRS} -lignition-transport -lws2_32 -lIphlpapi
       DEPENDS ${mex_srcs} ${PROJECT_NAME_LOWER} haptix-msgs
       COMMENT "Generating MATLAB mex file ${MEX_NAME}"
       VERBATIM)

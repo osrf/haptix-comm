@@ -5,7 +5,7 @@
 #
 
 if(NOT MATLAB_MEX_PATH)
-  find_program( MATLAB_MEX_PATH mex
+  find_program( MATLAB_MEX_PATH mex.bat
     HINTS ${MATLAB_ROOT}/bin
     PATHS ${MATLAB_ROOT}/bin
     DOC "The mex program path")
