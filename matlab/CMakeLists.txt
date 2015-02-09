@@ -38,10 +38,16 @@ endif()
 if (WIN32 AND MATLAB_FOUND)
   set (MATLAB_OUTPUT_FILE_SET)
 
-  if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-    set(MEX_EXTENSION ".mexw32")
+  # TODO: save check to be sure that variables needed for the hack
+  # below is working
+  if (not defined ignition-transport_DIR)
+     BUILD_ERROR("MATLAB support found but there is no ignition-transport_DIR variable")
+  endif()
+
+  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    set(MEX_EXTENSION "mexw64")
   else()
-    set(MEX_EXTENSION ".mexw64")
+    set(MEX_EXTENSION "mexw32")
   endif()
 
   foreach(mex_src ${mex_srcs})
