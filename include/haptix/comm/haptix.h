@@ -157,7 +157,7 @@ struct _hxSensor
   /// motor-related properties of #hxSensor.
   ///
   /// These values cannot exceed the minimum and maximum values specified in
-  /// hxRobotInfo::limit.
+  /// hxRobotInfo::motor_limit.
   float motor_pos[hxMAXMOTOR];
 
   /// \brief Motor velocity (rad/s).
