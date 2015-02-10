@@ -1,8 +1,18 @@
 /*
-  HAPTIX User API, Part 1
-
-  This file defines data structures and API functions
-  available both in simulation and on physical robots.
+ * Copyright (C) 2014-2015 Open Source Robotics Foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
 */
 
 /// \file haptix.h
@@ -71,7 +81,7 @@ struct _hxTime
 /// \brief Time representation.
 typedef struct _hxTime hxTime;
 
-/// \brief Device information.
+/// \brief Robot information.
 /// This data structure specifies inherent properties of the robot that
 /// do not change during simulation (for
 /// example, the number of joints in the robot arm).
@@ -217,7 +227,7 @@ struct _hxSensor
   /// This value is set to a unit value of (1, 0, 0, 0), until the IMUs
   /// on the hardware is known to provide an orientation estimate.
   /// The expected coordinate ordering of quaternions is (w, x, y, z).
-  float imu_orientation[hxMAXIMU][4]
+  float imu_orientation[hxMAXIMU][4];
 };
 
 /// \def hxSensor
@@ -305,7 +315,7 @@ hxResult hx_connect(const char *_host, int _port);
 hxResult hx_close();
 
 /// \brief Get information for a specified robot or simulator.
-/// \param[out] _robotInfo Device information requested. See #_hxRobotInfo
+/// \param[out] _robotInfo Robot information requested. See #_hxRobotInfo
 /// for a list of available fields.
 /// \return 'hxOK' if the operation succeed or an error code otherwise.
 hxResult hx_robot_info(hxRobotInfo *_robotinfo);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Open Source Robotics Foundation
+ * Copyright (C) 2014-2015 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,10 @@
 #include "gtest/gtest.h"
 #include "haptix/comm/haptix.h"
 #include "msg/hxCommand.pb.h"
-#include "msg/hxDevice.pb.h"
+#include "msg/hxRobot.pb.h"
 #include "msg/hxSensor.pb.h"
 
-static const std::string DeviceInfoTopic = "/haptix/gazebo/GetDeviceInfo";
+static const std::string RobotInfoTopic = "/haptix/gazebo/GetRobotInfo";
 static const std::string UpdateTopic     = "/haptix/gazebo/Update";
 static const std::string ReadTopic       = "/haptix/gazebo/Read";
 
@@ -32,26 +32,26 @@ static const int NumContactSensors = 6;
 static const int NumIMUs           = 7;
 
 //////////////////////////////////////////////////
-/// \brief Provide a "GetDeviceInfo" service.
-void onGetDeviceInfo(const std::string &_service,
-  const haptix::comm::msgs::hxDevice &/*_req*/,
-  haptix::comm::msgs::hxDevice &_rep,
+/// \brief Provide a "GetRobotInfo" service.
+void onGetRobotInfo(const std::string &_service,
+  const haptix::comm::msgs::hxRobot &/*_req*/,
+  haptix::comm::msgs::hxRobot &_rep,
   bool &_result)
 {
   _rep.Clear();
 
   // Check the name of the service received.
-  EXPECT_EQ(_service, DeviceInfoTopic);
+  EXPECT_EQ(_service, RobotInfoTopic);
 
   // Create some dummy response.
-  _rep.set_nmotor(NumMotors);
-  _rep.set_njoint(NumJoints);
-  _rep.set_ncontactsensor(NumContactSensors);
-  _rep.set_nimu(NumIMUs);
+  _rep.set_motor_count(NumMotors);
+  _rep.set_joint_count(NumJoints);
+  _rep.set_contact_sensor_count(NumContactSensors);
+  _rep.set_imu_count(NumIMUs);
 
   for (int i = 0; i < NumJoints; ++i)
   {
-    haptix::comm::msgs::hxJointAngle *joint = _rep.add_limit();
+    haptix::comm::msgs::hxRobot::hxLimit *joint = _rep.add_joint_limit();
     joint->set_minimum(-i);
     joint->set_maximum(i);
   }
@@ -76,7 +76,7 @@ void onUpdate(const std::string &_service,
   for (int i = 0; i < NumMotors; ++i)
   {
     EXPECT_FLOAT_EQ(_req.ref_pos(i), i);
-    EXPECT_FLOAT_EQ(_req.ref_vel(i), i + 1);
+    EXPECT_FLOAT_EQ(_req.ref_vel_max(i), i + 1);
     EXPECT_FLOAT_EQ(_req.gain_pos(i), i + 2);
     EXPECT_FLOAT_EQ(_req.gain_vel(i), i + 3);
   }
@@ -100,14 +100,14 @@ void onUpdate(const std::string &_service,
 
   for (int i = 0; i < NumIMUs; ++i)
   {
-    haptix::comm::msgs::imu *linacc = _rep.add_imu_linacc();
-    linacc->set_x(i);
-    linacc->set_y(i + 1);
-    linacc->set_z(i + 2);
-    haptix::comm::msgs::imu *angvel = _rep.add_imu_angvel();
-    angvel->set_x(i + 3);
-    angvel->set_y(i + 4);
-    angvel->set_z(i + 5);
+    haptix::comm::msgs::imu *linear_acc = _rep.add_imu_linear_acc();
+    linear_acc->set_x(i);
+    linear_acc->set_y(i + 1);
+    linear_acc->set_z(i + 2);
+    haptix::comm::msgs::imu *angular_vel = _rep.add_imu_angular_vel();
+    angular_vel->set_x(i + 3);
+    angular_vel->set_y(i + 4);
+    angular_vel->set_z(i + 5);
   }
 
   _result = true;
@@ -144,14 +144,14 @@ void onRead(const std::string &_service,
 
   for (int i = 0; i < NumIMUs; ++i)
   {
-    haptix::comm::msgs::imu *linacc = _rep.add_imu_linacc();
-    linacc->set_x(i);
-    linacc->set_y(i + 1);
-    linacc->set_z(i + 2);
-    haptix::comm::msgs::imu *angvel = _rep.add_imu_angvel();
-    angvel->set_x(i + 3);
-    angvel->set_y(i + 4);
-    angvel->set_z(i + 5);
+    haptix::comm::msgs::imu *linear_acc = _rep.add_imu_linear_acc();
+    linear_acc->set_x(i);
+    linear_acc->set_y(i + 1);
+    linear_acc->set_z(i + 2);
+    haptix::comm::msgs::imu *angular_vel = _rep.add_imu_angular_vel();
+    angular_vel->set_x(i + 3);
+    angular_vel->set_y(i + 4);
+    angular_vel->set_z(i + 5);
   }
 
   _result = true;
@@ -164,7 +164,7 @@ TEST(CommTest, BasicUsage)
   ignition::transport::Node node;
 
   // Advertise the "getdeviceinfo" service.
-  node.Advertise(DeviceInfoTopic, onGetDeviceInfo);
+  node.Advertise(RobotInfoTopic, onGetRobotInfo);
 
   // Advertise the "update" service.
   node.Advertise(UpdateTopic, onUpdate);
@@ -172,87 +172,86 @@ TEST(CommTest, BasicUsage)
   // Advertise the "read" service.
   node.Advertise(ReadTopic, onRead);
 
-  EXPECT_EQ(hx_connect(hxGAZEBO), hxOK);
+  EXPECT_EQ(hx_connect(NULL, 0), hxOK);
 
-  hxDeviceInfo deviceInfo;
-  ASSERT_EQ(hx_getdeviceinfo(hxGAZEBO, &deviceInfo), hxOK);
+  hxRobotInfo robotInfo;
+  ASSERT_EQ(hx_robot_info(&robotInfo), hxOK);
 
-  ASSERT_EQ(deviceInfo.nmotor, NumMotors);
-  ASSERT_EQ(deviceInfo.njoint, NumJoints);
-  ASSERT_EQ(deviceInfo.ncontactsensor, NumContactSensors);
-  ASSERT_EQ(deviceInfo.nIMU, NumIMUs);
+  ASSERT_EQ(robotInfo.motor_count, NumMotors);
+  ASSERT_EQ(robotInfo.joint_count, NumJoints);
+  ASSERT_EQ(robotInfo.contact_sensor_count, NumContactSensors);
+  ASSERT_EQ(robotInfo.imu_count, NumIMUs);
 
   hxCommand cmd;
   hxSensor sensor;
-  hxTime timestamp;
 
   // Fill the joint command.
-  for (int i = 0; i < deviceInfo.nmotor; ++i)
+  for (int i = 0; i < robotInfo.motor_count; ++i)
   {
     cmd.ref_pos[i] = i;
-    cmd.ref_vel[i] = i + 1;
+    cmd.ref_vel_max[i] = i + 1;
     cmd.gain_pos[i] = i + 2;
     cmd.gain_vel[i] = i + 3;
   }
 
-  EXPECT_EQ(hx_update(hxGAZEBO, &cmd, &sensor, &timestamp), hxOK);
+  EXPECT_EQ(hx_update(&cmd, &sensor), hxOK);
 
   // Check the response.
-  for (int i = 0; i < deviceInfo.nmotor; ++i)
+  for (int i = 0; i < robotInfo.motor_count; ++i)
   {
     EXPECT_FLOAT_EQ(sensor.motor_pos[i], i);
     EXPECT_FLOAT_EQ(sensor.motor_vel[i], i + 1);
     EXPECT_FLOAT_EQ(sensor.motor_torque[i], i + 2);
   }
 
-  for (int i = 0; i < deviceInfo.njoint; ++i)
+  for (int i = 0; i < robotInfo.joint_count; ++i)
   {
     EXPECT_FLOAT_EQ(sensor.joint_pos[i], i);
     EXPECT_FLOAT_EQ(sensor.joint_vel[i], i + 1);
   }
 
-  for (int i = 0; i < deviceInfo.ncontactsensor; ++i)
+  for (int i = 0; i < robotInfo.contact_sensor_count; ++i)
     EXPECT_FLOAT_EQ(sensor.contact[i], i);
 
-  for (int i = 0; i < deviceInfo.nIMU; ++i)
+  for (int i = 0; i < robotInfo.imu_count; ++i)
   {
-    EXPECT_FLOAT_EQ(sensor.IMU_linacc[i][0], i);
-    EXPECT_FLOAT_EQ(sensor.IMU_linacc[i][1], i + 1);
-    EXPECT_FLOAT_EQ(sensor.IMU_linacc[i][2], i + 2);
-    EXPECT_FLOAT_EQ(sensor.IMU_angvel[i][0], i + 3);
-    EXPECT_FLOAT_EQ(sensor.IMU_angvel[i][1], i + 4);
-    EXPECT_FLOAT_EQ(sensor.IMU_angvel[i][2], i + 5);
+    EXPECT_FLOAT_EQ(sensor.imu_linear_acc[i][0], i);
+    EXPECT_FLOAT_EQ(sensor.imu_linear_acc[i][1], i + 1);
+    EXPECT_FLOAT_EQ(sensor.imu_linear_acc[i][2], i + 2);
+    EXPECT_FLOAT_EQ(sensor.imu_angular_vel[i][0], i + 3);
+    EXPECT_FLOAT_EQ(sensor.imu_angular_vel[i][1], i + 4);
+    EXPECT_FLOAT_EQ(sensor.imu_angular_vel[i][2], i + 5);
   }
 
-  // Test hx_readsensors.
-  EXPECT_EQ(hx_readsensors(hxGAZEBO, &sensor, &timestamp), hxOK);
+  // Test hx_read_sensors.
+  EXPECT_EQ(hx_read_sensors(&sensor), hxOK);
 
   // Check the response.
-  for (int i = 0; i < deviceInfo.nmotor; ++i)
+  for (int i = 0; i < robotInfo.motor_count; ++i)
   {
     EXPECT_FLOAT_EQ(sensor.motor_pos[i], i);
     EXPECT_FLOAT_EQ(sensor.motor_vel[i], i + 1);
     EXPECT_FLOAT_EQ(sensor.motor_torque[i], i + 2);
   }
 
-  for (int i = 0; i < deviceInfo.njoint; ++i)
+  for (int i = 0; i < robotInfo.joint_count; ++i)
   {
     EXPECT_FLOAT_EQ(sensor.joint_pos[i], i);
     EXPECT_FLOAT_EQ(sensor.joint_vel[i], i + 1);
   }
 
-  for (int i = 0; i < deviceInfo.ncontactsensor; ++i)
+  for (int i = 0; i < robotInfo.contact_sensor_count; ++i)
     EXPECT_FLOAT_EQ(sensor.contact[i], i);
 
-  for (int i = 0; i < deviceInfo.nIMU; ++i)
+  for (int i = 0; i < robotInfo.imu_count; ++i)
   {
-    EXPECT_FLOAT_EQ(sensor.IMU_linacc[i][0], i);
-    EXPECT_FLOAT_EQ(sensor.IMU_linacc[i][1], i + 1);
-    EXPECT_FLOAT_EQ(sensor.IMU_linacc[i][2], i + 2);
-    EXPECT_FLOAT_EQ(sensor.IMU_angvel[i][0], i + 3);
-    EXPECT_FLOAT_EQ(sensor.IMU_angvel[i][1], i + 4);
-    EXPECT_FLOAT_EQ(sensor.IMU_angvel[i][2], i + 5);
+    EXPECT_FLOAT_EQ(sensor.imu_linear_acc[i][0], i);
+    EXPECT_FLOAT_EQ(sensor.imu_linear_acc[i][1], i + 1);
+    EXPECT_FLOAT_EQ(sensor.imu_linear_acc[i][2], i + 2);
+    EXPECT_FLOAT_EQ(sensor.imu_angular_vel[i][0], i + 3);
+    EXPECT_FLOAT_EQ(sensor.imu_angular_vel[i][1], i + 4);
+    EXPECT_FLOAT_EQ(sensor.imu_angular_vel[i][2], i + 5);
   }
 
-  EXPECT_EQ(hx_close(hxGAZEBO), hxOK);
+  EXPECT_EQ(hx_close(), hxOK);
 }

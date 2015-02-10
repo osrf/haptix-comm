@@ -1,6 +1,6 @@
 set(msgs
   hxCommand.proto
-  hxDevice.proto
+  hxRobot.proto
   hxSensor.proto
   hxGrasp.proto
 )

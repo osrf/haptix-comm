@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include <ignition/transport.hh>
 #include "msg/hxCommand.pb.h"
-#include "msg/hxDevice.pb.h"
+#include "msg/hxRobot.pb.h"
 #include "msg/hxSensor.pb.h"
 
 int numMotors = 4;
@@ -28,28 +28,28 @@ int numJoints = 5;
 int numContactSensors = 6;
 int numIMUs = 7;
 
-std::string deviceInfoTopic = "/haptix/gazebo/GetDeviceInfo";
+std::string deviceInfoTopic = "/haptix/gazebo/GetRobotInfo";
 std::string updateTopic = "/haptix/gazebo/Update";
 
 //////////////////////////////////////////////////
 /// \brief Provide a service.
-void onGetDeviceInfo(const std::string &_service,
-  const haptix::comm::msgs::hxDevice &/*_req*/,
-  haptix::comm::msgs::hxDevice &_rep, bool &_result)
+void onGetRobotInfo(const std::string &_service,
+  const haptix::comm::msgs::hxRobot &/*_req*/,
+  haptix::comm::msgs::hxRobot &_rep, bool &_result)
 {
   _result = true;
 
   if (_service != deviceInfoTopic)
     _result = false;
 
-  _rep.set_nmotor(numMotors);
-  _rep.set_njoint(numJoints);
-  _rep.set_ncontactsensor(numContactSensors);
-  _rep.set_nimu(numIMUs);
+  _rep.set_motor_count(numMotors);
+  _rep.set_joint_count(numJoints);
+  _rep.set_contact_sensor_count(numContactSensors);
+  _rep.set_imu_count(numIMUs);
 
   for (int i = 0; i < numJoints; ++i)
   {
-    haptix::comm::msgs::hxJointAngle *joint = _rep.add_limit();
+    haptix::comm::msgs::hxRobot::hxLimit *joint = _rep.add_joint_limit();
     joint->set_minimum(-i);
     joint->set_maximum(i);
   }
@@ -98,14 +98,14 @@ void onUpdate(const std::string &_service,
 
   for (int i = 0; i < numIMUs; ++i)
   {
-    haptix::comm::msgs::imu *linacc = _rep.add_imu_linacc();
-    linacc->set_x(i);
-    linacc->set_y(i + 1);
-    linacc->set_z(i + 2);
-    haptix::comm::msgs::imu *angvel = _rep.add_imu_angvel();
-    angvel->set_x(i + 3);
-    angvel->set_y(i + 4);
-    angvel->set_z(i + 5);
+    haptix::comm::msgs::imu *linear_acc = _rep.add_imu_linear_acc();
+    linear_acc->set_x(i);
+    linear_acc->set_y(i + 1);
+    linear_acc->set_z(i + 2);
+    haptix::comm::msgs::imu *angular_vel = _rep.add_imu_angular_vel();
+    angular_vel->set_x(i + 3);
+    angular_vel->set_y(i + 4);
+    angular_vel->set_z(i + 5);
   }
 }
 
@@ -137,7 +137,7 @@ int main(int argc, char **argv)
   ignition::transport::Node node;
 
   // Advertise the "getdeviceinfo" service.
-  if (!node.Advertise(deviceInfoTopic, onGetDeviceInfo))
+  if (!node.Advertise(deviceInfoTopic, onGetRobotInfo))
   {
     std::cerr << "Error advertising the [" << deviceInfoTopic << "] service."
               << std::endl;
