@@ -116,6 +116,13 @@ int main(int argc, char **argv)
   if (signal(SIGTERM, sigHandler) == SIG_ERR)
     printf("Error catching SIGTERM\n");
 
+  // Connect to the simulator / hardware
+  if (hx_connect(NULL, 0) != hxOK)
+  {
+    printf("hx_connect(): Request error.\n");
+    return -1;
+  }
+
   // Requesting robot information.
   if (hx_robot_info(&robotInfo) != hxOK)
   {
@@ -151,12 +158,30 @@ int main(int argc, char **argv)
     if (++counter == 10000)
       counter = 0;
 
+    // Here is where you would do your other work, such as reading from EMG
+    // sensors, decoding that data, computing your next control command,
+    // etc.  In this example, we're just sleeping for 10ms.
+    //
+    // You might also want to sleep in your code, because there's a maximum
+    // rate at which the limb can process new commands and produce new
+    // sensor readings.  Depending on how long your computation takes, you
+    // might want to wait here until it's time to send a new command.  Or
+    // you might want to run as fast as possible, computing and sending new
+    // commands constantly (but knowing that not all of them will be
+    // executed by the limb).
     unsigned int sleeptime_us = 10000;
 #ifdef _WIN32
     Sleep(sleeptime_us / 1e3);
 #else
     usleep(sleeptime_us);
 #endif
+  }
+
+  // Disconnect from the simulator / hardware
+  if (hx_close() != hxOK)
+  {
+    printf("hx_close(): Request error.\n");
+    return -1;
   }
 
   return 0;

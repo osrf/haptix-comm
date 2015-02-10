@@ -1,4 +1,4 @@
-set (mex_srcs 
+set (mex_srcs
      hx_getdeviceinfo.c
      hx_update.c)
 
@@ -18,7 +18,7 @@ foreach(mex_src ${mex_srcs})
 	VERBATIM)
 endforeach()
 
-install(FILES ${OCTAVE_OUTPUT_FILE_SET}
+install(FILES ${OCTAVE_OUTPUT_FILE_SET} hx_matlab_controller.m
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/octave)
 
 add_custom_target(mex_generation ALL DEPENDS ${OCTAVE_OUTPUT_FILE_SET})
