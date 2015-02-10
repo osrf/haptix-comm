@@ -15,6 +15,6 @@ message hxSensor
   repeated float joint_pos    = 4 [packed=true];
   repeated float joint_vel    = 5 [packed=true];
   repeated float contact      = 6 [packed=true];
-  repeated imu imu_linear_acc     = 7;
+  repeated imu imu_linear_acc      = 7;
   repeated imu imu_angular_vel     = 8;
 }
