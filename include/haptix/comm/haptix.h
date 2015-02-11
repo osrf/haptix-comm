@@ -86,12 +86,12 @@ typedef struct _hxTime hxTime;
 /// do not change during simulation (for
 /// example, the number of joints in the robot arm).
 ///
-/// It can be retrieved by calling hx_robotinfo(hxRobotInfo*).
+/// It can be retrieved by calling hx_robot_info(hxRobotInfo*).
 struct _hxRobotInfo
 {
   /// \brief Number of motors.
   /// Motors are commanded through filling an hxCommand struct and calling
-  /// hx_update(int, const hxCommand*, hxSensor*).
+  /// hx_update(const hxCommand*, hxSensor*).
   ///
   /// The number of motors is less than or equal to the number of
   /// joints. For example, one motor may control several joints through
@@ -143,7 +143,7 @@ typedef struct _hxRobotInfo hxRobotInfo;
 /// This data structure specifies the sensor information gained in a simulation
 /// update.
 /// It is an output of the function
-/// hx_update(int, const hxCommand*, hxSensor*).
+/// hx_update(const hxCommand*, hxSensor*).
 struct _hxSensor
 {
   /// \brief Timestamp.
@@ -239,7 +239,7 @@ typedef struct _hxSensor hxSensor;
 /// limb model.
 ///
 /// It is an input of the function
-/// hx_update(int, const hxCommand*, hxSensor*).
+/// hx_update(const hxCommand*, hxSensor*).
 struct _hxCommand
 {
   /// \brief Target reference positions (rad).
