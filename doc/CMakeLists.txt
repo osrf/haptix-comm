@@ -11,9 +11,13 @@ if (DOXYGEN_FOUND)
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     COMMAND cp ${CMAKE_SOURCE_DIR}/doc/search.js
             ${CMAKE_BINARY_DIR}/doxygen/html/search
-    COMMAND make -C ${CMAKE_BINARY_DIR}/doxygen/latex
-    COMMAND mv ${CMAKE_BINARY_DIR}/doxygen/latex/refman.pdf
-    ${CMAKE_BINARY_DIR}/doxygen/latex/${PROJECT_NAME_LOWER}-${PROJECT_VERSION_FULL}.pdf
-
+    COMMAND cp ${CMAKE_SOURCE_DIR}/doc/mpl_joints.svg
+            ${CMAKE_BINARY_DIR}/doxygen/html
+    COMMAND cp ${CMAKE_SOURCE_DIR}/doc/mpl_motors.svg
+            ${CMAKE_BINARY_DIR}/doxygen/html
+    COMMAND cp ${CMAKE_SOURCE_DIR}/doc/mpl_contact_sensors.svg
+            ${CMAKE_BINARY_DIR}/doxygen/html
+    COMMAND cp ${CMAKE_SOURCE_DIR}/doc/mpl_imu_sensors.svg
+            ${CMAKE_BINARY_DIR}/doxygen/html
     COMMENT "Generating API documentation with Doxygen" VERBATIM)
 endif()

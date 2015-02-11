@@ -1,0 +1,17 @@
+package haptix.comm.msgs;
+
+message hxRobot
+{
+  message hxLimit
+  {
+    required float minimum = 1;
+    required float maximum = 2;
+  }
+
+  required int32 motor_count          = 1;
+  required int32 joint_count          = 2;
+  required int32 contact_sensor_count = 3;
+  required int32 imu_count            = 4;
+  repeated hxLimit joint_limit        = 5;
+  repeated hxLimit motor_limit        = 6;
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Open Source Robotics Foundation
+ * Copyright (C) 2014-2015 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,12 +38,12 @@ void sigHandler(int signo)
 }
 
 //////////////////////////////////////////////////
-void printState(const hxDeviceInfo *_deviceInfo, const hxSensor *_sensor)
+void printState(const hxRobotInfo *_robotInfo, const hxSensor *_sensor)
 {
   int i;
 
   printf("\tMotors:\n");
-  for (i = 0; i < _deviceInfo->nmotor; ++i)
+  for (i = 0; i < _robotInfo->motor_count; ++i)
   {
     printf("\t\tMotor %d\n", i);
     printf("\t\t\tPosition: %f rads.\n", _sensor->motor_pos[i]);
@@ -52,7 +52,7 @@ void printState(const hxDeviceInfo *_deviceInfo, const hxSensor *_sensor)
   }
 
   printf("\tJoints:\n");
-  for (i = 0; i < _deviceInfo->njoint; ++i)
+  for (i = 0; i < _robotInfo->joint_count; ++i)
   {
     printf("\t\tJoint %d\n", i);
     printf("\t\t\tPosition: %f rads.\n", _sensor->joint_pos[i]);
@@ -60,42 +60,42 @@ void printState(const hxDeviceInfo *_deviceInfo, const hxSensor *_sensor)
   }
 
   printf("\tContact sensors:\n");
-  for (i = 0; i < _deviceInfo->ncontactsensor; ++i)
+  for (i = 0; i < _robotInfo->contact_sensor_count; ++i)
   {
     printf("\t\t# %d\n", i);
     printf("\t\t\tvalue: %f N.\n", _sensor->contact[i]);
   }
 
   printf("\tIMUs:\n");
-  for (i = 0; i < _deviceInfo->nIMU; ++i)
+  for (i = 0; i < _robotInfo->imu_count; ++i)
   {
     printf("\t\t# %d\n", i);
     printf("\t\t\tLinear acceleration: (%f, %f, %f) m./seg2.\n",
-      _sensor->IMU_linacc[i][0], _sensor->IMU_linacc[i][1],
-      _sensor->IMU_linacc[i][2]);
+      _sensor->imu_linear_acc[i][0], _sensor->imu_linear_acc[i][1],
+      _sensor->imu_linear_acc[i][2]);
     printf("\t\t\tAngular velocity: (%f, %f, %f) rads./sec.\n",
-      _sensor->IMU_angvel[i][0], _sensor->IMU_angvel[i][1],
-      _sensor->IMU_angvel[i][2]);
+      _sensor->imu_angular_vel[i][0], _sensor->imu_angular_vel[i][1],
+      _sensor->imu_angular_vel[i][2]);
   }
 }
 
 //////////////////////////////////////////////////
-void printDeviceInfo(const hxDeviceInfo *_deviceInfo)
+void printRobotInfo(const hxRobotInfo *_robotInfo)
 {
-  printf("Device information received:\n");
-  printf("Num motors: %d\n", _deviceInfo->nmotor);
-  printf("Num joints: %d\n", _deviceInfo->njoint);
-  printf("Num contact sensors: %d\n", _deviceInfo->ncontactsensor);
-  printf("Num IMUs: %d\n", _deviceInfo->nIMU);
+  printf("Robot information received:\n");
+  printf("Num motors: %d\n", _robotInfo->motor_count);
+  printf("Num joints: %d\n", _robotInfo->joint_count);
+  printf("Num contact sensors: %d\n", _robotInfo->contact_sensor_count);
+  printf("Num IMUs: %d\n", _robotInfo->imu_count);
   printf("Actuated joint limits: \n");
 
   // Print joint limits.
   int i;
-  for (i = 0; i < _deviceInfo->nmotor; ++i)
+  for (i = 0; i < _robotInfo->motor_count; ++i)
   {
     printf("\tJoint associated to motor %d:\n", i);
-    printf("\t\t Min: %f rads.\n", _deviceInfo->limit[i][0]);
-    printf("\t\t Max: %f rads.\n", _deviceInfo->limit[i][1]);
+    printf("\t\t Min: %f rads.\n", _robotInfo->joint_limit[i][0]);
+    printf("\t\t Max: %f rads.\n", _robotInfo->joint_limit[i][1]);
   }
 }
 
@@ -104,7 +104,7 @@ int main(int argc, char **argv)
 {
   int i;
   int counter = 0;
-  hxDeviceInfo deviceInfo;
+  hxRobotInfo robotInfo;
   hxCommand cmd;
   hxSensor sensor;
 
@@ -116,47 +116,72 @@ int main(int argc, char **argv)
   if (signal(SIGTERM, sigHandler) == SIG_ERR)
     printf("Error catching SIGTERM\n");
 
-  // Requesting device information.
-  if (hx_getdeviceinfo(hxGAZEBO, &deviceInfo) != hxOK)
+  // Connect to the simulator / hardware
+  if (hx_connect(NULL, 0) != hxOK)
   {
-    printf("hx_getdeviceinfo(): Request error.\n");
+    printf("hx_connect(): Request error.\n");
     return -1;
   }
 
-  // Print the device information.
-  printDeviceInfo(&deviceInfo);
+  // Requesting robot information.
+  if (hx_robot_info(&robotInfo) != hxOK)
+  {
+    printf("hx_getrobotinfo(): Request error.\n");
+    return -1;
+  }
+
+  // Print the robot information.
+  printRobotInfo(&robotInfo);
 
   // Send commands at ~100Hz.
   while (running == 1)
   {
     // Create a new command based on a sinusoidal wave.
-    for (i = 0; i < deviceInfo.nmotor; ++i)
+    for (i = 0; i < robotInfo.motor_count; ++i)
     {
       cmd.ref_pos[i] = 0.5 * sin(0.05 * 2.0 * M_PI * counter * 0.01);
-      cmd.ref_vel[i] = 1.0;
+      cmd.ref_vel_max[i] = 1.0;
       cmd.gain_pos[i] = 1.0;
       cmd.gain_vel[i] = 1.0;
     }
 
     // Send the new joint command and receive the state update.
-    if (hx_update(hxGAZEBO, &cmd, &sensor) != hxOK)
+    if (hx_update(&cmd, &sensor) != hxOK)
     {
       printf("hx_update(): Request error.\n");
       continue;
     }
 
     // Debug output: Print the state.
-    // printState(&deviceInfo, &sensor);
+    // printState(&robotInfo, &sensor);
 
     if (++counter == 10000)
       counter = 0;
 
+    // Here is where you would do your other work, such as reading from EMG
+    // sensors, decoding that data, computing your next control command,
+    // etc.  In this example, we're just sleeping for 10ms.
+    //
+    // You might also want to sleep in your code, because there's a maximum
+    // rate at which the limb can process new commands and produce new
+    // sensor readings.  Depending on how long your computation takes, you
+    // might want to wait here until it's time to send a new command.  Or
+    // you might want to run as fast as possible, computing and sending new
+    // commands constantly (but knowing that not all of them will be
+    // executed by the limb).
     unsigned int sleeptime_us = 10000;
 #ifdef _WIN32
     Sleep(sleeptime_us / 1e3);
 #else
     usleep(sleeptime_us);
 #endif
+  }
+
+  // Disconnect from the simulator / hardware
+  if (hx_close() != hxOK)
+  {
+    printf("hx_close(): Request error.\n");
+    return -1;
   }
 
   return 0;

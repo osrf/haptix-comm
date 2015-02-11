@@ -1,5 +1,5 @@
-set (mex_srcs 
-     hx_getdeviceinfo.c
+set (mex_srcs
+     hx_robot_info.c
      hx_update.c)
 
 #
@@ -23,7 +23,7 @@ if (OCTAVE_SUPPORT_FOUND)
       VERBATIM)
   endforeach()
 
-  install(FILES ${OCTAVE_OUTPUT_FILE_SET}
+  install(FILES ${OCTAVE_OUTPUT_FILE_SET} hx_matlab_controller.m
           DESTINATION ${CMAKE_INSTALL_LIBDIR}/octave)
 
   add_custom_target(mex_generation ALL DEPENDS ${OCTAVE_OUTPUT_FILE_SET})
@@ -73,7 +73,7 @@ if (WIN32 AND MATLAB_FOUND)
       VERBATIM)
   endforeach()
 
-  install(FILES ${MEX_OUTPUT_FILE_SET}
+  install(FILES ${MEX_OUTPUT_FILE_SET} hx_matlab_controller.m
           DESTINATION ${CMAKE_INSTALL_LIBDIR}/mex)
 
   add_custom_target(matlab_generation ALL DEPENDS ${MEX_OUTPUT_FILE_SET})

@@ -20,11 +20,12 @@
 #include <google/protobuf/io/printer.h>
 #include <google/protobuf/io/zero_copy_stream.h>
 #include <google/protobuf/descriptor.pb.h>
-#include <boost/algorithm/string/replace.hpp>
 
-#include <vector>
-#include <utility>
 #include <iostream>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "HaptixGenerator.hh"
 
@@ -37,6 +38,17 @@ namespace google
       namespace cpp
       {
 
+        void replaceAll(std::string &_src, const std::string &_oldValue,
+          const std::string &_newValue)
+        {
+          for (size_t i = 0;
+            (i = _src.find(_oldValue, i)) != std::string::npos;)
+          {
+            _src.replace(i, _oldValue.length(), _newValue);
+            i += _newValue.length() - _oldValue.length() + 1;
+          }
+        }
+
         HaptixGenerator::HaptixGenerator(const std::string &/*_name*/) {}
         HaptixGenerator::~HaptixGenerator() {}
         bool HaptixGenerator::Generate(const FileDescriptor *_file,
@@ -45,15 +57,18 @@ namespace google
             std::string * /*_error*/) const
         {
           std::string headerFilename = _file->name();
-          boost::replace_last(headerFilename, ".proto", ".pb.h");
+          std::string delim = ".proto";
+          size_t pos = headerFilename.rfind(delim);
+          headerFilename.replace(pos, delim.size(), ".pb.h");
 
           std::string sourceFilename = _file->name();
-          boost::replace_last(sourceFilename, ".proto", ".pb.cc");
+          pos = sourceFilename.rfind(delim);
+          sourceFilename.replace(pos, delim.size(), ".pb.cc");
 
           // GCC system_header pragma:
           // treat the rest of this file as a system header
           {
-            scoped_ptr<io::ZeroCopyOutputStream> output(
+            std::unique_ptr<io::ZeroCopyOutputStream> output(
                 _generatorContext->OpenForInsert(headerFilename, "includes"));
             io::Printer printer(output.get(), '$');
 
@@ -70,45 +85,44 @@ namespace google
                 "name", "includes");
           }
 
-          // Add boost shared point include
+          // Add <memory> include
           {
             scoped_ptr<io::ZeroCopyOutputStream> output(
                 _generatorContext->OpenForInsert(headerFilename, "includes"));
             io::Printer printer(output.get(), '$');
 
-            printer.Print("#include <boost/shared_ptr.hpp>\n",
-                "name", "includes");
+            printer.Print("#include <memory>\n", "name", "includes");
           }
 
-          // Add boost shared typedef
+          // Add std::shared_ptr typedef
           {
-            scoped_ptr<io::ZeroCopyOutputStream> output(
+            std::unique_ptr<io::ZeroCopyOutputStream> output(
                 _generatorContext->OpenForInsert(headerFilename,
                   "namespace_scope"));
             io::Printer printer(output.get(), '$');
 
             std::string package = _file->package();
-            boost::replace_all(package, ".", "::");
+            replaceAll(package, ".", "::");
 
-            std::string ptrType = "typedef boost::shared_ptr<" + package
+            std::string ptrType = "typedef std::shared_ptr<" + package
               + "::" + _file->message_type(0)->name() + "> "
               + _file->message_type(0)->name() + "Ptr;\n";
 
             printer.Print(ptrType.c_str(), "name", "namespace_scope");
           }
 
-          // Add const boost shared typedef
+          // Add const std::shared_ptr typedef
           {
-            scoped_ptr<io::ZeroCopyOutputStream> output(
+            std::unique_ptr<io::ZeroCopyOutputStream> output(
                 _generatorContext->OpenForInsert(headerFilename,
                   "global_scope"));
 
             io::Printer printer(output.get(), '$');
 
             std::string package = _file->package();
-            boost::replace_all(package, ".", "::");
+            replaceAll(package, ".", "::");
 
-            std::string constType = "typedef const boost::shared_ptr<"
+            std::string constType = "typedef const std::shared_ptr<"
               + package + "::" + _file->message_type(0)->name()
               + " const> Const" + _file->message_type(0)->name() + "Ptr;";
 

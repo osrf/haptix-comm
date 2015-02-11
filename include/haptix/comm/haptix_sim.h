@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Open Source Robotics Foundation
+ * Copyright (C) 2014-2015 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -210,6 +210,11 @@ hxResult hxs_updatedirect(int _target,
                           const float *_torque,
                           hxSensor *_sensor,
                           int _flg_sleep);
+
+/// \brief Display a text message in the simulator
+/// \param[in] _message Message to display.
+/// \return 'hxOK' if the operation succeeded or an error code otherwise.
+hxResult hxs_message(const char *_message);
 
 #ifdef __cplusplus
 }

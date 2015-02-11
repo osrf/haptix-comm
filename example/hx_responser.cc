@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Open Source Robotics Foundation
+ * Copyright (C) 2014-2015 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,39 +21,39 @@
 #include <ignition/transport.hh>
 #include <haptix/comm/haptix.h>
 #include <haptix/comm/msg/hxCommand.pb.h>
-#include <haptix/comm/msg/hxDevice.pb.h>
+#include <haptix/comm/msg/hxRobot.pb.h>
 #include <haptix/comm/msg/hxSensor.pb.h>
 
-const static int numMotors         = 4;
-const static int numJoints         = 5;
-const static int numContactSensors = 6;
-const static int numIMUs           = 7;
+const static int motorCount         = 4;
+const static int jointCount         = 5;
+const static int contactSensorCount = 6;
+const static int imuCount           = 7;
 
-const static std::string DeviceInfoTopic = "/haptix/gazebo/GetDeviceInfo";
+const static std::string RobotInfoTopic = "/haptix/gazebo/GetRobotInfo";
 const static std::string UpdateTopic     = "/haptix/gazebo/Update";
 const static std::string SensorInfoTopic = "/haptix/gazebo/Read";
 
 //////////////////////////////////////////////////
-/// \brief Provide a "getDeviceInfo" service.
-void onGetDeviceInfo(const std::string &_service,
-  const haptix::comm::msgs::hxDevice &/*_req*/,
-  haptix::comm::msgs::hxDevice &_rep, bool &_result)
+/// \brief Provide a "getRobotInfo" service.
+void onGetRobotInfo(const std::string &_service,
+  const haptix::comm::msgs::hxRobot &/*_req*/,
+  haptix::comm::msgs::hxRobot &_rep, bool &_result)
 {
   _result = true;
 
-  if (_service != DeviceInfoTopic)
+  if (_service != RobotInfoTopic)
     _result = false;
 
   _rep.Clear();
 
-  _rep.set_nmotor(numMotors);
-  _rep.set_njoint(numJoints);
-  _rep.set_ncontactsensor(numContactSensors);
-  _rep.set_nimu(numIMUs);
+  _rep.set_motor_count(motorCount);
+  _rep.set_joint_count(jointCount);
+  _rep.set_contact_sensor_count(contactSensorCount);
+  _rep.set_imu_count(imuCount);
 
-  for (int i = 0; i < numJoints; ++i)
+  for (int i = 0; i < jointCount; ++i)
   {
-    haptix::comm::msgs::hxJointAngle *joint = _rep.add_limit();
+    haptix::comm::msgs::hxRobot::hxLimit *joint = _rep.add_joint_limit();
     joint->set_minimum(-i);
     joint->set_maximum(i);
   }
@@ -74,7 +74,7 @@ void onUpdate(const std::string &_service,
   // Read the request parameters.
   // Debug output.
   /*std::cout << "Received a new motor command:" << std::endl;
-  for (int i = 0; i < numMotors; ++i)
+  for (int i = 0; i < motorCount; ++i)
   {
     std::cout << "\tMotor " << i << ":" << std::endl;
     std::cout << "\t\t" << _req.ref_pos(i) << std::endl;
@@ -86,29 +86,29 @@ void onUpdate(const std::string &_service,
   _rep.Clear();
 
   // Create some dummy response.
-  for (int i = 0; i < numMotors; ++i)
+  for (int i = 0; i < motorCount; ++i)
   {
     _rep.add_motor_pos(i);
     _rep.add_motor_vel(i + 1);
     _rep.add_motor_torque(i + 2);
   }
 
-  for (int i = 0; i < numJoints; ++i)
+  for (int i = 0; i < jointCount; ++i)
   {
     _rep.add_joint_pos(i);
     _rep.add_joint_vel(i + 1);
   }
 
-  for (int i = 0; i < numContactSensors; ++i)
+  for (int i = 0; i < contactSensorCount; ++i)
     _rep.add_contact(i);
 
-  for (int i = 0; i < numIMUs; ++i)
+  for (int i = 0; i < imuCount; ++i)
   {
-    haptix::comm::msgs::imu *linacc = _rep.add_imu_linacc();
-    linacc->set_x(i);
-    linacc->set_y(i + 1);
-    linacc->set_z(i + 2);
-    haptix::comm::msgs::imu *angvel = _rep.add_imu_angvel();
+    haptix::comm::msgs::imu *linear_acc = _rep.add_imu_linear_acc();
+    linear_acc->set_x(i);
+    linear_acc->set_y(i + 1);
+    linear_acc->set_z(i + 2);
+    haptix::comm::msgs::imu *angvel = _rep.add_imu_angular_vel();
     angvel->set_x(i + 3);
     angvel->set_y(i + 4);
     angvel->set_z(i + 5);
@@ -129,29 +129,29 @@ void onSensorRequest(const std::string &_service,
   _rep.Clear();
 
   // Create some dummy response.
-  for (int i = 0; i < numMotors; ++i)
+  for (int i = 0; i < motorCount; ++i)
   {
     _rep.add_motor_pos(i);
     _rep.add_motor_vel(i + 1);
     _rep.add_motor_torque(i + 2);
   }
 
-  for (int i = 0; i < numJoints; ++i)
+  for (int i = 0; i < jointCount; ++i)
   {
     _rep.add_joint_pos(i);
     _rep.add_joint_vel(i + 1);
   }
 
-  for (int i = 0; i < numContactSensors; ++i)
+  for (int i = 0; i < contactSensorCount; ++i)
     _rep.add_contact(i);
 
-  for (int i = 0; i < numIMUs; ++i)
+  for (int i = 0; i < imuCount; ++i)
   {
-    haptix::comm::msgs::imu *linacc = _rep.add_imu_linacc();
-    linacc->set_x(i);
-    linacc->set_y(i + 1);
-    linacc->set_z(i + 2);
-    haptix::comm::msgs::imu *angvel = _rep.add_imu_angvel();
+    haptix::comm::msgs::imu *linear_acc = _rep.add_imu_linear_acc();
+    linear_acc->set_x(i);
+    linear_acc->set_y(i + 1);
+    linear_acc->set_z(i + 2);
+    haptix::comm::msgs::imu *angvel = _rep.add_imu_angular_vel();
     angvel->set_x(i + 3);
     angvel->set_y(i + 4);
     angvel->set_z(i + 5);
@@ -186,10 +186,10 @@ int main(int argc, char **argv)
   // Create a Haptix transport node.
   ignition::transport::Node node;
 
-  // Advertise the "getdeviceinfo" service.
-  if (!node.Advertise(DeviceInfoTopic, onGetDeviceInfo))
+  // Advertise the "getrobotinfo" service.
+  if (!node.Advertise(RobotInfoTopic, onGetRobotInfo))
   {
-    std::cerr << "Error advertising the [" << DeviceInfoTopic << "] service."
+    std::cerr << "Error advertising the [" << RobotInfoTopic << "] service."
               << std::endl;
   }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Open Source Robotics Foundation
+ * Copyright (C) 2014-2015 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,18 +21,21 @@
 #include <ignition/transport.hh>
 #include "haptix/comm/haptix.h"
 #include "msg/hxCommand.pb.h"
-#include "msg/hxDevice.pb.h"
+#include "msg/hxRobot.pb.h"
 #include "msg/hxSensor.pb.h"
 
 extern "C" {
-  /// \brief Different device/simulators supported.
+  /// \brief Different robots/simulators supported.
   std::string ProjectTopic = "haptix";
   std::string DekaTopic    = "deka";
   std::string MPLTopic     = "mpl";
   std::string GazeboTopic  = "gazebo";
   std::string MujocoTopic  = "mujoco";
 
-  std::array<std::string, 4> DeviceTopics =
+  // Default to the Gazebo target.
+  int g_target = 2;
+
+  std::array<std::string, 4> RobotTopics =
       {DekaTopic, MPLTopic, GazeboTopic, MujocoTopic};
 
   /// \brief ignition transport node.
@@ -65,14 +68,14 @@ extern "C" {
     for (int i = 0; i < _in.contact_size(); ++i)
       _out->contact[i] = _in.contact(i);
 
-    for (int i = 0; i < _in.imu_linacc_size(); ++i)
+    for (int i = 0; i < _in.imu_linear_acc_size(); ++i)
     {
-      _out->IMU_linacc[i][0] = _in.imu_linacc(i).x();
-      _out->IMU_linacc[i][1] = _in.imu_linacc(i).y();
-      _out->IMU_linacc[i][2] = _in.imu_linacc(i).z();
-      _out->IMU_angvel[i][0] = _in.imu_angvel(i).x();
-      _out->IMU_angvel[i][1] = _in.imu_angvel(i).y();
-      _out->IMU_angvel[i][2] = _in.imu_angvel(i).z();
+      _out->imu_linear_acc[i][0] = _in.imu_linear_acc(i).x();
+      _out->imu_linear_acc[i][1] = _in.imu_linear_acc(i).y();
+      _out->imu_linear_acc[i][2] = _in.imu_linear_acc(i).z();
+      _out->imu_angular_vel[i][0] = _in.imu_angular_vel(i).x();
+      _out->imu_angular_vel[i][1] = _in.imu_angular_vel(i).y();
+      _out->imu_angular_vel[i][2] = _in.imu_angular_vel(i).z();
     }
   }
 
@@ -88,64 +91,39 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
-  /// \brief Private function that returns true if the target is supported
-  /// or false otherwise.
-  static bool checkTarget(int _target)
+  hxResult hx_connect(const char * /*_host*/, int /*_port*/)
   {
-    if (_target < hxDEKA || _target > hxMUJOCO)
-    {
-      std::cerr << "Unsupported target [" << _target << "]." << std::endl;
-      return false;
-    }
-    return true;
+    return hxOK;
   }
 
   //////////////////////////////////////////////////
-  hxResult hx_connect(int _target)
+  hxResult hx_close()
   {
-    // Sanity check.
-    if (checkTarget(_target))
-      return hxOK;
-    else
-      return hxBAD;
+    return hxOK;
   }
 
   //////////////////////////////////////////////////
-  hxResult hx_close(int _target)
-  {
-    // Sanity check.
-    if (checkTarget(_target))
-      return hxOK;
-    else
-      return hxBAD;
-  }
-
-  //////////////////////////////////////////////////
-  hxResult hx_getdeviceinfo(int _target, hxDeviceInfo* _deviceinfo)
+  hxResult hx_robot_info(hxRobotInfo *_robotinfo)
   {
     // Initialize the C struct.
-    memset(_deviceinfo, 0, sizeof(hxDeviceInfo));
+    memset(_robotinfo, 0, sizeof(hxRobotInfo));
 
-    // Sanity check.
-    if (!checkTarget(_target))
-      return hxBAD;
-
-    haptix::comm::msgs::hxDevice req;
-    haptix::comm::msgs::hxDevice rep;
+    haptix::comm::msgs::hxRobot req;
+    haptix::comm::msgs::hxRobot rep;
     bool result;
     ignition::transport::Node *hxNode = getHxNodeInstance();
 
-    req.set_nmotor(0.0);
-    req.set_njoint(0.0);
-    req.set_ncontactsensor(0.0);
-    req.set_nimu(0.0);
-    haptix::comm::msgs::hxJointAngle *limit = req.add_limit();
+    req.set_motor_count(0);
+    req.set_joint_count(0);
+    req.set_contact_sensor_count(0);
+    req.set_imu_count(0);
+    haptix::comm::msgs::hxRobot::hxLimit *limit = req.add_joint_limit();
     limit->set_minimum(0.0);
     limit->set_maximum(0.0);
 
     // Request the service.
-    std::string service = "/" + ProjectTopic + "/" + DeviceTopics[_target] +
-        "/GetDeviceInfo";
+    std::string service = "/" + ProjectTopic + "/" + RobotTopics[g_target] +
+        "/GetRobotInfo";
     bool executed = hxNode->Request(service, req, Timeout, rep, result);
 
     if (executed)
@@ -153,38 +131,41 @@ extern "C" {
       if (result)
       {
         // Fill the struct with the response.
-        _deviceinfo->nmotor = rep.nmotor();
-        _deviceinfo->njoint = rep.njoint();
-        _deviceinfo->ncontactsensor = rep.ncontactsensor();
-        _deviceinfo->nIMU = rep.nimu();
+        _robotinfo->motor_count = rep.motor_count();
+        _robotinfo->joint_count = rep.joint_count();
+        _robotinfo->contact_sensor_count = rep.contact_sensor_count();
+        _robotinfo->imu_count = rep.imu_count();
 
-        // Fill the limit field.
-        for (int i = 0; i < rep.limit_size(); ++i)
+        // Fill the joint limit field.
+        for (int i = 0; i < rep.joint_limit_size(); ++i)
         {
-          _deviceinfo->limit[i][0] = rep.limit(i).minimum();
-          _deviceinfo->limit[i][1] = rep.limit(i).maximum();
+          _robotinfo->joint_limit[i][0] = rep.joint_limit(i).minimum();
+          _robotinfo->joint_limit[i][1] = rep.joint_limit(i).maximum();
+        }
+
+        // Fill the motor limit field.
+        for (int i = 0; i < rep.motor_limit_size(); ++i)
+        {
+          _robotinfo->motor_limit[i][0] = rep.motor_limit(i).minimum();
+          _robotinfo->motor_limit[i][1] = rep.motor_limit(i).maximum();
         }
 
         return hxOK;
       }
       else
-        std::cerr << "hx_getdeviceinfo() Service call failed." << std::endl;
+        std::cerr << "hx_getrobotinfo() Service call failed." << std::endl;
     }
     else
-      std::cerr << "hx_getdeviceinfo() Service call timed out." << std::endl;
+      std::cerr << "hx_getrobotinfo() Service call timed out." << std::endl;
 
-    return hxBAD;
+    return hxERROR;
   }
 
   //////////////////////////////////////////////////
-  hxResult hx_update(int _target, const hxCommand* _command, hxSensor* _sensor)
+  hxResult hx_update(const hxCommand* _command, hxSensor* _sensor)
   {
     // Initialize the C struct.
     memset(_sensor, 0, sizeof(hxSensor));
-
-    // Sanity check.
-    if (!checkTarget(_target))
-      return hxBAD;
 
     haptix::comm::msgs::hxCommand req;
     haptix::comm::msgs::hxSensor rep;
@@ -194,13 +175,13 @@ extern "C" {
     for (int i = 0; i < hxMAXMOTOR; ++i)
     {
       req.add_ref_pos(_command->ref_pos[i]);
-      req.add_ref_vel(_command->ref_vel[i]);
+      req.add_ref_vel_max(_command->ref_vel_max[i]);
       req.add_gain_pos(_command->gain_pos[i]);
       req.add_gain_vel(_command->gain_vel[i]);
     }
 
     // Request the service.
-    std::string service = "/" + ProjectTopic + "/" + DeviceTopics[_target] +
+    std::string service = "/" + ProjectTopic + "/" + RobotTopics[g_target] +
         "/Update";
     bool executed = hxNode->Request(service, req, Timeout, rep, result);
 
@@ -219,15 +200,15 @@ extern "C" {
     else
       std::cerr << "hx_update() Service call timed out." << std::endl;
 
-    return hxBAD;
+    return hxERROR;
   }
 
   //////////////////////////////////////////////////
-  hxResult hx_readsensors(int _target, hxSensor *_sensor)
+  hxResult hx_read_sensors(hxSensor *_sensor)
   {
     // Sanity check.
-    if (!checkTarget(_target) || !_sensor)
-      return hxBAD;
+    if (!_sensor)
+      return hxERROR;
 
     haptix::comm::msgs::hxSensor req;
     haptix::comm::msgs::hxSensor rep;
@@ -235,20 +216,20 @@ extern "C" {
     ignition::transport::Node *hxNode = getHxNodeInstance();
 
     // Request the service.
-    std::string service = "/" + ProjectTopic + "/" + DeviceTopics[_target] +
+    std::string service = "/" + ProjectTopic + "/" + RobotTopics[g_target] +
         "/Read";
     bool executed = hxNode->Request(service, req, Timeout, rep, result);
 
     if (!executed)
     {
       std::cerr << "hx_readsensors() Service call timed out." << std::endl;
-      return hxBAD;
+      return hxERROR;
     }
 
     if (!result)
     {
       std::cerr << "hx_readsensors() Service call failed." << std::endl;
-      return hxBAD;
+      return hxERROR;
     }
 
     // Fill the struct with the response.
