@@ -1,5 +1,5 @@
 set (mex_srcs
-     hx_getdeviceinfo.c
+     hx_robot_info.c
      hx_update.c)
 
 set (OCTAVE_OUTPUT_FILE_SET)

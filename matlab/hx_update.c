@@ -21,7 +21,7 @@ mexFunction (int nlhs, mxArray *plhs[],
   if (nrhs != 1 || !mxIsStruct(prhs[0]))
     mexErrMsgTxt("Expects struct");
 
-  // Sanity check: Verify that the struct has 4 fields: ref_pos, ref_vel,
+  // Sanity check: Verify that the struct has 4 fields: ref_pos, ref_vel_max,
   // gain_pos and gain_vel.
   if (mxGetNumberOfFields(prhs[0]) != 4)
     mexErrMsgTxt("Expects 4 fields");
@@ -40,9 +40,9 @@ mexFunction (int nlhs, mxArray *plhs[],
     data = mxGetPr(v);
     cmd.ref_pos[i] = data[i];
 
-    v = mxGetField(prhs[0], 0, "ref_vel");
+    v = mxGetField(prhs[0], 0, "ref_vel_max");
     data = mxGetPr(v);
-    cmd.ref_vel[i] = data[i];
+    cmd.ref_vel_max[i] = data[i];
 
     v = mxGetField(prhs[0], 0, "gain_pos");
     data = mxGetPr(v);
@@ -53,8 +53,8 @@ mexFunction (int nlhs, mxArray *plhs[],
     cmd.gain_vel[i] = data[i];
   }
 
-  // Request device information.
-  if (hx_update(hxGAZEBO, &cmd, &sensor) != hxOK)
+  // Request robot information.
+  if (hx_update(&cmd, &sensor) != hxOK)
   {
     mexPrintf("hx_update(): Request error.\n");
     resultData[0] = -1.0;
@@ -63,7 +63,7 @@ mexFunction (int nlhs, mxArray *plhs[],
 
   // Create a Matlab structure array.
   const char *keys[] = {"motor_pos", "motor_vel", "motor_torque", "joint_pos",
-    "joint_vel", "contact", "IMU_linacc", "IMU_angvel"};
+    "joint_vel", "contact", "imu_linear_acc", "imu_angular_vel"};
   mxArray *s = mxCreateStructMatrix (1, 1, 8, keys);
 
   // Create the empty mxArrays for the structure array.
@@ -108,13 +108,13 @@ mexFunction (int nlhs, mxArray *plhs[],
   // Fill the IMU fields.
   for (i = 0; i < hxMAXIMU; ++i)
   {
-    imuLinAccData[i] = (double)sensor.IMU_linacc[i][0];
-    imuLinAccData[i + hxMAXIMU] = (double)sensor.IMU_linacc[i][1];
-    imuLinAccData[i + 2 * hxMAXIMU] = (double)sensor.IMU_linacc[i][2];
+    imuLinAccData[i] = (double)sensor.imu_linear_acc[i][0];
+    imuLinAccData[i + hxMAXIMU] = (double)sensor.imu_linear_acc[i][1];
+    imuLinAccData[i + 2 * hxMAXIMU] = (double)sensor.imu_linear_acc[i][2];
 
-    imuAngVelData[i] = (double)sensor.IMU_angvel[i][0];
-    imuAngVelData[i + hxMAXIMU] = (double)sensor.IMU_angvel[i][1];
-    imuAngVelData[i + 2 * hxMAXIMU] = (double)sensor.IMU_angvel[i][2];
+    imuAngVelData[i] = (double)sensor.imu_angular_vel[i][0];
+    imuAngVelData[i + hxMAXIMU] = (double)sensor.imu_angular_vel[i][1];
+    imuAngVelData[i + 2 * hxMAXIMU] = (double)sensor.imu_angular_vel[i][2];
   }
 
   // Set the structure array fields.
@@ -124,8 +124,8 @@ mexFunction (int nlhs, mxArray *plhs[],
   mxSetField(s, 0, "joint_pos", jointPosArray);
   mxSetField(s, 0, "joint_vel", jointVelArray);
   mxSetField(s, 0, "contact", contactArray);
-  mxSetField(s, 0, "IMU_linacc", imuLinAccArray);
-  mxSetField(s, 0, "IMU_angvel", imuAngVelArray);
+  mxSetField(s, 0, "imu_linear_acc", imuLinAccArray);
+  mxSetField(s, 0, "imu_angular_vel", imuAngVelArray);
 
   // Set the output arguments.
   plhs[0] = s;
