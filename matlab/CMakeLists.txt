@@ -1,6 +1,5 @@
 set (mex_srcs
-     hx_robot_info.c
-     hx_update.c)
+     hxgz.c)
 
 set (OCTAVE_OUTPUT_FILE_SET)
 
@@ -18,7 +17,13 @@ foreach(mex_src ${mex_srcs})
 	VERBATIM)
 endforeach()
 
-install(FILES ${OCTAVE_OUTPUT_FILE_SET} hx_matlab_controller.m
+install(FILES ${OCTAVE_OUTPUT_FILE_SET}
+              hx_close.m
+              hx_connect.m
+              hx_read_sensors.m
+              hx_robot_info.m
+              hx_update.m
+              hx_matlab_controller.m
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/octave)
 
 add_custom_target(mex_generation ALL DEPENDS ${OCTAVE_OUTPUT_FILE_SET})

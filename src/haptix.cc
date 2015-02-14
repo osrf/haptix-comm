@@ -41,6 +41,9 @@ extern "C" {
   /// \brief ignition transport node.
   ignition::transport::Node *haptixNode = NULL;
 
+  /// \brief Error string, to be retrieved by hx_last_result()
+  std::string lastResult;
+
   /// \brief Timeout used for the service requests (ms.).
   unsigned int Timeout = 1000;
 
@@ -153,10 +156,16 @@ extern "C" {
         return hxOK;
       }
       else
-        std::cerr << "hx_getrobotinfo() Service call failed." << std::endl;
+      {
+        lastResult = "hx_getrobotinfo() Service call failed.";
+        std::cerr << lastResult << std::endl;
+      }
     }
     else
-      std::cerr << "hx_getrobotinfo() Service call timed out." << std::endl;
+    {
+      lastResult = "hx_getrobotinfo() Service call timed out.";
+      std::cerr << lastResult << std::endl;
+    }
 
     return hxERROR;
   }
@@ -195,10 +204,16 @@ extern "C" {
         return hxOK;
       }
       else
-        std::cerr << "hx_update() Service call failed." << std::endl;
+      {
+        lastResult = "hx_update() Service call failed.";
+        std::cerr << lastResult << std::endl;
+      }
     }
     else
-      std::cerr << "hx_update() Service call timed out." << std::endl;
+    {
+      lastResult = "hx_update() Service call timed out.";
+      std::cerr << lastResult << std::endl;
+    }
 
     return hxERROR;
   }
@@ -222,13 +237,15 @@ extern "C" {
 
     if (!executed)
     {
-      std::cerr << "hx_readsensors() Service call timed out." << std::endl;
+      lastResult = "hx_readsensors() Service call timed out.";
+      std::cerr << lastResult << std::endl;
       return hxERROR;
     }
 
     if (!result)
     {
-      std::cerr << "hx_readsensors() Service call failed." << std::endl;
+      lastResult = "hx_readsensors() Service call failed.";
+      std::cerr << lastResult << std::endl;
       return hxERROR;
     }
 
@@ -236,6 +253,11 @@ extern "C" {
     convert(rep, _sensor);
 
     return hxOK;
+  }
+
+  const char *hx_last_result()
+  {
+    return lastResult.c_str();
   }
 
 // end extern "C"

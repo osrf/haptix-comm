@@ -17,32 +17,29 @@
 
 counter = 0;
 
-[deviceInfo, result] = hx_getdeviceinfo();
-if result ~= 0
-  disp('hx_getdeviceinfo(): Request error.');
-  exit;
-end
+deviceInfo = hx_robot_info();
 
 while counter < 2000
   % Initialize the command scalar structure.
-  cmd.ref_pos  = [];
-  cmd.ref_vel  = [];
+  cmd.ref_pos = [];
+  cmd.ref_pos_enabled = 1;
+  cmd.ref_vel_max = [];
+  cmd.ref_vel_max_enabled = 0;
   cmd.gain_pos = [];
+  cmd.gain_pos_enabled = 0;
   cmd.gain_vel = [];
+  cmd.gain_vel_enabled = 0;
 
   % Create a new command based on a sinusoidal wave.
-  for n = 0:deviceInfo.nmotor
+  for n = 0:deviceInfo.motor_count
     cmd.ref_pos(end + 1) = 0.5 * sin(0.05 * 2.0 * pi * counter * 0.01);
-    cmd.ref_vel(end + 1) = 1.0;
+    cmd.ref_vel_max(end + 1) = 1.0;
     cmd.gain_pos(end + 1) = 1.0;
     cmd.gain_vel(end + 1) = 1.0;
   end
 
   % Send the new joint command and receive the state update.
-  [state, result] = hx_update(cmd);
-  if result ~= 0
-    disp('hx_update(): Request error.');
-  end
+  state = hx_update(cmd);
 
   counter = counter + 1;
 
