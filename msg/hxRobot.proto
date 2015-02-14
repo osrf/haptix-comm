@@ -14,4 +14,5 @@ message hxRobot
   required int32 imu_count            = 4;
   repeated hxLimit joint_limit        = 5;
   repeated hxLimit motor_limit        = 6;
+  required float update_rate          = 7;
 }
