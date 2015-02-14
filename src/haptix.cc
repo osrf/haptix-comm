@@ -43,6 +43,7 @@ extern "C" {
 
   /// \brief Error string, to be retrieved by hx_last_result()
   std::string lastResult;
+  std::mutex lastResultLock;
 
   /// \brief Timeout used for the service requests (ms.).
   unsigned int Timeout = 1000;
@@ -157,12 +158,14 @@ extern "C" {
       }
       else
       {
+        std::lock_guard<std::mutex> lock(lastResultLock);
         lastResult = "hx_getrobotinfo() Service call failed.";
         std::cerr << lastResult << std::endl;
       }
     }
     else
     {
+      std::lock_guard<std::mutex> lock(lastResultLock);
       lastResult = "hx_getrobotinfo() Service call timed out.";
       std::cerr << lastResult << std::endl;
     }
@@ -205,12 +208,14 @@ extern "C" {
       }
       else
       {
+        std::lock_guard<std::mutex> lock(lastResultLock);
         lastResult = "hx_update() Service call failed.";
         std::cerr << lastResult << std::endl;
       }
     }
     else
     {
+      std::lock_guard<std::mutex> lock(lastResultLock);
       lastResult = "hx_update() Service call timed out.";
       std::cerr << lastResult << std::endl;
     }
@@ -237,6 +242,7 @@ extern "C" {
 
     if (!executed)
     {
+      std::lock_guard<std::mutex> lock(lastResultLock);
       lastResult = "hx_readsensors() Service call timed out.";
       std::cerr << lastResult << std::endl;
       return hxERROR;
@@ -244,6 +250,7 @@ extern "C" {
 
     if (!result)
     {
+      std::lock_guard<std::mutex> lock(lastResultLock);
       lastResult = "hx_readsensors() Service call failed.";
       std::cerr << lastResult << std::endl;
       return hxERROR;
@@ -257,6 +264,7 @@ extern "C" {
 
   const char *hx_last_result()
   {
+    std::lock_guard<std::mutex> lock(lastResultLock);
     return lastResult.c_str();
   }
 
