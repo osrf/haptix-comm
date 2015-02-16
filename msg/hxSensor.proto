@@ -5,8 +5,14 @@ message imu
   required float x = 1;
   required float y = 2;
   required float z = 3;
-  // The fourth field is used when we're representing a quaternion
-  optional float w = 4;
+}
+
+message quaternion
+{
+  required float x = 1;
+  required float y = 2;
+  required float z = 3;
+  required float w = 4;
 }
 
 message time
@@ -25,6 +31,6 @@ message hxSensor
   repeated float contact      = 6 [packed=true];
   repeated imu imu_linear_acc      = 7;
   repeated imu imu_angular_vel     = 8;
-  repeated imu imu_orientation     = 9;
+  repeated quaternion imu_orientation     = 9;
   required time time_stamp = 10;
 }

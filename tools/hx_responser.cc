@@ -116,7 +116,7 @@ void onUpdate(const std::string &_service,
     angular_vel->set_x(i + 3);
     angular_vel->set_y(i + 4);
     angular_vel->set_z(i + 5);
-    haptix::comm::msgs::imu *orientation = _rep.add_imu_orientation();
+    haptix::comm::msgs::quaternion *orientation = _rep.add_imu_orientation();
     orientation->set_x(i + 6);
     orientation->set_y(i + 7);
     orientation->set_z(i + 8);
