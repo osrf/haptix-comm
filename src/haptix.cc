@@ -52,30 +52,41 @@ extern "C" {
     // Initialize the C struct.
     memset(_out, 0, sizeof(hxSensor));
 
-    for (int i = 0; i < _in.motor_pos_size(); ++i)
-    {
+    _out->time_stamp.sec = _in.time_stamp().sec();
+    _out->time_stamp.nsec = _in.time_stamp().nsec();
+    for (int i = 0; (i < hxMAXMOTOR) && (i < _in.motor_pos_size()); ++i)
       _out->motor_pos[i] = _in.motor_pos(i);
+    for (int i = 0; (i < hxMAXMOTOR) && (i < _in.motor_vel_size()); ++i)
       _out->motor_vel[i] = _in.motor_vel(i);
+    for (int i = 0; (i < hxMAXMOTOR) && (i < _in.motor_torque_size()); ++i)
       _out->motor_torque[i] = _in.motor_torque(i);
-    }
-
-    for (int i = 0; i < _in.joint_pos_size(); ++i)
-    {
+    for (int i = 0; (i < hxMAXJOINT) && (i < _in.joint_pos_size()); ++i)
       _out->joint_pos[i] = _in.joint_pos(i);
+    for (int i = 0; (i < hxMAXJOINT) && (i < _in.joint_vel_size()); ++i)
       _out->joint_vel[i] = _in.joint_vel(i);
-    }
-
-    for (int i = 0; i < _in.contact_size(); ++i)
+    for (int i = 0; (i < hxMAXCONTACTSENSOR) &&
+                    (i < _in.contact_size()); ++i)
       _out->contact[i] = _in.contact(i);
-
-    for (int i = 0; i < _in.imu_linear_acc_size(); ++i)
+    for (int i = 0; (i < hxMAXIMU) && (i < _in.imu_linear_acc_size()); ++i)
     {
       _out->imu_linear_acc[i][0] = _in.imu_linear_acc(i).x();
       _out->imu_linear_acc[i][1] = _in.imu_linear_acc(i).y();
       _out->imu_linear_acc[i][2] = _in.imu_linear_acc(i).z();
+    }
+    for (int i = 0; (i < hxMAXIMU) &&
+                    (i < _in.imu_angular_vel_size()); ++i)
+    {
       _out->imu_angular_vel[i][0] = _in.imu_angular_vel(i).x();
       _out->imu_angular_vel[i][1] = _in.imu_angular_vel(i).y();
       _out->imu_angular_vel[i][2] = _in.imu_angular_vel(i).z();
+    }
+    for (int i = 0; (i < hxMAXIMU) &&
+                    (i < _in.imu_orientation_size()); ++i)
+    {
+      _out->imu_orientation[i][0] = _in.imu_orientation(i).x();
+      _out->imu_orientation[i][1] = _in.imu_orientation(i).y();
+      _out->imu_orientation[i][2] = _in.imu_orientation(i).z();
+      _out->imu_orientation[i][3] = _in.imu_orientation(i).w();
     }
   }
 
@@ -150,6 +161,8 @@ extern "C" {
           _robotinfo->motor_limit[i][1] = rep.motor_limit(i).maximum();
         }
 
+	_robotinfo->update_rate = rep.update_rate();
+
         return hxOK;
       }
       else
@@ -179,6 +192,10 @@ extern "C" {
       req.add_gain_pos(_command->gain_pos[i]);
       req.add_gain_vel(_command->gain_vel[i]);
     }
+    req.set_ref_pos_enabled(_command->ref_pos_enabled);
+    req.set_ref_vel_max_enabled(_command->ref_vel_max_enabled);
+    req.set_gain_pos_enabled(_command->gain_pos_enabled);
+    req.set_gain_vel_enabled(_command->gain_vel_enabled);
 
     // Request the service.
     std::string service = "/" + ProjectTopic + "/" + RobotTopics[g_target] +
