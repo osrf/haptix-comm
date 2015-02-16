@@ -124,6 +124,7 @@ extern "C" {
     bool result;
     ignition::transport::Node *hxNode = getHxNodeInstance();
 
+    // TODO: Why do we have to create an empty message here?
     req.set_motor_count(0);
     req.set_joint_count(0);
     req.set_contact_sensor_count(0);
@@ -131,6 +132,7 @@ extern "C" {
     haptix::comm::msgs::hxRobot::hxLimit *limit = req.add_joint_limit();
     limit->set_minimum(0.0);
     limit->set_maximum(0.0);
+    req.set_update_rate(0.0);
 
     // Request the service.
     std::string service = "/" + ProjectTopic + "/" + RobotTopics[g_target] +
@@ -166,10 +168,10 @@ extern "C" {
         return hxOK;
       }
       else
-        std::cerr << "hx_getrobotinfo() Service call failed." << std::endl;
+        std::cerr << "hx_robot_info() Service call failed." << std::endl;
     }
     else
-      std::cerr << "hx_getrobotinfo() Service call timed out." << std::endl;
+      std::cerr << "hx_robot_info() Service call timed out." << std::endl;
 
     return hxERROR;
   }

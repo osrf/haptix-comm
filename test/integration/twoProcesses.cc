@@ -45,6 +45,23 @@ TEST(twoProcesses, SrvTwoProcs)
   // Request the robot information.
   ASSERT_EQ(hx_robot_info(&robotInfo), hxOK);
 
+  EXPECT_EQ(robotInfo.motor_count, 4);
+  EXPECT_EQ(robotInfo.joint_count, 5);
+  EXPECT_EQ(robotInfo.contact_sensor_count, 6);
+  EXPECT_EQ(robotInfo.imu_count, 7);
+  EXPECT_FLOAT_EQ(robotInfo.update_rate, 8.0);
+
+  for (int i = 0; i < robotInfo.motor_count; ++i)
+  {
+    EXPECT_FLOAT_EQ(robotInfo.motor_limit[i][0], -i);
+    EXPECT_FLOAT_EQ(robotInfo.motor_limit[i][1], i);
+  }
+  for (int i = 0; i < robotInfo.joint_count; ++i)
+  {
+    EXPECT_FLOAT_EQ(robotInfo.joint_limit[i][0], -i);
+    EXPECT_FLOAT_EQ(robotInfo.joint_limit[i][1], i);
+  }
+
   // Fill the joint command.
   for (int i = 0; i < robotInfo.motor_count; ++i)
   {
@@ -83,6 +100,9 @@ TEST(twoProcesses, SrvTwoProcs)
     EXPECT_FLOAT_EQ(sensor.imu_angular_vel[i][1], i + 4);
     EXPECT_FLOAT_EQ(sensor.imu_angular_vel[i][2], i + 5);
   }
+
+  EXPECT_EQ(sensor.time_stamp.sec, 9);
+  EXPECT_EQ(sensor.time_stamp.nsec, 10);
 
   EXPECT_EQ(hx_close(), hxOK);
 }
