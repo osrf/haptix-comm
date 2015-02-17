@@ -83,10 +83,10 @@ extern "C" {
     for (int i = 0; (i < hxMAXIMU) &&
                     (i < _in.imu_orientation_size()); ++i)
     {
-      _out->imu_orientation[i][0] = _in.imu_orientation(i).x();
-      _out->imu_orientation[i][1] = _in.imu_orientation(i).y();
-      _out->imu_orientation[i][2] = _in.imu_orientation(i).z();
-      _out->imu_orientation[i][3] = _in.imu_orientation(i).w();
+      _out->imu_orientation[i][0] = _in.imu_orientation(i).w();
+      _out->imu_orientation[i][1] = _in.imu_orientation(i).x();
+      _out->imu_orientation[i][2] = _in.imu_orientation(i).y();
+      _out->imu_orientation[i][3] = _in.imu_orientation(i).z();
     }
   }
 

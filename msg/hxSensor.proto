@@ -9,10 +9,10 @@ message imu
 
 message quaternion
 {
-  required float x = 1;
-  required float y = 2;
-  required float z = 3;
-  required float w = 4;
+  required float w = 1;
+  required float x = 2;
+  required float y = 3;
+  required float z = 4;
 }
 
 message time
