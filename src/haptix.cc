@@ -231,8 +231,8 @@ extern "C" {
 
     haptix::comm::msgs::hxSensor req;
     // TODO: why do we have to fill in an empty message here?
-    req.mutable_time_stamp()->set_sec(0.0);
-    req.mutable_time_stamp()->set_nsec(0.0);
+    req.mutable_time_stamp()->set_sec(0);
+    req.mutable_time_stamp()->set_nsec(0);
     haptix::comm::msgs::hxSensor rep;
     bool result;
     ignition::transport::Node *hxNode = getHxNodeInstance();
