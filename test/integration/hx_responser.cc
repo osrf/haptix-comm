@@ -144,9 +144,10 @@ int main(int argc, char **argv)
       // Read the time parameter.
       time = std::stoi(argv[1]);
     }
-    catch(const std::invalid_argument ex)
+    catch(const std::invalid_argument &ex)
     {
-      std::cerr << "<TIME_MS> argument must be a positive integer." << std::endl;
+      std::cerr << "<TIME_MS> argument must be a positive integer."
+        << std::endl;
       return -1;
     }
   }
