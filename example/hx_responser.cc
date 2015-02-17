@@ -29,8 +29,8 @@ const static int jointCount         = 5;
 const static int contactSensorCount = 6;
 const static int imuCount           = 7;
 const static float updateRate = 8;
-const static int sec = 9;
-const static int nsec = 10;
+const static int time_sec = 9;
+const static int time_nsec = 10;
 
 const static std::string RobotInfoTopic = "/haptix/gazebo/GetRobotInfo";
 const static std::string UpdateTopic     = "/haptix/gazebo/Update";
@@ -117,8 +117,8 @@ void onUpdate(const std::string &_service,
     angvel->set_y(i + 4);
     angvel->set_z(i + 5);
   }
-  _rep.mutable_time_stamp()->set_sec(sec);
-  _rep.mutable_time_stamp()->set_nsec(nsec);
+  _rep.mutable_time_stamp()->set_sec(time_sec);
+  _rep.mutable_time_stamp()->set_nsec(time_nsec);
 }
 
 //////////////////////////////////////////////////
@@ -162,8 +162,8 @@ void onSensorRequest(const std::string &_service,
     angvel->set_y(i + 4);
     angvel->set_z(i + 5);
   }
-  _rep.mutable_time_stamp()->set_sec(sec);
-  _rep.mutable_time_stamp()->set_nsec(nsec);
+  _rep.mutable_time_stamp()->set_sec(time_sec);
+  _rep.mutable_time_stamp()->set_nsec(time_nsec);
 }
 
 //////////////////////////////////////////////////
