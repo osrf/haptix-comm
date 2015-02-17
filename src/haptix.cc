@@ -163,7 +163,7 @@ extern "C" {
           _robotinfo->motor_limit[i][1] = rep.motor_limit(i).maximum();
         }
 
-	_robotinfo->update_rate = rep.update_rate();
+        _robotinfo->update_rate = rep.update_rate();
 
         return hxOK;
       }
