@@ -6,4 +6,8 @@ message hxCommand
   repeated float ref_vel_max    = 2 [packed=true];
   repeated float gain_pos       = 3 [packed=true];
   repeated float gain_vel       = 4 [packed=true];
+  required bool ref_pos_enabled = 5;
+  required bool ref_vel_max_enabled = 6;
+  required bool gain_pos_enabled = 7;
+  required bool gain_vel_enabled = 8;
 }

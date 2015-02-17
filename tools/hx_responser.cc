@@ -27,6 +27,9 @@ int numMotors = 4;
 int numJoints = 5;
 int numContactSensors = 6;
 int numIMUs = 7;
+float updateRate = 8.0;
+unsigned int time_sec = 9;
+unsigned int time_nsec = 10;
 
 std::string deviceInfoTopic = "/haptix/gazebo/GetRobotInfo";
 std::string updateTopic = "/haptix/gazebo/Update";
@@ -46,6 +49,7 @@ void onGetRobotInfo(const std::string &_service,
   _rep.set_joint_count(numJoints);
   _rep.set_contact_sensor_count(numContactSensors);
   _rep.set_imu_count(numIMUs);
+  _rep.set_update_rate(updateRate);
 
   for (int i = 0; i < numJoints; ++i)
   {
@@ -54,6 +58,12 @@ void onGetRobotInfo(const std::string &_service,
     joint->set_maximum(i);
   }
 
+  for (int i = 0; i < numMotors; ++i)
+  {
+    haptix::comm::msgs::hxRobot::hxLimit *motor = _rep.add_motor_limit();
+    motor->set_minimum(-i);
+    motor->set_maximum(i);
+  }
 }
 
 //////////////////////////////////////////////////
@@ -106,7 +116,15 @@ void onUpdate(const std::string &_service,
     angular_vel->set_x(i + 3);
     angular_vel->set_y(i + 4);
     angular_vel->set_z(i + 5);
+    haptix::comm::msgs::quaternion *orientation = _rep.add_imu_orientation();
+    orientation->set_x(i + 6);
+    orientation->set_y(i + 7);
+    orientation->set_z(i + 8);
+    orientation->set_w(i + 9);
   }
+
+  _rep.mutable_time_stamp()->set_sec(time_sec);
+  _rep.mutable_time_stamp()->set_nsec(time_nsec);
 }
 
 //////////////////////////////////////////////////
