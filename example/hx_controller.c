@@ -42,7 +42,9 @@ void printState(const hxRobotInfo *_robotInfo, const hxSensor *_sensor)
 {
   int i;
 
-  printf("\tTime: %d %d\n", _sensor->time_stamp.sec, _sensor->time_stamp.nsec);
+  printf("\tTime: %d %d\n", 
+    _sensor->time_stamp.sec, _sensor->time_stamp.nsec);
+
   printf("\tMotors:\n");
   for (i = 0; i < _robotInfo->motor_count; ++i)
   {
@@ -88,6 +90,7 @@ void printRobotInfo(const hxRobotInfo *_robotInfo)
   printf("Num joints: %d\n", _robotInfo->joint_count);
   printf("Num contact sensors: %d\n", _robotInfo->contact_sensor_count);
   printf("Num IMUs: %d\n", _robotInfo->imu_count);
+  printf("Update rate: %f\n", _robotInfo->update_rate);
   printf("Actuated joint limits: \n");
 
   // Print joint limits.
@@ -154,7 +157,8 @@ int main(int argc, char **argv)
     }
 
     // Debug output: Print the state.
-    // printState(&robotInfo, &sensor);
+    if (!(counter % 100))
+      printState(&robotInfo, &sensor);
 
     if (++counter == 10000)
       counter = 0;
