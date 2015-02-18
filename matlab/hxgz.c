@@ -45,15 +45,15 @@ mexFunction (int nlhs, mxArray *plhs[],
   if (mxGetString(prhs[0], funcName, sizeof(funcName)))
     mexErrMsgIdAndTxt("hxgz", "Failed to determine function name");
   if (!strcmp(funcName, "connect"))
-    hxgz_connect(nlhs, plhs, nrhs-1, prhs+1);  
+    hxgz_connect(nlhs, plhs, nrhs-1, prhs+1);
   else if (!strcmp(funcName, "robot_info"))
-    hxgz_robot_info(nlhs, plhs, nrhs-1, prhs+1);  
+    hxgz_robot_info(nlhs, plhs, nrhs-1, prhs+1);
   else if (!strcmp(funcName, "update"))
-    hxgz_update(nlhs, plhs, nrhs-1, prhs+1);  
+    hxgz_update(nlhs, plhs, nrhs-1, prhs+1);
   else if (!strcmp(funcName, "read_sensors"))
-    hxgz_read_sensors(nlhs, plhs, nrhs-1, prhs+1);  
+    hxgz_read_sensors(nlhs, plhs, nrhs-1, prhs+1);
   else if (!strcmp(funcName, "close"))
-    hxgz_close(nlhs, plhs, nrhs-1, prhs+1);  
+    hxgz_close(nlhs, plhs, nrhs-1, prhs+1);
   else
     mexErrMsgIdAndTxt("hxgz", "Unknown command");
 }
@@ -69,7 +69,8 @@ void
 hxgz_close (int nlhs, mxArray *plhs[],
             int nrhs, const mxArray *prhs[])
 {
-  // no-op
+  if (hx_close() != hxOK)
+    mexErrMsgIdAndTxt("hx_close", hx_last_result());
 }
 
 void
@@ -100,7 +101,7 @@ hxgz_robot_info (int nlhs, mxArray *plhs[],
     mexErrMsgIdAndTxt("hx_robot_info", hx_last_result());
 
   // Create a Matlab structure array.
-  const char *keys[] = {"motor_count", 
+  const char *keys[] = {"motor_count",
                         "joint_count",
                         "contact_sensor_count",
                         "imu_count",
@@ -186,8 +187,8 @@ hxgz_update (int nlhs, mxArray *plhs[],
   if (nrhs != 1 || !mxIsStruct(prhs[0]))
     mexErrMsgIdAndTxt("hx_update", "Expects struct");
 
-  // Sanity check: Verify that the struct has fields: 
-  // ref_pos, ref_vel_max, gain_pos and gain_vel, plus the 
+  // Sanity check: Verify that the struct has fields:
+  // ref_pos, ref_vel_max, gain_pos and gain_vel, plus the
   // *_enabled flag for each one.
   if (mxGetNumberOfFields(prhs[0]) != 8)
     mexErrMsgIdAndTxt("hx_update", "Expects 8 fields");
