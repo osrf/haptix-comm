@@ -29,7 +29,7 @@ if (OCTAVE_SUPPORT_FOUND)
               hx_robot_info.m
               hx_update.m
               hx_matlab_controller.m
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}/octave)
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/haptix-comm/octave)
 
   add_custom_target(mex_generation ALL DEPENDS ${OCTAVE_OUTPUT_FILE_SET})
 endif()
@@ -85,7 +85,7 @@ if (WIN32 AND MATLAB_FOUND)
                 hx_robot_info.m
                 hx_update.m
                 hx_matlab_controller.m
-          DESTINATION ${CMAKE_INSTALL_LIBDIR}/mex)
+          DESTINATION ${CMAKE_INSTALL_LIBDIR}/haptix-comm/mex)
 
   add_custom_target(matlab_generation ALL DEPENDS ${MEX_OUTPUT_FILE_SET})
 endif()
