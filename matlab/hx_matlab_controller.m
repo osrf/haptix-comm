@@ -17,6 +17,8 @@
 
 counter = 0;
 
+hx_connect();
+
 deviceInfo = hx_robot_info();
 
 while counter < 2000
