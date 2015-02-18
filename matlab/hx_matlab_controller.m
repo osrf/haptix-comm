@@ -45,3 +45,5 @@ while counter < 2000
 
   pause(0.001);
 end
+
+hx_close();

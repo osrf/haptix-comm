@@ -114,6 +114,11 @@ extern "C" {
   //////////////////////////////////////////////////
   hxResult hx_close()
   {
+    if (haptixNode)
+    {
+      delete haptixNode;
+      haptixNode = NULL;
+    }
     return hxOK;
   }
 
