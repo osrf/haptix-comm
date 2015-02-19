@@ -24,20 +24,28 @@ deviceInfo = hx_robot_info();
 while counter < 2000
   % Initialize the command scalar structure.
   cmd.ref_pos = [];
-  cmd.ref_pos_enabled = 1;
   cmd.ref_vel_max = [];
-  cmd.ref_vel_max_enabled = 0;
   cmd.gain_pos = [];
-  cmd.gain_pos_enabled = 0;
   cmd.gain_vel = [];
+
+  % Indicate that the positions we set should be used.
+  cmd.ref_pos_enabled = 1;
+  % We're not setting it, so indicate that ref_vel_max should be ignored.
+  cmd.ref_vel_max_enabled = 0;
+  % We're not setting it, so indicate that gain_pos should be ignored.
+  cmd.gain_pos_enabled = 0;
+  % We're not setting it, so indicate that gain_vel should be ignored.
   cmd.gain_vel_enabled = 0;
 
   % Create a new command based on a sinusoidal wave.
   for n = 0:deviceInfo.motor_count
     cmd.ref_pos(end + 1) = 0.5 * sin(0.05 * 2.0 * pi * counter * 0.01);
-    cmd.ref_vel_max(end + 1) = 1.0;
-    cmd.gain_pos(end + 1) = 1.0;
-    cmd.gain_vel(end + 1) = 1.0;
+    % We could set a desired maximum velocity
+    % cmd.ref_vel_max(end + 1) = 1.0;
+    % We could set a desired controller position gain
+    %c md.gain_pos(end + 1) = 1.0;
+    % We could set a desired controller velocity gain
+    % cmd.gain_vel(end + 1) = 1.0;
   end
 
   % Send the new joint command and receive the state update.
