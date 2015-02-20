@@ -20,6 +20,8 @@ if (DOXYGEN_FOUND)
             ${CMAKE_BINARY_DIR}/doxygen/html
     COMMAND cp ${CMAKE_SOURCE_DIR}/doc/mpl_imu_sensors.svg
             ${CMAKE_BINARY_DIR}/doxygen/html
+
+    # Refer the Readme file for instructions on updating these files.
     COMMAND cp ${CMAKE_SOURCE_DIR}/doc/hx_update.html
             ${CMAKE_BINARY_DIR}/doxygen/html
     COMMAND cp ${CMAKE_SOURCE_DIR}/doc/hx_robot_info.html
