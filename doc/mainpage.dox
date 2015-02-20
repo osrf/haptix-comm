@@ -1,6 +1,6 @@
 /** \mainpage HAPTIX Communication API Reference
  
- This site provides useful information about the HAPTIX API.  Should you find problems with this documentation - typos, unclear phrases,
+ This site provides useful information about the HAPTIX API (C and Matlab).  Should you find problems with this documentation - typos, unclear phrases,
  or insufficient detail - please create a <a
    href="https://bitbucket.org/osrf/haptix-comm/issues/new">new bitbucket issue</a>.
  Include sufficient detail to quickly locate the problematic documentation,
@@ -8,22 +8,37 @@
  Priority - minor; Version - blank.
  
  <h2>Get Started</h2>
+
+   <h4>C-API</h4> 
+     The C-API contains two headers:
  
-   This API contains two headers:
+     - haptix.h : The primary HAPTIX interface
  
-   - haptix.h : The primary HAPTIX interface
+     - haptix_sim.h : Simulation specific interface
  
-   - haptix_sim.h : Simulation specific interface
+     Important functions:
  
-   Important functions:
+     - hx_connect(const char *_host, int _port) : Connect to specified device/simulator target
  
-   - hx_connect(int _target, const char *_host, int _port) : Connect to specified device/simulator target
+     - hx_update(const hxCommand *_command, hxSensor *_sensor) : Asynchronous update at the rate supported by the device
  
-   - hx_update(int _target, const hxCommand *_command, hxSensor *_sensor, hxTime *_timestamp) : Synchronous update at the rate supported by the device
+     - hx_robot_info(hxRobotInfo *_robotinfo) : Get info for specified robot/simulator target
  
-   - hx_getdeviceinfo(int _target, hxDeviceInfo *_deviceinfo) : Get info for specified device/simulator target
- 
-   - hx_close(int _target) : Close connection to specified device/simulator target
+     - hx_close() : Close connection to specified device/simulator target
+
+   <h4>Matlab API</h4> 
+   The Matlab API is a wrapper around the C-API. Use the following links to view each <b>.m</b> file.
+
+     - <a href='hx_close.html'>hx_close.m</a>
+
+     - <a href='hx_connect.html'>hx_connect.m</a>
+
+     - <a href='hx_read_sensors.html'>hx_read_sensors.m</a>
+
+     - <a href='hx_robot_info.html'>hx_robot_info.m</a>
+
+     - <a href='hx_update.html'>hx_update.m</a>
+
  <h2>MPL Arm Schematics</h2>
 
  <p>The following diagrams describe the locations of sensors, motors, and joints on the MPL hand. The numbers on the diagrams correspond to indices in data arrays specified in the hxSensor and hxCommand structures.
