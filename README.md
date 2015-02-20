@@ -43,3 +43,13 @@ To uninstall the software installed with the previous steps:
 
  - cd build/
  - sudo make uninstall
+
+## Documentation
+
+### Update Matlab documentation
+
+ - Matlab has a `publish` function that will convert a m file to html.
+ - Run the `publish` command in Matlab.
+ - Copy the resulting `.html` files into the `doc` directory
+ - Run `make doc`
+ - Upload content of `build/doxygen/html/*` to s3.
