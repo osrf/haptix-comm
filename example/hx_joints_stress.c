@@ -108,7 +108,6 @@ int main(int argc, char **argv)
 {
   int i;
   int counter = 0;
-  int currentMotor = 0;
   hxRobotInfo robotInfo;
   hxCommand cmd;
   hxSensor sensor;
@@ -139,21 +138,13 @@ int main(int argc, char **argv)
   printRobotInfo(&robotInfo);
 
   // Send commands at ~100Hz.
-  double freq = 0.05 * argc * 0.01;
   while (running == 1)
   {
     // Create a new command based on a sinusoidal wave.
     for (i = 0; i < robotInfo.motor_count; ++i)
     {
       // Set the desired position of this motor
-      if (i == currentMotor)
-      {
-        cmd.ref_pos[i] = 0.5 * argc * sin(2.0 * M_PI * counter * freq);
-      }
-      else
-      {
-        cmd.ref_pos[i] = 0.0;
-      }
+      cmd.ref_pos[i] = 0.5 * argc * sin(0.05 * argc * 2.0 * M_PI * counter * 0.01);
       // We could set a desired maximum velocity
       // cmd.ref_vel_max[i] = 1.0;
       // We could set a desired controller position gain
@@ -180,13 +171,6 @@ int main(int argc, char **argv)
     // Debug output: Print the state.
     if (!(counter % 100))
       printState(&robotInfo, &sensor);
-
-    if (counter * freq >= 1.0)
-    {
-      counter = 0;
-      currentMotor = (++currentMotor) % robotInfo.motor_count;
-      printf("actuating joint %d\n", currentMotor);
-    }
 
     if (++counter == 10000)
       counter = 0;
