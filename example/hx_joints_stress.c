@@ -19,6 +19,7 @@
 #include <windows.h>
 #define _USE_MATH_DEFINES
 #endif
+#include <stdlib.h>
 #include <math.h>
 #include <signal.h>
 #include <stdio.h>
@@ -106,6 +107,16 @@ void printRobotInfo(const hxRobotInfo *_robotInfo)
 //////////////////////////////////////////////////
 int main(int argc, char **argv)
 {
+  double frequency = 0.01;
+  double amplitude = 1.70;
+
+  if (argc > 2)
+    frequency = atof(argv[1]);
+  if (argc > 3)
+    amplitude = atof(argv[2]);
+
+  printf("freq: %s ampl: %s\n", argv[1], argv[2]);
+
   int i;
   int counter = 0;
   hxRobotInfo robotInfo;
@@ -144,7 +155,7 @@ int main(int argc, char **argv)
     for (i = 0; i < robotInfo.motor_count; ++i)
     {
       // Set the desired position of this motor
-      cmd.ref_pos[i] = 0.5 * argc * sin(0.05 * argc * 2.0 * M_PI * counter * 0.01);
+      cmd.ref_pos[i] = amplitude * sin(frequency * 2.0 * M_PI * counter);
       // We could set a desired maximum velocity
       // cmd.ref_vel_max[i] = 1.0;
       // We could set a desired controller position gain

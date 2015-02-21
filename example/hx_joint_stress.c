@@ -19,6 +19,7 @@
 #include <windows.h>
 #define _USE_MATH_DEFINES
 #endif
+#include <stdlib.h>
 #include <math.h>
 #include <signal.h>
 #include <stdio.h>
@@ -106,6 +107,16 @@ void printRobotInfo(const hxRobotInfo *_robotInfo)
 //////////////////////////////////////////////////
 int main(int argc, char **argv)
 {
+  double frequency = 0.01;
+  double amplitude = 1.70;
+
+  if (argc >= 2)
+    frequency = atof(argv[1]);
+  if (argc >= 3)
+    amplitude = atof(argv[2]);
+
+  printf("freq: %s ampl: %s\n", argv[1], argv[2]);
+
   int i;
   int counter = 0;
   int currentMotor = 0;
@@ -139,7 +150,6 @@ int main(int argc, char **argv)
   printRobotInfo(&robotInfo);
 
   // Send commands at ~100Hz.
-  double freq = 0.05 * argc * 0.01;
   while (running == 1)
   {
     // Create a new command based on a sinusoidal wave.
@@ -148,7 +158,7 @@ int main(int argc, char **argv)
       // Set the desired position of this motor
       if (i == currentMotor)
       {
-        cmd.ref_pos[i] = 0.5 * argc * sin(2.0 * M_PI * counter * freq);
+        cmd.ref_pos[i] = amplitude * sin(frequency * 2.0 * M_PI * counter);
       }
       else
       {
@@ -181,7 +191,7 @@ int main(int argc, char **argv)
     if (!(counter % 100))
       printState(&robotInfo, &sensor);
 
-    if (counter * freq >= 1.0)
+    if (counter * frequency >= 1.0)
     {
       counter = 0;
       currentMotor = (++currentMotor) % robotInfo.motor_count;
