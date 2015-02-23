@@ -24,9 +24,9 @@
 
      - hx_update(const hxCommand *_command, hxSensor *_sensor) : Asynchronous update at the rate supported by the device
 
-     - hx_read_sensors(hxSensor *_sensor) : Reads the latest sensor information from the robot in a non-blocking manner.
+     - hx_read_sensors(hxSensor *_sensor) : Reads the latest sensor information from the robot in a non-blocking manner
 
-     - hx_close() : Close connection to specified device/simulator target
+     - hx_close() : Close connection to to a robot or simulator
 
    <h4>Matlab API</h4>
    The Matlab API is a wrapper around the C-API. Use the following links to view each <b>.m</b> file.
