@@ -1,0 +1,209 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>hx_update</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-02-20"><meta name="DC.source" content="hx_update.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="comment">%HX_UPDATE Send motor command and receive sensor state.</span>
+<span class="comment">%</span>
+<span class="comment">% A non-blocking function that sends a command to the robot and receives</span>
+<span class="comment">% the latest sensor information. This function may be used as frequently as</span>
+<span class="comment">% desired, but the simulator/robot is only guaranteed to update at the rate</span>
+<span class="comment">% returned from HX_ROBOT_INFO.</span>
+<span class="comment">%</span>
+<span class="comment">% HX_CONNECT should have been called first.</span>
+<span class="comment">%</span>
+<span class="comment">% sensor = hx_update(command)</span>
+<span class="comment">%</span>
+<span class="comment">% Parameters:</span>
+<span class="comment">%   command: Structure with the following named fields:</span>
+<span class="comment">%     ref_pos (float array) : An N by 1 (or 1 by N) array of desired positions for</span>
+<span class="comment">%       the motors (rad).</span>
+<span class="comment">%     ref_pos_enabled (bool) : If true, then the values in ref_pos should be</span>
+<span class="comment">%       used; otherwise, they should be ignored.</span>
+<span class="comment">%     ref_vel_max (float array) : An N by 1 (or 1 by N) array of desired maximum</span>
+<span class="comment">%       angular velocities for the motors (rad/s).</span>
+<span class="comment">%     ref_vel_max_enabled (bool) : If true, then the values in ref_vel_max</span>
+<span class="comment">%       should be used; otherwise, they should be ignored.</span>
+<span class="comment">%     gain_pos (float array) : An N by 1 (or 1 by N) array of position gains to</span>
+<span class="comment">%       be applied to the internal controller (Nm/rad).</span>
+<span class="comment">%     gain_pos_enabled (bool) : If true, then the values in gain_pos</span>
+<span class="comment">%       should be used; otherwise, they should be ignored.</span>
+<span class="comment">%     gain_vel (float array) : An N by 1 (or 1 by N) array of velocity gains to</span>
+<span class="comment">%       be applied to the internal controller (Nms/rad).</span>
+<span class="comment">%     gain_vel_enabled (bool) : If true, then the values in gain_vel</span>
+<span class="comment">%       should be used; otherwise, they should be ignored.</span>
+<span class="comment">%</span>
+<span class="comment">%</span>
+<span class="comment">% Return values:</span>
+<span class="comment">%   sensor: Structure with the following named fields:</span>
+<span class="comment">%     time_stamp (float) : Time at which the sensor reading was taken (s).</span>
+<span class="comment">%     motor_pos (float array) : An N by 1  array of motor positions (rad).</span>
+<span class="comment">%     motor_vel (float array) : An N by 1  array of motor velocities (rad/s).</span>
+<span class="comment">%     motor_torque (float array) : An N by 1  array of motor torques (Nm).</span>
+<span class="comment">%     joint_pos (float array) : An M by 1  array of joint positions (rad).</span>
+<span class="comment">%     joint_vel (float array) : An M by 1  array of joint velocities (rad/s).</span>
+<span class="comment">%     contact (float array) : An L by 1  array of contact force magnitudes (N).</span>
+<span class="comment">%     imu_linear_acc (float array) : A K by 3  array of IMU accelerometer</span>
+<span class="comment">%       data (m/s^2).  Each row/column is a 3-dimensional vector of accelerometer</span>
+<span class="comment">%       output, which comprises the vector difference (a-g), where a is the</span>
+<span class="comment">%       linear acceleration and g is the gravity vector.  This measurement</span>
+<span class="comment">%       is expressed in a body-fixed frame.  The entries of each row/column are</span>
+<span class="comment">%       measured in meters per second squared and ordered (x, y, z).</span>
+<span class="comment">%     imu_angular_vel (float array) : A K by 3 array of IMU gyro data (rad/s).</span>
+<span class="comment">%       Each row/column is a 3-dimensional angular velocity vector.  This measurement</span>
+<span class="comment">%       is expressed in a body-fixed frame.  The entries of each row/column are</span>
+<span class="comment">%       measured in radians per second and ordered (x, y, z).</span>
+<span class="comment">%     imu_orientation (float array) : A K by 4 array of IMU orientation data</span>
+<span class="comment">%       (quaternion).  Each row/column provides a 4-element quaternion representation</span>
+<span class="comment">%       of the estimated orientation of the corresponding IMU.  A given</span>
+<span class="comment">%       simulator/robot might not support this functionality.</span>
+<span class="comment">%</span>
+<span class="comment">% Throws an error if something failed.</span>
+<span class="comment">%</span>
+<span class="comment">% See also HX_CLOSE, HX_CONNECT, HX_READ_SENSORS, and HX_ROBOT_INFO</span>
+<span class="comment">%</span>
+<span class="comment">% For more information, see &lt;a href="matlab:</span>
+<span class="comment">% web('http://gazebosim.org/haptix')"&gt;the Gazebo HAPTIX site&lt;/a&gt;</span>
+<span class="comment">% and/or</span>
+<span class="comment">% &lt;a href="matlab:</span>
+<span class="comment">% web('http://mujoco.org/haptix.html#hxMATLAB')"&gt;the MuJoCo HAPTIX site&lt;/a&gt;.</span>
+
+<span class="keyword">function</span> sensor = hx_update(command)
+  sensor = hxgz(<span class="string">'update'</span>, command);
+<span class="keyword">end</span>
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%HX_UPDATE Send motor command and receive sensor state.
+%
+% A non-blocking function that sends a command to the robot and receives
+% the latest sensor information. This function may be used as frequently as
+% desired, but the simulator/robot is only guaranteed to update at the rate
+% returned from HX_ROBOT_INFO.
+%
+% HX_CONNECT should have been called first.
+%
+% sensor = hx_update(command)
+%
+% Parameters:
+%   command: Structure with the following named fields:
+%     ref_pos (float array) : An N by 1 (or 1 by N) array of desired positions for
+%       the motors (rad).
+%     ref_pos_enabled (bool) : If true, then the values in ref_pos should be
+%       used; otherwise, they should be ignored.
+%     ref_vel_max (float array) : An N by 1 (or 1 by N) array of desired maximum
+%       angular velocities for the motors (rad/s).
+%     ref_vel_max_enabled (bool) : If true, then the values in ref_vel_max
+%       should be used; otherwise, they should be ignored.
+%     gain_pos (float array) : An N by 1 (or 1 by N) array of position gains to
+%       be applied to the internal controller (Nm/rad).
+%     gain_pos_enabled (bool) : If true, then the values in gain_pos
+%       should be used; otherwise, they should be ignored.
+%     gain_vel (float array) : An N by 1 (or 1 by N) array of velocity gains to
+%       be applied to the internal controller (Nms/rad).
+%     gain_vel_enabled (bool) : If true, then the values in gain_vel
+%       should be used; otherwise, they should be ignored.
+%     
+%     
+% Return values:
+%   sensor: Structure with the following named fields:
+%     time_stamp (float) : Time at which the sensor reading was taken (s).
+%     motor_pos (float array) : An N by 1  array of motor positions (rad).
+%     motor_vel (float array) : An N by 1  array of motor velocities (rad/s).
+%     motor_torque (float array) : An N by 1  array of motor torques (Nm).
+%     joint_pos (float array) : An M by 1  array of joint positions (rad).
+%     joint_vel (float array) : An M by 1  array of joint velocities (rad/s).
+%     contact (float array) : An L by 1  array of contact force magnitudes (N).
+%     imu_linear_acc (float array) : A K by 3  array of IMU accelerometer
+%       data (m/s^2).  Each row/column is a 3-dimensional vector of accelerometer
+%       output, which comprises the vector difference (a-g), where a is the
+%       linear acceleration and g is the gravity vector.  This measurement
+%       is expressed in a body-fixed frame.  The entries of each row/column are
+%       measured in meters per second squared and ordered (x, y, z).
+%     imu_angular_vel (float array) : A K by 3 array of IMU gyro data (rad/s).
+%       Each row/column is a 3-dimensional angular velocity vector.  This measurement
+%       is expressed in a body-fixed frame.  The entries of each row/column are
+%       measured in radians per second and ordered (x, y, z).
+%     imu_orientation (float array) : A K by 4 array of IMU orientation data
+%       (quaternion).  Each row/column provides a 4-element quaternion representation
+%       of the estimated orientation of the corresponding IMU.  A given
+%       simulator/robot might not support this functionality.
+%
+% Throws an error if something failed.
+%
+% See also HX_CLOSE, HX_CONNECT, HX_READ_SENSORS, and HX_ROBOT_INFO
+%
+% For more information, see <a href="matlab:
+% web('http://gazebosim.org/haptix')">the Gazebo HAPTIX site</a>
+% and/or
+% <a href="matlab:
+% web('http://mujoco.org/haptix.html#hxMATLAB')">the MuJoCo HAPTIX site</a>.
+
+function sensor = hx_update(command)
+  sensor = hxgz('update', command);
+end
+
+##### SOURCE END #####
+--></body></html>
