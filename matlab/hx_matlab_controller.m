@@ -43,7 +43,7 @@ while counter < 2000
     % We could set a desired maximum velocity
     % cmd.ref_vel_max(end + 1) = 1.0;
     % We could set a desired controller position gain
-    %c md.gain_pos(end + 1) = 1.0;
+    % cmd.gain_pos(end + 1) = 1.0;
     % We could set a desired controller velocity gain
     % cmd.gain_vel(end + 1) = 1.0;
   end
