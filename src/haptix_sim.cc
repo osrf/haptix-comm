@@ -20,46 +20,142 @@
 
 extern "C" {
   //////////////////////////////////////////////////
-  hxResult hxs_getdeviceinfo(int /*_target*/, hxsDeviceInfo* /*_deviceinfo*/)
+  hxResult hxs_siminfo(hxSimInfo * /*_siminfo*/)
   {
     return hxOK;
   }
 
   //////////////////////////////////////////////////
-  hxResult hxs_getbody(int /*_target*/, hxsBody* /*_body*/)
+  hxResult hxs_camera(hxCamera * /*_camera*/)
   {
     return hxOK;
   }
 
   //////////////////////////////////////////////////
-  hxResult hxs_getjoint(int /*_target*/, hxsJoint* /*_joint*/)
+  hxResult hxs_camera_transform(hxTransform /*_transform*/)
   {
     return hxOK;
   }
 
-  /////////////////////////////////////////////////
-  hxResult hxs_getcontact(int /*_target*/, hxsContact* /*_contact*/)
+  //////////////////////////////////////////////////
+  hxResult hxs_contacts(hxContact * /*_contact*/)
   {
     return hxOK;
   }
 
-  /////////////////////////////////////////////////
-  hxResult hxs_getjacobian(int /*_target*/, int /*_link*/,
-                           const float* /*_point*/, float* /*_jacobian*/)
+  //////////////////////////////////////////////////
+  hxResult hxs_jacobian(const hxLink * /*_link*/, const float * /*_point*/,
+                        float * /*_jacobian*/)
   {
     return hxOK;
   }
 
-  /////////////////////////////////////////////////
-  hxResult hxs_setstate(int /*_target*/, const hxsBody* /*_body*/,
-                        const hxsJoint* /*_joint*/)
+  //////////////////////////////////////////////////
+  hxResult hxs_state(const hxModel * /*_model*/, const hxJoint * /*_joint*/)
   {
     return hxOK;
   }
 
-  /////////////////////////////////////////////////
-  hxResult hxs_updatedirect(int /*_target*/, const float* /*_torque*/,
-                            hxSensor* /*_sensor*/, int /*_flg_sleep*/)
+  //////////////////////////////////////////////////
+  hxModel *hxs_add_model(const char * /*_urdf*/, float /*_x*/, float /*_y*/,
+                         float /*_z*/, float /*_roll*/, float /*_pitch*/,
+                         float /*_yaw*/)
+  {
+    return 0;
+  }
+
+  //////////////////////////////////////////////////
+  hxResult hxs_remove_model_id(int /*_id*/)
+  {
+    return hxOK;
+  }
+
+  //////////////////////////////////////////////////
+  hxResult hxs_remove_model(const hxModel * /*_model*/)
+  {
+    return hxOK;
+  }
+
+  //////////////////////////////////////////////////
+  hxResult hxs_model_transform(int /*_id*/, hxTransform /*_transform*/)
+  {
+    return hxOK;
+  }
+
+  //////////////////////////////////////////////////
+  hxResult hxs_linear_velocity(int /*_id*/, hxVector3 /*_velocity*/)
+  {
+    return hxOK;
+  }
+
+  //////////////////////////////////////////////////
+  hxResult hxs_angular_velocity(int /*_id*/, hxVector3 /*_velocity*/)
+  {
+    return hxOK;
+  }
+
+  //////////////////////////////////////////////////
+  hxResult hxs_linear_accel(int /*_id*/, hxVector3 /*_accel*/)
+  {
+    return hxOK;
+  }
+
+  //////////////////////////////////////////////////
+  hxResult hxs_angular_accel(int /*_id*/, hxVector3 /*_accel*/)
+  {
+    return hxOK;
+  }
+
+  //////////////////////////////////////////////////
+  hxResult hxs_force(const hxLink * /*_link*/, hxVector3 /*_force*/)
+  {
+    return hxOK;
+  }
+
+  //////////////////////////////////////////////////
+  hxResult hxs_torque(const hxLink * /*_link*/, hxVector3 /*_torque*/)
+  {
+    return hxOK;
+  }
+
+  //////////////////////////////////////////////////
+  hxResult hxs_reset(int /*_resetLimbPose*/)
+  {
+    return hxOK;
+  }
+
+  //////////////////////////////////////////////////
+  hxResult hxs_reset_timer()
+  {
+    return hxOK;
+  }
+
+  //////////////////////////////////////////////////
+  hxResult hxs_start_timer()
+  {
+    return hxOK;
+  }
+
+  //////////////////////////////////////////////////
+  hxResult hxs_stop_timer()
+  {
+    return hxOK;
+  }
+
+  //////////////////////////////////////////////////
+  hxResult hxs_start_logging(const char * /*_filename*/)
+  {
+    return hxOK;
+  }
+
+  //////////////////////////////////////////////////
+  int hxs_is_logging()
+  {
+    return 0;
+  }
+
+  //////////////////////////////////////////////////
+  hxResult hxs_stop_logging()
   {
     return hxOK;
   }
