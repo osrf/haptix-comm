@@ -1,0 +1,10 @@
+package haptix.comm.msgs;
+
+import "hxVector3.proto";
+import "hxQuaternion.proto";
+
+message hxTransform
+{
+  required hxVector3 pos       = 1;
+  required hxQuaternion orient = 2;
+}

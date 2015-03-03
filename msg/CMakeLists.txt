@@ -1,8 +1,17 @@
 set(msgs
+  hxCamera.proto
   hxCommand.proto
+  hxContact.proto
+  hxGrasp.proto
+  hxJoint.proto
+  hxLink.proto
+  hxQuaternion.proto
+  hxModel.proto
   hxRobot.proto
   hxSensor.proto
-  hxGrasp.proto
+  hxSimInfo.proto
+  hxTransform.proto
+  hxVector3.proto
 )
 
 add_executable(haptixmsgs_out generator/HaptixGenerator.cc generator/haptix_generator.cc)

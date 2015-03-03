@@ -1,0 +1,11 @@
+package haptix.comm.msgs;
+
+import "hxCamera.proto";
+import "hxModel.proto";
+
+message hxSimInfo
+{
+  required uint32 modelCount = 1;
+  repeated hxModel models    = 2;
+  repeated hxCamera camera   = 3;
+}

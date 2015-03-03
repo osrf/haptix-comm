@@ -1,0 +1,13 @@
+package haptix.comm.msgs;
+
+import "hxTransform.proto";
+import "hxVector3.proto";
+
+message hxLink
+{
+  required hxTransform transform = 1;
+  required hxVector3 linvel      = 2;
+  required hxVector3 angvel      = 3;
+  required hxVector3 linacc      = 4;
+  required hxVector3 angacc      = 5;
+}

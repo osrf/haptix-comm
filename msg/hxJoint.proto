@@ -1,0 +1,10 @@
+package haptix.comm.msgs;
+
+message hxJoint
+{
+  required float pos            = 1;
+  required float vel            = 2;
+  required float acc            = 3;
+  required float torque_motor   = 4;
+  required float torque_passive = 5;
+}
