@@ -260,7 +260,7 @@ extern "C" {
     ignition::transport::Node *hxNode = getHxNodeInstance();
 
     // Request the service.
-    std::string service = "/haptix/gazebo/siminfo";
+    std::string service = "/haptix/gazebo/hxs_siminfo";
     bool executed = hxNode->Request(service, req, kTimeout, rep, result);
 
     if (executed)
@@ -269,7 +269,6 @@ extern "C" {
       {
         // Fill the struct with the response.
         convertSimInfo(rep, _siminfo);
-
         return hxOK;
       }
       else
@@ -290,9 +289,40 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
-  hxResult hxs_camera(hxCamera * /*_camera*/)
+  hxResult hxs_camera(hxCamera *_camera)
   {
-    return hxOK;
+    haptix::comm::msgs::hxEmpty req;
+    haptix::comm::msgs::hxCamera rep;
+    bool result;
+    ignition::transport::Node *hxNode = getHxNodeInstance();
+
+    // Request the service.
+    std::string service = "/haptix/gazebo/hxs_camera";
+    bool executed = hxNode->Request(service, req, kTimeout, rep, result);
+
+    if (executed)
+    {
+      if (result)
+      {
+        // Fill the struct with the response.
+        convertCamera(rep, _camera);
+        return hxOK;
+      }
+      else
+      {
+        std::lock_guard<std::mutex> lock(hxs_lastResultLock);
+        hxs_lastResult = "hxs_camera() Service call failed.";
+        std::cerr << hxs_lastResult << std::endl;
+      }
+    }
+    else
+    {
+      std::lock_guard<std::mutex> lock(hxs_lastResultLock);
+      hxs_lastResult = "hxs_camera() Service call timed out.";
+      std::cerr << hxs_lastResult << std::endl;
+    }
+
+    return hxERROR;
   }
 
   //////////////////////////////////////////////////
