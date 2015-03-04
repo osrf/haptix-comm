@@ -30,7 +30,6 @@
 #include "msg/hxVector3.pb.h"
 
 extern "C" {
-
   /// \brief Timeout used for the service requests (ms.).
   static unsigned int kTimeout = 1000;
 
