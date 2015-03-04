@@ -85,3 +85,6 @@ target_link_libraries(joint_stress ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPORT
 
 add_executable(joints_stress hx_joints_stress.c)
 target_link_libraries(joints_stress ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARIES} ${EXTRA_LIBRARIES})
+
+add_executable(hxs_requester hxs_requester.c)
+target_link_libraries(hxs_requester ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARIES} ${EXTRA_LIBRARIES})
