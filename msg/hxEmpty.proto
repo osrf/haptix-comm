@@ -1,0 +1,6 @@
+package haptix.comm.msgs;
+
+message hxEmpty
+{
+  optional bool unused = 1;
+}

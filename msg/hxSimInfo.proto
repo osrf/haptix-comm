@@ -5,7 +5,6 @@ import "hxModel.proto";
 
 message hxSimInfo
 {
-  required uint32 modelCount = 1;
-  repeated hxModel models    = 2;
-  repeated hxCamera camera   = 3;
+  repeated hxModel models    = 1;
+  required hxCamera camera   = 2;
 }

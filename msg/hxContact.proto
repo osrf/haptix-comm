@@ -4,7 +4,6 @@ import "hxVector3.proto";
 
 message hxContact
 {
-  required uint32 contactCount = 1;
   repeated uint32 body1        = 2 [packed=true];
   repeated uint32 body2        = 3 [packed=true];
   repeated hxVector3 point     = 4;

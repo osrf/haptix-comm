@@ -2,6 +2,7 @@ set(msgs
   hxCamera.proto
   hxCommand.proto
   hxContact.proto
+  hxEmpty.proto
   hxGrasp.proto
   hxJoint.proto
   hxLink.proto
