@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <string.h>
 #include "mex.h"
 #include "haptix/comm/haptix.h"
 
@@ -180,7 +181,7 @@ hxgz_update (int nlhs, mxArray *plhs[],
   hxSensor sensor;
   int i;
   mxArray *v;
-  mwSize *cmdSize;
+  const mwSize *cmdSize;
   double *data;
 
   // Sanity check: Verify that the first input argument is a struct.
