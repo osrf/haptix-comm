@@ -1,0 +1,6 @@
+package haptix.comm.msgs;
+
+message hxString
+{
+  required string data = 1;
+}

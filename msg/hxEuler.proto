@@ -1,0 +1,8 @@
+package haptix.comm.msgs;
+
+message hxEuler
+{
+  required float roll  = 1;
+  required float pitch = 2;
+  required float yaw   = 3;
+}

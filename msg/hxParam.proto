@@ -1,0 +1,22 @@
+package haptix.comm.msgs;
+
+import "hxEuler.proto";
+import "hxJoint.proto";
+import "hxLink.proto";
+import "hxModel.proto";
+import "hxTransform.proto";
+import "hxVector3.proto";
+
+message hxParam
+{
+  optional uint32 id             = 1;
+  optional hxVector3 vector3     = 2;
+  optional hxLink link           = 3;
+  optional hxTransform transform = 4;
+  optional hxModel model         = 5;
+  optional hxJoint joint         = 6;
+  optional float float_value     = 7;
+  optional string string_value   = 8;
+  optional hxVector3 pos         = 9;
+  optional hxEuler orientation   = 10;
+}

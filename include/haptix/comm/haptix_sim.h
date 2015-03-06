@@ -30,9 +30,17 @@ extern "C" {
 
 // ---------- constants ----------
 
-/// \brief Maximum number of contacts per link.
-/// Defines the maximum number of contacts on any link.
-#define hxMAXCONTACT 10
+/// \brief Maximum number of contacts.
+#define hxMAXCONTACT 100
+
+/// \brief Maximum number of links per model.
+#define hxMAXLINKS 50
+
+/// \brief Maximum number of links per model.
+#define hxMAXJOINTS 50
+
+/// \brief Maximum number of models per simulation.
+#define hxMAXMODELS 50
 
 // ---------- data structures ----------
 
@@ -142,7 +150,7 @@ struct _hxModel
 
   /// \brief Array of links in the model.
   /// \sa link_count
-  hxLink **links;
+  hxLink links[hxMAXLINKS];
 
   /// \brief Number of joints in the model.
   /// This defines the range of elements in the "joints" array.
@@ -150,7 +158,7 @@ struct _hxModel
 
   /// \brief Array of joints in the model.
   /// \sa joint_count
-  hxJoint **joints;
+  hxJoint joints[hxMAXJOINTS];
 };
 /// \def hxModel
 /// \brief Information about simulated models.
@@ -221,11 +229,11 @@ struct _hxSimInfo
 
   /// \brief Array of models in simulation.
   /// \sa modelCount
-  hxModel **models;
+  hxModel models[hxMAXMODELS];
 
   /// \brief Information about the camera.
   /// \sa hxCamera
-  hxCamera *camera;
+  hxCamera camera;
 };
 /// \def hxSimInfo
 /// \brief Information about the simulation world.
@@ -282,9 +290,10 @@ hxResult hxs_state(const hxModel *_model, const hxJoint *_joint);
 /// \param[in] _roll Roll in global frame (radians)
 /// \param[in] _pitch Pitch in global frame (radians)
 /// \param[in] _yaw Yaw in global frame (radians)
-/// \return Pointer to the new model.
-hxModel *hxs_add_model(const char *_urdf, float _x, float _y, float _z,
-                       float _roll, float _pitch, float _yaw);
+/// \param[out] _model Pointer to the new model.
+/// \return 'hxOK' if the function succeed or an error code otherwise.
+hxResult hxs_add_model(const char *_urdf, float _x, float _y, float _z,
+                       float _roll, float _pitch, float _yaw, hxModel *_model);
 
 /// \brief Remove model.
 /// \param[in] _id Id of the model.
@@ -362,8 +371,9 @@ hxResult hxs_stop_timer();
 hxResult hxs_start_logging(const char *_filename);
 
 /// \brief Determine if logging is running.
-/// \return 1 if logging is running.
-int hxs_is_logging();
+/// \param[out] _result 1 if logging is running.
+/// \return 'hxOK' if the function succeed or an error code otherwise.
+hxResult hxs_is_logging(int *_result);
 
 /// \brief Stop recording log file.
 /// \return 'hxOK' if the function succeed or an error code otherwise.

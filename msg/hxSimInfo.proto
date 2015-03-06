@@ -5,6 +5,6 @@ import "hxModel.proto";
 
 message hxSimInfo
 {
-  repeated hxModel models    = 1;
-  required hxCamera camera   = 2;
+  repeated hxModel models  = 1;
+  required hxCamera camera = 2;
 }

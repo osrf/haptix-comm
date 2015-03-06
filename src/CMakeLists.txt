@@ -7,6 +7,7 @@ set (sources
 
 set (gtest_sources
   haptix_TEST.cc
+  haptix_sim_TEST.cc
 )
 
 #set_source_files_properties(${PROTO_SRCS} PROPERTIES GENERATED TRUE)

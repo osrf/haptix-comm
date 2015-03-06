@@ -1,0 +1,6 @@
+package haptix.comm.msgs;
+
+message hxInt
+{
+  required int32 data = 1;
+}

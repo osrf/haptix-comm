@@ -4,13 +4,13 @@ import "hxVector3.proto";
 
 message hxContact
 {
-  repeated uint32 body1        = 2 [packed=true];
-  repeated uint32 body2        = 3 [packed=true];
-  repeated hxVector3 point     = 4;
-  repeated hxVector3 normal    = 5;
-  repeated hxVector3 tangent1  = 6;
-  repeated hxVector3 tangent2  = 7;
-  repeated float distance      = 8 [packed=true];
-  repeated hxVector3 velocity  = 9;
-  repeated hxVector3 force     = 10;
+  required uint32 body1        = 1;
+  required uint32 body2        = 2;
+  required hxVector3 point     = 3;
+  required hxVector3 normal    = 4;
+  required hxVector3 tangent1  = 5;
+  required hxVector3 tangent2  = 6;
+  required float distance      = 7;
+  required hxVector3 velocity  = 8;
+  required hxVector3 force     = 9;
 }

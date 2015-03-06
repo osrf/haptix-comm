@@ -2,15 +2,20 @@ set(msgs
   hxCamera.proto
   hxCommand.proto
   hxContact.proto
+  hxContact_V.proto
   hxEmpty.proto
+  hxEuler.proto
   hxGrasp.proto
+  hxInt.proto
   hxJoint.proto
   hxLink.proto
   hxQuaternion.proto
   hxModel.proto
   hxRobot.proto
+  hxParam.proto
   hxSensor.proto
   hxSimInfo.proto
+  hxString.proto
   hxTransform.proto
   hxVector3.proto
 )
