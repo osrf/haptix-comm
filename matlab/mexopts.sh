@@ -55,9 +55,7 @@ echo "Error: Did not imbed 'options.sh' code"; exit 1 #imbed options.sh glnx86 1
             # CkeyVersion:
             # CkeyLinkerName: GNU ld
             # CkeyLinkerVersion:
-            # Use gcc-4.7, instead of gcc-4.8
-            #CC='gcc'
-            CC='gcc-4.7'
+            CC='gcc'
             # Change flags to admit C99-style comments (//)
             #CFLAGS='-ansi -D_GNU_SOURCE'
             CFLAGS='-std=c99 -D_GNU_SOURCE'
@@ -74,8 +72,7 @@ echo "Error: Did not imbed 'options.sh' code"; exit 1 #imbed options.sh glnx86 1
             # C++keyVersion:
             # C++keyLinkerName: GNU ld
             # C++keyLinkerVersion:  
-            # Use g++-4.7, instead of g++-4.8
-            CXX='g++-4.8'
+            CXX='g++'
             CXXFLAGS='-ansi -D_GNU_SOURCE'
             CXXFLAGS="$CXXFLAGS -fPIC -fno-omit-frame-pointer -pthread"
             CXXLIBS="$RPATH $MLIBS -lm"
