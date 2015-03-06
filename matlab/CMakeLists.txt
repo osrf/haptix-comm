@@ -87,5 +87,22 @@ if (WIN32 AND MATLAB_FOUND)
                 hx_matlab_controller.m
           DESTINATION ${CMAKE_INSTALL_LIBDIR}/haptix-comm/mex)
 
+  if (WIN32)
+    # To facilitate development, copy the zmq dll into the install tree in
+    # the same directory as the .mex.  That way, no PATH-mangling is needed
+    # to use the .mex in MATLAB.
+    # Note that the SDK.zip is contructed through a different code path, with
+    # various kinds of manual copying.
+    # The filename construction is a little hacky.
+    get_filename_component(ZMQ_DEBUG_DIR ${ZeroMQ_LIBRARY_DEBUG} DIRECTORY)
+    get_filename_component(ZMQ_DEBUG_DLL ${ZeroMQ_LIBRARY_DEBUG} NAME_WE)
+    set(ZMQ_DEBUG_DLL "${ZMQ_DEBUG_DIR}/../bin/${ZMQ_DEBUG_DLL}.dll")
+    get_filename_component(ZMQ_RELEASE_DIR ${ZeroMQ_LIBRARY_RELEASE} DIRECTORY)
+    get_filename_component(ZMQ_RELEASE_DLL ${ZeroMQ_LIBRARY_RELEASE} NAME_WE)
+    set(ZMQ_RELEASE_DLL "${ZMQ_RELEASE_DIR}/../bin/${ZMQ_RELEASE_DLL}.dll")
+    install(FILES ${ZMQ_RELEASE_DLL} ${ZMQ_DEBUG_DLL}
+            DESTINATION ${CMAKE_INSTALL_LIBDIR}/haptix-comm/mex)
+  endif()
+
   add_custom_target(matlab_generation ALL DEPENDS ${MEX_OUTPUT_FILE_SET})
 endif()
