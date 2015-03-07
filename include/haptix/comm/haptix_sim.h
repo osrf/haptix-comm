@@ -130,7 +130,6 @@ struct _hxLink
 /// \brief Information about a link.
 typedef struct _hxLink hxLink;
 
-
 /// \brief Information about a model
 struct _hxModel
 {
@@ -160,6 +159,7 @@ struct _hxModel
   /// \sa joint_count
   hxJoint joints[hxMAXJOINTS];
 };
+
 /// \def hxModel
 /// \brief Information about simulated models.
 typedef struct _hxModel hxModel;
@@ -203,6 +203,7 @@ struct _hxContact
   /// with axis order (normal, tangent1, tangent2)
   hxVector3 force[hxMAXCONTACT];
 };
+
 /// \def hxContact
 /// \brief Information about contacts.
 typedef struct _hxContact hxContact;
@@ -218,7 +219,6 @@ struct _hxCamera
 /// \def hxCamera
 /// \brief Information about the simulation camera.
 typedef struct _hxCamera hxCamera;
-
 
 /// \brief Simulation information.
 struct _hxSimInfo
@@ -238,6 +238,21 @@ struct _hxSimInfo
 /// \def hxSimInfo
 /// \brief Information about the simulation world.
 typedef struct _hxSimInfo hxSimInfo;
+
+/// \brief Jacobian matrix.
+struct _hxJacobian
+{
+  /// \brief Number of joints in the model.
+  /// This defines the number of columns in the "jacobian" matrix.
+  int jointCount;
+
+  /// \brief 3-by-njoint matrix in row-major format.
+  /// \sa hxMAXJOINTS.
+  float mat[3][hxMAXJOINTS];
+};
+
+/// \brief Jacobian matrix.
+typedef struct _hxJacobian hxJacobian;
 
 // ---------- API functions ----------
 
@@ -269,8 +284,8 @@ hxResult hxs_contacts(hxContact *_contact);
 /// \param[in] _point Point on the link.
 /// \param[out] _jacobian Resulting jacobian matrix.
 /// \return 'hxOK' if the function succeed or an error code otherwise.
-hxResult hxs_jacobian(const hxLink *_link, const float *_point,
-                      float *_jacobian);
+hxResult hxs_jacobian(const hxLink *_link, const hxVector3 *_point,
+                      hxJacobian *_jacobian);
 
 /// \brief Set simulation state (position and velocity) as follows:
 ///   the robot base and objects are set from hxModel

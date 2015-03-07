@@ -22,6 +22,7 @@
 #define __HAPTIX_SIM_UTILS_API_HAPTIX_H__
 
 #include <iostream>
+#include <string>
 #include <mutex>
 #include <ignition/transport.hh>
 #include "haptix/comm/haptix.h"
@@ -29,6 +30,7 @@
 #include "msg/hxContact.pb.h"
 #include "msg/hxContact_V.pb.h"
 #include "msg/hxEmpty.pb.h"
+#include "msg/hxJacobian.pb.h"
 #include "msg/hxJoint.pb.h"
 #include "msg/hxLink.pb.h"
 #include "msg/hxModel.pb.h"
@@ -91,7 +93,6 @@ static void hxs_convertVector3(const hxVector3 *_in,
   _out->set_x(_in->x);
   _out->set_y(_in->y);
   _out->set_z(_in->z);
-
 }
 
 //////////////////////////////////////////////////
@@ -239,7 +240,7 @@ static void hxs_convertModel(const haptix::comm::msgs::hxModel _in,
 //////////////////////////////////////////////////
 /// \brief Private function that converts a C struct hxModel to a
 /// protobuf hxModel message.
-/*static void hxs_convertModel(const hxModel *_in,
+static void hxs_convertModel(const hxModel *_in,
   haptix::comm::msgs::hxModel *_out)
 {
   // Initialize the message.
@@ -262,7 +263,7 @@ static void hxs_convertModel(const haptix::comm::msgs::hxModel _in,
     haptix::comm::msgs::hxJoint *joint = _out->add_joints();
     hxs_convertJoint(&(_in->joints[i]), joint);
   }
-}*/
+}
 
 //////////////////////////////////////////////////
 /// \brief Private function that converts a protobuf hxContact_V message to a
@@ -348,6 +349,26 @@ static void hxs_convertCamera(const haptix::comm::msgs::hxCamera _in,
 
   hxs_convertTransform(&(_in->transform), _out->mutable_transform());
 }*/
+
+//////////////////////////////////////////////////
+/// \brief Private function that converts a protobuf hxJacobian message to a
+/// C struct hxJacobian.
+static void hxs_convertJacobian(const haptix::comm::msgs::hxJacobian _in,
+  hxJacobian *_out)
+{
+  // Initialize the C struct.
+  memset(_out, 0, sizeof(*_out));
+
+  _out->jointCount = _in.columns_size();
+
+  // Fill the matrix.
+  for (int i = 0; i < _out->jointCount; ++i)
+  {
+    _out->mat[0][i] = _in.columns(i).x();
+    _out->mat[1][i] = _in.columns(i).y();
+    _out->mat[2][i] = _in.columns(i).z();
+  }
+}
 
 //////////////////////////////////////////////////
 /// \brief Private function that converts a protobuf hxSimInfo message to a

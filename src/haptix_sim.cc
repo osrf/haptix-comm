@@ -22,6 +22,7 @@
 #include "msg/hxContact.pb.h"
 #include "msg/hxEmpty.pb.h"
 #include "msg/hxInt.pb.h"
+#include "msg/hxJacobian.pb.h"
 #include "msg/hxJoint.pb.h"
 #include "msg/hxLink.pb.h"
 #include "msg/hxModel.pb.h"
@@ -33,7 +34,6 @@
 #include "msg/hxVector3.pb.h"
 
 extern "C" {
-
   //////////////////////////////////////////////////
   hxResult hxs_siminfo(hxSimInfo *_siminfo)
   {
@@ -73,10 +73,17 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
-  hxResult hxs_jacobian(const hxLink * /*_link*/, const float * /*_point*/,
-                        float * /*_jacobian*/)
+  hxResult hxs_jacobian(const hxLink *_link, const hxVector3 *_point,
+                        hxJacobian *_jacobian)
   {
-    return hxOK;
+    const std::string service = "/haptix/gazebo/hxs_jacobian";
+    haptix::comm::msgs::hxParam req;
+    haptix::comm::msgs::hxJacobian rep;
+
+    hxs_convertLink(_link, req.mutable_link());
+    hxs_convertVector3(_point, req.mutable_vector3());
+    return hxs_call(service, __func__, req, rep, _jacobian,
+      hxs_convertJacobian);
   }
 
   //////////////////////////////////////////////////
@@ -97,7 +104,7 @@ extern "C" {
     const std::string service = "/haptix/gazebo/hxs_state";
     haptix::comm::msgs::hxParam req;
     haptix::comm::msgs::hxEmpty rep;
-    req.set_id(_model->id);
+    hxs_convertModel(_model, req.mutable_model());
     hxs_convertJoint(_joint, req.mutable_joint());
     return hxs_call(service, __func__, req, rep);
   }

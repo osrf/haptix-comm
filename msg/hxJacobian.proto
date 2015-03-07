@@ -1,0 +1,8 @@
+package haptix.comm.msgs;
+
+import "hxVector3.proto";
+
+message hxJacobian
+{
+  repeated hxVector3 columns = 1;
+}

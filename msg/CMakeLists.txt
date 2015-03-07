@@ -7,6 +7,7 @@ set(msgs
   hxEuler.proto
   hxGrasp.proto
   hxInt.proto
+  hxJacobian.proto
   hxJoint.proto
   hxLink.proto
   hxQuaternion.proto

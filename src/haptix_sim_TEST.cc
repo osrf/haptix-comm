@@ -23,8 +23,11 @@
 #include "msg/hxContact.pb.h"
 #include "msg/hxContact_V.pb.h"
 #include "msg/hxEmpty.pb.h"
+#include "msg/hxInt.pb.h"
+#include "msg/hxJacobian.pb.h"
 #include "msg/hxParam.pb.h"
 #include "msg/hxSimInfo.pb.h"
+#include "msg/hxString.pb.h"
 #include "msg/hxTransform.pb.h"
 
 /// \brief Global constants.
@@ -179,21 +182,11 @@ void onHxsCameraTransform(const std::string &_service,
   // Check the name of the service received.
   EXPECT_EQ(_service, "/haptix/gazebo/hxs_camera_transform");
 
-  // Apply the camera transform.
-  simState.mutable_camera()->mutable_transform()->mutable_pos()->set_x(
-    _req.pos().x());
-  simState.mutable_camera()->mutable_transform()->mutable_pos()->set_y(
-    _req.pos().y());
-  simState.mutable_camera()->mutable_transform()->mutable_pos()->set_z(
-    _req.pos().z());
-  simState.mutable_camera()->mutable_transform()->mutable_orient()->set_w(
-    _req.orient().w());
-  simState.mutable_camera()->mutable_transform()->mutable_orient()->set_x(
-    _req.orient().x());
-  simState.mutable_camera()->mutable_transform()->mutable_orient()->set_y(
-    _req.orient().y());
-  simState.mutable_camera()->mutable_transform()->mutable_orient()->set_z(
-    _req.orient().z());
+  std::string msg1, msg2;
+
+  _req.SerializeToString(&msg1);
+  simState.camera().transform().SerializeToString(&msg2);
+  EXPECT_EQ(msg1, msg2);
 
   _result = true;
 }
@@ -212,6 +205,56 @@ void onHxsContacts(const std::string &_service,
 
   // Create some dummy response.
   _rep = simContactsState;
+
+  _result = true;
+}
+
+//////////////////////////////////////////////////
+/// \brief Provide a "hxs_jacobian" service.
+void onHxsJacobian(const std::string &_service,
+  const haptix::comm::msgs::hxParam &_req,
+  haptix::comm::msgs::hxJacobian &_rep,
+  bool &_result)
+{
+  _rep.Clear();
+
+  // Check the name of the service received.
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_jacobian");
+
+  // Sanity check: The message should contain a link.
+  if (!_req.has_link())
+  {
+    std::cerr << "onHxsJacobian() error: Missing link in request" << std::endl;
+    return;
+  }
+
+  // Sanity check: The message should contain a point.
+  if (!_req.has_vector3())
+  {
+    std::cerr << "onHxsState() error: Missing point in request" << std::endl;
+    return;
+  }
+
+  // Check that the link has the expected values.
+  std::string msg1;
+  _req.link().SerializeToString(&msg1);
+  std::string msg2;
+  simState.models(0).links(0).SerializeToString(&msg2);
+  EXPECT_EQ(msg1, msg2);
+
+  // Check the point.
+  EXPECT_FLOAT_EQ(_req.vector3().x(), 1.1);
+  EXPECT_FLOAT_EQ(_req.vector3().y(), 1.2);
+  EXPECT_FLOAT_EQ(_req.vector3().z(), 1.3);
+
+  // Create some dummy Jacobian matrix.
+  for (int i = 0; i < kNumJointsPerModel; ++i)
+  {
+    haptix::comm::msgs::hxVector3 *column = _rep.add_columns();
+    column->set_x(i);
+    column->set_y(i + 0.1);
+    column->set_z(i + 0.2);
+  }
 
   _result = true;
 }
@@ -243,8 +286,487 @@ void onHxsState(const std::string &_service,
     return;
   }
 
-  // Apply the new simulation state.
-  // ToDo.
+  // Verify the request. The model should be the first model in simState and
+  // the link should be the second link of the first model.
+  std::string msg1;
+  _req.model().SerializeToString(&msg1);
+  std::string msg2;
+  simState.models(0).SerializeToString(&msg2);
+  EXPECT_EQ(msg1, msg2);
+
+  // Verify that the joint is the second joint of model #1 in simState.
+  _req.joint().SerializeToString(&msg1);
+  simState.models(0).joints(1).SerializeToString(&msg2);
+  EXPECT_EQ(msg1, msg2);
+
+  _result = true;
+}
+
+//////////////////////////////////////////////////
+/// \brief Provide a "hxs_add_model" service.
+void onHxsAddModel(const std::string &_service,
+  const haptix::comm::msgs::hxParam &_req,
+  haptix::comm::msgs::hxModel &_rep,
+  bool &_result)
+{
+  _rep.Clear();
+  _result = false;
+
+  // Check the name of the service received.
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_add_model");
+
+  // Sanity check: The message should contain a string with the urdf.
+  if (!_req.has_string_value())
+  {
+    std::cerr << "onHxsAddModel() error: Missing urdf in request" << std::endl;
+    return;
+  }
+
+  // Sanity check: The message should contain a position.
+  if (!_req.has_pos())
+  {
+    std::cerr << "onHxsAddModel() error: Missing pos in request" << std::endl;
+    return;
+  }
+
+  // Sanity check: The message should contain an orientation.
+  if (!_req.has_orientation())
+  {
+    std::cerr << "onHxsAddModel() error: Missing orientation in request"
+              << std::endl;
+    return;
+  }
+
+  // Verify the request.
+  EXPECT_EQ(_req.string_value(), "fake URDF");
+  EXPECT_FLOAT_EQ(_req.pos().x(), 1.0);
+  EXPECT_FLOAT_EQ(_req.pos().y(), 2.0);
+  EXPECT_FLOAT_EQ(_req.pos().z(), 3.0);
+  EXPECT_FLOAT_EQ(_req.orientation().roll(), 4.0);
+  EXPECT_FLOAT_EQ(_req.orientation().pitch(), 5.0);
+  EXPECT_FLOAT_EQ(_req.orientation().yaw(), 6.0);
+
+  // Return the first model of simState as an answer.
+  _rep = simState.models(0);
+
+  _result = true;
+}
+
+//////////////////////////////////////////////////
+/// \brief Provide a "hxs_remove_model_id" service.
+void onHxsRemoveModelId(const std::string &_service,
+  const haptix::comm::msgs::hxInt &_req,
+  haptix::comm::msgs::hxEmpty &_rep,
+  bool &_result)
+{
+  _rep.Clear();
+
+  // Check the name of the service received.
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_remove_model_id");
+
+  // Verify the request.
+  EXPECT_EQ(_req.data(), 1);
+
+  _result = true;
+}
+
+//////////////////////////////////////////////////
+/// \brief Provide a "hxs_model_transform" service.
+void onHxsModelTransform(const std::string &_service,
+  const haptix::comm::msgs::hxParam &_req,
+  haptix::comm::msgs::hxEmpty &_rep,
+  bool &_result)
+{
+  _rep.Clear();
+  _result = false;
+
+  // Check the name of the service received.
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_model_transform");
+
+  // Sanity check: The message should contain an ID.
+  if (!_req.id())
+  {
+    std::cerr << "onHxsModelTransform() error: Missing ID in request"
+              << std::endl;
+    return;
+  }
+
+  // Sanity check: The message should contain a transform.
+  if (!_req.has_transform())
+  {
+    std::cerr << "onHxsModelTransform() error: Missing transform in request"
+              << std::endl;
+    return;
+  }
+
+  // Verify the ID.
+  EXPECT_EQ(_req.id(), 1);
+
+  // Verify the transform.
+  std::string msg1, msg2;
+  _req.transform().SerializeToString(&msg1);
+  simState.models(1).transform().SerializeToString(&msg2);
+  EXPECT_EQ(msg1, msg2);
+
+  _result = true;
+}
+
+//////////////////////////////////////////////////
+/// \brief Provide a "hxs_linear_velocity" service.
+void onHxsLinearVelocity(const std::string &_service,
+  const haptix::comm::msgs::hxParam &_req,
+  haptix::comm::msgs::hxEmpty &_rep,
+  bool &_result)
+{
+  _rep.Clear();
+  _result = false;
+
+  // Check the name of the service received.
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_linear_velocity");
+
+  // Sanity check: The message should contain an ID.
+  if (!_req.id())
+  {
+    std::cerr << "onHxsLinearVelocity() error: Missing ID in request"
+              << std::endl;
+    return;
+  }
+
+  // Sanity check: The message should contain a vector3.
+  if (!_req.has_vector3())
+  {
+    std::cerr << "onHxsLinearVelocity() error: Missing linvel in request"
+              << std::endl;
+    return;
+  }
+
+  // Verify the ID.
+  EXPECT_EQ(_req.id(), 1);
+
+  // Verify the linvel.
+  EXPECT_FLOAT_EQ(_req.vector3().x(), 1.0);
+  EXPECT_FLOAT_EQ(_req.vector3().y(), 1.1);
+  EXPECT_FLOAT_EQ(_req.vector3().z(), 1.2);
+
+  _result = true;
+}
+
+//////////////////////////////////////////////////
+/// \brief Provide a "hxs_angular_velocity" service.
+void onHxsAngularVelocity(const std::string &_service,
+  const haptix::comm::msgs::hxParam &_req,
+  haptix::comm::msgs::hxEmpty &_rep,
+  bool &_result)
+{
+  _rep.Clear();
+  _result = false;
+
+  // Check the name of the service received.
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_angular_velocity");
+
+  // Sanity check: The message should contain an ID.
+  if (!_req.id())
+  {
+    std::cerr << "onHxsAngularVelocity() error: Missing ID in request"
+              << std::endl;
+    return;
+  }
+
+  // Sanity check: The message should contain a vector3.
+  if (!_req.has_vector3())
+  {
+    std::cerr << "onHxsAngularVelocity() error: Missing angvel in request"
+              << std::endl;
+    return;
+  }
+
+  // Verify the ID.
+  EXPECT_EQ(_req.id(), 1);
+
+  // Verify the angvel.
+  EXPECT_FLOAT_EQ(_req.vector3().x(), 2.0);
+  EXPECT_FLOAT_EQ(_req.vector3().y(), 2.1);
+  EXPECT_FLOAT_EQ(_req.vector3().z(), 2.2);
+
+  _result = true;
+}
+
+//////////////////////////////////////////////////
+/// \brief Provide a "hxs_linear_accel" service.
+void onHxsLinearAccel(const std::string &_service,
+  const haptix::comm::msgs::hxParam &_req,
+  haptix::comm::msgs::hxEmpty &_rep,
+  bool &_result)
+{
+  _rep.Clear();
+  _result = false;
+
+  // Check the name of the service received.
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_linear_accel");
+
+  // Sanity check: The message should contain an ID.
+  if (!_req.id())
+  {
+    std::cerr << "onHxsLinearAccel() error: Missing ID in request"
+              << std::endl;
+    return;
+  }
+
+  // Sanity check: The message should contain a vector3.
+  if (!_req.has_vector3())
+  {
+    std::cerr << "onHxsLinearAccel() error: Missing linaccel in request"
+              << std::endl;
+    return;
+  }
+
+  // Verify the ID.
+  EXPECT_EQ(_req.id(), 1);
+
+  // Verify the linaccel.
+  EXPECT_FLOAT_EQ(_req.vector3().x(), 3.0);
+  EXPECT_FLOAT_EQ(_req.vector3().y(), 3.1);
+  EXPECT_FLOAT_EQ(_req.vector3().z(), 3.2);
+
+  _result = true;
+}
+
+//////////////////////////////////////////////////
+/// \brief Provide a "hxs_angular_accel" service.
+void onHxsAngularAccel(const std::string &_service,
+  const haptix::comm::msgs::hxParam &_req,
+  haptix::comm::msgs::hxEmpty &_rep,
+  bool &_result)
+{
+  _rep.Clear();
+  _result = false;
+
+  // Check the name of the service received.
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_angular_accel");
+
+  // Sanity check: The message should contain an ID.
+  if (!_req.id())
+  {
+    std::cerr << "onHxsAngularAccel() error: Missing ID in request"
+              << std::endl;
+    return;
+  }
+
+  // Sanity check: The message should contain a vector3.
+  if (!_req.has_vector3())
+  {
+    std::cerr << "onHxsAngularAccel() error: Missing angaccel in request"
+              << std::endl;
+    return;
+  }
+
+  // Verify the ID.
+  EXPECT_EQ(_req.id(), 1);
+
+  // Verify the angaccel.
+  EXPECT_FLOAT_EQ(_req.vector3().x(), 4.0);
+  EXPECT_FLOAT_EQ(_req.vector3().y(), 4.1);
+  EXPECT_FLOAT_EQ(_req.vector3().z(), 4.2);
+
+  _result = true;
+}
+
+//////////////////////////////////////////////////
+/// \brief Provide a "hxs_force" service.
+void onHxsForce(const std::string &_service,
+  const haptix::comm::msgs::hxParam &_req,
+  haptix::comm::msgs::hxEmpty &_rep,
+  bool &_result)
+{
+  _rep.Clear();
+  _result = false;
+
+  // Check the name of the service received.
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_force");
+
+  // Sanity check: The message should contain a link.
+  if (!_req.has_link())
+  {
+    std::cerr << "onHxsForce() error: Missing link in request"
+              << std::endl;
+    return;
+  }
+
+  // Sanity check: The message should contain a vector3.
+  if (!_req.has_vector3())
+  {
+    std::cerr << "onHxsForce() error: Missing force in request"
+              << std::endl;
+    return;
+  }
+
+  // Verify the link received.
+  std::string msg1, msg2;
+  _req.link().SerializeToString(&msg1);
+  simState.models(0).links(0).SerializeToString(&msg2);
+  EXPECT_EQ(msg1, msg2);
+
+  // Verify the force vector received.
+  EXPECT_FLOAT_EQ(_req.vector3().x(), 5.1);
+  EXPECT_FLOAT_EQ(_req.vector3().y(), 5.2);
+  EXPECT_FLOAT_EQ(_req.vector3().z(), 5.3);
+
+  _result = true;
+}
+
+//////////////////////////////////////////////////
+/// \brief Provide a "hxs_torque" service.
+void onHxsTorque(const std::string &_service,
+  const haptix::comm::msgs::hxParam &_req,
+  haptix::comm::msgs::hxEmpty &_rep,
+  bool &_result)
+{
+  _rep.Clear();
+  _result = false;
+
+  // Check the name of the service received.
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_torque");
+
+  // Sanity check: The message should contain a link.
+  if (!_req.has_link())
+  {
+    std::cerr << "onHxsTorque() error: Missing link in request"
+              << std::endl;
+    return;
+  }
+
+  // Sanity check: The message should contain a vector3.
+  if (!_req.has_vector3())
+  {
+    std::cerr << "onHxsTorque() error: Missing torque in request"
+              << std::endl;
+    return;
+  }
+
+  // Verify the link received.
+  std::string msg1, msg2;
+  _req.link().SerializeToString(&msg1);
+  simState.models(0).links(0).SerializeToString(&msg2);
+  EXPECT_EQ(msg1, msg2);
+
+  // Verify the torque vector received.
+  EXPECT_FLOAT_EQ(_req.vector3().x(), 6.1);
+  EXPECT_FLOAT_EQ(_req.vector3().y(), 6.2);
+  EXPECT_FLOAT_EQ(_req.vector3().z(), 6.3);
+
+  _result = true;
+}
+
+//////////////////////////////////////////////////
+/// \brief Provide a "hxs_reset" service.
+void onHxsReset(const std::string &_service,
+  const haptix::comm::msgs::hxInt &_req,
+  haptix::comm::msgs::hxEmpty &_rep,
+  bool &_result)
+{
+  _rep.Clear();
+
+  // Check the name of the service received.
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_reset");
+
+  // Verify the value received.
+  EXPECT_EQ(_req.data(), 1);
+
+  _result = true;
+}
+
+//////////////////////////////////////////////////
+/// \brief Provide a "hxs_reset_timer" service.
+void onHxsResetTimer(const std::string &_service,
+  const haptix::comm::msgs::hxEmpty &/*_req*/,
+  haptix::comm::msgs::hxEmpty &_rep,
+  bool &_result)
+{
+  _rep.Clear();
+
+  // Check the name of the service received.
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_reset_timer");
+
+  _result = true;
+}
+
+//////////////////////////////////////////////////
+/// \brief Provide a "hxs_start_timer" service.
+void onHxsStartTimer(const std::string &_service,
+  const haptix::comm::msgs::hxEmpty &/*_req*/,
+  haptix::comm::msgs::hxEmpty &_rep,
+  bool &_result)
+{
+  _rep.Clear();
+
+  // Check the name of the service received.
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_start_timer");
+
+  _result = true;
+}
+
+//////////////////////////////////////////////////
+/// \brief Provide a "hxs_stop_timer" service.
+void onHxsStopTimer(const std::string &_service,
+  const haptix::comm::msgs::hxEmpty &/*_req*/,
+  haptix::comm::msgs::hxEmpty &_rep,
+  bool &_result)
+{
+  _rep.Clear();
+
+  // Check the name of the service received.
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_stop_timer");
+
+  _result = true;
+}
+
+//////////////////////////////////////////////////
+/// \brief Provide a "hxs_start_logging" service.
+void onHxsStartLogging(const std::string &_service,
+  const haptix::comm::msgs::hxString &_req,
+  haptix::comm::msgs::hxEmpty &_rep,
+  bool &_result)
+{
+  _rep.Clear();
+
+  // Check the name of the service received.
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_start_logging");
+
+  // Check the filename received.
+  EXPECT_EQ(_req.data(), "a filename");
+
+  _result = true;
+}
+
+//////////////////////////////////////////////////
+/// \brief Provide a "hxs_is_logging" service.
+void onHxsIsLogging(const std::string &_service,
+  const haptix::comm::msgs::hxEmpty &/*_req*/,
+  haptix::comm::msgs::hxInt &_rep,
+  bool &_result)
+{
+  _rep.Clear();
+
+  // Check the name of the service received.
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_is_logging");
+
+  // Set the response.
+  _rep.set_data(1);
+
+  _result = true;
+}
+
+//////////////////////////////////////////////////
+/// \brief Provide a "hxs_stop_logging" service.
+void onHxsStopLogging(const std::string &_service,
+  const haptix::comm::msgs::hxEmpty &/*_req*/,
+  haptix::comm::msgs::hxEmpty &_rep,
+  bool &_result)
+{
+  _rep.Clear();
+
+  // Check the name of the service received.
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_stop_logging");
 
   _result = true;
 }
@@ -355,29 +877,19 @@ TEST(hxsTest, hxs_camera_transform)
   setup();
 
   ignition::transport::Node node;
-  hxTransform newTransform;
+  hxSimInfo simInfo;
+
+  // Advertise the "hxs_siminfo" service.
+  node.Advertise("/haptix/gazebo/hxs_siminfo", onHxsSimInfo);
+
+  // Request simulation information.
+  ASSERT_EQ(hxs_siminfo(&simInfo), hxOK);
 
   // Advertise the "hxs_camera_transform" service.
   node.Advertise("/haptix/gazebo/hxs_camera_transform", onHxsCameraTransform);
 
-  // Set a camera transformation.
-  newTransform.pos.x = 40.0;
-  newTransform.pos.y = 40.1;
-  newTransform.pos.z = 40.2;
-  newTransform.orient.w = 40.3;
-  newTransform.orient.x = 40.4;
-  newTransform.orient.y = 40.5;
-  newTransform.orient.z = 40.6;
-  ASSERT_EQ(hxs_camera_transform(newTransform), hxOK);
-
-  // Verify that the camera transformation has been applied.
-  EXPECT_FLOAT_EQ(simState.camera().transform().pos().x(), 40.0);
-  EXPECT_FLOAT_EQ(simState.camera().transform().pos().y(), 40.1);
-  EXPECT_FLOAT_EQ(simState.camera().transform().pos().z(), 40.2);
-  EXPECT_FLOAT_EQ(simState.camera().transform().orient().w(), 40.3);
-  EXPECT_FLOAT_EQ(simState.camera().transform().orient().x(), 40.4);
-  EXPECT_FLOAT_EQ(simState.camera().transform().orient().y(), 40.5);
-  EXPECT_FLOAT_EQ(simState.camera().transform().orient().z(), 40.6);
+  // Set a camera transformation similar to the camera in simState.
+  ASSERT_EQ(hxs_camera_transform(simInfo.camera.transform), hxOK);
 }
 
 //////////////////////////////////////////////////
@@ -423,121 +935,426 @@ TEST(hxsTest, hxs_contacts)
 }
 
 //////////////////////////////////////////////////
+/// \brief Check hxs_jacobian.
+TEST(hxsTest, hxs_jacobian)
+{
+  setup();
+
+  ignition::transport::Node node;
+  hxVector3 point;
+  hxJacobian jacobian;
+  hxSimInfo simInfo;
+
+  // Advertise the "hxs_siminfo" service.
+  node.Advertise("/haptix/gazebo/hxs_siminfo", onHxsSimInfo);
+
+  // Advertise the "hxs_jacobian" service.
+  node.Advertise("/haptix/gazebo/hxs_jacobian", onHxsJacobian);
+
+  // Request simulation information.
+  ASSERT_EQ(hxs_siminfo(&simInfo), hxOK);
+
+  // Create a random point.
+  point.x = 1.1;
+  point.y = 1.2;
+  point.z = 1.3;
+
+  // Use the first link of the first model as an example.
+  ASSERT_EQ(hxs_jacobian(&simInfo.models[0].links[0], &point, &jacobian), hxOK);
+
+  // Check the Jacobian matrix.
+  EXPECT_EQ(jacobian.jointCount, kNumJointsPerModel);
+  for (int i = 0; i < jacobian.jointCount; ++i)
+  {
+    EXPECT_FLOAT_EQ(jacobian.mat[0][i], i);
+    EXPECT_FLOAT_EQ(jacobian.mat[1][i], i + 0.1);
+    EXPECT_FLOAT_EQ(jacobian.mat[2][i], i + 0.2);
+  }
+}
+
+//////////////////////////////////////////////////
 /// \brief Check hxs_state.
 TEST(hxsTest, hxs_state)
 {
   setup();
 
   ignition::transport::Node node;
-  hxModel model;
-  hxJoint joint;
+  hxSimInfo simInfo;
 
-  // Advertise the "hxs_camera_state" service.
+  // Advertise the "hxs_siminfo" service.
+  node.Advertise("/haptix/gazebo/hxs_siminfo", onHxsSimInfo);
+
+  // Advertise the "hxs_state" service.
   node.Advertise("/haptix/gazebo/hxs_state", onHxsState);
 
-  // Set a new state.
-  // ToDo.
-  ASSERT_EQ(hxs_state(&model, &joint), hxOK);
+  // Request simulation information.
+  ASSERT_EQ(hxs_siminfo(&simInfo), hxOK);
 
-  // Verify that the new state has been set.
-  // ToDo.
+  // I'll use the first model stored in simState and the second joint.
+  EXPECT_EQ(hxs_state(&simInfo.models[0], &simInfo.models[0].joints[1]), hxOK);
 }
 
 //////////////////////////////////////////////////
-/// \brief Check that we can use the C-wrapper.
-/*TEST(CommTest, BasicUsage)
+/// \brief Check hxs_add_model.
+TEST(hxsTest, hxs_add_model)
 {
+  setup();
+
+  ignition::transport::Node node;
+  std::string urdf = "fake URDF";
+  hxModel model;
+  float x = 1.0;
+  float y = 2.0;
+  float z = 3.0;
+  float roll = 4.0;
+  float pitch = 5.0;
+  float yaw = 6.0;
+
+  // Advertise the "hxs_add_model" service.
+  node.Advertise("/haptix/gazebo/hxs_add_model", onHxsAddModel);
+
+  // Create new model.
+  ASSERT_EQ(hxs_add_model(urdf.c_str(), x, y, z, roll, pitch, yaw, &model),
+    hxOK);
+
+  // Verify that the new model matches the first model in simState.
+  EXPECT_FLOAT_EQ(model.transform.pos.x, 0);
+  EXPECT_FLOAT_EQ(model.transform.pos.y, 0.1);
+  EXPECT_FLOAT_EQ(model.transform.pos.z, 0.2);
+  EXPECT_FLOAT_EQ(model.transform.orient.w, 0.3);
+  EXPECT_FLOAT_EQ(model.transform.orient.x, 0.4);
+  EXPECT_FLOAT_EQ(model.transform.orient.y, 0.5);
+  EXPECT_FLOAT_EQ(model.transform.orient.z, 0.6);
+  EXPECT_FLOAT_EQ(model.is_static, 1);
+  EXPECT_FLOAT_EQ(model.id, 0);
+  ASSERT_EQ(model.link_count, kNumLinksPerModel);
+  for (int i = 0; i < model.link_count; ++i)
+  {
+    float v = i;
+    EXPECT_FLOAT_EQ(model.links[i].transform.pos.x, v);
+    EXPECT_FLOAT_EQ(model.links[i].transform.pos.y, v + 0.1);
+    EXPECT_FLOAT_EQ(model.links[i].transform.pos.z, v + 0.2);
+    EXPECT_FLOAT_EQ(model.links[i].transform.orient.w, v + 0.3);
+    EXPECT_FLOAT_EQ(model.links[i].transform.orient.x, v + 0.4);
+    EXPECT_FLOAT_EQ(model.links[i].transform.orient.y, v + 0.5);
+    EXPECT_FLOAT_EQ(model.links[i].transform.orient.z, v + 0.6);
+    EXPECT_FLOAT_EQ(model.links[i].linvel.x, v + 0.7);
+    EXPECT_FLOAT_EQ(model.links[i].linvel.y, v + 0.8);
+    EXPECT_FLOAT_EQ(model.links[i].linvel.z, v + 0.9);
+    EXPECT_FLOAT_EQ(model.links[i].angvel.x, v + 1);
+    EXPECT_FLOAT_EQ(model.links[i].angvel.y, v + 1.1);
+    EXPECT_FLOAT_EQ(model.links[i].angvel.z, v + 1.2);
+    EXPECT_FLOAT_EQ(model.links[i].linacc.x, v + 1.3);
+    EXPECT_FLOAT_EQ(model.links[i].linacc.y, v + 1.4);
+    EXPECT_FLOAT_EQ(model.links[i].linacc.z, v + 1.5);
+    EXPECT_FLOAT_EQ(model.links[i].angacc.x, v + 1.6);
+    EXPECT_FLOAT_EQ(model.links[i].angacc.y, v + 1.7);
+    EXPECT_FLOAT_EQ(model.links[i].angacc.z, v + 1.8);
+  }
+  ASSERT_EQ(model.joint_count, kNumJointsPerModel);
+  for (int i = 0; i < model.joint_count; ++i)
+  {
+    float v = i;
+    EXPECT_FLOAT_EQ(model.joints[i].pos, v);
+    EXPECT_FLOAT_EQ(model.joints[i].vel, v + 0.1);
+    EXPECT_FLOAT_EQ(model.joints[i].acc, v + 0.2);
+    EXPECT_FLOAT_EQ(model.joints[i].torque_motor, v + 0.3);
+    EXPECT_FLOAT_EQ(model.joints[i].torque_passive, v + 0.4);
+  }
+}
+
+//////////////////////////////////////////////////
+/// \brief Check hxs_remove_model_id.
+TEST(hxsTest, hxs_remove_model_id)
+{
+  setup();
+
+  ignition::transport::Node node;
+  int id = 1;
+
+  // Advertise the "hxs_remove_model_id" service.
+  node.Advertise("/haptix/gazebo/hxs_remove_model_id", onHxsRemoveModelId);
+
+  // Remove a model with ID = 1.
+  ASSERT_EQ(hxs_remove_model_id(id), hxOK);
+}
+
+//////////////////////////////////////////////////
+/// \brief Check hxs_remove_model.
+TEST(hxsTest, hxs_remove_model)
+{
+  setup();
+
+  ignition::transport::Node node;
+  hxSimInfo simInfo;
+
+  // Advertise the "hxs_siminfo" service.
+  node.Advertise("/haptix/gazebo/hxs_siminfo", onHxsSimInfo);
+
+  // Advertise the "hxs_remove_model_id" service. Note that hxs_remove_model()
+  // uses internally hxs_remove_model_id(). We need to enable this service.
+  node.Advertise("/haptix/gazebo/hxs_remove_model_id", onHxsRemoveModelId);
+
+  // Request simulation information.
+  ASSERT_EQ(hxs_siminfo(&simInfo), hxOK);
+
+  // Get the second model of simInfo and remove it.
+  ASSERT_EQ(hxs_remove_model(&simInfo.models[1]), hxOK);
+}
+
+//////////////////////////////////////////////////
+/// \brief Check hxs_model_transform.
+TEST(hxsTest, hxs_model_transform)
+{
+  setup();
+
+  ignition::transport::Node node;
+  hxSimInfo simInfo;
+  int id = 1;
+
+  // Advertise the "hxs_siminfo" service.
+  node.Advertise("/haptix/gazebo/hxs_siminfo", onHxsSimInfo);
+
+  // Advertise the "hxs_model_transform" service.
+  node.Advertise("/haptix/gazebo/hxs_model_transform", onHxsModelTransform);
+
+  // Request simulation information.
+  ASSERT_EQ(hxs_siminfo(&simInfo), hxOK);
+
+  // Let's use the transform from the second model.
+  ASSERT_EQ(hxs_model_transform(id, simInfo.models[1].transform), hxOK);
+}
+
+//////////////////////////////////////////////////
+/// \brief Check hxs_linear_velocity.
+TEST(hxsTest, hxs_linear_velocity)
+{
+  setup();
+
+  ignition::transport::Node node;
+  hxVector3 linvel;
+  int id = 1;
+
+  // Advertise the "hxs_linear_velocity" service.
+  node.Advertise("/haptix/gazebo/hxs_linear_velocity", onHxsLinearVelocity);
+
+  linvel.x = 1.0;
+  linvel.y = 1.1;
+  linvel.z = 1.2;
+
+  ASSERT_EQ(hxs_linear_velocity(id, linvel), hxOK);
+}
+
+//////////////////////////////////////////////////
+/// \brief Check hxs_angular_velocity.
+TEST(hxsTest, hxs_angular_velocity)
+{
+  setup();
+
+  ignition::transport::Node node;
+  hxVector3 angvel;
+  int id = 1;
+
+  // Advertise the "hxs_angular_velocity" service.
+  node.Advertise("/haptix/gazebo/hxs_angular_velocity", onHxsAngularVelocity);
+
+  angvel.x = 2.0;
+  angvel.y = 2.1;
+  angvel.z = 2.2;
+
+  ASSERT_EQ(hxs_angular_velocity(id, angvel), hxOK);
+}
+
+//////////////////////////////////////////////////
+/// \brief Check hxs_linear_accel.
+TEST(hxsTest, hxs_linear_accel)
+{
+  setup();
+
+  ignition::transport::Node node;
+  hxVector3 linaccel;
+  int id = 1;
+
+  // Advertise the "hxs_linear_accel" service.
+  node.Advertise("/haptix/gazebo/hxs_linear_accel", onHxsLinearAccel);
+
+  linaccel.x = 3.0;
+  linaccel.y = 3.1;
+  linaccel.z = 3.2;
+
+  ASSERT_EQ(hxs_linear_accel(id, linaccel), hxOK);
+}
+
+//////////////////////////////////////////////////
+/// \brief Check hxs_angular_accel.
+TEST(hxsTest, hxs_angular_accel)
+{
+  setup();
+
+  ignition::transport::Node node;
+  hxVector3 angaccel;
+  int id = 1;
+
+  // Advertise the "hxs_angular_accel" service.
+  node.Advertise("/haptix/gazebo/hxs_angular_accel", onHxsAngularAccel);
+
+  angaccel.x = 4.0;
+  angaccel.y = 4.1;
+  angaccel.z = 4.2;
+
+  ASSERT_EQ(hxs_angular_accel(id, angaccel), hxOK);
+}
+
+//////////////////////////////////////////////////
+/// \brief Check hxs_force.
+TEST(hxsTest, hxs_force)
+{
+  setup();
+
+  ignition::transport::Node node;
+  hxVector3 force;
+  hxSimInfo simInfo;
+
+  // Advertise the "hxs_siminfo" service.
+  node.Advertise("/haptix/gazebo/hxs_siminfo", onHxsSimInfo);
+
+  // Advertise the "hxs_force" service.
+  node.Advertise("/haptix/gazebo/hxs_force", onHxsForce);
+
+  // Set some force.
+  force.x = 5.1;
+  force.y = 5.2;
+  force.z = 5.3;
+
+  // Use the first link of the first model in simState.
+  ASSERT_EQ(hxs_force(&simInfo.models[0].links[0], force), hxOK);
+}
+
+//////////////////////////////////////////////////
+/// \brief Check hxs_torque.
+TEST(hxsTest, hxs_torque)
+{
+  setup();
+
+  ignition::transport::Node node;
+  hxVector3 torque;
+  hxSimInfo simInfo;
+
+  // Advertise the "hxs_siminfo" service.
+  node.Advertise("/haptix/gazebo/hxs_siminfo", onHxsSimInfo);
+
+  // Advertise the "hxs_torque" service.
+  node.Advertise("/haptix/gazebo/hxs_torque", onHxsTorque);
+
+  // Set some force.
+  torque.x = 6.1;
+  torque.y = 6.2;
+  torque.z = 6.3;
+
+  // Use the first link of the first model in simState.
+  ASSERT_EQ(hxs_torque(&simInfo.models[0].links[0], torque), hxOK);
+}
+
+//////////////////////////////////////////////////
+/// \brief Check hxs_reset.
+TEST(hxsTest, hxs_reset)
+{
+  setup();
+
+  ignition::transport::Node node;
+  int resetLimbPose = 1;
+
+  // Advertise the "hxs_reset" service.
+  node.Advertise("/haptix/gazebo/hxs_reset", onHxsReset);
+
+  ASSERT_EQ(hxs_reset(resetLimbPose), hxOK);
+}
+
+//////////////////////////////////////////////////
+/// \brief Check hxs_reset_timer.
+TEST(hxsTest, hxs_reset_timer)
+{
+  setup();
+
   ignition::transport::Node node;
 
-  // Advertise the "getdeviceinfo" service.
-  node.Advertise(RobotInfoTopic, onGetRobotInfo);
+  // Advertise the "hxs_reset_timer" service.
+  node.Advertise("/haptix/gazebo/hxs_reset_timer", onHxsResetTimer);
 
-  // Advertise the "update" service.
-  node.Advertise(UpdateTopic, onUpdate);
+  ASSERT_EQ(hxs_reset_timer(), hxOK);
+}
 
-  // Advertise the "read" service.
-  node.Advertise(ReadTopic, onRead);
+//////////////////////////////////////////////////
+/// \brief Check hxs_start_timer.
+TEST(hxsTest, hxs_start_timer)
+{
+  setup();
 
-  EXPECT_EQ(hx_connect(NULL, 0), hxOK);
+  ignition::transport::Node node;
 
-  hxRobotInfo robotInfo;
-  ASSERT_EQ(hx_robot_info(&robotInfo), hxOK);
+  // Advertise the "hxs_start_timer" service.
+  node.Advertise("/haptix/gazebo/hxs_start_timer", onHxsStartTimer);
 
-  ASSERT_EQ(robotInfo.motor_count, NumMotors);
-  ASSERT_EQ(robotInfo.joint_count, NumJoints);
-  ASSERT_EQ(robotInfo.contact_sensor_count, NumContactSensors);
-  ASSERT_EQ(robotInfo.imu_count, NumIMUs);
+  ASSERT_EQ(hxs_start_timer(), hxOK);
+}
 
-  hxCommand cmd;
-  hxSensor sensor;
+//////////////////////////////////////////////////
+/// \brief Check hxs_stop_timer.
+TEST(hxsTest, hxs_stop_timer)
+{
+  setup();
 
-  // Fill the joint command.
-  for (int i = 0; i < robotInfo.motor_count; ++i)
-  {
-    cmd.ref_pos[i] = i;
-    cmd.ref_vel_max[i] = i + 1;
-    cmd.gain_pos[i] = i + 2;
-    cmd.gain_vel[i] = i + 3;
-  }
+  ignition::transport::Node node;
 
-  EXPECT_EQ(hx_update(&cmd, &sensor), hxOK);
+  // Advertise the "hxs_stop_timer" service.
+  node.Advertise("/haptix/gazebo/hxs_stop_timer", onHxsStopTimer);
 
-  // Check the response.
-  for (int i = 0; i < robotInfo.motor_count; ++i)
-  {
-    EXPECT_FLOAT_EQ(sensor.motor_pos[i], i);
-    EXPECT_FLOAT_EQ(sensor.motor_vel[i], i + 1);
-    EXPECT_FLOAT_EQ(sensor.motor_torque[i], i + 2);
-  }
+  ASSERT_EQ(hxs_stop_timer(), hxOK);
+}
 
-  for (int i = 0; i < robotInfo.joint_count; ++i)
-  {
-    EXPECT_FLOAT_EQ(sensor.joint_pos[i], i);
-    EXPECT_FLOAT_EQ(sensor.joint_vel[i], i + 1);
-  }
+//////////////////////////////////////////////////
+/// \brief Check hxs_start_logging.
+TEST(hxsTest, hxs_start_logging)
+{
+  setup();
 
-  for (int i = 0; i < robotInfo.contact_sensor_count; ++i)
-    EXPECT_FLOAT_EQ(sensor.contact[i], i);
+  ignition::transport::Node node;
+  std::string filename = "a filename";
 
-  for (int i = 0; i < robotInfo.imu_count; ++i)
-  {
-    EXPECT_FLOAT_EQ(sensor.imu_linear_acc[i][0], i);
-    EXPECT_FLOAT_EQ(sensor.imu_linear_acc[i][1], i + 1);
-    EXPECT_FLOAT_EQ(sensor.imu_linear_acc[i][2], i + 2);
-    EXPECT_FLOAT_EQ(sensor.imu_angular_vel[i][0], i + 3);
-    EXPECT_FLOAT_EQ(sensor.imu_angular_vel[i][1], i + 4);
-    EXPECT_FLOAT_EQ(sensor.imu_angular_vel[i][2], i + 5);
-  }
+  // Advertise the "hxs_start_logging" service.
+  node.Advertise("/haptix/gazebo/hxs_start_logging", onHxsStartLogging);
 
-  // Test hx_read_sensors.
-  EXPECT_EQ(hx_read_sensors(&sensor), hxOK);
+  ASSERT_EQ(hxs_start_logging(filename.c_str()), hxOK);
+}
 
-  // Check the response.
-  for (int i = 0; i < robotInfo.motor_count; ++i)
-  {
-    EXPECT_FLOAT_EQ(sensor.motor_pos[i], i);
-    EXPECT_FLOAT_EQ(sensor.motor_vel[i], i + 1);
-    EXPECT_FLOAT_EQ(sensor.motor_torque[i], i + 2);
-  }
+//////////////////////////////////////////////////
+/// \brief Check hxs_is_logging.
+TEST(hxsTest, hxs_is_logging)
+{
+  setup();
 
-  for (int i = 0; i < robotInfo.joint_count; ++i)
-  {
-    EXPECT_FLOAT_EQ(sensor.joint_pos[i], i);
-    EXPECT_FLOAT_EQ(sensor.joint_vel[i], i + 1);
-  }
+  ignition::transport::Node node;
+  int isLogging;
 
-  for (int i = 0; i < robotInfo.contact_sensor_count; ++i)
-    EXPECT_FLOAT_EQ(sensor.contact[i], i);
+  // Advertise the "hxs_is_logging" service.
+  node.Advertise("/haptix/gazebo/hxs_is_logging", onHxsIsLogging);
 
-  for (int i = 0; i < robotInfo.imu_count; ++i)
-  {
-    EXPECT_FLOAT_EQ(sensor.imu_linear_acc[i][0], i);
-    EXPECT_FLOAT_EQ(sensor.imu_linear_acc[i][1], i + 1);
-    EXPECT_FLOAT_EQ(sensor.imu_linear_acc[i][2], i + 2);
-    EXPECT_FLOAT_EQ(sensor.imu_angular_vel[i][0], i + 3);
-    EXPECT_FLOAT_EQ(sensor.imu_angular_vel[i][1], i + 4);
-    EXPECT_FLOAT_EQ(sensor.imu_angular_vel[i][2], i + 5);
-  }
+  ASSERT_EQ(hxs_is_logging(&isLogging), hxOK);
 
-  EXPECT_EQ(hx_close(), hxOK);
-}*/
+  // Verify the result.
+  EXPECT_EQ(isLogging, 1);
+}
+
+//////////////////////////////////////////////////
+/// \brief Check hxs_stop_logging.
+TEST(hxsTest, hxs_stop_logging)
+{
+  setup();
+
+  ignition::transport::Node node;
+
+  // Advertise the "hxs_stop_logging" service.
+  node.Advertise("/haptix/gazebo/hxs_stop_logging", onHxsStopLogging);
+
+  ASSERT_EQ(hxs_stop_logging(), hxOK);
+}
