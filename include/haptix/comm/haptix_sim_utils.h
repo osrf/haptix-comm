@@ -291,42 +291,6 @@ static void hxs_convertContact(const haptix::comm::msgs::hxContact_V _in,
 }
 
 //////////////////////////////////////////////////
-/// \brief Private function that converts a C struct hxContact to a
-/// protobuf hxContact message.
-/*static void hxs_convertContact(const hxContact *_in,
-  haptix::comm::msgs::hxContact *_out)
-{
-  // Initialize the message.
-  _out->Clear();
-
-  for (int i = 0; i < _in->contactCount; ++i)
-  {
-    _out->add_body1(_in->body1[i]);
-    _out->add_body2(_in->body2[i]);
-
-    haptix::comm::msgs::hxVector3 *point = _out->add_point();
-    hxs_convertVector3(&(_in->point[i]), point);
-
-    haptix::comm::msgs::hxVector3 *normal = _out->add_normal();
-    hxs_convertVector3(&(_in->normal[i]), normal);
-
-    haptix::comm::msgs::hxVector3 *tangent1 = _out->add_tangent1();
-    hxs_convertVector3(&(_in->tangent1[i]), tangent1);
-
-    haptix::comm::msgs::hxVector3 *tangent2 = _out->add_tangent2();
-    hxs_convertVector3(&(_in->tangent2[i]), tangent2);
-
-    _out->add_distance(_in->distance[i]);
-
-    haptix::comm::msgs::hxVector3 *velocity = _out->add_velocity();
-    hxs_convertVector3(&(_in->velocity[i]), velocity);
-
-    haptix::comm::msgs::hxVector3 *force = _out->add_force();
-    hxs_convertVector3(&(_in->force[i]), force);
-  }
-}*/
-
-//////////////////////////////////////////////////
 /// \brief Private function that converts a protobuf hxCamera message to a
 /// C struct hxCamera.
 static void hxs_convertCamera(const haptix::comm::msgs::hxCamera _in,
@@ -337,18 +301,6 @@ static void hxs_convertCamera(const haptix::comm::msgs::hxCamera _in,
 
   hxs_convertTransform(_in.transform(), &(_out->transform));
 }
-
-//////////////////////////////////////////////////
-/// \brief Private function that converts a  C struct hxCamera to a
-/// protobuf hxCamera message.
-/*static void hxs_convertCamera(const hxCamera *_in,
-  haptix::comm::msgs::hxCamera *_out)
-{
-  // Initialize the protobuf message.
-  _out->Clear();
-
-  hxs_convertTransform(&(_in->transform), _out->mutable_transform());
-}*/
 
 //////////////////////////////////////////////////
 /// \brief Private function that converts a protobuf hxJacobian message to a
@@ -388,26 +340,6 @@ static void hxs_convertSimInfo(const haptix::comm::msgs::hxSimInfo _in,
   // Fill the camera.
   hxs_convertCamera(_in.camera(), &(_out->camera));
 }
-
-//////////////////////////////////////////////////
-/// \brief Private function that converts a C struct hxSimInfo to a
-/// protobuf hxSimInfo message.
-/*static void hxs_convertSimInfo(const hxSimInfo *_in,
-  haptix::comm::msgs::hxSimInfo *_out)
-{
-  // Initialize the protobuf message.
-  _out->Clear();
-
-  // Create the models.
-  for (int i = 0; i < _in->modelCount; ++i)
-  {
-    haptix::comm::msgs::hxModel *model = _out->add_models();
-    hxs_convertModel(&(_in->models[i]), model);
-  }
-
-  // Fill the camera.
-  hxs_convertCamera(&(_in->camera), _out->mutable_camera());
-}*/
 
 //////////////////////////////////////////////////
 /// \brief .
