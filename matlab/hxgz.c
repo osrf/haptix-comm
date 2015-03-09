@@ -27,7 +27,7 @@ mexFunction (int nlhs, mxArray *plhs[],
   if (!g_info_valid)
   {
     if (hx_robot_info(&g_info) != hxOK)
-      mexErrMsgIdAndTxt("hxgz", "Failed to get robot info");
+      mexErrMsgIdAndTxt("HAPTIX:hxgz", "Failed to get robot info");
     if (g_info.motor_count > hxMAXMOTOR)
       g_info.motor_count = hxMAXMOTOR;
     if (g_info.joint_count > hxMAXJOINT)
@@ -41,9 +41,9 @@ mexFunction (int nlhs, mxArray *plhs[],
 
   char funcName[128];
   if (nrhs < 1)
-    mexErrMsgIdAndTxt("hxgz", "Expects >= 1 argument");
+    mexErrMsgIdAndTxt("HAPTIX:hxgz", "Expects >= 1 argument");
   if (mxGetString(prhs[0], funcName, sizeof(funcName)))
-    mexErrMsgIdAndTxt("hxgz", "Failed to determine function name");
+    mexErrMsgIdAndTxt("HAPTIX:hxgz", "Failed to determine function name");
   if (!strcmp(funcName, "connect"))
     hxgz_connect(nlhs, plhs, nrhs-1, prhs+1);
   else if (!strcmp(funcName, "robot_info"))
@@ -55,7 +55,7 @@ mexFunction (int nlhs, mxArray *plhs[],
   else if (!strcmp(funcName, "close"))
     hxgz_close(nlhs, plhs, nrhs-1, prhs+1);
   else
-    mexErrMsgIdAndTxt("hxgz", "Unknown command");
+    mexErrMsgIdAndTxt("HAPTIX:hxgz", "Unknown command");
 }
 
 void
@@ -70,7 +70,7 @@ hxgz_close (int nlhs, mxArray *plhs[],
             int nrhs, const mxArray *prhs[])
 {
   if (hx_close() != hxOK)
-    mexErrMsgIdAndTxt("hx_close", hx_last_result());
+    mexErrMsgIdAndTxt("HAPTIX:hx_close", hx_last_result());
 }
 
 void
@@ -81,7 +81,7 @@ hxgz_read_sensors (int nlhs, mxArray *plhs[],
 
   // Request robot information.
   if (hx_read_sensors(&sensor) != hxOK)
-    mexErrMsgIdAndTxt("hx_read_sensors", hx_last_result());
+    mexErrMsgIdAndTxt("HAPTIX:hx_read_sensors", hx_last_result());
 
   mxArray* s = sensor_to_matlab(&sensor);
 
@@ -98,7 +98,7 @@ hxgz_robot_info (int nlhs, mxArray *plhs[],
 
   // Request robot information.
   if (hx_robot_info(&robotInfo) != hxOK)
-    mexErrMsgIdAndTxt("hx_robot_info", hx_last_result());
+    mexErrMsgIdAndTxt("HAPTIX:hx_robot_info", hx_last_result());
 
   // Create a Matlab structure array.
   const char *keys[] = {"motor_count",
@@ -185,13 +185,13 @@ hxgz_update (int nlhs, mxArray *plhs[],
 
   // Sanity check: Verify that the first input argument is a struct.
   if (nrhs != 1 || !mxIsStruct(prhs[0]))
-    mexErrMsgIdAndTxt("hx_update", "Expects struct");
+    mexErrMsgIdAndTxt("HAPTIX:hx_update", "Expects struct");
 
   // Sanity check: Verify that the struct has fields:
   // ref_pos, ref_vel_max, gain_pos and gain_vel, plus the
   // *_enabled flag for each one.
   if (mxGetNumberOfFields(prhs[0]) != 8)
-    mexErrMsgIdAndTxt("hx_update", "Expects 8 fields");
+    mexErrMsgIdAndTxt("HAPTIX:hx_update", "Expects 8 fields");
 
   // Set the hxCommand struct.
   v = mxGetField(prhs[0], 0, "ref_pos");
@@ -236,7 +236,7 @@ hxgz_update (int nlhs, mxArray *plhs[],
 
   // Request robot information.
   if (hx_update(&cmd, &sensor) != hxOK)
-    mexErrMsgIdAndTxt("hx_update", hx_last_result());
+    mexErrMsgIdAndTxt("HAPTIX:hx_update", hx_last_result());
 
   mxArray* s = sensor_to_matlab(&sensor);
 
