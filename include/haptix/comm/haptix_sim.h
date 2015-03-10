@@ -31,7 +31,7 @@ extern "C" {
 // ---------- constants ----------
 
 /// \brief Maximum number of contacts.
-#define hxMAXCONTACT 100
+#define hxMAXCONTACT 200
 
 /// \brief Maximum number of links per model.
 #define hxMAXLINKS 50
@@ -87,6 +87,9 @@ typedef struct _hxTransform hxTransform;
 /// \brief information about a joint. A joint is a component of a model.
 struct _hxJoint
 {
+  /// \brief Joint name.
+  char *name;
+
   /// \brief Position (radians)
   float pos;
 
@@ -110,6 +113,9 @@ typedef struct _hxJoint hxJoint;
 /// \brief Information about a link. A link is a component of a model
 struct _hxLink
 {
+  /// \brief Link name.
+  char *name;
+
   /// \brief The position and orientation of the link, relative to the
   /// model. Position is in meters.
   hxTransform transform;
@@ -133,6 +139,9 @@ typedef struct _hxLink hxLink;
 /// \brief Information about a model
 struct _hxModel
 {
+  /// \brief Model name.
+  char *name;
+
   /// \brief The position and orientation of the model, relative to the
   /// global coordiate frame.
   hxTransform transform;
@@ -164,49 +173,60 @@ struct _hxModel
 /// \brief Information about simulated models.
 typedef struct _hxModel hxModel;
 
-/// \brief Information about contacts
-struct _hxContact
+/// \brief Information about a contact point.
+struct _hxContactPoint
 {
-  /// \brief Number of currently active contacts
-  int contactCount;
+  /// \brief contact descriptor for contacting body 1.
+  int body1;
 
-  /// \brief contact descriptor for contacting body 1
-  int body1[hxMAXCONTACT];
-
-  /// \brief contact descriptor for contacting body 2
-  int body2[hxMAXCONTACT];
+  /// \brief contact descriptor for contacting body 2.
+  int body2;
 
   /// \brief Description of contact frame relative to global frame:
-  /// origin of frame
-  hxVector3 point[hxMAXCONTACT];
+  /// origin of frame.
+  hxVector3 point;
 
   /// \brief Description of contact frame relative to global frame:
-  /// normal direction (unit vector)
-  hxVector3 normal[hxMAXCONTACT];
+  /// normal direction (unit vector).
+  hxVector3 normal;
 
   /// \brief Description of contact frame relative to global frame:
-  /// first tangent direction (unit vector)
-  hxVector3 tangent1[hxMAXCONTACT];
+  /// first tangent direction (unit vector).
+  hxVector3 tangent1;
 
   /// \brief Description of contact frame relative to global frame:
-  /// second tangent direction (unit vector)
-  hxVector3 tangent2[hxMAXCONTACT];
+  /// second tangent direction (unit vector).
+  hxVector3 tangent2;
 
   /// \brief Normal distance (penetration depth) in contact frame (m).
-  float distance[hxMAXCONTACT];
+  float distance;
 
   /// \brief Relative velocity in contact frame (m/s),
-  /// with axis order (normal, tangent1, tangent2)
-  hxVector3 velocity[hxMAXCONTACT];
+  /// with axis order (normal, tangent1, tangent2).
+  hxVector3 velocity;
 
   /// \brief Contact force in contact frame (N),
-  /// with axis order (normal, tangent1, tangent2)
-  hxVector3 force[hxMAXCONTACT];
+  /// with axis order (normal, tangent1, tangent2).
+  hxVector3 force;
+};
+
+/// \def hxContact
+/// \brief Information about a contact point.
+typedef struct _hxContactPoint hxContactPoint;
+
+/// \brief Information about contacts.
+struct _hxContacts
+{
+  /// \brief Number of currently active contacts.
+  int contactCount;
+
+  /// \brief Description of contacts.
+  hxContactPoint contacts[hxMAXCONTACT];
 };
 
 /// \def hxContact
 /// \brief Information about contacts.
-typedef struct _hxContact hxContact;
+typedef _hxContacts hxContacts;
 
 /// \brief Information about the simulation camera. This is the camera
 /// that generates the user's view.
@@ -270,12 +290,12 @@ hxResult hxs_camera(hxCamera *_camera);
 /// \brief Set camera transform.
 /// \param[in] _transform New camera transform
 /// \return 'hxOK' if the function succeed or an error code otherwise.
-hxResult hxs_camera_transform(hxTransform _transform);
+hxResult hxs_camera_transform(const hxTransform *_transform);
 
 /// \brief Get information about active contacts.
 /// \param[out] _contact The latest contact information.
 /// \return 'hxOK' if the function succeed or an error code otherwise.
-hxResult hxs_contacts(hxContact *_contact);
+hxResult hxs_contacts(hxContacts *_contact);
 
 /// \brief Get Jacobian of global point attached to robot link
 /// (index between 1 and njoint-1) size of Jacobian matrix is
@@ -299,6 +319,7 @@ hxResult hxs_state(const hxModel *_model, const hxJoint *_joint);
 
 /// \brief Add model during runtime.
 /// \param[in] _urdf URDF xml description of the model.
+/// \param[in] _name Model name.
 /// \param[in] _x X position in global frame (m)
 /// \param[in] _y Y position in global frame (m)
 /// \param[in] _z Z position in global frame (m)
@@ -307,60 +328,56 @@ hxResult hxs_state(const hxModel *_model, const hxJoint *_joint);
 /// \param[in] _yaw Yaw in global frame (radians)
 /// \param[out] _model Pointer to the new model.
 /// \return 'hxOK' if the function succeed or an error code otherwise.
-hxResult hxs_add_model(const char *_urdf, float _x, float _y, float _z,
-                       float _roll, float _pitch, float _yaw, hxModel *_model);
+hxResult hxs_add_model(const char *_urdf, const char *_name,
+  float _x, float _y, float _z, float _roll, float _pitch, float _yaw,
+  hxModel *_model);
 
 /// \brief Remove model.
 /// \param[in] _id Id of the model.
 /// \return 'hxOK' if the function succeed or an error code otherwise.
 hxResult hxs_remove_model_id(int _id);
 
-/// \brief Remove model.
-/// \param[in] _model Pointer to the model.
-/// \return 'hxOK' if the function succeed or an error code otherwise.
-hxResult hxs_remove_model(const hxModel *_model);
-
 /// \brief Set model pose.
 /// \param[in] _id Id of the model.
 /// \param[in] _transform New model transform
 /// \return 'hxOK' if the function succeed or an error code otherwise.
-hxResult hxs_model_transform(int _id, hxTransform _transform);
+hxResult hxs_model_transform(int _id, const hxTransform *_transform);
 
 /// \brief Set the linear velocity of a model.
 /// \param[in] _id Id of the model.
 /// \param[in] _velocity Velocity (m/s)
 /// \return 'hxOK' if the function succeed or an error code otherwise.
-hxResult hxs_linear_velocity(int _id, hxVector3 _velocity);
+hxResult hxs_linear_velocity(int _id, const hxVector3 *_velocity);
 
 /// \brief Set the angular velocity of a model.
 /// \param[in] _id Id of the model.
 /// \param[in] _velocity Velocity (rad/s)
 /// \return 'hxOK' if the function succeed or an error code otherwise.
-hxResult hxs_angular_velocity(int _id, hxVector3 _velocity);
+hxResult hxs_angular_velocity(int _id, const hxVector3 *_velocity);
 
 /// \brief Set the linear acceleration on a model.
 /// \param[in] _id Id of the model.
 /// \param[in] _accel Acceleration (m/s/s)
 /// \return 'hxOK' if the function succeed or an error code otherwise.
-hxResult hxs_linear_accel(int _id, hxVector3 _accel);
+hxResult hxs_linear_accel(int _id, const hxVector3 *_accel);
 
 /// \brief Set the angular acceleration on a model.
 /// \param[in] _id Id of the model.
 /// \param[in] _accel Acceleration (rad/s/s)
 /// \return 'hxOK' if the function succeed or an error code otherwise.
-hxResult hxs_angular_accel(int _id, hxVector3 _accel);
+hxResult hxs_angular_accel(int _id, const hxVector3 *_accel);
 
 /// \brief Apply force to a link.
 /// \param[in] _link Pointer to the link.
 /// \param[in] _force Force (N)
 /// \return 'hxOK' if the function succeed or an error code otherwise.
-hxResult hxs_force(const hxLink *_link, hxVector3 _force);
+hxResult hxs_force(const hxLink *_link, const hxVector3 *_force);
 
 /// \brief Apply torque to a link.
 /// \param[in] _link Pointer to the link.
 /// \param[in] _torque Torque (N-m)
 /// \return 'hxOK' if the function succeed or an error code otherwise.
-hxResult hxs_torque(const hxLink *_link, hxVector3 _torque);
+hxResult hxs_torque(const hxLink *_link, const hxVector3 *_torque);
 
 /// \brief Send world reset command/Carry over limb pose between world reset.
 /// \param[in] _rsetLimbPose 1 to reset the post of the limb.

@@ -19,4 +19,5 @@ message hxParam
   optional string string_value   = 8;
   optional hxVector3 pos         = 9;
   optional hxEuler orientation   = 10;
+  optional string name           = 11;
 }

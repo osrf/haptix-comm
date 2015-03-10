@@ -50,6 +50,7 @@ void setup()
   for (int i = 0; i < kNumModels; ++i)
   {
     haptix::comm::msgs::hxModel *model = simState.add_models();
+    model->set_name("model " + std::to_string(i));
     model->mutable_transform()->mutable_pos()->set_x(i);
     model->mutable_transform()->mutable_pos()->set_y(i + 0.1);
     model->mutable_transform()->mutable_pos()->set_z(i + 0.2);
@@ -64,6 +65,7 @@ void setup()
     {
       float v = 10 * i + j;
       haptix::comm::msgs::hxLink *link = model->add_links();
+      link->set_name("link " + std::to_string(j));
       link->mutable_transform()->mutable_pos()->set_x(v);
       link->mutable_transform()->mutable_pos()->set_y(v + 0.1);
       link->mutable_transform()->mutable_pos()->set_z(v + 0.2);
@@ -89,6 +91,7 @@ void setup()
     {
       float v = 20 * i + j;
       haptix::comm::msgs::hxJoint *joint = model->add_joints();
+      joint->set_name("joint " + std::to_string(j));
       joint->set_pos(v);
       joint->set_vel(v + 0.1);
       joint->set_acc(v + 0.2);
@@ -322,6 +325,14 @@ void onHxsAddModel(const std::string &_service,
     return;
   }
 
+  // Sanity check: The message should contain a string with the model name.
+  if (!_req.has_name())
+  {
+    std::cerr << "onHxsAddModel() error: Missing model name in request"
+              << std::endl;
+    return;
+  }
+
   // Sanity check: The message should contain a position.
   if (!_req.has_pos())
   {
@@ -339,6 +350,7 @@ void onHxsAddModel(const std::string &_service,
 
   // Verify the request.
   EXPECT_EQ(_req.string_value(), "fake URDF");
+  EXPECT_EQ(_req.name(), "model 1");
   EXPECT_FLOAT_EQ(_req.pos().x(), 1.0);
   EXPECT_FLOAT_EQ(_req.pos().y(), 2.0);
   EXPECT_FLOAT_EQ(_req.pos().z(), 3.0);
@@ -889,7 +901,7 @@ TEST(hxsTest, hxs_camera_transform)
   node.Advertise("/haptix/gazebo/hxs_camera_transform", onHxsCameraTransform);
 
   // Set a camera transformation similar to the camera in simState.
-  ASSERT_EQ(hxs_camera_transform(simInfo.camera.transform), hxOK);
+  ASSERT_EQ(hxs_camera_transform(&simInfo.camera.transform), hxOK);
 }
 
 //////////////////////////////////////////////////
@@ -899,7 +911,7 @@ TEST(hxsTest, hxs_contacts)
   setup();
 
   ignition::transport::Node node;
-  hxContact contactsInfo;
+  hxContacts contactsInfo;
 
   // Advertise the "hxs_contacts" service.
   node.Advertise("/haptix/gazebo/hxs_contacts", onHxsContacts);
@@ -910,27 +922,27 @@ TEST(hxsTest, hxs_contacts)
   ASSERT_EQ(contactsInfo.contactCount, kNumContacts);
   for (int i = 0; i < contactsInfo.contactCount; ++i)
   {
-    EXPECT_EQ(contactsInfo.body1[i], i);
-    EXPECT_EQ(contactsInfo.body2[i], i + 1);
-    EXPECT_FLOAT_EQ(contactsInfo.point[i].x, i + 0.2);
-    EXPECT_FLOAT_EQ(contactsInfo.point[i].y, i + 0.3);
-    EXPECT_FLOAT_EQ(contactsInfo.point[i].z, i + 0.4);
-    EXPECT_FLOAT_EQ(contactsInfo.normal[i].x, i + 0.5);
-    EXPECT_FLOAT_EQ(contactsInfo.normal[i].y, i + 0.6);
-    EXPECT_FLOAT_EQ(contactsInfo.normal[i].z, i + 0.7);
-    EXPECT_FLOAT_EQ(contactsInfo.tangent1[i].x, i + 0.8);
-    EXPECT_FLOAT_EQ(contactsInfo.tangent1[i].y, i + 0.9);
-    EXPECT_FLOAT_EQ(contactsInfo.tangent1[i].z, i + 1);
-    EXPECT_FLOAT_EQ(contactsInfo.tangent2[i].x, i + 1.1);
-    EXPECT_FLOAT_EQ(contactsInfo.tangent2[i].y, i + 1.2);
-    EXPECT_FLOAT_EQ(contactsInfo.tangent2[i].z, i + 1.3);
-    EXPECT_FLOAT_EQ(contactsInfo.distance[i], i + 1.4);
-    EXPECT_FLOAT_EQ(contactsInfo.velocity[i].x, i + 1.5);
-    EXPECT_FLOAT_EQ(contactsInfo.velocity[i].y, i + 1.6);
-    EXPECT_FLOAT_EQ(contactsInfo.velocity[i].z, i + 1.7);
-    EXPECT_FLOAT_EQ(contactsInfo.force[i].x, i + 1.8);
-    EXPECT_FLOAT_EQ(contactsInfo.force[i].y, i + 1.9);
-    EXPECT_FLOAT_EQ(contactsInfo.force[i].z, i + 2);
+    EXPECT_EQ(contactsInfo.contacts[i].body1, i);
+    EXPECT_EQ(contactsInfo.contacts[i].body2, i + 1);
+    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].point.x, i + 0.2);
+    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].point.y, i + 0.3);
+    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].point.z, i + 0.4);
+    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].normal.x, i + 0.5);
+    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].normal.y, i + 0.6);
+    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].normal.z, i + 0.7);
+    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].tangent1.x, i + 0.8);
+    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].tangent1.y, i + 0.9);
+    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].tangent1.z, i + 1);
+    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].tangent2.x, i + 1.1);
+    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].tangent2.y, i + 1.2);
+    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].tangent2.z, i + 1.3);
+    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].distance, i + 1.4);
+    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].velocity.x, i + 1.5);
+    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].velocity.y, i + 1.6);
+    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].velocity.z, i + 1.7);
+    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].force.x, i + 1.8);
+    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].force.y, i + 1.9);
+    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].force.z, i + 2);
   }
 }
 
@@ -1002,6 +1014,7 @@ TEST(hxsTest, hxs_add_model)
 
   ignition::transport::Node node;
   std::string urdf = "fake URDF";
+  std::string name = "model 1";
   hxModel model;
   float x = 1.0;
   float y = 2.0;
@@ -1013,9 +1026,9 @@ TEST(hxsTest, hxs_add_model)
   // Advertise the "hxs_add_model" service.
   node.Advertise("/haptix/gazebo/hxs_add_model", onHxsAddModel);
 
-  // Create new model.
-  ASSERT_EQ(hxs_add_model(urdf.c_str(), x, y, z, roll, pitch, yaw, &model),
-    hxOK);
+  // Create a new model.
+  ASSERT_EQ(hxs_add_model(urdf.c_str(), name.c_str(), x, y, z, roll, pitch, yaw,
+    &model), hxOK);
 
   // Verify that the new model matches the first model in simState.
   EXPECT_FLOAT_EQ(model.transform.pos.x, 0);
@@ -1080,29 +1093,6 @@ TEST(hxsTest, hxs_remove_model_id)
 }
 
 //////////////////////////////////////////////////
-/// \brief Check hxs_remove_model.
-TEST(hxsTest, hxs_remove_model)
-{
-  setup();
-
-  ignition::transport::Node node;
-  hxSimInfo simInfo;
-
-  // Advertise the "hxs_siminfo" service.
-  node.Advertise("/haptix/gazebo/hxs_siminfo", onHxsSimInfo);
-
-  // Advertise the "hxs_remove_model_id" service. Note that hxs_remove_model()
-  // uses internally hxs_remove_model_id(). We need to enable this service.
-  node.Advertise("/haptix/gazebo/hxs_remove_model_id", onHxsRemoveModelId);
-
-  // Request simulation information.
-  ASSERT_EQ(hxs_siminfo(&simInfo), hxOK);
-
-  // Get the second model of simInfo and remove it.
-  ASSERT_EQ(hxs_remove_model(&simInfo.models[1]), hxOK);
-}
-
-//////////////////////////////////////////////////
 /// \brief Check hxs_model_transform.
 TEST(hxsTest, hxs_model_transform)
 {
@@ -1122,7 +1112,7 @@ TEST(hxsTest, hxs_model_transform)
   ASSERT_EQ(hxs_siminfo(&simInfo), hxOK);
 
   // Let's use the transform from the second model.
-  ASSERT_EQ(hxs_model_transform(id, simInfo.models[1].transform), hxOK);
+  ASSERT_EQ(hxs_model_transform(id, &simInfo.models[1].transform), hxOK);
 }
 
 //////////////////////////////////////////////////
@@ -1142,7 +1132,7 @@ TEST(hxsTest, hxs_linear_velocity)
   linvel.y = 1.1;
   linvel.z = 1.2;
 
-  ASSERT_EQ(hxs_linear_velocity(id, linvel), hxOK);
+  ASSERT_EQ(hxs_linear_velocity(id, &linvel), hxOK);
 }
 
 //////////////////////////////////////////////////
@@ -1162,7 +1152,7 @@ TEST(hxsTest, hxs_angular_velocity)
   angvel.y = 2.1;
   angvel.z = 2.2;
 
-  ASSERT_EQ(hxs_angular_velocity(id, angvel), hxOK);
+  ASSERT_EQ(hxs_angular_velocity(id, &angvel), hxOK);
 }
 
 //////////////////////////////////////////////////
@@ -1182,7 +1172,7 @@ TEST(hxsTest, hxs_linear_accel)
   linaccel.y = 3.1;
   linaccel.z = 3.2;
 
-  ASSERT_EQ(hxs_linear_accel(id, linaccel), hxOK);
+  ASSERT_EQ(hxs_linear_accel(id, &linaccel), hxOK);
 }
 
 //////////////////////////////////////////////////
@@ -1202,7 +1192,7 @@ TEST(hxsTest, hxs_angular_accel)
   angaccel.y = 4.1;
   angaccel.z = 4.2;
 
-  ASSERT_EQ(hxs_angular_accel(id, angaccel), hxOK);
+  ASSERT_EQ(hxs_angular_accel(id, &angaccel), hxOK);
 }
 
 //////////////////////////////////////////////////
@@ -1227,7 +1217,7 @@ TEST(hxsTest, hxs_force)
   force.z = 5.3;
 
   // Use the first link of the first model in simState.
-  ASSERT_EQ(hxs_force(&simInfo.models[0].links[0], force), hxOK);
+  ASSERT_EQ(hxs_force(&simInfo.models[0].links[0], &force), hxOK);
 }
 
 //////////////////////////////////////////////////
@@ -1252,7 +1242,7 @@ TEST(hxsTest, hxs_torque)
   torque.z = 6.3;
 
   // Use the first link of the first model in simState.
-  ASSERT_EQ(hxs_torque(&simInfo.models[0].links[0], torque), hxOK);
+  ASSERT_EQ(hxs_torque(&simInfo.models[0].links[0], &torque), hxOK);
 }
 
 //////////////////////////////////////////////////
