@@ -34,7 +34,7 @@ extern "C" {
 #define hxMAXCONTACT 200
 
 /// \brief Maximum number of links per model.
-#define hxMAXLINKS 50
+#define hxMAXLINKS 100
 
 /// \brief Maximum number of links per model.
 #define hxMAXJOINTS 50
