@@ -226,7 +226,7 @@ struct _hxContacts
 
 /// \def hxContact
 /// \brief Information about contacts.
-typedef _hxContacts hxContacts;
+typedef struct _hxContacts hxContacts;
 
 /// \brief Information about the simulation camera. This is the camera
 /// that generates the user's view.
@@ -236,6 +236,7 @@ struct _hxCamera
   /// global coordinate frame.
   hxTransform transform;
 };
+
 /// \def hxCamera
 /// \brief Information about the simulation camera.
 typedef struct _hxCamera hxCamera;
@@ -255,6 +256,7 @@ struct _hxSimInfo
   /// \sa hxCamera
   hxCamera camera;
 };
+
 /// \def hxSimInfo
 /// \brief Information about the simulation world.
 typedef struct _hxSimInfo hxSimInfo;
