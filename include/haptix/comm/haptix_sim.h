@@ -57,7 +57,7 @@ struct _hxVector3
 /// translation.
 typedef struct _hxVector3 hxVector3;
 
-/// \brief A quaternion
+/// \brief A quaternion.
 struct _hxQuaternion
 {
   float w;
@@ -90,19 +90,19 @@ struct _hxJoint
   /// \brief Joint name.
   char *name;
 
-  /// \brief Position (radians)
+  /// \brief Position (radians).
   float pos;
 
-  /// \brief Velocity (rad/s)
+  /// \brief Velocity (rad/s).
   float vel;
 
-  /// \brief acceleration (rad/s/s)
+  /// \brief acceleration (rad/s/s).
   float acc;
 
-  /// \brief Torque due to actuation (N-m)
+  /// \brief Torque due to actuation (N-m).
   float torque_motor;
 
-  /// \brief torque due to limits, damping, friction (N-m)
+  /// \brief torque due to limits, damping, friction (N-m).
   float torque_passive;
 };
 
@@ -110,7 +110,7 @@ struct _hxJoint
 /// \brief Information about a joint.
 typedef struct _hxJoint hxJoint;
 
-/// \brief Information about a link. A link is a component of a model
+/// \brief Information about a link. A link is a component of a model.
 struct _hxLink
 {
   /// \brief Link name.
@@ -120,23 +120,23 @@ struct _hxLink
   /// model. Position is in meters.
   hxTransform transform;
 
-  /// \brief Linear velocity (m/s)
+  /// \brief Linear velocity (m/s).
   hxVector3 linvel;
 
-  /// \brief Angular velocity (rad/s)
+  /// \brief Angular velocity (rad/s).
   hxVector3 angvel;
 
-  /// \brief Linear acceleration (m/s/s)
+  /// \brief Linear acceleration (m/s/s).
   hxVector3 linacc;
 
-  /// \brief Angular acceleration (rad/s/s)
+  /// \brief Angular acceleration (rad/s/s).
   hxVector3 angacc;
 };
 /// \def hxLink
 /// \brief Information about a link.
 typedef struct _hxLink hxLink;
 
-/// \brief Information about a model
+/// \brief Information about a model.
 struct _hxModel
 {
   /// \brief Model name.
@@ -290,7 +290,7 @@ hxResult hxs_siminfo(hxSimInfo *_siminfo);
 hxResult hxs_camera(hxCamera *_camera);
 
 /// \brief Set camera transform.
-/// \param[in] _transform New camera transform
+/// \param[in] _transform New camera transform.
 /// \return 'hxOK' if the function succeed or an error code otherwise.
 hxResult hxs_camera_transform(const hxTransform *_transform);
 
@@ -322,12 +322,12 @@ hxResult hxs_state(const hxModel *_model, const hxJoint *_joint);
 /// \brief Add model during runtime.
 /// \param[in] _urdf URDF xml description of the model.
 /// \param[in] _name Model name.
-/// \param[in] _x X position in global frame (m)
-/// \param[in] _y Y position in global frame (m)
-/// \param[in] _z Z position in global frame (m)
-/// \param[in] _roll Roll in global frame (radians)
-/// \param[in] _pitch Pitch in global frame (radians)
-/// \param[in] _yaw Yaw in global frame (radians)
+/// \param[in] _x X position in global frame (m).
+/// \param[in] _y Y position in global frame (m).
+/// \param[in] _z Z position in global frame (m).
+/// \param[in] _roll Roll in global frame (radians).
+/// \param[in] _pitch Pitch in global frame (radians).
+/// \param[in] _yaw Yaw in global frame (radians).
 /// \param[out] _model Pointer to the new model.
 /// \return 'hxOK' if the function succeed or an error code otherwise.
 hxResult hxs_add_model(const char *_urdf, const char *_name,
@@ -341,25 +341,25 @@ hxResult hxs_remove_model_id(int _id);
 
 /// \brief Set model pose.
 /// \param[in] _id Id of the model.
-/// \param[in] _transform New model transform
+/// \param[in] _transform New model transform.
 /// \return 'hxOK' if the function succeed or an error code otherwise.
 hxResult hxs_model_transform(int _id, const hxTransform *_transform);
 
 /// \brief Set the linear velocity of a model.
 /// \param[in] _id Id of the model.
-/// \param[in] _velocity Velocity (m/s)
+/// \param[in] _velocity Velocity (m/s).
 /// \return 'hxOK' if the function succeed or an error code otherwise.
 hxResult hxs_linear_velocity(int _id, const hxVector3 *_velocity);
 
 /// \brief Set the angular velocity of a model.
 /// \param[in] _id Id of the model.
-/// \param[in] _velocity Velocity (rad/s)
+/// \param[in] _velocity Velocity (rad/s).
 /// \return 'hxOK' if the function succeed or an error code otherwise.
 hxResult hxs_angular_velocity(int _id, const hxVector3 *_velocity);
 
 /// \brief Set the linear acceleration on a model.
 /// \param[in] _id Id of the model.
-/// \param[in] _accel Acceleration (m/s/s)
+/// \param[in] _accel Acceleration (m/s/s).
 /// \return 'hxOK' if the function succeed or an error code otherwise.
 hxResult hxs_linear_accel(int _id, const hxVector3 *_accel);
 
@@ -371,13 +371,13 @@ hxResult hxs_angular_accel(int _id, const hxVector3 *_accel);
 
 /// \brief Apply force to a link.
 /// \param[in] _link Pointer to the link.
-/// \param[in] _force Force (N)
+/// \param[in] _force Force (N).
 /// \return 'hxOK' if the function succeed or an error code otherwise.
 hxResult hxs_force(const hxLink *_link, const hxVector3 *_force);
 
 /// \brief Apply torque to a link.
 /// \param[in] _link Pointer to the link.
-/// \param[in] _torque Torque (N-m)
+/// \param[in] _torque Torque (N-m).
 /// \return 'hxOK' if the function succeed or an error code otherwise.
 hxResult hxs_torque(const hxLink *_link, const hxVector3 *_torque);
 
@@ -399,7 +399,7 @@ hxResult hxs_start_timer();
 hxResult hxs_stop_timer();
 
 /// \brief Start recording log file. Only one log file may be recorded at
-/// a time
+/// a time.
 /// \param[in] _filename Name of the file to log information into.
 /// \return 'hxOK' if the function succeed or an error code otherwise.
 hxResult hxs_start_logging(const char *_filename);
