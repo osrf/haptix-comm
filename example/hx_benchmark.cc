@@ -109,13 +109,13 @@ int main(int argc, char **argv)
 
     Timestamp now = std::chrono::steady_clock::now();
     // Elapsed time since the last update from this publisher.
-    std::chrono::duration<double> elapsed = last - now;
+    std::chrono::duration<double> elapsed = now - last;
 
     // This publisher has expired.
     if (std::chrono::duration_cast<std::chrono::milliseconds>
-         (elapsed).count() >= 5000)
+         (elapsed).count() >= 2000)
     {
-      std::cout << "Running at " << counter / 5.0 << " Hz" << std::endl;
+      std::cout << "Running at " << counter / 2.0 << " Hz" << std::endl;
       counter = 0;
       last = std::chrono::steady_clock::now();
     }

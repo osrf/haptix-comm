@@ -13,7 +13,7 @@ if (OCTAVE_SUPPORT_FOUND)
     set(OCTAVE_NAME "${OCTAVE_NAME}.mex")
     set(OCTAVE_OUTPUT_FILE "${CMAKE_CURRENT_BINARY_DIR}/${OCTAVE_NAME}")
     set(OCTAVE_OUTPUT_FILE_SET ${OCTAVE_OUTPUT_FILE_SET} ${OCTAVE_OUTPUT_FILE})
-    
+
     add_custom_command(
       OUTPUT ${OCTAVE_OUTPUT_FILE}
       COMMAND ${MKOCTFILE} --mex -I${CMAKE_SOURCE_DIR}/include -l${PROJECT_NAME_LOWER} -L${CMAKE_BINARY_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/${mex_src}
@@ -29,6 +29,7 @@ if (OCTAVE_SUPPORT_FOUND)
               hx_robot_info.m
               hx_update.m
               hx_matlab_controller.m
+              hx_benchmark.m
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/haptix-comm/octave)
 
   add_custom_target(mex_generation ALL DEPENDS ${OCTAVE_OUTPUT_FILE_SET})
@@ -36,7 +37,7 @@ endif()
 
 #
 # MATLAB generation if support found
-# 
+#
 # Only tested on Windows. It could work on Linux but there is
 # no guarantee or test done.
 #
@@ -61,7 +62,7 @@ if (WIN32 AND MATLAB_FOUND)
     set(MEX_OUTPUT_FILE "${CMAKE_CURRENT_BINARY_DIR}/${MEX_BINARY_NAME}")
     set(MEX_OUTPUT_FILE_SET ${MEX_OUTPUT_FILE_SET} ${MEX_OUTPUT_FILE})
 
-    # TODO: IGNITION cmake variables can not be directly used, they stored 
+    # TODO: IGNITION cmake variables can not be directly used, they stored
     # several paths separated by an space which will break this whole
     # mex hack.
 
@@ -85,6 +86,7 @@ if (WIN32 AND MATLAB_FOUND)
                 hx_robot_info.m
                 hx_update.m
                 hx_matlab_controller.m
+                hx_benchmark.m
           DESTINATION ${CMAKE_INSTALL_LIBDIR}/haptix-comm/mex)
 
   add_custom_target(matlab_generation ALL DEPENDS ${MEX_OUTPUT_FILE_SET})
