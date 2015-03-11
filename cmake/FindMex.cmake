@@ -1,16 +1,24 @@
 # FindMex.cmake 
 # 
 # Needs: 
+# - 'mex' on the PATH; OR:
 # - MATLAB_ROOT pointing to MATLAB/R20XXZ/
 #
-# It will look for mex.bat script and provide the following variables:
+# It will look for mex[.bat] script and provide the following variables:
 #    - MATLAB_MEX_PATH    : full path to MEX script
 #    - MATLAB_FOUND       : 0/1 -> support not found / found
 #    - MATLAB_INCLUDE_DIR : full path to extern/include. Mex headers.
-#
+
+# TODO: check whether the explicit .bat extension is required for find_program()
+# to work.
+if(WIN32)
+  set(MEX_NAME mex.bat)
+else()
+  set(MEX_NAME mex)
+endif()
 
 if(NOT MATLAB_MEX_PATH)
-  find_program( MATLAB_MEX_PATH mex.bat
+  find_program( MATLAB_MEX_PATH ${MEX_NAME}
     HINTS ${MATLAB_ROOT}/bin
     PATHS ${MATLAB_ROOT}/bin
     DOC "The mex program path")
@@ -22,6 +30,7 @@ if(NOT MATLAB_MEX_PATH)
 else()
   set (MATLAB_FOUND 1)
   message(STATUS "MATLAB mex compiler found")
+  # TODO: check that MATLAB_INCLUDE_DIR is actually needed anywhere
   find_path(MATLAB_INCLUDE_DIR
      "mex.h"
      ${MATLAB_ROOT}/extern/include)
