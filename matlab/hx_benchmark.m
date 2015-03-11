@@ -57,7 +57,7 @@ while true
   elapsedTime = toc;
 
   if (elapsedTime >= 2.0)
-    fprintf('Running at %f Hz\n', counter / 2.0)
+    fprintf('Controller running at %f Hz\n', counter / 2.0)
     counter = 0;
     tic
   end
