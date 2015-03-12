@@ -13,7 +13,7 @@ if (OCTAVE_SUPPORT_FOUND)
     set(OCTAVE_NAME "${OCTAVE_NAME}.mex")
     set(OCTAVE_OUTPUT_FILE "${CMAKE_CURRENT_BINARY_DIR}/octave/${OCTAVE_NAME}")
     set(OCTAVE_OUTPUT_FILE_SET ${OCTAVE_OUTPUT_FILE_SET} ${OCTAVE_OUTPUT_FILE})
-    
+
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/octave)
     add_custom_command(
       OUTPUT ${OCTAVE_OUTPUT_FILE}
@@ -37,7 +37,7 @@ endif()
 
 #
 # MATLAB generation if support found
-# 
+#
 # Only tested on Windows. It could work on Linux but there is
 # no guarantee or test done.
 #
@@ -70,7 +70,7 @@ if (MATLAB_FOUND)
     set(MEX_OUTPUT_FILE "${CMAKE_CURRENT_BINARY_DIR}/matlab/${MEX_BINARY_NAME}")
     set(MEX_OUTPUT_FILE_SET ${MEX_OUTPUT_FILE_SET} ${MEX_OUTPUT_FILE})
 
-    # TODO: IGNITION cmake variables can not be directly used, they stored 
+    # TODO: IGNITION cmake variables can not be directly used, they stored
     # several paths separated by an space which will break this whole
     # mex hack.
 
@@ -125,7 +125,7 @@ if (MATLAB_FOUND)
     get_filename_component(ZMQ_RELEASE_DLL ${ZeroMQ_LIBRARY_RELEASE} NAME_WE)
     set(ZMQ_RELEASE_DLL "${ZMQ_RELEASE_DIR}/../bin/${ZMQ_RELEASE_DLL}.dll")
     install(FILES ${ZMQ_RELEASE_DLL} ${ZMQ_DEBUG_DLL}
-            DESTINATION ${CMAKE_INSTALL_LIBDIR}/haptix-comm/mex)
+            DESTINATION ${CMAKE_INSTALL_LIBDIR}/haptix-comm/matlab)
   endif()
 
   add_custom_target(matlab_generation ALL DEPENDS ${MEX_OUTPUT_FILE_SET})
