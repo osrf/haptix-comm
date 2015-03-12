@@ -115,7 +115,8 @@ int main(int argc, char **argv)
     if (std::chrono::duration_cast<std::chrono::milliseconds>
          (elapsed).count() >= 2000)
     {
-      std::cout << "Controller running at " << counter / 2.0 << " Hz" << std::endl;
+      std::cout << "Controller running at " << counter / 2.0 << " Hz"
+                << std::endl;
       counter = 0;
       last = std::chrono::steady_clock::now();
     }
