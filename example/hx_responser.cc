@@ -24,17 +24,17 @@
 #include <haptix/comm/msg/hxRobot.pb.h>
 #include <haptix/comm/msg/hxSensor.pb.h>
 
-const static int motorCount         = 4;
-const static int jointCount         = 5;
-const static int contactSensorCount = 6;
-const static int imuCount           = 7;
-const static float updateRate = 8;
-const static int time_sec = 9;
-const static int time_nsec = 10;
+static const int motorCount         = 4;
+static const int jointCount         = 5;
+static const int contactSensorCount = 6;
+static const int imuCount           = 7;
+static const float updateRate       = 8;
+static const int time_sec           = 9;
+static const int time_nsec          = 10;
 
-const static std::string RobotInfoTopic = "/haptix/gazebo/GetRobotInfo";
-const static std::string UpdateTopic     = "/haptix/gazebo/Update";
-const static std::string SensorInfoTopic = "/haptix/gazebo/Read";
+static const std::string RobotInfoTopic  = "/haptix/gazebo/GetRobotInfo";
+static const std::string UpdateTopic     = "/haptix/gazebo/Update";
+static const std::string SensorInfoTopic = "/haptix/gazebo/Read";
 
 //////////////////////////////////////////////////
 /// \brief Provide a "getRobotInfo" service.
@@ -61,7 +61,6 @@ void onGetRobotInfo(const std::string &_service,
     joint->set_minimum(-i);
     joint->set_maximum(i);
   }
-
 }
 
 //////////////////////////////////////////////////
