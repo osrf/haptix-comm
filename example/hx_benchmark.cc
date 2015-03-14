@@ -19,7 +19,15 @@
 #include <windows.h>
 #define _USE_MATH_DEFINES
 #endif
-#include <math.h>
+#include <cmath>
+#include <iomanip>
+#include <boost/accumulators/accumulators.hpp>
+#include <boost/accumulators/statistics/mean.hpp>
+#include <boost/accumulators/statistics/median.hpp>
+#include <boost/accumulators/statistics/min.hpp>
+#include <boost/accumulators/statistics/max.hpp>
+#include <boost/accumulators/statistics/stats.hpp>
+#include <boost/accumulators/statistics/variance.hpp>
 #include <signal.h>
 #include <stdio.h>
 #include <time.h>
@@ -31,6 +39,12 @@
 #endif
 
 typedef std::chrono::steady_clock::time_point Timestamp;
+typedef boost::accumulators::accumulator_set<double, boost::accumulators::stats<
+          boost::accumulators::tag::mean,
+          boost::accumulators::tag::median(boost::accumulators::with_p_square_quantile),
+          boost::accumulators::tag::variance,
+          boost::accumulators::tag::min,
+          boost::accumulators::tag::max>> Stats;
 
 int running = 1;
 
@@ -42,13 +56,47 @@ void sigHandler(int signo)
 }
 
 //////////////////////////////////////////////////
+void printStats(const Stats &_stats, Timestamp &_last)
+{
+  // Check if it's time to print stats.
+  Timestamp now = std::chrono::steady_clock::now();
+  std::chrono::duration<double> elapsed = now - _last;
+
+  if (std::chrono::duration_cast<std::chrono::milliseconds>
+       (elapsed).count() >= 1000)
+  {
+    // Print the header.
+    static bool first = true;
+    if (first)
+    {
+      std::cout << std::setw(10) << "Mean" << std::setw(10) << "Median"
+              << std::setw(10) << "Min" << std::setw(10) << "Max"
+              << std::setw(10) << "Stddev" << std::endl;
+      first = false;
+    }
+
+    // Print a new row of stats.
+    std::cout << std::fixed << std::setprecision(2)
+              << std::setw(10) << boost::accumulators::mean(_stats)
+              << std::setw(10) << boost::accumulators::median(_stats)
+              << std::setw(10) << boost::accumulators::min(_stats)
+              << std::setw(10) << boost::accumulators::max(_stats)
+              << std::setw(10) << sqrt(boost::accumulators::variance(_stats))
+              << std::endl;
+    _last = std::chrono::steady_clock::now();
+  }
+}
+
+//////////////////////////////////////////////////
 int main(int argc, char **argv)
 {
   int i;
-  long counter = 0;
   hxRobotInfo robotInfo;
   hxCommand cmd;
   hxSensor sensor;
+  float targetWristPos = 1.0;
+  Stats stats;
+  static const float kThreshold = 0.00001;
 
   // Capture SIGINT signal.
   if (signal(SIGINT, sigHandler) == SIG_ERR)
@@ -72,32 +120,43 @@ int main(int argc, char **argv)
     return -1;
   }
 
+  if (hx_read_sensors(&sensor) != hxOK)
+  {
+    printf("hx_read_sensors(): Request error.\n");
+    return -1;
+  }
+
+  memset(&cmd, 0, sizeof(hxCommand));
+
+  // Indicate that the positions we set should be used.
+  cmd.ref_pos_enabled = 1;
+  // We're not setting it, so indicate that ref_vel_max should be ignored.
+  cmd.ref_vel_max_enabled = 0;
+  // We're not setting it, so indicate that gain_pos should be ignored.
+  cmd.gain_pos_enabled = 0;
+  // We're not setting it, so indicate that gain_vel should be ignored.
+  cmd.gain_vel_enabled = 0;
+
+  // Send the new joint command and receive the state update.
+  if (hx_update(&cmd, &sensor) != hxOK)
+  {
+    printf("hx_update(): Request error.\n");
+    return -1;
+  }
+
+  // Let the hand reach the target.
+  usleep(2000000);
+
+  float dPos = std::abs(targetWristPos - sensor.motor_pos[2]);
+  float lastDPos = dPos;
+
+  cmd.ref_pos[2] = targetWristPos;
+  Timestamp cmdSent = std::chrono::steady_clock::now();
   Timestamp last = std::chrono::steady_clock::now();
 
   // Send commands as fast as we can.
   while (running == 1)
   {
-    // Create a new command based on a sinusoidal wave.
-    for (i = 0; i < robotInfo.motor_count; ++i)
-    {
-      // Set the desired position of this motor
-      cmd.ref_pos[i] = 0.5 * sin(0.05 * 2.0 * M_PI * counter * 0.01);
-      // We could set a desired maximum velocity
-      // cmd.ref_vel_max[i] = 1.0;
-      // We could set a desired controller position gain
-      // cmd.gain_pos[i] = 1.0;
-      // We could set a desired controller velocity gain
-      // cmd.gain_vel[i] = 1.0;
-    }
-    // Indicate that the positions we set should be used.
-    cmd.ref_pos_enabled = 1;
-    // We're not setting it, so indicate that ref_vel_max should be ignored.
-    cmd.ref_vel_max_enabled = 0;
-    // We're not setting it, so indicate that gain_pos should be ignored.
-    cmd.gain_pos_enabled = 0;
-    // We're not setting it, so indicate that gain_vel should be ignored.
-    cmd.gain_vel_enabled = 0;
-
     // Send the new joint command and receive the state update.
     if (hx_update(&cmd, &sensor) != hxOK)
     {
@@ -105,21 +164,29 @@ int main(int argc, char **argv)
       continue;
     }
 
-    ++counter;
+    dPos = std::abs(targetWristPos - sensor.motor_pos[2]);
 
-    Timestamp now = std::chrono::steady_clock::now();
-    // Elapsed time since the last update from this publisher.
-    std::chrono::duration<double> elapsed = now - last;
-
-    // This publisher has expired.
-    if (std::chrono::duration_cast<std::chrono::milliseconds>
-         (elapsed).count() >= 2000)
+    if (lastDPos - dPos > kThreshold)
     {
-      std::cout << "Controller running at " << counter / 2.0 << " Hz"
-                << std::endl;
-      counter = 0;
-      last = std::chrono::steady_clock::now();
+      // Update stats.
+      Timestamp cmdApplied = std::chrono::steady_clock::now();
+      std::chrono::duration<double> cmdElapsed = cmdApplied - cmdSent;
+      float ms = std::chrono::duration_cast<
+        std::chrono::milliseconds>(cmdElapsed).count();
+      stats(ms);
+
+      // Change wrist direction.
+      targetWristPos = -targetWristPos;
+      cmd.ref_pos[2] = targetWristPos;
+
+      dPos = std::abs(targetWristPos - sensor.motor_pos[2]);
+      cmdSent = std::chrono::steady_clock::now();
     }
+
+    lastDPos = dPos;
+
+    // Print stats if needed.
+    printStats(stats, last);
 
     // Here is where you would do your other work, such as reading from EMG
     // sensors, decoding that data, computing your next control command,

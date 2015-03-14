@@ -15,51 +15,70 @@
 %
 %
 
-counter = 0;
+targetWristPos = 1.0;
+kThreshold = 0.00001;
+samples = [];
 
 hx_connect();
 
 deviceInfo = hx_robot_info();
 
-tic
+% Initialize the command scalar structure.
+cmd.ref_pos = [];
+cmd.ref_vel_max = [];
+cmd.gain_pos = [];
+cmd.gain_vel = [];
+
+% Indicate that the positions we set should be used.
+cmd.ref_pos_enabled = 1;
+% We're not setting it, so indicate that ref_vel_max should be ignored.
+cmd.ref_vel_max_enabled = 0;
+% We're not setting it, so indicate that gain_pos should be ignored.
+cmd.gain_pos_enabled = 0;
+% We're not setting it, so indicate that gain_vel should be ignored.
+cmd.gain_vel_enabled = 0;
+
+state = hx_update(cmd);
+
+% Let the hand reach the target.
+pause(2)
+
+dPos = abs(targetWristPos - state.motor_pos(3));
+lastDPos = dPos;
+
+cmd.ref_pos(3) = targetWristPos;
+
+cmdSent = tic;
+lastPrint = tic;
 
 while true
-  % Initialize the command scalar structure.
-  cmd.ref_pos = [];
-  cmd.ref_vel_max = [];
-  cmd.gain_pos = [];
-  cmd.gain_vel = [];
-
-  % Indicate that the positions we set should be used.
-  cmd.ref_pos_enabled = 1;
-  % We're not setting it, so indicate that ref_vel_max should be ignored.
-  cmd.ref_vel_max_enabled = 0;
-  % We're not setting it, so indicate that gain_pos should be ignored.
-  cmd.gain_pos_enabled = 0;
-  % We're not setting it, so indicate that gain_vel should be ignored.
-  cmd.gain_vel_enabled = 0;
-
-  % Create a new command based on a sinusoidal wave.
-  for n = 0:deviceInfo.motor_count
-    cmd.ref_pos(end + 1) = 0.5 * sin(0.05 * 2.0 * pi * counter * 0.01);
-    % We could set a desired maximum velocity
-    % cmd.ref_vel_max(end + 1) = 1.0;
-    % We could set a desired controller position gain
-    % cmd.gain_pos(end + 1) = 1.0;
-    % We could set a desired controller velocity gain
-    % cmd.gain_vel(end + 1) = 1.0;
-  end
 
   % Send the new joint command and receive the state update.
   state = hx_update(cmd);
 
-  counter = counter + 1;
-  elapsedTime = toc;
+  dPos = abs(targetWristPos - state.motor_pos(3));
 
-  if (elapsedTime >= 2.0)
-    fprintf('Controller running at %f Hz\n', counter / 2.0)
-    counter = 0;
-    tic
+  if (lastDPos - dPos > kThreshold)
+    % Update stats.
+    elapsedCmd = toc(cmdSent);
+    samples(end + 1) = elapsedCmd * 1000.0;
+
+    % Change wrist direction.
+    targetWristPos = -targetWristPos;
+    cmd.ref_pos(3) = targetWristPos;
+
+    dPos = abs(targetWristPos - state.motor_pos(3));
+    cmdSent = tic;
+  end
+
+  lastDPos = dPos;
+
+  % Time to print stats?
+  elapsedPrint = toc(lastPrint);
+  if (elapsedPrint > 1.0)
+    fprintf('Commands stats:\n\tMean: %f ms\n\tMedian: %f ms\n\n',
+      mean(samples), median(samples))
+    lastPrint = tic;
   end
 
 end
