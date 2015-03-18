@@ -1,7 +1,7 @@
 @rem Run CMake, pointing to sibling directories containing dependencies.
 @rem the script is prepared to look for MATLAB in 64bits machines
 @rem if you are running a 32bits copy of windows please modify the
-@rem MATLAB PATH according
+@rem MATLAB PATH accordingly
 
 @set build_type=Release
 @if not "%1"=="" set build_type=%1
