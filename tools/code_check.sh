@@ -45,7 +45,7 @@ then
   CPPLINT_FILES="$CHECK_FILES"
   QUICK_TMP=`mktemp -t asdfXXXXXXXXXX`
 else
-  CHECK_DIRS="./src ./include ./test/integration ./test/regression ./test/performance"
+  CHECK_DIRS="./src ./include ./example ./test/integration ./test/regression ./test/performance"
   if [ $CPPCHECK_LT_157 -eq 1 ]; then
     # cppcheck is older than 1.57, so don't check header files (issue #907)
     CPPCHECK_FILES=`find $CHECK_DIRS -name "*.cc"`
@@ -57,6 +57,7 @@ else
 fi
 
 SUPPRESS=/tmp/cpp_check.suppress
+touch $SUPPRESS
 # The follow suppression is useful when checking for missing includes.
 # It's disable for now because checking for missing includes is very
 # time consuming. See CPPCHECK_CMD3.
