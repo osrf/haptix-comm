@@ -115,6 +115,8 @@ int main(int argc, char **argv)
   if (argc >= 3)
     amplitude = atof(argv[2]);
 
+  printf("Usage:\n./joint_stress [frequency] [amplitude]"
+         " [minimum motor index] [maximum motor index]\n");
   printf("freq: %s ampl: %s\n", argv[1], argv[2]);
 
   int i;
@@ -148,6 +150,20 @@ int main(int argc, char **argv)
 
   // Print the robot information.
   printRobotInfo(&robotInfo);
+
+  // Truncate iMin and iMax based on number of motors
+  int iMin = 0;
+  int iMax = robotInfo.motor_count - 1;
+  if (argc >= 4)
+    iMin = atoi(argv[3]);
+  if (argc >= 5)
+    iMax = atoi(argv[4]);
+  iMax = iMax < 0? 0 : iMax;
+  iMax = iMax >= robotInfo.motor_count? robotInfo.motor_count - 1 : iMax;
+  iMin = iMin < 0? 0 : iMin;
+  iMin = iMin > iMax? iMax : iMin;
+
+  currentMotor = iMin;
 
   // Send commands at ~100Hz.
   while (running == 1)
@@ -195,6 +211,8 @@ int main(int argc, char **argv)
     {
       counter = 0;
       currentMotor = (++currentMotor) % robotInfo.motor_count;
+      if (currentMotor > iMax)
+        currentMotor = iMin;
       printf("actuating joint %d\n", currentMotor);
     }
 
