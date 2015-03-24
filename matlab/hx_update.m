@@ -64,5 +64,18 @@
 % web('http://mujoco.org/haptix.html#hxMATLAB')">the MuJoCo HAPTIX site</a>.
 
 function sensor = hx_update(command)
+  % If necessary, convert to row vectors, which is what hx_update expects
+  if(isfield(command, 'ref_pos') && size(command.ref_pos, 1) > size(command.ref_pos, 2))
+    command.ref_pos = command.ref_pos';
+  end
+  if(isfield(command, 'ref_vel_max') && size(command.ref_vel_max, 1) > size(command.ref_vel_max, 2))
+    command.ref_vel_max = command.ref_vel_max';
+  end
+  if(isfield(command, 'gain_pos') && size(command.gain_pos, 1) > size(command.gain_pos, 2))
+    command.gain_pos = command.gain_pos';
+  end
+  if(isfield(command, 'gain_vel') && size(command.gain_vel, 1) > size(command.gain_vel, 2))
+    command.gain_vel = command.gain_vel';
+  end
   sensor = hxgz('update', command);
 end

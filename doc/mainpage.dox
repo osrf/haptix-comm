@@ -1,43 +1,45 @@
 /** \mainpage HAPTIX Communication API Reference
- 
+
  This site provides useful information about the HAPTIX API (C and Matlab).  Should you find problems with this documentation - typos, unclear phrases,
  or insufficient detail - please create a <a
    href="https://bitbucket.org/osrf/haptix-comm/issues/new">new bitbucket issue</a>.
  Include sufficient detail to quickly locate the problematic documentation,
  and set the issue's fields accordingly: Assignee - blank; Kind - bug;
  Priority - minor; Version - blank.
- 
+
  <h2>Get Started</h2>
 
-   <h4>C-API</h4> 
+   <h4>C-API</h4>
      The C-API contains two headers:
- 
-     - haptix.h : The primary HAPTIX interface
- 
-     - haptix_sim.h : Simulation specific interface
- 
-     Important functions:
- 
-     - hx_connect(const char *_host, int _port) : Connect to specified device/simulator target
- 
-     - hx_update(const hxCommand *_command, hxSensor *_sensor) : Asynchronous update at the rate supported by the device
- 
-     - hx_robot_info(hxRobotInfo *_robotinfo) : Get info for specified robot/simulator target
- 
-     - hx_close() : Close connection to specified device/simulator target
 
-   <h4>Matlab API</h4> 
+     - haptix.h : The primary HAPTIX interface
+
+     - haptix_sim.h : Simulation specific interface
+
+     Important functions:
+
+     - hx_connect(const char *_host, int _port) : Connect to a robot or simulator
+
+     - hx_robot_info(hxRobotInfo *_robotinfo) : Get info for specified robot/simulator target
+
+     - hx_update(const hxCommand *_command, hxSensor *_sensor) : Asynchronous update at the rate supported by the device
+
+     - hx_read_sensors(hxSensor *_sensor) : Reads the latest sensor information from the robot in a non-blocking manner
+
+     - hx_close() : Close connection to to a robot or simulator
+
+   <h4>Matlab API</h4>
    The Matlab API is a wrapper around the C-API. Use the following links to view each <b>.m</b> file.
 
-     - <a href='hx_close.html'>hx_close.m</a>
-
      - <a href='hx_connect.html'>hx_connect.m</a>
-
-     - <a href='hx_read_sensors.html'>hx_read_sensors.m</a>
 
      - <a href='hx_robot_info.html'>hx_robot_info.m</a>
 
      - <a href='hx_update.html'>hx_update.m</a>
+
+     - <a href='hx_read_sensors.html'>hx_read_sensors.m</a>
+
+     - <a href='hx_close.html'>hx_close.m</a>
 
  <h2>MPL Arm Schematics</h2>
 
@@ -49,17 +51,17 @@
    <div style="display: inline-block;margin: 10px">
      <img src="mpl_joints.svg" class="diagram"/>
    </div>
- 
+
    <div style="display: inline-block;margin: 10px">
      <img src="mpl_motors.svg" class="diagram"/>
    </div>
  </div>
- 
+
  <div>
    <div style="display: inline-block;margin: 10px">
        <img src="mpl_contact_sensors.svg" class="diagram"/>
    </div>
-   
+
    <div style="display: inline-block;margin: 10px;">
        <img src="mpl_imu_sensors.svg" class="diagram"/>
    </div>
