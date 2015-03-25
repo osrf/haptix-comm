@@ -90,7 +90,7 @@ void printStats(const Stats &_stats)
 //////////////////////////////////////////////////
 void reset()
 {
-  const float kThreshold = 0.001f;
+  const float kThreshold = 0.1;
   hxCommand cmd;
   hxSensor sensor;
 
@@ -110,7 +110,7 @@ void reset()
       printf("hx_update(): Request error.\n");
       return;
     }
-  } while (std::abs(sensor.motor_pos[0]) > kThreshold);
+  } while (std::abs(sensor.joint_pos[0]) > kThreshold);
 }
 
 //////////////////////////////////////////////////
@@ -134,7 +134,7 @@ void stop()
   }
 
   // Keep the hand in contact.
-  cmd.ref_pos[0] = sensor.motor_pos[0];
+  cmd.ref_pos[0] = sensor.joint_pos[0];
   if (hx_update(&cmd, &sensor) != hxOK)
   {
     printf("hx_update(): Request error.\n");
@@ -256,7 +256,7 @@ int main(int argc, char **argv)
   hxTime timeNow;
   hxTime timeLastStatsPrinted;
 
-  logFile.open("log.dat", ios::out);
+  logFile.open("log.dat", std::ios::out);
 
   // Capture SIGINT signal.
   if (signal(SIGINT, sigHandler) == SIG_ERR)
@@ -274,7 +274,7 @@ int main(int argc, char **argv)
   timeLastStatsPrinted = sensor.time_stamp;
 
   reset();
-  std::this_thread::sleep_for(std::chrono::milliseconds(500));
+  usleep(500000);
 
   while (running)
   {
