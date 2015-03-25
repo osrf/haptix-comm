@@ -23,6 +23,7 @@
 #include <cmath>
 #include <iomanip>
 #include <thread>
+#ifndef _WIN32
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics/mean.hpp>
 #include <boost/accumulators/statistics/median.hpp>
@@ -30,6 +31,7 @@
 #include <boost/accumulators/statistics/max.hpp>
 #include <boost/accumulators/statistics/stats.hpp>
 #include <boost/accumulators/statistics/variance.hpp>
+#endif
 #include <signal.h>
 #include <stdio.h>
 #include <time.h>
