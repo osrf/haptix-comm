@@ -33,13 +33,14 @@
 #include <time.h>
 #include <haptix/comm/haptix.h>
 #include <chrono>
+#include <fstream>
 #include <iostream>
 #ifdef _WIN32
 #include <windows.h>
 #endif
 
 typedef std::chrono::steady_clock::time_point Timestamp;
-typedef boost::accumulators::accumulator_set<double, boost::accumulators::stats<
+typedef boost::accumulators::accumulator_set<long, boost::accumulators::stats<
           boost::accumulators::tag::mean,
           boost::accumulators::tag::median(boost::accumulators::with_p_square_quantile),
           boost::accumulators::tag::variance,
@@ -96,7 +97,10 @@ int main(int argc, char **argv)
   hxSensor sensor;
   float targetWristPos = 1.0;
   Stats stats;
+  std::ofstream myfile;
   static const float kThreshold = 0.00001;
+
+  myfile.open("1.dat");
 
   // Capture SIGINT signal.
   if (signal(SIGINT, sigHandler) == SIG_ERR)
@@ -151,8 +155,8 @@ int main(int argc, char **argv)
   float lastDPos = dPos;
 
   cmd.ref_pos[2] = targetWristPos;
-  Timestamp cmdSent = std::chrono::steady_clock::now();
-  Timestamp last = std::chrono::steady_clock::now();
+  hxTime cmdSent = sensor.time_stamp;
+  hxTime last = sensor.time_stamp;
 
   // Send commands as fast as we can.
   while (running == 1)
@@ -169,18 +173,25 @@ int main(int argc, char **argv)
     if (lastDPos - dPos > kThreshold)
     {
       // Update stats.
-      Timestamp cmdApplied = std::chrono::steady_clock::now();
-      std::chrono::duration<double> cmdElapsed = cmdApplied - cmdSent;
-      float ms = std::chrono::duration_cast<
-        std::chrono::milliseconds>(cmdElapsed).count();
-      stats(ms);
+      hxTime cmdApplied = sensor.time_stamp;
+
+      long cmdElapsed = (((cmdApplied.sec - cmdSent.sec) * 1000000000)
+        + (cmdApplied.nsec - cmdSent.nsec)) / 1000000.0;
+
+      //std::chrono::duration<double> cmdElapsed = cmdApplied - cmdSent;
+      //float ms = std::chrono::duration_cast<
+      //  std::chrono::milliseconds>(cmdElapsed).count();
+      stats(cmdElapsed);
+
+      // Update log file.
+      myfile << " " << cmdElapsed << std::endl;
 
       // Change wrist direction.
       targetWristPos = -targetWristPos;
       cmd.ref_pos[2] = targetWristPos;
 
       dPos = std::abs(targetWristPos - sensor.motor_pos[2]);
-      cmdSent = std::chrono::steady_clock::now();
+      cmdSent = sensor.time_stamp;
     }
 
     lastDPos = dPos;
@@ -207,6 +218,8 @@ int main(int argc, char **argv)
     printf("hx_close(): Request error.\n");
     return -1;
   }
+
+  myFile.close();
 
   return 0;
 }

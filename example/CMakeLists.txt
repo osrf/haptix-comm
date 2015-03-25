@@ -86,9 +86,11 @@ target_link_libraries(joint_stress ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPORT
 add_executable(joints_stress hx_joints_stress.c)
 target_link_libraries(joints_stress ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARIES} ${EXTRA_LIBRARIES})
 
-add_executable(benchmark hx_benchmark.cc)
-target_link_libraries(benchmark ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARIES} ${EXTRA_LIBRARIES})
+#add_executable(benchmark hx_benchmark.cc)
+#target_link_libraries(benchmark ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARIES} ${EXTRA_LIBRARIES})
 
+add_executable(benchmark2 hx_benchmark2.cc)
+target_link_libraries(benchmark2 ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARIES} ${EXTRA_LIBRARIES})
 
 if (MSVC)
 # Copy the ZMQ DLLs.
@@ -96,7 +98,7 @@ if (MSVC)
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
       "../../../ZeroMQ 3.2.4/bin/libzmq-v120-mt-3_2_4.dll"
       $<TARGET_FILE_DIR:requester> VERBATIM)
-  
+
   add_custom_command(TARGET requester POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
       "../../../ZeroMQ 3.2.4/bin/libzmq-v120-mt-gd-3_2_4.dll"
