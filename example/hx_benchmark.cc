@@ -41,13 +41,14 @@
 #include <windows.h>
 #endif
 
-typedef std::chrono::steady_clock::time_point Timestamp;
+#ifndef _WIN32
 typedef boost::accumulators::accumulator_set<long, boost::accumulators::stats<
           boost::accumulators::tag::mean,
           boost::accumulators::tag::median(boost::accumulators::with_p_square_quantile),
           boost::accumulators::tag::variance,
           boost::accumulators::tag::min,
           boost::accumulators::tag::max>> Stats;
+#endif
 
 int running = 1;
 
@@ -58,6 +59,7 @@ void sigHandler(int signo)
   running = 0;
 }
 
+#ifndef _WIN32
 //////////////////////////////////////////////////
 void printStats(const Stats &_stats)
 {
@@ -80,12 +82,21 @@ void printStats(const Stats &_stats)
             << std::setw(10) << sqrt(boost::accumulators::variance(_stats))
             << std::endl;
 }
+#endif
 
 //////////////////////////////////////////////////
 long elapsedMs(hxTime _time1, hxTime _time2)
 {
   return ((_time1.sec + (_time1.nsec / 1000000000.0)) -
    (_time2.sec + (_time2.nsec / 1000000000.0))) * 1000;
+}
+
+//////////////////////////////////////////////////
+void updateLogFile(const hxTime *_time, const long _elapsed,
+  std::ofstream *_file)
+{
+  float fTime = _time->sec + (_time->nsec / 1000000000.0);
+  *_file << fTime << " " << _elapsed << std::endl;
 }
 
 //////////////////////////////////////////////////
@@ -96,11 +107,13 @@ int main(int argc, char **argv)
   hxCommand cmd;
   hxSensor sensor;
   float targetWristPos = 1.0;
+#ifndef _WIN32
   Stats stats;
+#endif
   std::ofstream logFile;
   static const float kThreshold = 0.00001;
 
-  logFile.open("1.dat");
+  logFile.open("log2.dat", std::ios::out);
 
   // Capture SIGINT signal.
   if (signal(SIGINT, sigHandler) == SIG_ERR)
@@ -162,10 +175,12 @@ int main(int argc, char **argv)
       hxTime cmdApplied = sensor.time_stamp;
 
       long cmdElapsed = elapsedMs(cmdApplied, cmdSent);
+#ifndef _WIN32
       stats(cmdElapsed);
+#endif
 
       // Update log file.
-      // myfile << " " << cmdElapsed << std::endl;
+      updateLogFile(&cmdSent, cmdElapsed, &logFile);
 
       // Change wrist direction.
       targetWristPos = -targetWristPos;
@@ -177,12 +192,14 @@ int main(int argc, char **argv)
 
     lastDPos = dPos;
 
+#ifndef _WIN32
     // Print stats if needed.
     if (elapsedMs(sensor.time_stamp, timeLastStatsPrinted) > 2000)
     {
       printStats(stats);
       timeLastStatsPrinted = sensor.time_stamp;
     }
+#endif
   }
 
   // Disconnect from the simulator / hardware
