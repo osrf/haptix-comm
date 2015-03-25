@@ -274,7 +274,7 @@ int main(int argc, char **argv)
   timeLastStatsPrinted = sensor.time_stamp;
 
   reset();
-  usleep(500000);
+  std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
   while (running)
   {
