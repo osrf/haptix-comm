@@ -21,6 +21,7 @@
 #endif
 #include <cmath>
 #include <iomanip>
+#ifndef _WIN32
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics/mean.hpp>
 #include <boost/accumulators/statistics/median.hpp>
@@ -28,6 +29,7 @@
 #include <boost/accumulators/statistics/max.hpp>
 #include <boost/accumulators/statistics/stats.hpp>
 #include <boost/accumulators/statistics/variance.hpp>
+#endif
 #include <signal.h>
 #include <stdio.h>
 #include <time.h>
@@ -40,12 +42,14 @@
 #endif
 
 typedef std::chrono::steady_clock::time_point Timestamp;
+#ifndef _WIN32
 typedef boost::accumulators::accumulator_set<long, boost::accumulators::stats<
   boost::accumulators::tag::mean,
   boost::accumulators::tag::median(boost::accumulators::with_p_square_quantile),
   boost::accumulators::tag::variance,
   boost::accumulators::tag::min,
   boost::accumulators::tag::max>> Stats;
+#endif
 
 int running = 1;
 
@@ -56,6 +60,7 @@ void sigHandler(int signo)
   running = 0;
 }
 
+#ifndef _WIN32
 //////////////////////////////////////////////////
 void printStats(const Stats &_stats)
 {
@@ -78,6 +83,7 @@ void printStats(const Stats &_stats)
             << std::setw(10) << sqrt(boost::accumulators::variance(_stats))
             << std::endl;
 }
+#endif
 
 //////////////////////////////////////////////////
 void reset()
@@ -287,6 +293,7 @@ int main(int argc, char **argv)
 
     updateLogFile(&timeCmdSent, elapsedUntilContact, &logFile);
 
+#ifndef _WIN32
     long elapsedSinceLastStats = elapsedMs(timeNow, timeLastStatsPrinted);
     // Print stats if needed.
     if (elapsedMs(timeNow, timeLastStatsPrinted) > 2000)
@@ -294,6 +301,7 @@ int main(int argc, char **argv)
       printStats(stats);
       timeLastStatsPrinted = timeNow;
     }
+#endif
 
     reset();
     usleep(500000);
