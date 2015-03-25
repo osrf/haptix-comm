@@ -19,8 +19,10 @@
 #include <windows.h>
 #define _USE_MATH_DEFINES
 #endif
+#include <chrono>
 #include <cmath>
 #include <iomanip>
+#include <thread>
 #ifndef _WIN32
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics/mean.hpp>
@@ -88,7 +90,7 @@ void printStats(const Stats &_stats)
 //////////////////////////////////////////////////
 void reset()
 {
-  const float kThreshold = 0.001;
+  const float kThreshold = 0.001f;
   hxCommand cmd;
   hxSensor sensor;
 
@@ -246,13 +248,15 @@ int main(int argc, char **argv)
   hxRobotInfo robotInfo;
   hxCommand cmd;
   hxSensor sensor;
+#ifndef _WIN32
   Stats stats;
+#endif
   std::ofstream logFile;
   hxTime timeCmdSent;
   hxTime timeNow;
   hxTime timeLastStatsPrinted;
 
-  logFile.open("log.dat");
+  logFile.open("log.dat", ios::out);
 
   // Capture SIGINT signal.
   if (signal(SIGINT, sigHandler) == SIG_ERR)
@@ -270,7 +274,7 @@ int main(int argc, char **argv)
   timeLastStatsPrinted = sensor.time_stamp;
 
   reset();
-  usleep(500000);
+  std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
   while (running)
   {
@@ -279,18 +283,21 @@ int main(int argc, char **argv)
     waitForContact(&timeNow);
     // Stop timer.
     long elapsedUntilContact = elapsedMs(timeNow, timeCmdSent);
+#ifndef _WIN32
     stats(elapsedUntilContact);
+#endif
     stop();
     updateLogFile(&timeCmdSent, elapsedUntilContact, &logFile);
-    usleep(500000);
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
     up(&timeCmdSent);
     // Start timer.
     waitForNoContact(&timeNow);
     // Stop timer.
     long elapsedUntilNoContact = elapsedMs(timeNow, timeCmdSent);
+#ifndef _WIN32
     stats(elapsedUntilNoContact);
-
+#endif
     updateLogFile(&timeCmdSent, elapsedUntilContact, &logFile);
 
 #ifndef _WIN32
@@ -304,7 +311,7 @@ int main(int argc, char **argv)
 #endif
 
     reset();
-    usleep(500000);
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
   }
 
   logFile.close();
