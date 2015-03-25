@@ -86,8 +86,8 @@ target_link_libraries(joint_stress ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPORT
 add_executable(joints_stress hx_joints_stress.c)
 target_link_libraries(joints_stress ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARIES} ${EXTRA_LIBRARIES})
 
-#add_executable(benchmark hx_benchmark.cc)
-#target_link_libraries(benchmark ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARIES} ${EXTRA_LIBRARIES})
+add_executable(benchmark hx_benchmark.cc)
+target_link_libraries(benchmark ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARIES} ${EXTRA_LIBRARIES})
 
 add_executable(benchmark2 hx_benchmark2.cc)
 target_link_libraries(benchmark2 ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARIES} ${EXTRA_LIBRARIES})

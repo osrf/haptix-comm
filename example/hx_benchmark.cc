@@ -19,8 +19,10 @@
 #include <windows.h>
 #define _USE_MATH_DEFINES
 #endif
+#include <chrono>
 #include <cmath>
 #include <iomanip>
+#include <thread>
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics/mean.hpp>
 #include <boost/accumulators/statistics/median.hpp>
@@ -57,35 +59,33 @@ void sigHandler(int signo)
 }
 
 //////////////////////////////////////////////////
-void printStats(const Stats &_stats, Timestamp &_last)
+void printStats(const Stats &_stats)
 {
-  // Check if it's time to print stats.
-  Timestamp now = std::chrono::steady_clock::now();
-  std::chrono::duration<double> elapsed = now - _last;
-
-  if (std::chrono::duration_cast<std::chrono::milliseconds>
-       (elapsed).count() >= 1000)
+  // Print the header.
+  static bool first = true;
+  if (first)
   {
-    // Print the header.
-    static bool first = true;
-    if (first)
-    {
-      std::cout << std::setw(10) << "Mean" << std::setw(10) << "Median"
-              << std::setw(10) << "Min" << std::setw(10) << "Max"
-              << std::setw(10) << "Stddev" << std::endl;
-      first = false;
-    }
-
-    // Print a new row of stats.
-    std::cout << std::fixed << std::setprecision(2)
-              << std::setw(10) << boost::accumulators::mean(_stats)
-              << std::setw(10) << boost::accumulators::median(_stats)
-              << std::setw(10) << boost::accumulators::min(_stats)
-              << std::setw(10) << boost::accumulators::max(_stats)
-              << std::setw(10) << sqrt(boost::accumulators::variance(_stats))
-              << std::endl;
-    _last = std::chrono::steady_clock::now();
+    std::cout << std::setw(10) << "Mean" << std::setw(10) << "Median"
+            << std::setw(10) << "Min" << std::setw(10) << "Max"
+            << std::setw(10) << "Stddev" << std::endl;
+    first = false;
   }
+
+  // Print a new row of stats.
+  std::cout << std::fixed << std::setprecision(2)
+            << std::setw(10) << boost::accumulators::mean(_stats)
+            << std::setw(10) << boost::accumulators::median(_stats)
+            << std::setw(10) << boost::accumulators::min(_stats)
+            << std::setw(10) << boost::accumulators::max(_stats)
+            << std::setw(10) << sqrt(boost::accumulators::variance(_stats))
+            << std::endl;
+}
+
+//////////////////////////////////////////////////
+long elapsedMs(hxTime _time1, hxTime _time2)
+{
+  return ((_time1.sec + (_time1.nsec / 1000000000.0)) -
+   (_time2.sec + (_time2.nsec / 1000000000.0))) * 1000;
 }
 
 //////////////////////////////////////////////////
@@ -97,10 +97,10 @@ int main(int argc, char **argv)
   hxSensor sensor;
   float targetWristPos = 1.0;
   Stats stats;
-  std::ofstream myfile;
+  std::ofstream logFile;
   static const float kThreshold = 0.00001;
 
-  myfile.open("1.dat");
+  logFile.open("1.dat");
 
   // Capture SIGINT signal.
   if (signal(SIGINT, sigHandler) == SIG_ERR)
@@ -109,26 +109,6 @@ int main(int argc, char **argv)
   // Capture SIGTERM signal.
   if (signal(SIGTERM, sigHandler) == SIG_ERR)
     printf("Error catching SIGTERM\n");
-
-  // Connect to the simulator / hardware
-  if (hx_connect(NULL, 0) != hxOK)
-  {
-    printf("hx_connect(): Request error.\n");
-    return -1;
-  }
-
-  // Requesting robot information.
-  if (hx_robot_info(&robotInfo) != hxOK)
-  {
-    printf("hx_getrobotinfo(): Request error.\n");
-    return -1;
-  }
-
-  if (hx_read_sensors(&sensor) != hxOK)
-  {
-    printf("hx_read_sensors(): Request error.\n");
-    return -1;
-  }
 
   memset(&cmd, 0, sizeof(hxCommand));
 
@@ -149,14 +129,20 @@ int main(int argc, char **argv)
   }
 
   // Let the hand reach the target.
-  usleep(2000000);
+  std::this_thread::sleep_for(std::chrono::milliseconds(2000));
 
-  float dPos = std::abs(targetWristPos - sensor.motor_pos[2]);
+  if (hx_read_sensors(&sensor) != hxOK)
+  {
+    printf("hx_update(): Request error.\n");
+    return -1;
+  }
+
+  float dPos = std::abs(targetWristPos - sensor.joint_pos[2]);
   float lastDPos = dPos;
 
   cmd.ref_pos[2] = targetWristPos;
   hxTime cmdSent = sensor.time_stamp;
-  hxTime last = sensor.time_stamp;
+  hxTime timeLastStatsPrinted = sensor.time_stamp;
 
   // Send commands as fast as we can.
   while (running == 1)
@@ -168,48 +154,35 @@ int main(int argc, char **argv)
       continue;
     }
 
-    dPos = std::abs(targetWristPos - sensor.motor_pos[2]);
+    dPos = std::abs(targetWristPos - sensor.joint_pos[2]);
 
     if (lastDPos - dPos > kThreshold)
     {
       // Update stats.
       hxTime cmdApplied = sensor.time_stamp;
 
-      long cmdElapsed = (((cmdApplied.sec - cmdSent.sec) * 1000000000)
-        + (cmdApplied.nsec - cmdSent.nsec)) / 1000000.0;
-
-      //std::chrono::duration<double> cmdElapsed = cmdApplied - cmdSent;
-      //float ms = std::chrono::duration_cast<
-      //  std::chrono::milliseconds>(cmdElapsed).count();
+      long cmdElapsed = elapsedMs(cmdApplied, cmdSent);
       stats(cmdElapsed);
 
       // Update log file.
-      myfile << " " << cmdElapsed << std::endl;
+      // myfile << " " << cmdElapsed << std::endl;
 
       // Change wrist direction.
       targetWristPos = -targetWristPos;
       cmd.ref_pos[2] = targetWristPos;
 
-      dPos = std::abs(targetWristPos - sensor.motor_pos[2]);
+      dPos = std::abs(targetWristPos - sensor.joint_pos[2]);
       cmdSent = sensor.time_stamp;
     }
 
     lastDPos = dPos;
 
     // Print stats if needed.
-    printStats(stats, last);
-
-    // Here is where you would do your other work, such as reading from EMG
-    // sensors, decoding that data, computing your next control command,
-    // etc.  In this example, we're just sleeping for 10ms.
-    //
-    // You might also want to sleep in your code, because there's a maximum
-    // rate at which the limb can process new commands and produce new
-    // sensor readings.  Depending on how long your computation takes, you
-    // might want to wait here until it's time to send a new command.  Or
-    // you might want to run as fast as possible, computing and sending new
-    // commands constantly (but knowing that not all of them will be
-    // executed by the limb).
+    if (elapsedMs(sensor.time_stamp, timeLastStatsPrinted) > 2000)
+    {
+      printStats(stats);
+      timeLastStatsPrinted = sensor.time_stamp;
+    }
   }
 
   // Disconnect from the simulator / hardware
@@ -219,7 +192,7 @@ int main(int argc, char **argv)
     return -1;
   }
 
-  myFile.close();
+  logFile.close();
 
   return 0;
 }
