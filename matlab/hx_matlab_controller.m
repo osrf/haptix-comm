@@ -21,7 +21,11 @@ hx_connect();
 
 deviceInfo = hx_robot_info();
 
-while counter < 2000
+total = tic
+
+cmdSent = tic;
+
+while counter < 250
   % Initialize the command scalar structure.
   cmd.ref_pos = [];
   cmd.ref_vel_max = [];
@@ -39,7 +43,7 @@ while counter < 2000
 
   % Create a new command based on a sinusoidal wave.
   for n = 0:deviceInfo.motor_count
-    cmd.ref_pos(end + 1) = 0.5 * sin(0.05 * 2.0 * pi * counter * 0.01);
+    cmd.ref_pos(end + 1) = 0.5 * sin(0.05 * 2.0 * pi * counter * 0.08);
     % We could set a desired maximum velocity
     % cmd.ref_vel_max(end + 1) = 1.0;
     % We could set a desired controller position gain
@@ -48,15 +52,21 @@ while counter < 2000
     % cmd.gain_vel(end + 1) = 1.0;
   end
 
+  elapsedCmd = toc(cmdSent);
+  pause(0.02 - elapsedCmd);
+
+  fprintf('Elapsed: %f ms\n', 0.02 - elapsedCmd)
+
   cmdSent = tic;
+
   % Send the new joint command and receive the state update.
   state = hx_update(cmd);
-  elapsedCmd = toc(cmdSent);
-  fprintf('Elapsed: %f ms\n', elapsedCmd)
+
 
   counter = counter + 1;
-
-  pause(0.001);
 end
+
+totalElapsed = toc(total)
+fprintf('Elapsed: %f ms\n', totalElapsed)
 
 hx_close();
