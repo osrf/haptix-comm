@@ -48,8 +48,11 @@ while counter < 2000
     % cmd.gain_vel(end + 1) = 1.0;
   end
 
+  cmdSent = tic;
   % Send the new joint command and receive the state update.
   state = hx_update(cmd);
+  elapsedCmd = toc(cmdSent);
+  fprintf('Elapsed: %f ms\n', elapsedCmd)
 
   counter = counter + 1;
 
