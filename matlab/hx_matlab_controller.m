@@ -53,9 +53,11 @@ while counter < 250
   end
 
   elapsedCmd = toc(cmdSent);
-  pause(0.02 - elapsedCmd);
+  while elapsedCmd < 0.02
+    elapsedCmd = toc(cmdSent);
+  end
 
-  fprintf('Elapsed: %f ms\n', 0.02 - elapsedCmd)
+  fprintf('Elapsed: %f ms\n', elapsedCmd)
 
   cmdSent = tic;
 
