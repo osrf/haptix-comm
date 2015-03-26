@@ -43,8 +43,7 @@ void printState(const hxRobotInfo *_robotInfo, const hxSensor *_sensor)
 {
   int i;
 
-  printf("\tTime: %d %d\n", 
-    _sensor->time_stamp.sec, _sensor->time_stamp.nsec);
+  printf("\tTime: %d %d\n", _sensor->time_stamp.sec, _sensor->time_stamp.nsec);
 
   printf("\tMotors:\n");
   for (i = 0; i < _robotInfo->motor_count; ++i)
@@ -115,7 +114,7 @@ int main(int argc, char **argv)
   if (argc > 3)
     amplitude = atof(argv[2]);
 
-  printf("freq: %s ampl: %s\n", argv[1], argv[2]);
+  printf("freq: %f ampl: %f\n", frequency, amplitude);
 
   int i;
   int counter = 0;
