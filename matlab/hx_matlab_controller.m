@@ -21,8 +21,6 @@ hx_connect();
 
 deviceInfo = hx_robot_info();
 
-total = tic
-
 cmdSent = tic;
 
 while counter < 250
@@ -52,23 +50,18 @@ while counter < 250
     % cmd.gain_vel(end + 1) = 1.0;
   end
 
+  % Busy wait. pause() is not accurate enough on Windows.
   elapsedCmd = toc(cmdSent);
   while elapsedCmd < 0.02
     elapsedCmd = toc(cmdSent);
   end
-
-  fprintf('Elapsed: %f ms\n', elapsedCmd)
 
   cmdSent = tic;
 
   % Send the new joint command and receive the state update.
   state = hx_update(cmd);
 
-
   counter = counter + 1;
 end
-
-totalElapsed = toc(total)
-fprintf('Elapsed: %f ms\n', totalElapsed)
 
 hx_close();
