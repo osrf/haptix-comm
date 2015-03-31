@@ -43,6 +43,7 @@ from __future__ import print_function
 NAME="check_test_ran.py"
 
 import os
+import re
 import sys
 import subprocess
 
@@ -54,8 +55,11 @@ def usage():
     sys.exit(getattr(os, 'EX_USAGE', 1))
 
 def run_grep(filename, arg):
-    process = subprocess.Popen(['grep', arg, filename], stdout=subprocess.PIPE)
-    stdout, stderr = process.communicate()
+    stdout = ""
+    stderr = ""
+    for line in open(filename, 'r'):
+        if re.search(arg, line):
+            stdout += line
     return stdout, stderr
 
 def run_xsltproc(stylesheet, document):
