@@ -18,11 +18,9 @@
 #include "haptix/comm/haptix.h"
 #include "haptix/comm/haptix_sim.h"
 #include "haptix/comm/haptix_sim_utils.h"
-#include "msg/hxCamera.pb.h"
-#include "msg/hxContact.pb.h"
+#include "msg/hxContactPoint.pb.h"
 #include "msg/hxEmpty.pb.h"
 #include "msg/hxInt.pb.h"
-#include "msg/hxJacobian.pb.h"
 #include "msg/hxJoint.pb.h"
 #include "msg/hxLink.pb.h"
 #include "msg/hxModel.pb.h"
@@ -30,6 +28,7 @@
 #include "msg/hxParam.pb.h"
 #include "msg/hxSimInfo.pb.h"
 #include "msg/hxString.pb.h"
+#include "msg/hxTime.pb.h"
 #include "msg/hxTransform.pb.h"
 #include "msg/hxVector3.pb.h"
 
@@ -44,16 +43,16 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
-  hxResult hxs_camera(hxCamera *_camera)
+  hxResult hxs_camera_transform(hxTransform *_transform)
   {
     const std::string service = "/haptix/gazebo/hxs_camera";
     haptix::comm::msgs::hxEmpty req;
-    haptix::comm::msgs::hxCamera rep;
-    return hxs_call(service, __func__, req, rep, _camera, hxs_convertCamera);
+    haptix::comm::msgs::hxTransform rep;
+    return hxs_call(service, __func__, req, rep, _transform, hxs_convertTransform);
   }
 
   //////////////////////////////////////////////////
-  hxResult hxs_camera_transform(const hxTransform *_transform)
+  hxResult hxs_set_camera_transform(const hxTransform *_transform)
   {
     const std::string service = "/haptix/gazebo/hxs_camera_transform";
     haptix::comm::msgs::hxTransform req;
@@ -66,30 +65,12 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
-  hxResult hxs_contacts(hxContacts *_contact)
+  hxResult hxs_contacts(hxContactPoints *_contact)
   {
     const std::string service = "/haptix/gazebo/hxs_contacts";
     haptix::comm::msgs::hxEmpty req;
-    haptix::comm::msgs::hxContact_V rep;
-    return hxs_call(service, __func__, req, rep, _contact, hxs_convertContacts);
-  }
-
-  //////////////////////////////////////////////////
-  hxResult hxs_jacobian(const hxLink *_link, const hxVector3 *_point,
-                        hxJacobian *_jacobian)
-  {
-    const std::string service = "/haptix/gazebo/hxs_jacobian";
-    haptix::comm::msgs::hxParam req;
-    haptix::comm::msgs::hxJacobian rep;
-
-    if (!hxs_convertLink(_link, req.mutable_link()))
-      return hxERROR;
-
-    if (!hxs_convertVector3(_point, req.mutable_vector3()))
-      return hxERROR;
-
-    return hxs_call(service, __func__, req, rep, _jacobian,
-      hxs_convertJacobian);
+    haptix::comm::msgs::hxContactPoint_V rep;
+    return hxs_call(service, __func__, req, rep, _contact, hxs_convertContactPoints);
   }
 
   //////////////////////////////////////////////////
@@ -188,64 +169,46 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
-  hxResult hxs_linear_accel(int _id, const hxVector3 *_linaccel)
+  hxResult hxs_force(const char *_modelName, const char *_linkName,
+      const hxVector3 *_force, const double _duration)
   {
-    const std::string service = "/haptix/gazebo/hxs_linear_accel";
-    haptix::comm::msgs::hxParam req;
-    haptix::comm::msgs::hxEmpty rep;
-    req.set_id(_id);
-    if (!hxs_convertVector3(_linaccel, req.mutable_vector3()))
-      return hxERROR;
-    return hxs_call(service, __func__, req, rep);
-  }
-
-  //////////////////////////////////////////////////
-  hxResult hxs_angular_accel(int _id, const hxVector3 *_angaccel)
-  {
-    const std::string service = "/haptix/gazebo/hxs_angular_accel";
-    haptix::comm::msgs::hxParam req;
-    haptix::comm::msgs::hxEmpty rep;
-    req.set_id(_id);
-    if (!hxs_convertVector3(_angaccel, req.mutable_vector3()))
-      return hxERROR;
-    return hxs_call(service, __func__, req, rep);
-  }
-
-  //////////////////////////////////////////////////
-  hxResult hxs_force(const hxLink *_link, const hxVector3 *_force)
-  {
-    if (!_link)
+    // TODO duration 
+    /*if (!_link)
     {
       std::cerr << "hxs_force() error: link is NULL" << std::endl;
       return hxERROR;
-    }
+    }*/
 
     const std::string service = "/haptix/gazebo/hxs_force";
     haptix::comm::msgs::hxParam req;
     haptix::comm::msgs::hxEmpty rep;
-    if (!hxs_convertLink(_link, req.mutable_link()))
+    /*if (!hxs_convertLink(_link, req.mutable_link()))
       return hxERROR;
     if (!hxs_convertVector3(_force, req.mutable_vector3()))
-      return hxERROR;
+      return hxERROR;*/
+    // TODO: send strings
     return hxs_call(service, __func__, req, rep);
   }
 
   //////////////////////////////////////////////////
-  hxResult hxs_torque(const hxLink *_link, const hxVector3 *_torque)
+  hxResult hxs_torque(const char *_modelName, const char *_linkName,
+      const hxVector3 *_torque, const double _duration)
   {
-    if (!_link)
+    // TODO duration 
+    /*if (!_link)
     {
       std::cerr << "hxs_force() error: link is NULL" << std::endl;
       return hxERROR;
-    }
+    }*/
 
     const std::string service = "/haptix/gazebo/hxs_torque";
     haptix::comm::msgs::hxParam req;
     haptix::comm::msgs::hxEmpty rep;
-    if (!hxs_convertLink(_link, req.mutable_link()))
+    /*if (!hxs_convertLink(_link, req.mutable_link()))
       return hxERROR;
     if (!hxs_convertVector3(_torque, req.mutable_vector3()))
-      return hxERROR;
+      return hxERROR;*/
+    // TODO: send strings
     return hxs_call(service, __func__, req, rep);
   }
 
@@ -284,6 +247,15 @@ extern "C" {
     haptix::comm::msgs::hxEmpty req;
     haptix::comm::msgs::hxEmpty rep;
     return hxs_call(service, __func__, req, rep);
+  }
+
+  //////////////////////////////////////////////////
+  hxResult hxs_get_timer(hxTime *_time)
+  {
+    const std::string service = "/haptix/gazebo/hxs_get_timer";
+    haptix::comm::msgs::hxEmpty req;
+    haptix::comm::msgs::hxTime rep;
+    return hxs_call(service, __func__, req, rep, _time, hxs_convertTime);
   }
 
   //////////////////////////////////////////////////

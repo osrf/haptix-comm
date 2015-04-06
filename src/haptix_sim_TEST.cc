@@ -19,31 +19,30 @@
 #include "gtest/gtest.h"
 #include "haptix/comm/haptix.h"
 #include "haptix/comm/haptix_sim.h"
-#include "msg/hxCamera.pb.h"
-#include "msg/hxContact.pb.h"
-#include "msg/hxContact_V.pb.h"
+#include "msg/hxContactPoint.pb.h"
+#include "msg/hxContactPoint_V.pb.h"
 #include "msg/hxEmpty.pb.h"
 #include "msg/hxInt.pb.h"
-#include "msg/hxJacobian.pb.h"
 #include "msg/hxParam.pb.h"
 #include "msg/hxSimInfo.pb.h"
 #include "msg/hxString.pb.h"
+#include "msg/hxTime.pb.h"
 #include "msg/hxTransform.pb.h"
 
 /// \brief Global constants.
 const int kNumModels         = 5;
 const int kNumLinksPerModel  = 40;
 const int kNumJointsPerModel = 20;
-const int kNumContacts       = 30;
+const int kNumContactPoints       = 30;
 
 /// \brief Global variables.
 haptix::comm::msgs::hxSimInfo simState;
-haptix::comm::msgs::hxContact_V simContactsState;
+haptix::comm::msgs::hxContactPoint_V simContactPointsState;
 
 void setup()
 {
   simState.Clear();
-  simContactsState.Clear();
+  simContactPointsState.Clear();
 
   // Create a fake simulation state.
   // Models.
@@ -58,7 +57,6 @@ void setup()
     model->mutable_transform()->mutable_orient()->set_x(i + 0.4);
     model->mutable_transform()->mutable_orient()->set_y(i + 0.5);
     model->mutable_transform()->mutable_orient()->set_z(i + 0.6);
-    model->set_is_static(1);
     model->set_id(i);
     // Links.
     for (int j = 0; j < kNumLinksPerModel; ++j)
@@ -101,20 +99,20 @@ void setup()
   }
 
   // Camera.
-  simState.mutable_camera()->mutable_transform()->mutable_pos()->set_x(30.0);
-  simState.mutable_camera()->mutable_transform()->mutable_pos()->set_y(30.1);
-  simState.mutable_camera()->mutable_transform()->mutable_pos()->set_z(30.2);
-  simState.mutable_camera()->mutable_transform()->mutable_orient()->set_w(30.3);
-  simState.mutable_camera()->mutable_transform()->mutable_orient()->set_x(30.4);
-  simState.mutable_camera()->mutable_transform()->mutable_orient()->set_y(30.5);
-  simState.mutable_camera()->mutable_transform()->mutable_orient()->set_z(30.6);
+  simState.mutable_camera_transform()->mutable_pos()->set_x(30.0);
+  simState.mutable_camera_transform()->mutable_pos()->set_y(30.1);
+  simState.mutable_camera_transform()->mutable_pos()->set_z(30.2);
+  simState.mutable_camera_transform()->mutable_orient()->set_w(30.3);
+  simState.mutable_camera_transform()->mutable_orient()->set_x(30.4);
+  simState.mutable_camera_transform()->mutable_orient()->set_y(30.5);
+  simState.mutable_camera_transform()->mutable_orient()->set_z(30.6);
 
   // Create some contacts.
-  for (int i = 0; i < kNumContacts; ++i)
+  for (int i = 0; i < kNumContactPoints; ++i)
   {
-    haptix::comm::msgs::hxContact *contact = simContactsState.add_contacts();
-    contact->set_body1(i);
-    contact->set_body2(i + 1);
+    haptix::comm::msgs::hxContactPoint *contact = simContactPointsState.add_contacts();
+    contact->set_link1(i);
+    contact->set_link2(i + 1);
     contact->mutable_point()->set_x(i + 0.2);
     contact->mutable_point()->set_y(i + 0.3);
     contact->mutable_point()->set_z(i + 0.4);
@@ -159,7 +157,7 @@ void onHxsSimInfo(const std::string &_service,
 /// \brief Provide a "hxs_camera" service.
 void onHxsCamera(const std::string &_service,
   const haptix::comm::msgs::hxEmpty &/*_req*/,
-  haptix::comm::msgs::hxCamera &_rep,
+  haptix::comm::msgs::hxTransform &_rep,
   bool &_result)
 {
   _rep.Clear();
@@ -168,7 +166,7 @@ void onHxsCamera(const std::string &_service,
   EXPECT_EQ(_service, "/haptix/gazebo/hxs_camera");
 
   // Create some dummy response.
-  _rep = simState.camera();
+  _rep = simState.camera_transform();
 
   _result = true;
 }
@@ -188,7 +186,7 @@ void onHxsCameraTransform(const std::string &_service,
   std::string msg1, msg2;
 
   _req.SerializeToString(&msg1);
-  simState.camera().transform().SerializeToString(&msg2);
+  simState.camera_transform().SerializeToString(&msg2);
   EXPECT_EQ(msg1, msg2);
 
   _result = true;
@@ -196,9 +194,9 @@ void onHxsCameraTransform(const std::string &_service,
 
 //////////////////////////////////////////////////
 /// \brief Provide a "hxs_contacts" service.
-void onHxsContacts(const std::string &_service,
+void onHxsContactPoints(const std::string &_service,
   const haptix::comm::msgs::hxEmpty &/*_req*/,
-  haptix::comm::msgs::hxContact_V &_rep,
+  haptix::comm::msgs::hxContactPoint_V &_rep,
   bool &_result)
 {
   _rep.Clear();
@@ -207,57 +205,7 @@ void onHxsContacts(const std::string &_service,
   EXPECT_EQ(_service, "/haptix/gazebo/hxs_contacts");
 
   // Create some dummy response.
-  _rep = simContactsState;
-
-  _result = true;
-}
-
-//////////////////////////////////////////////////
-/// \brief Provide a "hxs_jacobian" service.
-void onHxsJacobian(const std::string &_service,
-  const haptix::comm::msgs::hxParam &_req,
-  haptix::comm::msgs::hxJacobian &_rep,
-  bool &_result)
-{
-  _rep.Clear();
-
-  // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_jacobian");
-
-  // Sanity check: The message should contain a link.
-  if (!_req.has_link())
-  {
-    std::cerr << "onHxsJacobian() error: Missing link in request" << std::endl;
-    return;
-  }
-
-  // Sanity check: The message should contain a point.
-  if (!_req.has_vector3())
-  {
-    std::cerr << "onHxsState() error: Missing point in request" << std::endl;
-    return;
-  }
-
-  // Check that the link has the expected values.
-  std::string msg1;
-  _req.link().SerializeToString(&msg1);
-  std::string msg2;
-  simState.models(0).links(0).SerializeToString(&msg2);
-  EXPECT_EQ(msg1, msg2);
-
-  // Check the point.
-  EXPECT_FLOAT_EQ(_req.vector3().x(), 1.1);
-  EXPECT_FLOAT_EQ(_req.vector3().y(), 1.2);
-  EXPECT_FLOAT_EQ(_req.vector3().z(), 1.3);
-
-  // Create some dummy Jacobian matrix.
-  for (int i = 0; i < kNumJointsPerModel; ++i)
-  {
-    haptix::comm::msgs::hxVector3 *column = _rep.add_columns();
-    column->set_x(i);
-    column->set_y(i + 0.1);
-    column->set_z(i + 0.2);
-  }
+  _rep = simContactPointsState;
 
   _result = true;
 }
@@ -809,7 +757,6 @@ TEST(hxsTest, hxs_simInfo)
     EXPECT_FLOAT_EQ(simInfo.models[i].transform.orient.x, i + 0.4);
     EXPECT_FLOAT_EQ(simInfo.models[i].transform.orient.y, i + 0.5);
     EXPECT_FLOAT_EQ(simInfo.models[i].transform.orient.z, i + 0.6);
-    EXPECT_FLOAT_EQ(simInfo.models[i].is_static, 1);
     EXPECT_FLOAT_EQ(simInfo.models[i].id, i);
     ASSERT_EQ(simInfo.models[i].link_count, kNumLinksPerModel);
     for (int j = 0; j < simInfo.models[i].link_count; ++j)
@@ -848,13 +795,13 @@ TEST(hxsTest, hxs_simInfo)
   }
 
   // Check the camera information.
-  EXPECT_FLOAT_EQ(simInfo.camera.transform.pos.x, 30.0);
-  EXPECT_FLOAT_EQ(simInfo.camera.transform.pos.y, 30.1);
-  EXPECT_FLOAT_EQ(simInfo.camera.transform.pos.z, 30.2);
-  EXPECT_FLOAT_EQ(simInfo.camera.transform.orient.w, 30.3);
-  EXPECT_FLOAT_EQ(simInfo.camera.transform.orient.x, 30.4);
-  EXPECT_FLOAT_EQ(simInfo.camera.transform.orient.y, 30.5);
-  EXPECT_FLOAT_EQ(simInfo.camera.transform.orient.z, 30.6);
+  EXPECT_FLOAT_EQ(simInfo.camera_transform.pos.x, 30.0);
+  EXPECT_FLOAT_EQ(simInfo.camera_transform.pos.y, 30.1);
+  EXPECT_FLOAT_EQ(simInfo.camera_transform.pos.z, 30.2);
+  EXPECT_FLOAT_EQ(simInfo.camera_transform.orient.w, 30.3);
+  EXPECT_FLOAT_EQ(simInfo.camera_transform.orient.x, 30.4);
+  EXPECT_FLOAT_EQ(simInfo.camera_transform.orient.y, 30.5);
+  EXPECT_FLOAT_EQ(simInfo.camera_transform.orient.z, 30.6);
 }
 
 //////////////////////////////////////////////////
@@ -864,27 +811,27 @@ TEST(hxsTest, hxs_camera)
   setup();
 
   ignition::transport::Node node;
-  hxCamera camInfo;
+  hxTransform camInfo;
 
   // Advertise the "hxs_camera" service.
   node.Advertise("/haptix/gazebo/hxs_camera", onHxsCamera);
 
   // Request camera information.
-  ASSERT_EQ(hxs_camera(&camInfo), hxOK);
+  ASSERT_EQ(hxs_camera_transform(&camInfo), hxOK);
 
   // Check the camera information.
-  EXPECT_FLOAT_EQ(camInfo.transform.pos.x, 30.0);
-  EXPECT_FLOAT_EQ(camInfo.transform.pos.y, 30.1);
-  EXPECT_FLOAT_EQ(camInfo.transform.pos.z, 30.2);
-  EXPECT_FLOAT_EQ(camInfo.transform.orient.w, 30.3);
-  EXPECT_FLOAT_EQ(camInfo.transform.orient.x, 30.4);
-  EXPECT_FLOAT_EQ(camInfo.transform.orient.y, 30.5);
-  EXPECT_FLOAT_EQ(camInfo.transform.orient.z, 30.6);
+  EXPECT_FLOAT_EQ(camInfo.pos.x, 30.0);
+  EXPECT_FLOAT_EQ(camInfo.pos.y, 30.1);
+  EXPECT_FLOAT_EQ(camInfo.pos.z, 30.2);
+  EXPECT_FLOAT_EQ(camInfo.orient.w, 30.3);
+  EXPECT_FLOAT_EQ(camInfo.orient.x, 30.4);
+  EXPECT_FLOAT_EQ(camInfo.orient.y, 30.5);
+  EXPECT_FLOAT_EQ(camInfo.orient.z, 30.6);
 }
 
 //////////////////////////////////////////////////
 /// \brief Check hxs_camera_transform.
-TEST(hxsTest, hxs_camera_transform)
+TEST(hxsTest, hxs_set_camera_transform)
 {
   setup();
 
@@ -901,7 +848,7 @@ TEST(hxsTest, hxs_camera_transform)
   node.Advertise("/haptix/gazebo/hxs_camera_transform", onHxsCameraTransform);
 
   // Set a camera transformation similar to the camera in simState.
-  ASSERT_EQ(hxs_camera_transform(&simInfo.camera.transform), hxOK);
+  ASSERT_EQ(hxs_camera_transform(&simInfo.camera_transform), hxOK);
 }
 
 //////////////////////////////////////////////////
@@ -911,19 +858,19 @@ TEST(hxsTest, hxs_contacts)
   setup();
 
   ignition::transport::Node node;
-  hxContacts contactsInfo;
+  hxContactPoints contactsInfo;
 
   // Advertise the "hxs_contacts" service.
-  node.Advertise("/haptix/gazebo/hxs_contacts", onHxsContacts);
+  node.Advertise("/haptix/gazebo/hxs_contacts", onHxsContactPoints);
 
   ASSERT_EQ(hxs_contacts(&contactsInfo), hxOK);
 
   // Check the contacts information.
-  ASSERT_EQ(contactsInfo.contactCount, kNumContacts);
+  ASSERT_EQ(contactsInfo.contactCount, kNumContactPoints);
   for (int i = 0; i < contactsInfo.contactCount; ++i)
   {
-    EXPECT_EQ(contactsInfo.contacts[i].body1, i);
-    EXPECT_EQ(contactsInfo.contacts[i].body2, i + 1);
+    EXPECT_EQ(contactsInfo.contacts[i].link1, i);
+    EXPECT_EQ(contactsInfo.contacts[i].link2, i + 1);
     EXPECT_FLOAT_EQ(contactsInfo.contacts[i].point.x, i + 0.2);
     EXPECT_FLOAT_EQ(contactsInfo.contacts[i].point.y, i + 0.3);
     EXPECT_FLOAT_EQ(contactsInfo.contacts[i].point.z, i + 0.4);
@@ -943,44 +890,6 @@ TEST(hxsTest, hxs_contacts)
     EXPECT_FLOAT_EQ(contactsInfo.contacts[i].force.x, i + 1.8);
     EXPECT_FLOAT_EQ(contactsInfo.contacts[i].force.y, i + 1.9);
     EXPECT_FLOAT_EQ(contactsInfo.contacts[i].force.z, i + 2);
-  }
-}
-
-//////////////////////////////////////////////////
-/// \brief Check hxs_jacobian.
-TEST(hxsTest, hxs_jacobian)
-{
-  setup();
-
-  ignition::transport::Node node;
-  hxVector3 point;
-  hxJacobian jacobian;
-  hxSimInfo simInfo;
-
-  // Advertise the "hxs_siminfo" service.
-  node.Advertise("/haptix/gazebo/hxs_siminfo", onHxsSimInfo);
-
-  // Advertise the "hxs_jacobian" service.
-  node.Advertise("/haptix/gazebo/hxs_jacobian", onHxsJacobian);
-
-  // Request simulation information.
-  ASSERT_EQ(hxs_siminfo(&simInfo), hxOK);
-
-  // Create a random point.
-  point.x = 1.1;
-  point.y = 1.2;
-  point.z = 1.3;
-
-  // Use the first link of the first model as an example.
-  ASSERT_EQ(hxs_jacobian(&simInfo.models[0].links[0], &point, &jacobian), hxOK);
-
-  // Check the Jacobian matrix.
-  EXPECT_EQ(jacobian.jointCount, kNumJointsPerModel);
-  for (int i = 0; i < jacobian.jointCount; ++i)
-  {
-    EXPECT_FLOAT_EQ(jacobian.mat[0][i], i);
-    EXPECT_FLOAT_EQ(jacobian.mat[1][i], i + 0.1);
-    EXPECT_FLOAT_EQ(jacobian.mat[2][i], i + 0.2);
   }
 }
 
@@ -1038,7 +947,6 @@ TEST(hxsTest, hxs_add_model)
   EXPECT_FLOAT_EQ(model.transform.orient.x, 0.4);
   EXPECT_FLOAT_EQ(model.transform.orient.y, 0.5);
   EXPECT_FLOAT_EQ(model.transform.orient.z, 0.6);
-  EXPECT_FLOAT_EQ(model.is_static, 1);
   EXPECT_FLOAT_EQ(model.id, 0);
   ASSERT_EQ(model.link_count, kNumLinksPerModel);
   for (int i = 0; i < model.link_count; ++i)
@@ -1156,46 +1064,6 @@ TEST(hxsTest, hxs_angular_velocity)
 }
 
 //////////////////////////////////////////////////
-/// \brief Check hxs_linear_accel.
-TEST(hxsTest, hxs_linear_accel)
-{
-  setup();
-
-  ignition::transport::Node node;
-  hxVector3 linaccel;
-  int id = 1;
-
-  // Advertise the "hxs_linear_accel" service.
-  node.Advertise("/haptix/gazebo/hxs_linear_accel", onHxsLinearAccel);
-
-  linaccel.x = 3.0;
-  linaccel.y = 3.1;
-  linaccel.z = 3.2;
-
-  ASSERT_EQ(hxs_linear_accel(id, &linaccel), hxOK);
-}
-
-//////////////////////////////////////////////////
-/// \brief Check hxs_angular_accel.
-TEST(hxsTest, hxs_angular_accel)
-{
-  setup();
-
-  ignition::transport::Node node;
-  hxVector3 angaccel;
-  int id = 1;
-
-  // Advertise the "hxs_angular_accel" service.
-  node.Advertise("/haptix/gazebo/hxs_angular_accel", onHxsAngularAccel);
-
-  angaccel.x = 4.0;
-  angaccel.y = 4.1;
-  angaccel.z = 4.2;
-
-  ASSERT_EQ(hxs_angular_accel(id, &angaccel), hxOK);
-}
-
-//////////////////////////////////////////////////
 /// \brief Check hxs_force.
 TEST(hxsTest, hxs_force)
 {
@@ -1217,7 +1085,8 @@ TEST(hxsTest, hxs_force)
   force.z = 5.3;
 
   // Use the first link of the first model in simState.
-  ASSERT_EQ(hxs_force(&simInfo.models[0].links[0], &force), hxOK);
+  ASSERT_EQ(hxs_force(simInfo.models[0].name,
+      simInfo.models[0].links[0].name, &force, 0.1), hxOK);
 }
 
 //////////////////////////////////////////////////
@@ -1242,7 +1111,8 @@ TEST(hxsTest, hxs_torque)
   torque.z = 6.3;
 
   // Use the first link of the first model in simState.
-  ASSERT_EQ(hxs_torque(&simInfo.models[0].links[0], &torque), hxOK);
+  ASSERT_EQ(hxs_torque(simInfo.models[0].name,
+      simInfo.models[0].links[0].name, &torque, 0.1), hxOK);
 }
 
 //////////////////////////////////////////////////
