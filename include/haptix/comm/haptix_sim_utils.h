@@ -244,7 +244,6 @@ static bool hxs_convertJoint(const haptix::comm::msgs::hxJoint _in,
   _out->name = strdup(_in.name().c_str());
   _out->pos = _in.pos();
   _out->vel = _in.vel();
-  _out->acc = _in.acc();
   _out->torque_motor = _in.torque_motor();
   _out->torque_passive = _in.torque_passive();
 
@@ -272,7 +271,6 @@ static bool hxs_convertJoint(const hxJoint *_in,
   _out->set_name(std::string(_in->name));
   _out->set_pos(_in->pos);
   _out->set_vel(_in->vel);
-  _out->set_acc(_in->acc);
   _out->set_torque_motor(_in->torque_motor);
   _out->set_torque_passive(_in->torque_passive);
 
@@ -420,14 +418,19 @@ static bool hxs_convertContactPoints(const haptix::comm::msgs::hxContactPoint_V 
 
   for (int i = 0; i < _out->contactCount; ++i)
   {
-    _out->contacts[i].link1 = _in.contacts(i).link1();
-    _out->contacts[i].link2 = _in.contacts(i).link2();
+    int length1 = _in.contacts(i).link1().length();
+    int length2 = _in.contacts(i).link2().length();
+    _out->contacts[i].link1 = (char*) malloc(length1 + 1);
+    _out->contacts[i].link2 = (char*) malloc(length2 + 1);
+    memset(_out->contacts[i].link1, 0, length1+1);
+    memset(_out->contacts[i].link2, 0, length2+2);
+    strncpy(_out->contacts[i].link1, _in.contacts(i).link1().c_str(), length1);
+    strncpy(_out->contacts[i].link2, _in.contacts(i).link2().c_str(), length2);
     hxs_convertVector3(_in.contacts(i).point(), &_out->contacts[i].point);
     hxs_convertVector3(_in.contacts(i).normal(), &_out->contacts[i].normal);
     hxs_convertVector3(_in.contacts(i).tangent1(), &_out->contacts[i].tangent1);
     hxs_convertVector3(_in.contacts(i).tangent2(), &_out->contacts[i].tangent2);
     _out->contacts[i].distance = _in.contacts(i).distance();
-    hxs_convertVector3(_in.contacts(i).velocity(), &_out->contacts[i].velocity);
     hxs_convertVector3(_in.contacts(i).force(), &_out->contacts[i].force);
   }
 

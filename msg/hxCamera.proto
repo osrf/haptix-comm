@@ -1,8 +1,0 @@
-package haptix.comm.msgs;
-
-import "hxTransform.proto";
-
-message hxCamera
-{
-  required hxTransform transform = 1;
-}

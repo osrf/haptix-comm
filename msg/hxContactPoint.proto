@@ -2,10 +2,10 @@ package haptix.comm.msgs;
 
 import "hxVector3.proto";
 
-message hxContact
+message hxContactPoint
 {
-  required uint32 body1        = 1;
-  required uint32 body2        = 2;
+  required string link1        = 1;
+  required string link2        = 2;
   required hxVector3 point     = 3;
   required hxVector3 normal    = 4;
   required hxVector3 tangent1  = 5;

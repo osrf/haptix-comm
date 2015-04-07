@@ -92,7 +92,6 @@ void setup()
       joint->set_name("joint " + std::to_string(j));
       joint->set_pos(v);
       joint->set_vel(v + 0.1);
-      joint->set_acc(v + 0.2);
       joint->set_torque_motor(v + 0.3);
       joint->set_torque_passive(v + 0.4);
     }
@@ -111,8 +110,8 @@ void setup()
   for (int i = 0; i < kNumContactPoints; ++i)
   {
     haptix::comm::msgs::hxContactPoint *contact = simContactPointsState.add_contacts();
-    contact->set_link1(i);
-    contact->set_link2(i + 1);
+    contact->set_link1(("link " + std::to_string(i)).c_str());
+    contact->set_link2(("link " + std::to_string(i+1)).c_str());
     contact->mutable_point()->set_x(i + 0.2);
     contact->mutable_point()->set_y(i + 0.3);
     contact->mutable_point()->set_z(i + 0.4);
@@ -154,7 +153,7 @@ void onHxsSimInfo(const std::string &_service,
 }
 
 //////////////////////////////////////////////////
-/// \brief Provide a "hxs_camera" service.
+/// \brief Provide a "hxs_camera_transform" service.
 void onHxsCamera(const std::string &_service,
   const haptix::comm::msgs::hxEmpty &/*_req*/,
   haptix::comm::msgs::hxTransform &_rep,
@@ -163,7 +162,7 @@ void onHxsCamera(const std::string &_service,
   _rep.Clear();
 
   // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_camera");
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_camera_transform");
 
   // Create some dummy response.
   _rep = simState.camera_transform();
@@ -172,7 +171,7 @@ void onHxsCamera(const std::string &_service,
 }
 
 //////////////////////////////////////////////////
-/// \brief Provide a "hxs_camera_transform" service.
+/// \brief Provide a "hxs_set_camera_transform" service.
 void onHxsCameraTransform(const std::string &_service,
   const haptix::comm::msgs::hxTransform &_req,
   haptix::comm::msgs::hxEmpty &_rep,
@@ -181,7 +180,7 @@ void onHxsCameraTransform(const std::string &_service,
   _rep.Clear();
 
   // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_camera_transform");
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_set_camera_transform");
 
   std::string msg1, msg2;
 
@@ -195,7 +194,7 @@ void onHxsCameraTransform(const std::string &_service,
 //////////////////////////////////////////////////
 /// \brief Provide a "hxs_contacts" service.
 void onHxsContactPoints(const std::string &_service,
-  const haptix::comm::msgs::hxEmpty &/*_req*/,
+  const haptix::comm::msgs::hxString &/*_req*/,
   haptix::comm::msgs::hxContactPoint_V &_rep,
   bool &_result)
 {
@@ -315,7 +314,7 @@ void onHxsAddModel(const std::string &_service,
 //////////////////////////////////////////////////
 /// \brief Provide a "hxs_remove_model_id" service.
 void onHxsRemoveModelId(const std::string &_service,
-  const haptix::comm::msgs::hxInt &_req,
+  const haptix::comm::msgs::hxString &_req,
   haptix::comm::msgs::hxEmpty &_rep,
   bool &_result)
 {
@@ -325,7 +324,7 @@ void onHxsRemoveModelId(const std::string &_service,
   EXPECT_EQ(_service, "/haptix/gazebo/hxs_remove_model_id");
 
   // Verify the request.
-  EXPECT_EQ(_req.data(), 1);
+  EXPECT_EQ(_req.data(), "model 1");
 
   _result = true;
 }
@@ -344,9 +343,9 @@ void onHxsModelTransform(const std::string &_service,
   EXPECT_EQ(_service, "/haptix/gazebo/hxs_model_transform");
 
   // Sanity check: The message should contain an ID.
-  if (!_req.id())
+  if (!_req.has_name())
   {
-    std::cerr << "onHxsModelTransform() error: Missing ID in request"
+    std::cerr << "onHxsModelTransform() error: Missing name in request"
               << std::endl;
     return;
   }
@@ -360,7 +359,7 @@ void onHxsModelTransform(const std::string &_service,
   }
 
   // Verify the ID.
-  EXPECT_EQ(_req.id(), 1);
+  EXPECT_EQ(_req.name(), "model 1");
 
   // Verify the transform.
   std::string msg1, msg2;
@@ -385,9 +384,9 @@ void onHxsLinearVelocity(const std::string &_service,
   EXPECT_EQ(_service, "/haptix/gazebo/hxs_linear_velocity");
 
   // Sanity check: The message should contain an ID.
-  if (!_req.id())
+  if (!_req.has_name())
   {
-    std::cerr << "onHxsLinearVelocity() error: Missing ID in request"
+    std::cerr << "onHxsLinearVelocity() error: Missing name in request"
               << std::endl;
     return;
   }
@@ -401,7 +400,7 @@ void onHxsLinearVelocity(const std::string &_service,
   }
 
   // Verify the ID.
-  EXPECT_EQ(_req.id(), 1);
+  EXPECT_EQ(_req.name(), "model 1");
 
   // Verify the linvel.
   EXPECT_FLOAT_EQ(_req.vector3().x(), 1.0);
@@ -425,9 +424,9 @@ void onHxsAngularVelocity(const std::string &_service,
   EXPECT_EQ(_service, "/haptix/gazebo/hxs_angular_velocity");
 
   // Sanity check: The message should contain an ID.
-  if (!_req.id())
+  if (!_req.has_name())
   {
-    std::cerr << "onHxsAngularVelocity() error: Missing ID in request"
+    std::cerr << "onHxsAngularVelocity() error: Missing name in request"
               << std::endl;
     return;
   }
@@ -441,92 +440,12 @@ void onHxsAngularVelocity(const std::string &_service,
   }
 
   // Verify the ID.
-  EXPECT_EQ(_req.id(), 1);
+  EXPECT_EQ(_req.name(), "model 1");
 
   // Verify the angvel.
   EXPECT_FLOAT_EQ(_req.vector3().x(), 2.0);
   EXPECT_FLOAT_EQ(_req.vector3().y(), 2.1);
   EXPECT_FLOAT_EQ(_req.vector3().z(), 2.2);
-
-  _result = true;
-}
-
-//////////////////////////////////////////////////
-/// \brief Provide a "hxs_linear_accel" service.
-void onHxsLinearAccel(const std::string &_service,
-  const haptix::comm::msgs::hxParam &_req,
-  haptix::comm::msgs::hxEmpty &_rep,
-  bool &_result)
-{
-  _rep.Clear();
-  _result = false;
-
-  // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_linear_accel");
-
-  // Sanity check: The message should contain an ID.
-  if (!_req.id())
-  {
-    std::cerr << "onHxsLinearAccel() error: Missing ID in request"
-              << std::endl;
-    return;
-  }
-
-  // Sanity check: The message should contain a vector3.
-  if (!_req.has_vector3())
-  {
-    std::cerr << "onHxsLinearAccel() error: Missing linaccel in request"
-              << std::endl;
-    return;
-  }
-
-  // Verify the ID.
-  EXPECT_EQ(_req.id(), 1);
-
-  // Verify the linaccel.
-  EXPECT_FLOAT_EQ(_req.vector3().x(), 3.0);
-  EXPECT_FLOAT_EQ(_req.vector3().y(), 3.1);
-  EXPECT_FLOAT_EQ(_req.vector3().z(), 3.2);
-
-  _result = true;
-}
-
-//////////////////////////////////////////////////
-/// \brief Provide a "hxs_angular_accel" service.
-void onHxsAngularAccel(const std::string &_service,
-  const haptix::comm::msgs::hxParam &_req,
-  haptix::comm::msgs::hxEmpty &_rep,
-  bool &_result)
-{
-  _rep.Clear();
-  _result = false;
-
-  // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_angular_accel");
-
-  // Sanity check: The message should contain an ID.
-  if (!_req.id())
-  {
-    std::cerr << "onHxsAngularAccel() error: Missing ID in request"
-              << std::endl;
-    return;
-  }
-
-  // Sanity check: The message should contain a vector3.
-  if (!_req.has_vector3())
-  {
-    std::cerr << "onHxsAngularAccel() error: Missing angaccel in request"
-              << std::endl;
-    return;
-  }
-
-  // Verify the ID.
-  EXPECT_EQ(_req.id(), 1);
-
-  // Verify the angaccel.
-  EXPECT_FLOAT_EQ(_req.vector3().x(), 4.0);
-  EXPECT_FLOAT_EQ(_req.vector3().y(), 4.1);
-  EXPECT_FLOAT_EQ(_req.vector3().z(), 4.2);
 
   _result = true;
 }
@@ -544,10 +463,25 @@ void onHxsForce(const std::string &_service,
   // Check the name of the service received.
   EXPECT_EQ(_service, "/haptix/gazebo/hxs_force");
 
-  // Sanity check: The message should contain a link.
-  if (!_req.has_link())
+  // Sanity check: The message should contain a model name.
+  if (!_req.has_name())
   {
-    std::cerr << "onHxsForce() error: Missing link in request"
+    std::cerr << "onHxsForce() error: Missing name in request"
+              << std::endl;
+    return;
+  }
+
+  // Sanity check: The message should contain a link name.
+  if (!_req.has_string_value())
+  {
+    std::cerr << "onHxsForce() error: Missing link name in request"
+              << std::endl;
+    return;
+  }
+
+  if (!_req.has_float_value())
+  {
+    std::cerr << "onHxsForce() error: Missing duration in request"
               << std::endl;
     return;
   }
@@ -561,10 +495,10 @@ void onHxsForce(const std::string &_service,
   }
 
   // Verify the link received.
-  std::string msg1, msg2;
-  _req.link().SerializeToString(&msg1);
-  simState.models(0).links(0).SerializeToString(&msg2);
-  EXPECT_EQ(msg1, msg2);
+  EXPECT_EQ(std::string(simState.models(0).name()), _req.name());
+  EXPECT_EQ(std::string(simState.models(0).links(0).name()), _req.string_value());
+  
+  EXPECT_FLOAT_EQ(_req.float_value(), 0.1);
 
   // Verify the force vector received.
   EXPECT_FLOAT_EQ(_req.vector3().x(), 5.1);
@@ -587,10 +521,25 @@ void onHxsTorque(const std::string &_service,
   // Check the name of the service received.
   EXPECT_EQ(_service, "/haptix/gazebo/hxs_torque");
 
-  // Sanity check: The message should contain a link.
-  if (!_req.has_link())
+  // Sanity check: The message should contain a model name.
+  if (!_req.has_name())
   {
-    std::cerr << "onHxsTorque() error: Missing link in request"
+    std::cerr << "onHxsTorque() error: Missing name in request"
+              << std::endl;
+    return;
+  }
+
+  // Sanity check: The message should contain a link name.
+  if (!_req.has_string_value())
+  {
+    std::cerr << "onHxsTorque() error: Missing link name in request"
+              << std::endl;
+    return;
+  }
+
+  if (!_req.has_float_value())
+  {
+    std::cerr << "onHxsTorque() error: Missing duration in request"
               << std::endl;
     return;
   }
@@ -604,11 +553,10 @@ void onHxsTorque(const std::string &_service,
   }
 
   // Verify the link received.
-  std::string msg1, msg2;
-  _req.link().SerializeToString(&msg1);
-  simState.models(0).links(0).SerializeToString(&msg2);
-  EXPECT_EQ(msg1, msg2);
-
+  EXPECT_EQ(std::string(simState.models(0).name()), _req.name());
+  EXPECT_EQ(std::string(simState.models(0).links(0).name()), _req.string_value());
+  
+  EXPECT_FLOAT_EQ(_req.float_value(), 0.1);
   // Verify the torque vector received.
   EXPECT_FLOAT_EQ(_req.vector3().x(), 6.1);
   EXPECT_FLOAT_EQ(_req.vector3().y(), 6.2);
@@ -788,7 +736,6 @@ TEST(hxsTest, hxs_simInfo)
       float v = 20 * i + j;
       EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].pos, v);
       EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].vel, v + 0.1);
-      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].acc, v + 0.2);
       EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].torque_motor, v + 0.3);
       EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].torque_passive, v + 0.4);
     }
@@ -805,8 +752,8 @@ TEST(hxsTest, hxs_simInfo)
 }
 
 //////////////////////////////////////////////////
-/// \brief Check hxs_camera.
-TEST(hxsTest, hxs_camera)
+/// \brief Check hxs_camera_transform.
+TEST(hxsTest, hxs_camera_transform)
 {
   setup();
 
@@ -814,7 +761,7 @@ TEST(hxsTest, hxs_camera)
   hxTransform camInfo;
 
   // Advertise the "hxs_camera" service.
-  node.Advertise("/haptix/gazebo/hxs_camera", onHxsCamera);
+  node.Advertise("/haptix/gazebo/hxs_camera_transform", onHxsCamera);
 
   // Request camera information.
   ASSERT_EQ(hxs_camera_transform(&camInfo), hxOK);
@@ -830,7 +777,7 @@ TEST(hxsTest, hxs_camera)
 }
 
 //////////////////////////////////////////////////
-/// \brief Check hxs_camera_transform.
+/// \brief Check hxs_set_camera_transform.
 TEST(hxsTest, hxs_set_camera_transform)
 {
   setup();
@@ -845,10 +792,10 @@ TEST(hxsTest, hxs_set_camera_transform)
   ASSERT_EQ(hxs_siminfo(&simInfo), hxOK);
 
   // Advertise the "hxs_camera_transform" service.
-  node.Advertise("/haptix/gazebo/hxs_camera_transform", onHxsCameraTransform);
+  node.Advertise("/haptix/gazebo/hxs_set_camera_transform", onHxsCameraTransform);
 
   // Set a camera transformation similar to the camera in simState.
-  ASSERT_EQ(hxs_camera_transform(&simInfo.camera_transform), hxOK);
+  ASSERT_EQ(hxs_set_camera_transform(&simInfo.camera_transform), hxOK);
 }
 
 //////////////////////////////////////////////////
@@ -863,14 +810,14 @@ TEST(hxsTest, hxs_contacts)
   // Advertise the "hxs_contacts" service.
   node.Advertise("/haptix/gazebo/hxs_contacts", onHxsContactPoints);
 
-  ASSERT_EQ(hxs_contacts(&contactsInfo), hxOK);
+  ASSERT_EQ(hxs_contacts("model 0", &contactsInfo), hxOK);
 
   // Check the contacts information.
   ASSERT_EQ(contactsInfo.contactCount, kNumContactPoints);
   for (int i = 0; i < contactsInfo.contactCount; ++i)
   {
-    EXPECT_EQ(contactsInfo.contacts[i].link1, i);
-    EXPECT_EQ(contactsInfo.contacts[i].link2, i + 1);
+    EXPECT_EQ(std::string(contactsInfo.contacts[i].link1), "link " + std::to_string(i));
+    EXPECT_EQ(std::string(contactsInfo.contacts[i].link2), "link " + std::to_string(i + 1));
     EXPECT_FLOAT_EQ(contactsInfo.contacts[i].point.x, i + 0.2);
     EXPECT_FLOAT_EQ(contactsInfo.contacts[i].point.y, i + 0.3);
     EXPECT_FLOAT_EQ(contactsInfo.contacts[i].point.z, i + 0.4);
@@ -884,9 +831,6 @@ TEST(hxsTest, hxs_contacts)
     EXPECT_FLOAT_EQ(contactsInfo.contacts[i].tangent2.y, i + 1.2);
     EXPECT_FLOAT_EQ(contactsInfo.contacts[i].tangent2.z, i + 1.3);
     EXPECT_FLOAT_EQ(contactsInfo.contacts[i].distance, i + 1.4);
-    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].velocity.x, i + 1.5);
-    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].velocity.y, i + 1.6);
-    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].velocity.z, i + 1.7);
     EXPECT_FLOAT_EQ(contactsInfo.contacts[i].force.x, i + 1.8);
     EXPECT_FLOAT_EQ(contactsInfo.contacts[i].force.y, i + 1.9);
     EXPECT_FLOAT_EQ(contactsInfo.contacts[i].force.z, i + 2);
@@ -978,7 +922,6 @@ TEST(hxsTest, hxs_add_model)
     float v = i;
     EXPECT_FLOAT_EQ(model.joints[i].pos, v);
     EXPECT_FLOAT_EQ(model.joints[i].vel, v + 0.1);
-    EXPECT_FLOAT_EQ(model.joints[i].acc, v + 0.2);
     EXPECT_FLOAT_EQ(model.joints[i].torque_motor, v + 0.3);
     EXPECT_FLOAT_EQ(model.joints[i].torque_passive, v + 0.4);
   }
@@ -991,13 +934,12 @@ TEST(hxsTest, hxs_remove_model_id)
   setup();
 
   ignition::transport::Node node;
-  int id = 1;
 
   // Advertise the "hxs_remove_model_id" service.
   node.Advertise("/haptix/gazebo/hxs_remove_model_id", onHxsRemoveModelId);
 
   // Remove a model with ID = 1.
-  ASSERT_EQ(hxs_remove_model_id(id), hxOK);
+  ASSERT_EQ(hxs_remove_model_id("model 1"), hxOK);
 }
 
 //////////////////////////////////////////////////
@@ -1008,7 +950,6 @@ TEST(hxsTest, hxs_model_transform)
 
   ignition::transport::Node node;
   hxSimInfo simInfo;
-  int id = 1;
 
   // Advertise the "hxs_siminfo" service.
   node.Advertise("/haptix/gazebo/hxs_siminfo", onHxsSimInfo);
@@ -1020,7 +961,7 @@ TEST(hxsTest, hxs_model_transform)
   ASSERT_EQ(hxs_siminfo(&simInfo), hxOK);
 
   // Let's use the transform from the second model.
-  ASSERT_EQ(hxs_model_transform(id, &simInfo.models[1].transform), hxOK);
+  ASSERT_EQ(hxs_model_transform("model 1", &simInfo.models[1].transform), hxOK);
 }
 
 //////////////////////////////////////////////////
@@ -1031,7 +972,6 @@ TEST(hxsTest, hxs_linear_velocity)
 
   ignition::transport::Node node;
   hxVector3 linvel;
-  int id = 1;
 
   // Advertise the "hxs_linear_velocity" service.
   node.Advertise("/haptix/gazebo/hxs_linear_velocity", onHxsLinearVelocity);
@@ -1040,7 +980,7 @@ TEST(hxsTest, hxs_linear_velocity)
   linvel.y = 1.1;
   linvel.z = 1.2;
 
-  ASSERT_EQ(hxs_linear_velocity(id, &linvel), hxOK);
+  ASSERT_EQ(hxs_linear_velocity("model 1", &linvel), hxOK);
 }
 
 //////////////////////////////////////////////////
@@ -1051,7 +991,6 @@ TEST(hxsTest, hxs_angular_velocity)
 
   ignition::transport::Node node;
   hxVector3 angvel;
-  int id = 1;
 
   // Advertise the "hxs_angular_velocity" service.
   node.Advertise("/haptix/gazebo/hxs_angular_velocity", onHxsAngularVelocity);
@@ -1060,7 +999,7 @@ TEST(hxsTest, hxs_angular_velocity)
   angvel.y = 2.1;
   angvel.z = 2.2;
 
-  ASSERT_EQ(hxs_angular_velocity(id, &angvel), hxOK);
+  ASSERT_EQ(hxs_angular_velocity("model 1", &angvel), hxOK);
 }
 
 //////////////////////////////////////////////////
