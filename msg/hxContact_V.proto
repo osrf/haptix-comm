@@ -1,8 +1,0 @@
-package haptix.comm.msgs;
-
-import "hxContact.proto";
-
-message hxContact_V
-{
-  repeated hxContact contacts = 1;
-}

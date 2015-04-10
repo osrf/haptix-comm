@@ -26,16 +26,15 @@
 #include <mutex>
 #include <ignition/transport.hh>
 #include "haptix/comm/haptix.h"
-#include "msg/hxCamera.pb.h"
-#include "msg/hxContact.pb.h"
-#include "msg/hxContact_V.pb.h"
+#include "msg/hxContactPoint.pb.h"
+#include "msg/hxContactPoint_V.pb.h"
 #include "msg/hxEmpty.pb.h"
-#include "msg/hxJacobian.pb.h"
 #include "msg/hxJoint.pb.h"
 #include "msg/hxLink.pb.h"
 #include "msg/hxModel.pb.h"
 #include "msg/hxQuaternion.pb.h"
 #include "msg/hxSimInfo.pb.h"
+#include "msg/hxTime.pb.h"
 #include "msg/hxTransform.pb.h"
 #include "msg/hxVector3.pb.h"
 
@@ -77,6 +76,23 @@ template <typename T, typename T2> bool hxs_convertScalar(T _in, T2 *_out)
   return true;
 }
 
+//////////////////////////////////////////////////
+/// \brief Private function that converts a protobuf hxTime message to a
+/// C struct hxTime.
+/// \param[in] _in Protobuf message.
+/// \param[out] _out C-struct.
+/// \return True if the function succeed or false otherwise.
+static bool hxs_convertTime(const haptix::comm::msgs::hxTime _in,
+  hxTime *_out)
+{
+  // Initialize the C struct.
+  memset(_out, 0, sizeof(hxTime));
+
+  _out->sec = _in.sec();
+  _out->nsec = _in.nsec();
+
+  return true;
+}
 //////////////////////////////////////////////////
 /// \brief Private function that converts a protobuf hxVector3 message to a
 /// C struct hxVector3.
@@ -228,7 +244,6 @@ static bool hxs_convertJoint(const haptix::comm::msgs::hxJoint _in,
   _out->name = strdup(_in.name().c_str());
   _out->pos = _in.pos();
   _out->vel = _in.vel();
-  _out->acc = _in.acc();
   _out->torque_motor = _in.torque_motor();
   _out->torque_passive = _in.torque_passive();
 
@@ -256,7 +271,6 @@ static bool hxs_convertJoint(const hxJoint *_in,
   _out->set_name(std::string(_in->name));
   _out->set_pos(_in->pos);
   _out->set_vel(_in->vel);
-  _out->set_acc(_in->acc);
   _out->set_torque_motor(_in->torque_motor);
   _out->set_torque_passive(_in->torque_passive);
 
@@ -333,7 +347,6 @@ static bool hxs_convertModel(const haptix::comm::msgs::hxModel _in,
 
   _out->name = strdup(_in.name().c_str());
   hxs_convertTransform(_in.transform(), &(_out->transform));
-  _out->is_static = _in.is_static();
   _out->id = _in.id();
   _out->link_count = _in.links_size();
   _out->joint_count = _in.joints_size();
@@ -370,7 +383,6 @@ static bool hxs_convertModel(const hxModel *_in,
   _out->set_name(_in->name);
 
   hxs_convertTransform(&(_in->transform), _out->mutable_transform());
-  _out->set_is_static(_in->is_static);
   _out->set_id(_in->id);
 
   // Create the links.
@@ -391,76 +403,40 @@ static bool hxs_convertModel(const hxModel *_in,
 }
 
 //////////////////////////////////////////////////
-/// \brief Private function that converts a protobuf hxContact_V message to a
-/// C struct hxContacts.
+/// \brief Private function that converts a protobuf hxContactPoint_V message to a
+/// C struct hxContactPoints.
 /// \param[in] _in Protobuf message.
 /// \param[out] _out C-struct.
 /// \return True if the function succeed or false otherwise.
-static bool hxs_convertContacts(const haptix::comm::msgs::hxContact_V _in,
-  hxContacts *_out)
+static bool hxs_convertContactPoints(const haptix::comm::msgs::hxContactPoint_V _in,
+  hxContactPoints *_out)
 {
   // Initialize the C struct.
-  memset(_out, 0, sizeof(hxContacts));
+  memset(_out, 0, sizeof(hxContactPoints));
 
   _out->contactCount = _in.contacts_size();
 
   for (int i = 0; i < _out->contactCount; ++i)
   {
-    _out->contacts[i].body1 = _in.contacts(i).body1();
-    _out->contacts[i].body2 = _in.contacts(i).body2();
+    int length1 = _in.contacts(i).link1().length();
+    int length2 = _in.contacts(i).link2().length();
+    _out->contacts[i].link1 = (char*) malloc(length1 + 1);
+    _out->contacts[i].link2 = (char*) malloc(length2 + 1);
+    memset(_out->contacts[i].link1, 0, length1+1);
+    memset(_out->contacts[i].link2, 0, length2+2);
+    strncpy(_out->contacts[i].link1, _in.contacts(i).link1().c_str(), length1);
+    strncpy(_out->contacts[i].link2, _in.contacts(i).link2().c_str(), length2);
     hxs_convertVector3(_in.contacts(i).point(), &_out->contacts[i].point);
     hxs_convertVector3(_in.contacts(i).normal(), &_out->contacts[i].normal);
     hxs_convertVector3(_in.contacts(i).tangent1(), &_out->contacts[i].tangent1);
     hxs_convertVector3(_in.contacts(i).tangent2(), &_out->contacts[i].tangent2);
     _out->contacts[i].distance = _in.contacts(i).distance();
-    hxs_convertVector3(_in.contacts(i).velocity(), &_out->contacts[i].velocity);
     hxs_convertVector3(_in.contacts(i).force(), &_out->contacts[i].force);
   }
 
   return true;
 }
 
-//////////////////////////////////////////////////
-/// \brief Private function that converts a protobuf hxCamera message to a
-/// C struct hxCamera.
-/// \param[in] _in Protobuf message.
-/// \param[out] _out C-struct.
-/// \return True if the function succeed or false otherwise.
-static bool hxs_convertCamera(const haptix::comm::msgs::hxCamera _in,
-  hxCamera *_out)
-{
-  // Initialize the C struct.
-  memset(_out, 0, sizeof(hxCamera));
-
-  hxs_convertTransform(_in.transform(), &_out->transform);
-
-  return true;
-}
-
-//////////////////////////////////////////////////
-/// \brief Private function that converts a protobuf hxJacobian message to a
-/// C struct hxJacobian.
-/// \param[in] _in Protobuf message.
-/// \param[out] _out C-struct.
-/// \return True if the function succeed or false otherwise.
-static bool hxs_convertJacobian(const haptix::comm::msgs::hxJacobian _in,
-  hxJacobian *_out)
-{
-  // Initialize the C struct.
-  memset(_out, 0, sizeof(*_out));
-
-  _out->jointCount = _in.columns_size();
-
-  // Fill the matrix.
-  for (int i = 0; i < _out->jointCount; ++i)
-  {
-    _out->mat[0][i] = _in.columns(i).x();
-    _out->mat[1][i] = _in.columns(i).y();
-    _out->mat[2][i] = _in.columns(i).z();
-  }
-
-  return true;
-}
 
 //////////////////////////////////////////////////
 /// \brief Private function that converts a protobuf hxSimInfo message to a
@@ -481,7 +457,7 @@ static bool hxs_convertSimInfo(const haptix::comm::msgs::hxSimInfo _in,
     hxs_convertModel(_in.models(i), &_out->models[i]);
 
   // Fill the camera.
-  hxs_convertCamera(_in.camera(), &_out->camera);
+  hxs_convertTransform(_in.camera_transform(), &_out->camera_transform);
 
   return true;
 }

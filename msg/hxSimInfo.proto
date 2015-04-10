@@ -1,10 +1,10 @@
 package haptix.comm.msgs;
 
-import "hxCamera.proto";
 import "hxModel.proto";
+import "hxTransform.proto";
 
 message hxSimInfo
 {
   repeated hxModel models  = 1;
-  required hxCamera camera = 2;
+  required hxTransform camera_transform = 2;
 }

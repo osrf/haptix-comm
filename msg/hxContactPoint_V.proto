@@ -1,0 +1,8 @@
+package haptix.comm.msgs;
+
+import "hxContactPoint.proto";
+
+message hxContactPoint_V
+{
+  repeated hxContactPoint contacts = 1;
+}

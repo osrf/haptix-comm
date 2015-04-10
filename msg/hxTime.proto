@@ -1,0 +1,7 @@
+package haptix.comm.msgs;
+
+message hxTime
+{
+  required uint64 sec = 1;
+  required uint64 nsec = 2;
+}
