@@ -109,7 +109,8 @@ void setup()
   // Create some contacts.
   for (int i = 0; i < kNumContactPoints; ++i)
   {
-    haptix::comm::msgs::hxContactPoint *contact = simContactPointsState.add_contacts();
+    haptix::comm::msgs::hxContactPoint *contact =
+      simContactPointsState.add_contacts();
     contact->set_link1(("link " + std::to_string(i)).c_str());
     contact->set_link2(("link " + std::to_string(i+1)).c_str());
     contact->mutable_point()->set_x(i + 0.2);
@@ -477,8 +478,9 @@ void onHxsForce(const std::string &_service,
 
   // Verify the link received.
   EXPECT_EQ(std::string(simState.models(0).name()), _req.name());
-  EXPECT_EQ(std::string(simState.models(0).links(0).name()), _req.string_value());
-  
+  EXPECT_EQ(std::string(simState.models(0).links(0).name()),
+    _req.string_value());
+
   EXPECT_FLOAT_EQ(_req.float_value(), 0.1);
 
   // Verify the force vector received.
@@ -535,8 +537,9 @@ void onHxsTorque(const std::string &_service,
 
   // Verify the link received.
   EXPECT_EQ(std::string(simState.models(0).name()), _req.name());
-  EXPECT_EQ(std::string(simState.models(0).links(0).name()), _req.string_value());
-  
+  EXPECT_EQ(std::string(simState.models(0).links(0).name()),
+    _req.string_value());
+
   EXPECT_FLOAT_EQ(_req.float_value(), 0.1);
   // Verify the torque vector received.
   EXPECT_FLOAT_EQ(_req.vector3().x(), 6.1);
@@ -788,7 +791,8 @@ TEST(hxsTest, hxs_set_camera_transform)
   ASSERT_EQ(hxs_siminfo(&simInfo), hxOK);
 
   // Advertise the "hxs_camera_transform" service.
-  node.Advertise("/haptix/gazebo/hxs_set_camera_transform", onHxsCameraTransform);
+  node.Advertise("/haptix/gazebo/hxs_set_camera_transform",
+    onHxsCameraTransform);
 
   // Set a camera transformation similar to the camera in simState.
   ASSERT_EQ(hxs_set_camera_transform(&simInfo.camera_transform), hxOK);
@@ -812,8 +816,10 @@ TEST(hxsTest, hxs_contacts)
   ASSERT_EQ(contactsInfo.contactCount, kNumContactPoints);
   for (int i = 0; i < contactsInfo.contactCount; ++i)
   {
-    EXPECT_EQ(std::string(contactsInfo.contacts[i].link1), "link " + std::to_string(i));
-    EXPECT_EQ(std::string(contactsInfo.contacts[i].link2), "link " + std::to_string(i + 1));
+    EXPECT_EQ(std::string(contactsInfo.contacts[i].link1),
+      "link " + std::to_string(i));
+    EXPECT_EQ(std::string(contactsInfo.contacts[i].link2),
+      "link " + std::to_string(i + 1));
     EXPECT_FLOAT_EQ(contactsInfo.contacts[i].point.x, i + 0.2);
     EXPECT_FLOAT_EQ(contactsInfo.contacts[i].point.y, i + 0.3);
     EXPECT_FLOAT_EQ(contactsInfo.contacts[i].point.z, i + 0.4);

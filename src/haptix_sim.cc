@@ -48,7 +48,8 @@ extern "C" {
     const std::string service = "/haptix/gazebo/hxs_camera_transform";
     haptix::comm::msgs::hxEmpty req;
     haptix::comm::msgs::hxTransform rep;
-    return hxs_call(service, __func__, req, rep, _transform, hxs_convertTransform);
+    return hxs_call(service, __func__, req, rep, _transform,
+      hxs_convertTransform);
   }
 
   //////////////////////////////////////////////////
@@ -71,7 +72,8 @@ extern "C" {
     haptix::comm::msgs::hxString req;
     req.set_data(_model);
     haptix::comm::msgs::hxContactPoint_V rep;
-    return hxs_call(service, __func__, req, rep, _contact, hxs_convertContactPoints);
+    return hxs_call(service, __func__, req, rep, _contact,
+      hxs_convertContactPoints);
   }
 
   //////////////////////////////////////////////////

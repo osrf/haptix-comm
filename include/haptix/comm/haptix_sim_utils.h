@@ -403,13 +403,13 @@ static bool hxs_convertModel(const hxModel *_in,
 }
 
 //////////////////////////////////////////////////
-/// \brief Private function that converts a protobuf hxContactPoint_V message to a
-/// C struct hxContactPoints.
+/// \brief Private function that converts a protobuf hxContactPoint_V message to
+/// a C struct hxContactPoints.
 /// \param[in] _in Protobuf message.
 /// \param[out] _out C-struct.
 /// \return True if the function succeed or false otherwise.
-static bool hxs_convertContactPoints(const haptix::comm::msgs::hxContactPoint_V _in,
-  hxContactPoints *_out)
+static bool hxs_convertContactPoints(
+  const haptix::comm::msgs::hxContactPoint_V _in, hxContactPoints *_out)
 {
   // Initialize the C struct.
   memset(_out, 0, sizeof(hxContactPoints));
@@ -420,8 +420,8 @@ static bool hxs_convertContactPoints(const haptix::comm::msgs::hxContactPoint_V 
   {
     int length1 = _in.contacts(i).link1().length();
     int length2 = _in.contacts(i).link2().length();
-    _out->contacts[i].link1 = (char*) malloc(length1 + 1);
-    _out->contacts[i].link2 = (char*) malloc(length2 + 1);
+    _out->contacts[i].link1 = static_cast<char*>(malloc(length1 + 1));
+    _out->contacts[i].link2 = static_cast<char*>(malloc(length2 + 1));
     memset(_out->contacts[i].link1, 0, length1+1);
     memset(_out->contacts[i].link2, 0, length2+2);
     strncpy(_out->contacts[i].link1, _in.contacts(i).link1().c_str(), length1);

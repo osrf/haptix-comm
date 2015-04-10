@@ -232,7 +232,7 @@ struct _hxSimInfo
   hxModel models[hxMAXMODELS];
 
   /// \brief Information about the camera.
-  /// \sa hxs_get_camera_transform 
+  /// \sa hxs_get_camera_transform
   hxTransform camera_transform;
 };
 
