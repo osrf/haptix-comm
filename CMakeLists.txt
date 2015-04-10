@@ -29,7 +29,7 @@ include (${project_cmake_dir}/Utils.cmake)
 # If on windows, generate a file called version which host the current 
 # version to be used by releasing scripts
 if (MSVC)
-  file(WRITE version ${PROJECT_VERSION_FULL})
+  file(WRITE ${PROJECT_BINARY_DIR}/VERSION ${PROJECT_VERSION_FULL})
 endif()
 
 include (${project_cmake_dir}/cpack.cmake)
