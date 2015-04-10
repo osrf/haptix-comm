@@ -232,7 +232,7 @@ struct _hxSimInfo
   hxModel models[hxMAXMODELS];
 
   /// \brief Information about the camera.
-  /// \sahxs_get_camera_transform 
+  /// \sa hxs_get_camera_transform 
   hxTransform camera_transform;
 };
 
@@ -264,15 +264,11 @@ hxResult hxs_set_camera_transform(const hxTransform *_transform);
 /// \return 'hxOK' if the function succeed or an error code otherwise.
 hxResult hxs_contacts(const char *_model, hxContactPoints *_contact);
 
-/// \brief Set simulation state (position and velocity) as follows:
-///   the robot base and objects are set from hxModel
-///   the robot links are set from hxJoint via forward kinematics
-///   the robot link data in hxModel, and all acceleration and torque
-///   data are ignored.
+/// \brief Set simulation state (position and velocity) of _model
+/// based on the joint data contained in the struct.
 /// \param[in] _model Model information to set.
-/// \param[in] _joint Joint information to set.
 /// \return 'hxOK' if the function succeed or an error code otherwise.
-hxResult hxs_state(const hxModel *_model, const hxJoint *_joint);
+hxResult hxs_set_state(const hxModel *_model);
 
 /// \brief Add model during runtime.
 /// \param[in] _urdf URDF xml description of the model.
@@ -352,7 +348,7 @@ hxResult hxs_stop_timer();
 /// \brief Get the state of the on-screen timer.
 /// \param[out] _time The time represented by the on-screen timer.
 /// \return 'hxOK' if the function succeed or an error code otherwise.
-hxResult hxs_get_timer(hxTime *_time);
+hxResult hxs_timer(hxTime *_time);
 
 /// \brief Start recording log file. Only one log file may be recorded at
 /// a time.

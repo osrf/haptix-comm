@@ -212,7 +212,7 @@ void onHxsContactPoints(const std::string &_service,
 //////////////////////////////////////////////////
 /// \brief Provide a "hxs_state" service.
 void onHxsState(const std::string &_service,
-  const haptix::comm::msgs::hxParam &_req,
+  const haptix::comm::msgs::hxModel &_req,
   haptix::comm::msgs::hxEmpty &_rep,
   bool &_result)
 {
@@ -223,7 +223,7 @@ void onHxsState(const std::string &_service,
   EXPECT_EQ(_service, "/haptix/gazebo/hxs_state");
 
   // Sanity check: The message should contain a model.
-  if (!_req.has_model())
+  /*if (!_req.has_model())
   {
     std::cerr << "onHxsState() error: Missing model in request" << std::endl;
     return;
@@ -234,20 +234,20 @@ void onHxsState(const std::string &_service,
   {
     std::cerr << "onHxsState() error: Missing joint in request" << std::endl;
     return;
-  }
+  }*/
 
   // Verify the request. The model should be the first model in simState and
   // the link should be the second link of the first model.
   std::string msg1;
-  _req.model().SerializeToString(&msg1);
+  _req.SerializeToString(&msg1);
   std::string msg2;
   simState.models(0).SerializeToString(&msg2);
   EXPECT_EQ(msg1, msg2);
 
   // Verify that the joint is the second joint of model #1 in simState.
-  _req.joint().SerializeToString(&msg1);
+  /*_req.joint().SerializeToString(&msg1);
   simState.models(0).joints(1).SerializeToString(&msg2);
-  EXPECT_EQ(msg1, msg2);
+  EXPECT_EQ(msg1, msg2);*/
 
   _result = true;
 }
@@ -629,6 +629,21 @@ void onHxsStopTimer(const std::string &_service,
 }
 
 //////////////////////////////////////////////////
+/// \brief Provide a "hxs_stop_timer" service.
+void onHxsTimer(const std::string &_service,
+  const haptix::comm::msgs::hxEmpty &/*_req*/,
+  haptix::comm::msgs::hxTime &_rep,
+  bool &_result)
+{
+  // Check the name of the service received.
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_timer");
+  _rep.set_sec(1);
+  _rep.set_nsec(2);
+
+  _result = true;
+}
+
+//////////////////////////////////////////////////
 /// \brief Provide a "hxs_start_logging" service.
 void onHxsStartLogging(const std::string &_service,
   const haptix::comm::msgs::hxString &_req,
@@ -839,7 +854,7 @@ TEST(hxsTest, hxs_contacts)
 
 //////////////////////////////////////////////////
 /// \brief Check hxs_state.
-TEST(hxsTest, hxs_state)
+TEST(hxsTest, hxs_set_state)
 {
   setup();
 
@@ -850,13 +865,13 @@ TEST(hxsTest, hxs_state)
   node.Advertise("/haptix/gazebo/hxs_siminfo", onHxsSimInfo);
 
   // Advertise the "hxs_state" service.
-  node.Advertise("/haptix/gazebo/hxs_state", onHxsState);
+  node.Advertise("/haptix/gazebo/hxs_set_state", onHxsState);
 
   // Request simulation information.
   ASSERT_EQ(hxs_siminfo(&simInfo), hxOK);
 
   // I'll use the first model stored in simState and the second joint.
-  EXPECT_EQ(hxs_state(&simInfo.models[0], &simInfo.models[0].joints[1]), hxOK);
+  EXPECT_EQ(hxs_set_state(&simInfo.models[0]), hxOK);
 }
 
 //////////////////////////////////////////////////
@@ -1109,6 +1124,22 @@ TEST(hxsTest, hxs_stop_timer)
   node.Advertise("/haptix/gazebo/hxs_stop_timer", onHxsStopTimer);
 
   ASSERT_EQ(hxs_stop_timer(), hxOK);
+}
+
+//////////////////////////////////////////////////
+/// \brief Check hxs_timer.
+TEST(hxsTest, hxs_timer)
+{
+  setup();
+
+  ignition::transport::Node node;
+
+  // Advertise the "hxs_stop_timer" service.
+  node.Advertise("/haptix/gazebo/hxs_timer", onHxsTimer);
+  hxTime *timer = new hxTime;
+  ASSERT_EQ(hxs_timer(timer), hxOK);
+  EXPECT_EQ(timer->sec, 1);
+  EXPECT_EQ(timer->nsec, 2);
 }
 
 //////////////////////////////////////////////////

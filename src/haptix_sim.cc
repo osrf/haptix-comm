@@ -75,7 +75,7 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
-  hxResult hxs_state(const hxModel *_model, const hxJoint *_joint)
+  hxResult hxs_set_state(const hxModel *_model)
   {
     if (!_model)
     {
@@ -83,19 +83,10 @@ extern "C" {
       return hxERROR;
     }
 
-    if (!_joint)
-    {
-      std::cerr << "hxs_state() error: joint is NULL" << std::endl;
-      return hxERROR;
-    }
-
-    const std::string service = "/haptix/gazebo/hxs_state";
-    haptix::comm::msgs::hxParam req;
+    const std::string service = "/haptix/gazebo/hxs_set_state";
+    haptix::comm::msgs::hxModel req;
     haptix::comm::msgs::hxEmpty rep;
-    if (!hxs_convertModel(_model, req.mutable_model()))
-      return hxERROR;
-
-    if (!hxs_convertJoint(_joint, req.mutable_joint()))
+    if (!hxs_convertModel(_model, &req))
       return hxERROR;
 
     return hxs_call(service, __func__, req, rep);
@@ -239,9 +230,9 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
-  hxResult hxs_get_timer(hxTime *_time)
+  hxResult hxs_timer(hxTime *_time)
   {
-    const std::string service = "/haptix/gazebo/hxs_get_timer";
+    const std::string service = "/haptix/gazebo/hxs_timer";
     haptix::comm::msgs::hxEmpty req;
     haptix::comm::msgs::hxTime rep;
     return hxs_call(service, __func__, req, rep, _time, hxs_convertTime);
