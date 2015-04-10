@@ -210,7 +210,7 @@ void onHxsContactPoints(const std::string &_service,
 }
 
 //////////////////////////////////////////////////
-/// \brief Provide a "hxs_state" service.
+/// \brief Provide a "hxs_set_state" service.
 void onHxsState(const std::string &_service,
   const haptix::comm::msgs::hxModel &_req,
   haptix::comm::msgs::hxEmpty &_rep,
@@ -220,21 +220,7 @@ void onHxsState(const std::string &_service,
   _result = false;
 
   // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_state");
-
-  // Sanity check: The message should contain a model.
-  /*if (!_req.has_model())
-  {
-    std::cerr << "onHxsState() error: Missing model in request" << std::endl;
-    return;
-  }
-
-  // Sanity check: The message should contain a joint.
-  if (!_req.has_joint())
-  {
-    std::cerr << "onHxsState() error: Missing joint in request" << std::endl;
-    return;
-  }*/
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_set_state");
 
   // Verify the request. The model should be the first model in simState and
   // the link should be the second link of the first model.
@@ -243,11 +229,6 @@ void onHxsState(const std::string &_service,
   std::string msg2;
   simState.models(0).SerializeToString(&msg2);
   EXPECT_EQ(msg1, msg2);
-
-  // Verify that the joint is the second joint of model #1 in simState.
-  /*_req.joint().SerializeToString(&msg1);
-  simState.models(0).joints(1).SerializeToString(&msg2);
-  EXPECT_EQ(msg1, msg2);*/
 
   _result = true;
 }
@@ -853,7 +834,7 @@ TEST(hxsTest, hxs_contacts)
 }
 
 //////////////////////////////////////////////////
-/// \brief Check hxs_state.
+/// \brief Check hxs_set_state.
 TEST(hxsTest, hxs_set_state)
 {
   setup();
