@@ -163,6 +163,9 @@ struct _hxModel {
   /// \brief Array of joints in the model.
   /// \sa joint_count
   hxJoint joints[hxMAXJOINTS];
+
+  /// \brief Whether or not this model is affected by gravity.
+  bool gravity;
 };
 
 /// \def hxModel
@@ -232,7 +235,7 @@ struct _hxSimInfo
   hxModel models[hxMAXMODELS];
 
   /// \brief Information about the camera.
-  /// \sa hxs_get_camera_transform
+  /// \sa hxs_get_camera_transform 
   hxTransform camera_transform;
 };
 
@@ -288,13 +291,25 @@ hxResult hxs_add_model(const char *_urdf, const char *_name,
 /// \brief Remove model.
 /// \param[in] _name Name of the model.
 /// \return 'hxOK' if the function succeed or an error code otherwise.
-hxResult hxs_remove_model_id(const char *_name);
+hxResult hxs_remove_model(const char *_name);
 
 /// \brief Set model pose.
 /// \param[in] _name Name of the model.
 /// \param[in] _transform New model transform.
 /// \return 'hxOK' if the function succeed or an error code otherwise.
 hxResult hxs_model_transform(const char *_name, const hxTransform *_transform);
+
+/// \brief Get whether or not this model is affected by gravity.
+/// \param[in] _name Name of the model.
+/// \param[out] _gravity If true, the model is affected by gravity. If false,
+/// the model is free-floating
+hxResult hxs_model_gravity(const char *_name, bool *_gravity);
+
+/// \brief Set whether or not this model is affected by gravity.
+/// \param[in] _name Name of the model.
+/// \param[out] _gravity If true, the model is affected by gravity. If false,
+/// the model is free-floating
+hxResult hxs_set_model_gravity(const char *_name, const bool _gravity);
 
 /// \brief Set the linear velocity of a model.
 /// \param[in] _name Name of the model.

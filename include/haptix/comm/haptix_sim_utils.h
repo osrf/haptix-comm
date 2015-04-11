@@ -82,8 +82,7 @@ template <typename T, typename T2> bool hxs_convertScalar(T _in, T2 *_out)
 /// \param[in] _in Protobuf message.
 /// \param[out] _out C-struct.
 /// \return True if the function succeed or false otherwise.
-static bool hxs_convertTime(const haptix::comm::msgs::hxTime _in,
-  hxTime *_out)
+static bool hxs_convertTime(const haptix::comm::msgs::hxTime _in, hxTime *_out)
 {
   // Initialize the C struct.
   memset(_out, 0, sizeof(hxTime));

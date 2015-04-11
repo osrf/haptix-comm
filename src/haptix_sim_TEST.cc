@@ -796,6 +796,7 @@ TEST(hxsTest, hxs_set_camera_transform)
 
   // Set a camera transformation similar to the camera in simState.
   ASSERT_EQ(hxs_set_camera_transform(&simInfo.camera_transform), hxOK);
+  // TODO compare transform!
 }
 
 //////////////////////////////////////////////////

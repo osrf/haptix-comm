@@ -137,6 +137,28 @@ extern "C" {
       return hxERROR;
     return hxs_call(service, __func__, req, rep);
   }
+  //////////////////////////////////////////////////
+  hxResult hxs_model_gravity(const char *_name, int *_gravity)
+  {
+    const std::string service = "/haptix/gazebo/hxs_model_gravity";
+    haptix::comm::msgs::hxString req;
+    haptix::comm::msgs::hxInt rep;
+    req.set_data(_name);
+    return hxs_call(service, __func__, req, rep, hxs_convertInt);
+  }
+
+
+  //////////////////////////////////////////////////
+  hxResult hxs_set_model_gravity(const char *_name, const int _gravity);
+  {
+    const std::string service = "/haptix/gazebo/hxs_set_model_gravity";
+    haptix::comm::msgs::hxParam req;
+    haptix::comm::msgs::hxEmpty rep;
+    req.set_name(_name);
+    req.set_int_data(_gravity);
+    
+    return hxs_call(service, __func__, req, rep);
+  }
 
   //////////////////////////////////////////////////
   hxResult hxs_linear_velocity(const char *_name, const hxVector3 *_linvel)
