@@ -100,14 +100,12 @@ extern "C" {
     hxModel *_model)
   {
     const std::string service = "/haptix/gazebo/hxs_add_model";
-    haptix::comm::msgs::hxVector3 pos;
-    haptix::comm::msgs::hxEuler orient;
     haptix::comm::msgs::hxParam req;
     haptix::comm::msgs::hxModel rep;
     req.set_name(std::string(_name));
-    req.mutable_pos()->set_x(_x);
-    req.mutable_pos()->set_y(_y);
-    req.mutable_pos()->set_z(_z);
+    req.mutable_vector3()->set_x(_x);
+    req.mutable_vector3()->set_y(_y);
+    req.mutable_vector3()->set_z(_z);
     req.mutable_orientation()->set_roll(_roll);
     req.mutable_orientation()->set_pitch(_pitch);
     req.mutable_orientation()->set_yaw(_yaw);
@@ -117,9 +115,9 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
-  hxResult hxs_remove_model_id(const char *_name)
+  hxResult hxs_remove_model(const char *_name)
   {
-    const std::string service = "/haptix/gazebo/hxs_remove_model_id";
+    const std::string service = "/haptix/gazebo/hxs_remove_model";
     haptix::comm::msgs::hxString req;
     req.set_data(_name);
     haptix::comm::msgs::hxEmpty rep;
@@ -144,18 +142,17 @@ extern "C" {
     haptix::comm::msgs::hxString req;
     haptix::comm::msgs::hxInt rep;
     req.set_data(_name);
-    return hxs_call(service, __func__, req, rep, hxs_convertInt);
+    return hxs_call(service, __func__, req, rep, _gravity, hxs_convertScalar);
   }
 
-
   //////////////////////////////////////////////////
-  hxResult hxs_set_model_gravity(const char *_name, const int _gravity);
+  hxResult hxs_set_model_gravity(const char *_name, const int _gravity)
   {
     const std::string service = "/haptix/gazebo/hxs_set_model_gravity";
     haptix::comm::msgs::hxParam req;
     haptix::comm::msgs::hxEmpty rep;
     req.set_name(_name);
-    req.set_int_data(_gravity);
+    req.set_int_value(_gravity);
     
     return hxs_call(service, __func__, req, rep);
   }

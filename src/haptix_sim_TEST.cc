@@ -263,9 +263,9 @@ void onHxsAddModel(const std::string &_service,
   }
 
   // Sanity check: The message should contain a position.
-  if (!_req.has_pos())
+  if (!_req.has_vector3())
   {
-    std::cerr << "onHxsAddModel() error: Missing pos in request" << std::endl;
+    std::cerr << "onHxsAddModel() error: Missing vector3 in request" << std::endl;
     return;
   }
 
@@ -280,9 +280,9 @@ void onHxsAddModel(const std::string &_service,
   // Verify the request.
   EXPECT_EQ(_req.string_value(), "fake URDF");
   EXPECT_EQ(_req.name(), "model 1");
-  EXPECT_FLOAT_EQ(_req.pos().x(), 1.0);
-  EXPECT_FLOAT_EQ(_req.pos().y(), 2.0);
-  EXPECT_FLOAT_EQ(_req.pos().z(), 3.0);
+  EXPECT_FLOAT_EQ(_req.vector3().x(), 1.0);
+  EXPECT_FLOAT_EQ(_req.vector3().y(), 2.0);
+  EXPECT_FLOAT_EQ(_req.vector3().z(), 3.0);
   EXPECT_FLOAT_EQ(_req.orientation().roll(), 4.0);
   EXPECT_FLOAT_EQ(_req.orientation().pitch(), 5.0);
   EXPECT_FLOAT_EQ(_req.orientation().yaw(), 6.0);
@@ -294,7 +294,7 @@ void onHxsAddModel(const std::string &_service,
 }
 
 //////////////////////////////////////////////////
-/// \brief Provide a "hxs_remove_model_id" service.
+/// \brief Provide a "hxs_remove_model" service.
 void onHxsRemoveModelId(const std::string &_service,
   const haptix::comm::msgs::hxString &_req,
   haptix::comm::msgs::hxEmpty &_rep,
@@ -303,7 +303,7 @@ void onHxsRemoveModelId(const std::string &_service,
   _rep.Clear();
 
   // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_remove_model_id");
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_remove_model");
 
   // Verify the request.
   EXPECT_EQ(_req.data(), "model 1");
@@ -931,18 +931,18 @@ TEST(hxsTest, hxs_add_model)
 }
 
 //////////////////////////////////////////////////
-/// \brief Check hxs_remove_model_id.
-TEST(hxsTest, hxs_remove_model_id)
+/// \brief Check hxs_remove_model.
+TEST(hxsTest, hxs_remove_model)
 {
   setup();
 
   ignition::transport::Node node;
 
-  // Advertise the "hxs_remove_model_id" service.
-  node.Advertise("/haptix/gazebo/hxs_remove_model_id", onHxsRemoveModelId);
+  // Advertise the "hxs_remove_model" service.
+  node.Advertise("/haptix/gazebo/hxs_remove_model", onHxsRemoveModelId);
 
   // Remove a model with ID = 1.
-  ASSERT_EQ(hxs_remove_model_id("model 1"), hxOK);
+  ASSERT_EQ(hxs_remove_model("model 1"), hxOK);
 }
 
 //////////////////////////////////////////////////
