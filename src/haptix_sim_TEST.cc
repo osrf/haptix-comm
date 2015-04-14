@@ -33,7 +33,7 @@
 const int kNumModels         = 5;
 const int kNumLinksPerModel  = 40;
 const int kNumJointsPerModel = 20;
-const int kNumContactPoints       = 30;
+const int kNumContactPoints  = 30;
 
 /// \brief Global variables.
 haptix::comm::msgs::hxSimInfo simState;
@@ -265,7 +265,8 @@ void onHxsAddModel(const std::string &_service,
   // Sanity check: The message should contain a position.
   if (!_req.has_vector3())
   {
-    std::cerr << "onHxsAddModel() error: Missing vector3 in request" << std::endl;
+    std::cerr << "onHxsAddModel() error: Missing vector3 in request"
+              << std::endl;
     return;
   }
 
@@ -295,7 +296,7 @@ void onHxsAddModel(const std::string &_service,
 
 //////////////////////////////////////////////////
 /// \brief Provide a "hxs_remove_model" service.
-void onHxsRemoveModelId(const std::string &_service,
+void onHxsRemoveModel(const std::string &_service,
   const haptix::comm::msgs::hxString &_req,
   haptix::comm::msgs::hxEmpty &_rep,
   bool &_result)
@@ -481,6 +482,7 @@ void onHxsForce(const std::string &_service,
   EXPECT_EQ(std::string(simState.models(0).links(0).name()),
     _req.string_value());
 
+  // Verify the duration received.
   EXPECT_FLOAT_EQ(_req.float_value(), 0.1);
 
   // Verify the force vector received.
@@ -540,7 +542,9 @@ void onHxsTorque(const std::string &_service,
   EXPECT_EQ(std::string(simState.models(0).links(0).name()),
     _req.string_value());
 
+  // Verify the duration received.
   EXPECT_FLOAT_EQ(_req.float_value(), 0.1);
+
   // Verify the torque vector received.
   EXPECT_FLOAT_EQ(_req.vector3().x(), 6.1);
   EXPECT_FLOAT_EQ(_req.vector3().y(), 6.2);
@@ -796,7 +800,6 @@ TEST(hxsTest, hxs_set_camera_transform)
 
   // Set a camera transformation similar to the camera in simState.
   ASSERT_EQ(hxs_set_camera_transform(&simInfo.camera_transform), hxOK);
-  // TODO compare transform!
 }
 
 //////////////////////////////////////////////////
@@ -811,6 +814,7 @@ TEST(hxsTest, hxs_contacts)
   // Advertise the "hxs_contacts" service.
   node.Advertise("/haptix/gazebo/hxs_contacts", onHxsContactPoints);
 
+  // Get the list of contacts for model "model 0".
   ASSERT_EQ(hxs_contacts("model 0", &contactsInfo), hxOK);
 
   // Check the contacts information.
@@ -939,9 +943,9 @@ TEST(hxsTest, hxs_remove_model)
   ignition::transport::Node node;
 
   // Advertise the "hxs_remove_model" service.
-  node.Advertise("/haptix/gazebo/hxs_remove_model", onHxsRemoveModelId);
+  node.Advertise("/haptix/gazebo/hxs_remove_model", onHxsRemoveModel);
 
-  // Remove a model with ID = 1.
+  // Remove "model 1" model.
   ASSERT_EQ(hxs_remove_model("model 1"), hxOK);
 }
 
@@ -1021,6 +1025,9 @@ TEST(hxsTest, hxs_force)
   // Advertise the "hxs_force" service.
   node.Advertise("/haptix/gazebo/hxs_force", onHxsForce);
 
+  // Request simulation information.
+  ASSERT_EQ(hxs_siminfo(&simInfo), hxOK);
+
   // Set some force.
   force.x = 5.1;
   force.y = 5.2;
@@ -1046,6 +1053,9 @@ TEST(hxsTest, hxs_torque)
 
   // Advertise the "hxs_torque" service.
   node.Advertise("/haptix/gazebo/hxs_torque", onHxsTorque);
+
+  // Request simulation information.
+  ASSERT_EQ(hxs_siminfo(&simInfo), hxOK);
 
   // Set some force.
   torque.x = 6.1;
@@ -1122,12 +1132,12 @@ TEST(hxsTest, hxs_timer)
 
   ignition::transport::Node node;
 
-  // Advertise the "hxs_stop_timer" service.
+  // Advertise the "hxs_timer" service.
   node.Advertise("/haptix/gazebo/hxs_timer", onHxsTimer);
-  hxTime *timer = new hxTime;
-  ASSERT_EQ(hxs_timer(timer), hxOK);
-  EXPECT_EQ(timer->sec, 1);
-  EXPECT_EQ(timer->nsec, 2);
+  hxTime timer;
+  ASSERT_EQ(hxs_timer(&timer), hxOK);
+  EXPECT_EQ(timer.sec, 1);
+  EXPECT_EQ(timer.nsec, 2);
 }
 
 //////////////////////////////////////////////////

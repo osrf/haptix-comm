@@ -88,7 +88,7 @@ typedef struct _hxTransform hxTransform;
 struct _hxJoint
 {
   /// \brief Joint name.
-  char *name;
+  char *name = 0;
 
   /// \brief Position (radians).
   float pos;
@@ -114,7 +114,7 @@ typedef struct _hxJoint hxJoint;
 struct _hxLink
 {
   /// \brief Link name.
-  char *name;
+  char *name = 0;
 
   /// \brief The position and orientation of the link, relative to the
   /// model. Position is in meters.
@@ -139,7 +139,7 @@ typedef struct _hxLink hxLink;
 /// \brief Information about a model.
 struct _hxModel {
   /// \brief Model name.
-  char *name;
+  char *name = 0;
 
   /// \brief The position and orientation of the model, relative to the
   /// global coordinate frame.
@@ -176,10 +176,10 @@ typedef struct _hxModel hxModel;
 struct _hxContactPoint
 {
   /// \brief contact descriptor for contacting link 1.
-  char *link1;
+  char *link1 = 0;
 
   /// \brief contact descriptor for contacting link 2.
-  char *link2;
+  char *link2 = 0;
 
   /// \brief Description of contact frame relative to global frame:
   /// origin of frame.
@@ -235,7 +235,7 @@ struct _hxSimInfo
   hxModel models[hxMAXMODELS];
 
   /// \brief Information about the camera.
-  /// \sa hxs_get_camera_transform 
+  /// \sa hxs_get_camera_transform
   hxTransform camera_transform;
 };
 

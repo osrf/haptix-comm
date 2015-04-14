@@ -233,12 +233,12 @@ static bool hxs_convertTransform(const hxTransform *_in,
 static bool hxs_convertJoint(const haptix::comm::msgs::hxJoint _in,
   hxJoint *_out)
 {
-  // Initialize the C struct.
-  memset(_out, 0, sizeof(hxJoint));
-
   // Deallocate the memory for the joint name.
   if (_out->name)
     free(_out->name);
+
+  // Initialize the C struct.
+  memset(_out, 0, sizeof(hxJoint));
 
   _out->name = strdup(_in.name().c_str());
   _out->pos = _in.pos();
@@ -284,12 +284,12 @@ static bool hxs_convertJoint(const hxJoint *_in,
 /// \return True if the function succeed or false otherwise.
 static bool hxs_convertLink(const haptix::comm::msgs::hxLink _in, hxLink *_out)
 {
-  // Initialize the C struct.
-  memset(_out, 0, sizeof(hxLink));
-
   // Deallocate the memory for the joint name.
   if (_out->name)
     free(_out->name);
+
+  // Initialize the C struct.
+  memset(_out, 0, sizeof(hxLink));
 
   _out->name = strdup(_in.name().c_str());
   hxs_convertTransform(_in.transform(), &_out->transform);
@@ -337,12 +337,26 @@ static bool hxs_convertLink(const hxLink *_in, haptix::comm::msgs::hxLink *_out)
 static bool hxs_convertModel(const haptix::comm::msgs::hxModel _in,
   hxModel *_out)
 {
-  // Initialize the C struct.
-  memset(_out, 0, sizeof(hxModel));
-
-  // First, deallocate the memory for the 'name' field.
+  // We need to deallocate the dynamic memory before initializing the struct.
   if (_out->name)
     free(_out->name);
+
+  // Links memory.
+  for (auto j = 0; j < hxMAXLINKS; ++j)
+  {
+    if (_out->links[j].name)
+      free(_out->links[j].name);
+  }
+
+  // Joints memory.
+  for (auto j = 0; j < hxMAXJOINTS; ++j)
+  {
+    if (_out->joints[j].name)
+      free(_out->joints[j].name);
+  }
+
+  // Initialize the C struct.
+  memset(_out, 0, sizeof(hxModel));
 
   _out->name = strdup(_in.name().c_str());
   hxs_convertTransform(_in.transform(), &(_out->transform));
@@ -410,6 +424,16 @@ static bool hxs_convertModel(const hxModel *_in,
 static bool hxs_convertContactPoints(
   const haptix::comm::msgs::hxContactPoint_V _in, hxContactPoints *_out)
 {
+  // We need to deallocate the dynamic memory before initializing the struct.
+  for (int i = 0; i < hxMAXCONTACT; ++i)
+  {
+    if (_out->contacts[i].link1)
+      free(_out->contacts[i].link1);
+
+    if (_out->contacts[i].link2)
+      free(_out->contacts[i].link2);
+  }
+
   // Initialize the C struct.
   memset(_out, 0, sizeof(hxContactPoints));
 
@@ -417,14 +441,8 @@ static bool hxs_convertContactPoints(
 
   for (int i = 0; i < _out->contactCount; ++i)
   {
-    int length1 = _in.contacts(i).link1().length();
-    int length2 = _in.contacts(i).link2().length();
-    _out->contacts[i].link1 = static_cast<char*>(malloc(length1 + 1));
-    _out->contacts[i].link2 = static_cast<char*>(malloc(length2 + 1));
-    memset(_out->contacts[i].link1, 0, length1+1);
-    memset(_out->contacts[i].link2, 0, length2+2);
-    strncpy(_out->contacts[i].link1, _in.contacts(i).link1().c_str(), length1);
-    strncpy(_out->contacts[i].link2, _in.contacts(i).link2().c_str(), length2);
+    _out->contacts[i].link1 = strdup(_in.contacts(i).link1().c_str());
+    _out->contacts[i].link2 = strdup(_in.contacts(i).link2().c_str());
     hxs_convertVector3(_in.contacts(i).point(), &_out->contacts[i].point);
     hxs_convertVector3(_in.contacts(i).normal(), &_out->contacts[i].normal);
     hxs_convertVector3(_in.contacts(i).tangent1(), &_out->contacts[i].tangent1);
@@ -436,7 +454,6 @@ static bool hxs_convertContactPoints(
   return true;
 }
 
-
 //////////////////////////////////////////////////
 /// \brief Private function that converts a protobuf hxSimInfo message to a
 /// C struct hxSimInfo.
@@ -446,6 +463,28 @@ static bool hxs_convertContactPoints(
 static bool hxs_convertSimInfo(const haptix::comm::msgs::hxSimInfo _in,
   hxSimInfo *_out)
 {
+  // We need to deallocate the dynamic memory before initializing the struct.
+  for (auto i = 0; i < hxMAXMODELS; ++i)
+  {
+    // Model name memory.
+    if (_out->models[i].name)
+      free(_out->models[i].name);
+
+    // Links memory.
+    for (auto j = 0; j < hxMAXLINKS; ++j)
+    {
+      if (_out->models[i].links[j].name)
+        free(_out->models[i].links[j].name);
+    }
+
+    // Joints memory.
+    for (auto j = 0; j < hxMAXJOINTS; ++j)
+    {
+      if (_out->models[i].joints[j].name)
+        free(_out->models[i].joints[j].name);
+    }
+  }
+
   // Initialize the C struct.
   memset(_out, 0, sizeof(hxSimInfo));
 
