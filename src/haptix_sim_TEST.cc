@@ -95,6 +95,8 @@ void setup()
       joint->set_torque_motor(v + 0.3);
       joint->set_torque_passive(v + 0.4);
     }
+
+    model->set_gravity(true);
   }
 
   // Camera.
@@ -278,6 +280,14 @@ void onHxsAddModel(const std::string &_service,
     return;
   }
 
+  // Sanity check: The message should contain a gravity field.
+  if (!_req.has_gravity())
+  {
+    std::cerr << "onHxsAddModel() error: Missing gravity in request"
+              << std::endl;
+    return;
+  }
+
   // Verify the request.
   EXPECT_EQ(_req.string_value(), "fake URDF");
   EXPECT_EQ(_req.name(), "model 1");
@@ -287,6 +297,7 @@ void onHxsAddModel(const std::string &_service,
   EXPECT_FLOAT_EQ(_req.orientation().roll(), 4.0);
   EXPECT_FLOAT_EQ(_req.orientation().pitch(), 5.0);
   EXPECT_FLOAT_EQ(_req.orientation().yaw(), 6.0);
+  EXPECT_TRUE(_req.gravity());
 
   // Return the first model of simState as an answer.
   _rep = simState.models(0);
@@ -382,7 +393,7 @@ void onHxsLinearVelocity(const std::string &_service,
     return;
   }
 
-  // Verify the ID.
+  // Verify the name.
   EXPECT_EQ(_req.name(), "model 1");
 
   // Verify the linvel.
@@ -742,6 +753,7 @@ TEST(hxsTest, hxs_simInfo)
       EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].torque_motor, v + 0.3);
       EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].torque_passive, v + 0.4);
     }
+    EXPECT_TRUE(simInfo.models[i].gravity);
   }
 
   // Check the camera information.
@@ -888,7 +900,7 @@ TEST(hxsTest, hxs_add_model)
 
   // Create a new model.
   ASSERT_EQ(hxs_add_model(urdf.c_str(), name.c_str(), x, y, z, roll, pitch, yaw,
-    &model), hxOK);
+    true, &model), hxOK);
 
   // Verify that the new model matches the first model in simState.
   EXPECT_FLOAT_EQ(model.transform.pos.x, 0);
@@ -932,6 +944,7 @@ TEST(hxsTest, hxs_add_model)
     EXPECT_FLOAT_EQ(model.joints[i].torque_motor, v + 0.3);
     EXPECT_FLOAT_EQ(model.joints[i].torque_passive, v + 0.4);
   }
+  EXPECT_TRUE(model.gravity);
 }
 
 //////////////////////////////////////////////////

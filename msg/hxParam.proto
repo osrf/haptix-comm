@@ -20,4 +20,5 @@ message hxParam
   optional uint32 int_value      = 9;
   optional hxEuler orientation   = 10;
   optional string name           = 11;
+  optional bool gravity          = 12;
 }

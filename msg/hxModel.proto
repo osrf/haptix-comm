@@ -11,4 +11,5 @@ message hxModel
   required uint32 id             = 3;
   repeated hxLink links          = 4;
   repeated hxJoint joints        = 5;
+  required bool gravity          = 6;
 }

@@ -282,11 +282,12 @@ hxResult hxs_set_state(const hxModel *_model);
 /// \param[in] _roll Roll in global frame (radians).
 /// \param[in] _pitch Pitch in global frame (radians).
 /// \param[in] _yaw Yaw in global frame (radians).
+/// \param[in] _gravity True if the model is affected by gravity.
 /// \param[out] _model Pointer to the new model.
 /// \return 'hxOK' if the function succeed or an error code otherwise.
 hxResult hxs_add_model(const char *_urdf, const char *_name,
   float _x, float _y, float _z, float _roll, float _pitch, float _yaw,
-  hxModel *_model);
+  bool _gravity, hxModel *_model);
 
 /// \brief Remove model.
 /// \param[in] _name Name of the model.

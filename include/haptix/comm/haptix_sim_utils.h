@@ -372,6 +372,8 @@ static bool hxs_convertModel(const haptix::comm::msgs::hxModel _in,
   for (int i = 0; i < _out->joint_count; ++i)
     hxs_convertJoint(_in.joints(i), &_out->joints[i]);
 
+  _out->gravity = _in.gravity();
+
   return true;
 }
 
@@ -411,6 +413,8 @@ static bool hxs_convertModel(const hxModel *_in,
     haptix::comm::msgs::hxJoint *joint = _out->add_joints();
     hxs_convertJoint(&_in->joints[i], joint);
   }
+
+  _out->set_gravity(_in->gravity);
 
   return true;
 }

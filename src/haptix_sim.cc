@@ -97,7 +97,7 @@ extern "C" {
   //////////////////////////////////////////////////
   hxResult hxs_add_model(const char *_urdf, const char *_name,
     float _x, float _y, float _z, float _roll, float _pitch, float _yaw,
-    hxModel *_model)
+    bool _gravity, hxModel *_model)
   {
     const std::string service = "/haptix/gazebo/hxs_add_model";
     haptix::comm::msgs::hxParam req;
@@ -110,6 +110,7 @@ extern "C" {
     req.mutable_orientation()->set_pitch(_pitch);
     req.mutable_orientation()->set_yaw(_yaw);
     req.set_string_value(_urdf);
+    req.set_gravity(_gravity);
 
     return hxs_call(service, __func__, req, rep, _model, hxs_convertModel);
   }
