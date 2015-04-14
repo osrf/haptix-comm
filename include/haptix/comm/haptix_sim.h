@@ -307,7 +307,7 @@ hxResult hxs_model_gravity(const char *_name, int *_gravity);
 
 /// \brief Set whether or not this model is affected by gravity.
 /// \param[in] _name Name of the model.
-/// \param[out] _gravity If true, the model is affected by gravity. If false,
+/// \param[in] _gravity If true, the model is affected by gravity. If false,
 /// the model is free-floating
 hxResult hxs_set_model_gravity(const char *_name, const int _gravity);
 
