@@ -8,9 +8,8 @@ message hxContactPoint
   required string link2        = 2;
   required hxVector3 point     = 3;
   required hxVector3 normal    = 4;
-  required hxVector3 tangent1  = 5;
-  required hxVector3 tangent2  = 6;
-  required float distance      = 7;
-  required hxVector3 velocity  = 8;
-  required hxVector3 force     = 9;
+  required float distance      = 5;
+  required hxVector3 velocity  = 6;
+  required hxVector3 force     = 7;
+  required hxVector3 torque    = 8;
 }

@@ -463,10 +463,9 @@ static bool hxs_convertContactPoints(
 
     hxs_convertVector3(_in.contacts(i).point(), &_out->contacts[i].point);
     hxs_convertVector3(_in.contacts(i).normal(), &_out->contacts[i].normal);
-    hxs_convertVector3(_in.contacts(i).tangent1(), &_out->contacts[i].tangent1);
-    hxs_convertVector3(_in.contacts(i).tangent2(), &_out->contacts[i].tangent2);
     _out->contacts[i].distance = _in.contacts(i).distance();
     hxs_convertVector3(_in.contacts(i).force(), &_out->contacts[i].force);
+    hxs_convertVector3(_in.contacts(i).torque(), &_out->contacts[i].torque);
   }
 
   return true;

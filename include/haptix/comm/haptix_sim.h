@@ -186,28 +186,22 @@ struct _hxContactPoint
   /// \brief contact descriptor for contacting link 2.
   char link2[hxMAXNAMESIZE];
 
-  /// \brief Description of contact frame relative to global frame:
-  /// origin of frame.
+  /// \brief Description of contact frame relative to link 1 frame:
+  /// origin of contact on link 1.
   hxVector3 point;
 
-  /// \brief Description of contact frame relative to global frame:
-  /// normal direction (unit vector).
+  /// \brief Description of contact frame relative to link 1 frame:
+  /// normal direction (unit vector) of contact force on link 1.
   hxVector3 normal;
 
-  /// \brief Description of contact frame relative to global frame:
-  /// first tangent direction (unit vector).
-  hxVector3 tangent1;
-
-  /// \brief Description of contact frame relative to global frame:
-  /// second tangent direction (unit vector).
-  hxVector3 tangent2;
-
-  /// \brief Normal distance (penetration depth) in contact frame (m).
+  /// \brief Normal distance (penetration depth) in link 1 frame (m).
   float distance;
 
-  /// \brief Contact force in contact frame (N),
-  /// with axis order (normal, tangent1, tangent2).
+  /// \brief Contact force in link 1 frame (N).
   hxVector3 force;
+
+  /// \brief Contact torque in link 1 frame (N).
+  hxVector3 torque;
 };
 
 /// \def hxContactPoint

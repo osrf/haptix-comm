@@ -121,12 +121,6 @@ void setup()
     contact->mutable_normal()->set_x(i + 0.5);
     contact->mutable_normal()->set_y(i + 0.6);
     contact->mutable_normal()->set_z(i + 0.7);
-    contact->mutable_tangent1()->set_x(i + 0.8);
-    contact->mutable_tangent1()->set_y(i + 0.9);
-    contact->mutable_tangent1()->set_z(i + 1);
-    contact->mutable_tangent2()->set_x(i + 1.1);
-    contact->mutable_tangent2()->set_y(i + 1.2);
-    contact->mutable_tangent2()->set_z(i + 1.3);
     contact->set_distance(i + 1.4);
     contact->mutable_velocity()->set_x(i + 1.5);
     contact->mutable_velocity()->set_y(i + 1.6);
@@ -134,6 +128,9 @@ void setup()
     contact->mutable_force()->set_x(i + 1.8);
     contact->mutable_force()->set_y(i + 1.9);
     contact->mutable_force()->set_z(i + 2);
+    contact->mutable_torque()->set_x(i + 2.1);
+    contact->mutable_torque()->set_y(i + 2.2);
+    contact->mutable_torque()->set_z(i + 2.3);
   }
 }
 
@@ -879,16 +876,13 @@ TEST(hxsTest, hxs_contacts)
     EXPECT_FLOAT_EQ(contactsInfo.contacts[i].normal.x, i + 0.5);
     EXPECT_FLOAT_EQ(contactsInfo.contacts[i].normal.y, i + 0.6);
     EXPECT_FLOAT_EQ(contactsInfo.contacts[i].normal.z, i + 0.7);
-    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].tangent1.x, i + 0.8);
-    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].tangent1.y, i + 0.9);
-    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].tangent1.z, i + 1);
-    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].tangent2.x, i + 1.1);
-    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].tangent2.y, i + 1.2);
-    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].tangent2.z, i + 1.3);
     EXPECT_FLOAT_EQ(contactsInfo.contacts[i].distance, i + 1.4);
     EXPECT_FLOAT_EQ(contactsInfo.contacts[i].force.x, i + 1.8);
     EXPECT_FLOAT_EQ(contactsInfo.contacts[i].force.y, i + 1.9);
     EXPECT_FLOAT_EQ(contactsInfo.contacts[i].force.z, i + 2);
+    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].torque.x, i + 2.1);
+    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].torque.y, i + 2.2);
+    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].torque.z, i + 2.3);
   }
 }
 
