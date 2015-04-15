@@ -26,7 +26,6 @@
 #include <mutex>
 #include <ignition/transport.hh>
 #include "haptix/comm/haptix.h"
-#include "msg/hxContactPoint.pb.h"
 #include "msg/hxContactPoint_V.pb.h"
 #include "msg/hxEmpty.pb.h"
 #include "msg/hxJoint.pb.h"
