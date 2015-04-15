@@ -232,14 +232,19 @@ static bool hxs_convertTransform(const hxTransform *_in,
 static bool hxs_convertJoint(const haptix::comm::msgs::hxJoint _in,
   hxJoint *_out)
 {
-  // Deallocate the memory for the joint name.
-  if (_out->name)
-    free(_out->name);
-
   // Initialize the C struct.
   memset(_out, 0, sizeof(hxJoint));
 
-  _out->name = strdup(_in.name().c_str());
+  if (_in.name().size() > hxMAXNAMESIZE - 1)
+  {
+    std::cerr << "hxs_convertJoint() error: The name of the joint ["
+              << _in.name() << "] exceeds the maximum size allowed ("
+              << hxMAXNAMESIZE << " chars)." << std::endl;
+    return false;
+  }
+
+  strncpy(_out->name, _in.name().c_str(), strlen(_in.name().c_str()));
+  _out->name[strlen(_in.name().c_str())] = '\0';
   _out->pos = _in.pos();
   _out->vel = _in.vel();
   _out->torque_motor = _in.torque_motor();
@@ -283,14 +288,19 @@ static bool hxs_convertJoint(const hxJoint *_in,
 /// \return True if the function succeed or false otherwise.
 static bool hxs_convertLink(const haptix::comm::msgs::hxLink _in, hxLink *_out)
 {
-  // Deallocate the memory for the joint name.
-  if (_out->name)
-    free(_out->name);
-
   // Initialize the C struct.
   memset(_out, 0, sizeof(hxLink));
 
-  _out->name = strdup(_in.name().c_str());
+  if (_in.name().size() > hxMAXNAMESIZE - 1)
+  {
+    std::cerr << "hxs_convertLink() error: The name of the link ["
+              << _in.name() << "] exceeds the maximum size allowed ("
+              << hxMAXNAMESIZE << " chars)." << std::endl;
+    return false;
+  }
+
+  strncpy(_out->name, _in.name().c_str(), strlen(_in.name().c_str()));
+  _out->name[strlen(_in.name().c_str())] = '\0';
   hxs_convertTransform(_in.transform(), &_out->transform);
   hxs_convertVector3(_in.linvel(), &_out->linvel);
   hxs_convertVector3(_in.angvel(), &_out->angvel);
@@ -336,28 +346,20 @@ static bool hxs_convertLink(const hxLink *_in, haptix::comm::msgs::hxLink *_out)
 static bool hxs_convertModel(const haptix::comm::msgs::hxModel _in,
   hxModel *_out)
 {
-  // We need to deallocate the dynamic memory before initializing the struct.
-  if (_out->name)
-    free(_out->name);
-
-  // Links memory.
-  for (auto j = 0; j < hxMAXLINKS; ++j)
-  {
-    if (_out->links[j].name)
-      free(_out->links[j].name);
-  }
-
-  // Joints memory.
-  for (auto j = 0; j < hxMAXJOINTS; ++j)
-  {
-    if (_out->joints[j].name)
-      free(_out->joints[j].name);
-  }
-
   // Initialize the C struct.
   memset(_out, 0, sizeof(hxModel));
 
-  _out->name = strdup(_in.name().c_str());
+  if (_in.name().size() > hxMAXNAMESIZE - 1)
+  {
+    std::cerr << "hxs_convertModel() error: The name of the model ["
+              << _in.name() << "] exceeds the maximum size allowed ("
+              << hxMAXNAMESIZE << " chars)." << std::endl;
+    return false;
+  }
+
+  strncpy(_out->name, _in.name().c_str(), strlen(_in.name().c_str()));
+  _out->name[strlen(_in.name().c_str())] = '\0';
+
   hxs_convertTransform(_in.transform(), &(_out->transform));
   _out->id = _in.id();
   _out->link_count = _in.links_size();
@@ -427,16 +429,6 @@ static bool hxs_convertModel(const hxModel *_in,
 static bool hxs_convertContactPoints(
   const haptix::comm::msgs::hxContactPoint_V _in, hxContactPoints *_out)
 {
-  // We need to deallocate the dynamic memory before initializing the struct.
-  for (int i = 0; i < hxMAXCONTACT; ++i)
-  {
-    if (_out->contacts[i].link1)
-      free(_out->contacts[i].link1);
-
-    if (_out->contacts[i].link2)
-      free(_out->contacts[i].link2);
-  }
-
   // Initialize the C struct.
   memset(_out, 0, sizeof(hxContactPoints));
 
@@ -444,8 +436,31 @@ static bool hxs_convertContactPoints(
 
   for (int i = 0; i < _out->contactCount; ++i)
   {
-    _out->contacts[i].link1 = strdup(_in.contacts(i).link1().c_str());
-    _out->contacts[i].link2 = strdup(_in.contacts(i).link2().c_str());
+
+    if (_in.contacts(i).link1().size() > hxMAXNAMESIZE - 1)
+    {
+      std::cerr << "hxs_convertContactPoints() error: The name of the link1 ["
+                << _in.contacts(i).link1() << "] exceeds the maximum size "
+                << "allowed (" << hxMAXNAMESIZE << " chars)." << std::endl;
+      return false;
+    }
+
+    if (_in.contacts(i).link2().size() > hxMAXNAMESIZE - 1)
+    {
+      std::cerr << "hxs_convertContactPoints() error: The name of the link2 ["
+                << _in.contacts(i).link2() << "] exceeds the maximum size "
+                << "allowed (" << hxMAXNAMESIZE << " chars)." << std::endl;
+      return false;
+    }
+
+    strncpy(_out->contacts[i].link1, _in.contacts(i).link1().c_str(),
+      strlen(_in.contacts(i).link1().c_str()));
+    _out->contacts[i].link1[strlen(_in.contacts(i).link1().c_str())] = '\0';
+
+    strncpy(_out->contacts[i].link2, _in.contacts(i).link2().c_str(),
+      strlen(_in.contacts(i).link2().c_str()));
+    _out->contacts[i].link2[strlen(_in.contacts(i).link2().c_str())] = '\0';
+
     hxs_convertVector3(_in.contacts(i).point(), &_out->contacts[i].point);
     hxs_convertVector3(_in.contacts(i).normal(), &_out->contacts[i].normal);
     hxs_convertVector3(_in.contacts(i).tangent1(), &_out->contacts[i].tangent1);
@@ -466,28 +481,6 @@ static bool hxs_convertContactPoints(
 static bool hxs_convertSimInfo(const haptix::comm::msgs::hxSimInfo _in,
   hxSimInfo *_out)
 {
-  // We need to deallocate the dynamic memory before initializing the struct.
-  for (auto i = 0; i < hxMAXMODELS; ++i)
-  {
-    // Model name memory.
-    if (_out->models[i].name)
-      free(_out->models[i].name);
-
-    // Links memory.
-    for (auto j = 0; j < hxMAXLINKS; ++j)
-    {
-      if (_out->models[i].links[j].name)
-        free(_out->models[i].links[j].name);
-    }
-
-    // Joints memory.
-    for (auto j = 0; j < hxMAXJOINTS; ++j)
-    {
-      if (_out->models[i].joints[j].name)
-        free(_out->models[i].joints[j].name);
-    }
-  }
-
   // Initialize the C struct.
   memset(_out, 0, sizeof(hxSimInfo));
 

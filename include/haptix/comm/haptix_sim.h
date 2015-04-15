@@ -26,6 +26,7 @@
 extern "C" {
 #endif
 
+#include <stdbool.h>
 #include "haptix.h"
 
 // ---------- constants ----------
@@ -41,6 +42,9 @@ extern "C" {
 
 /// \brief Maximum number of models per simulation.
 #define hxMAXMODELS 50
+
+/// \brief Maximum number of models per simulation.
+#define hxMAXNAMESIZE 100
 
 // ---------- data structures ----------
 
@@ -88,7 +92,7 @@ typedef struct _hxTransform hxTransform;
 struct _hxJoint
 {
   /// \brief Joint name.
-  char *name = 0;
+  char name[hxMAXNAMESIZE];
 
   /// \brief Position (radians).
   float pos;
@@ -114,7 +118,7 @@ typedef struct _hxJoint hxJoint;
 struct _hxLink
 {
   /// \brief Link name.
-  char *name = 0;
+  char name[hxMAXNAMESIZE];
 
   /// \brief The position and orientation of the link, relative to the
   /// model. Position is in meters.
@@ -139,7 +143,7 @@ typedef struct _hxLink hxLink;
 /// \brief Information about a model.
 struct _hxModel {
   /// \brief Model name.
-  char *name = 0;
+  char name[hxMAXNAMESIZE];
 
   /// \brief The position and orientation of the model, relative to the
   /// global coordinate frame.
@@ -176,10 +180,10 @@ typedef struct _hxModel hxModel;
 struct _hxContactPoint
 {
   /// \brief contact descriptor for contacting link 1.
-  char *link1 = 0;
+  char link1[hxMAXNAMESIZE];
 
   /// \brief contact descriptor for contacting link 2.
-  char *link2 = 0;
+  char link2[hxMAXNAMESIZE];
 
   /// \brief Description of contact frame relative to global frame:
   /// origin of frame.
