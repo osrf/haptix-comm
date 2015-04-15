@@ -724,7 +724,7 @@ void onHxsSetModelGravity(const std::string &_service,
   EXPECT_TRUE(_req.has_name());
   EXPECT_TRUE(_req.has_int_value());
   EXPECT_EQ(_req.name(), "model_1");
-  EXPECT_EQ(_req.int_value(), 0);
+  EXPECT_EQ(_req.int_value(), 1);
 
   _result = true;
 }
@@ -1263,5 +1263,5 @@ TEST(hxsTest, hxs_set_model_gravity)
   // Advertise the "hxs_set_model_gravity" service.
   node.Advertise("/haptix/gazebo/hxs_set_model_gravity", onHxsSetModelGravity);
 
-  ASSERT_EQ(hxs_set_model_gravity("model_1", 0), hxOK);
+  ASSERT_EQ(hxs_set_model_gravity("model_1", 1), hxOK);
 }
