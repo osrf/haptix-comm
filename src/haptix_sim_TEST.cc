@@ -694,6 +694,40 @@ void onHxsStopLogging(const std::string &_service,
 }
 
 //////////////////////////////////////////////////
+/// \brief Provide a "hxs_model_gravity" service.
+void onHxsModelGravity(const std::string &_service,
+  const haptix::comm::msgs::hxString &_req,
+  haptix::comm::msgs::hxInt &_rep,
+  bool &_result)
+{
+  _rep.Clear();
+
+  // Check the name of the service received.
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_model_gravity");
+
+  EXPECT_EQ(_req.data(), "model_1");
+  _rep.set_data(1);
+
+  _result = true;
+}
+
+//////////////////////////////////////////////////
+/// \brief Provide a "hxs_set_gravity" service.
+void onHxsSetModelGravity(const std::string &_service,
+  const haptix::comm::msgs::hxParam &_req,
+  haptix::comm::msgs::hxEmpty &/*_rep*/,
+  bool &_result)
+{
+  // Check the name of the service received.
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_set_model_gravity");
+
+  EXPECT_EQ(_req.name(), "model_1");
+  EXPECT_EQ(_req.int_value(), 0);
+
+  _result = true;
+}
+
+//////////////////////////////////////////////////
 /// \brief Check hxs_simInfo.
 TEST(hxsTest, hxs_simInfo)
 {
@@ -1198,4 +1232,34 @@ TEST(hxsTest, hxs_stop_logging)
   node.Advertise("/haptix/gazebo/hxs_stop_logging", onHxsStopLogging);
 
   ASSERT_EQ(hxs_stop_logging(), hxOK);
+}
+
+//////////////////////////////////////////////////
+/// \brief Check hxs_model_gravity.
+TEST(hxsTest, hxs_model_gravity)
+{
+  setup();
+
+  ignition::transport::Node node;
+
+  // Advertise the "hxs_model_gravity" service.
+  node.Advertise("/haptix/gazebo/hxs_model_gravity", onHxsModelGravity);
+
+  int gravity = 0;
+  ASSERT_EQ(hxs_model_gravity("model_1", &gravity), hxOK);
+  EXPECT_EQ(gravity, 1);
+}
+
+//////////////////////////////////////////////////
+/// \brief Check hxs_set_model_gravity.
+TEST(hxsTest, hxs_set_model_gravity)
+{
+  setup();
+
+  ignition::transport::Node node;
+
+  // Advertise the "hxs_model_gravity" service.
+  node.Advertise("/haptix/gazebo/hxs_set_model_gravity", onHxsModelGravity);
+
+  ASSERT_EQ(hxs_set_model_gravity("model_1", 0), hxOK);
 }

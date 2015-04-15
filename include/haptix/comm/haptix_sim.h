@@ -36,7 +36,7 @@ extern "C" {
 /// \brief Maximum number of links per model.
 #define hxMAXLINKS 100
 
-/// \brief Maximum number of links per model.
+/// \brief Maximum number of joints per model.
 #define hxMAXJOINTS 50
 
 /// \brief Maximum number of models per simulation.
