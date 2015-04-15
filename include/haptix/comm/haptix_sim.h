@@ -132,6 +132,7 @@ struct _hxLink
   /// \brief Angular acceleration (rad/s/s).
   hxVector3 angacc;
 };
+
 /// \def hxLink
 /// \brief Information about a link.
 typedef struct _hxLink hxLink;
