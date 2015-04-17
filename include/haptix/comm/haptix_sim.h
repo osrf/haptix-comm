@@ -272,7 +272,7 @@ hxResult hxs_contacts(const char *_model, hxContactPoints *_contact);
 hxResult hxs_set_state(const hxModel *_model);
 
 /// \brief Add model during runtime.
-/// \param[in] _urdf URDF xml description of the model.
+/// \param[in] _sdf SDF xml description of the model.
 /// \param[in] _name Model name.
 /// \param[in] _x X position in global frame (m).
 /// \param[in] _y Y position in global frame (m).
@@ -283,7 +283,7 @@ hxResult hxs_set_state(const hxModel *_model);
 /// \param[in] _gravity True if the model is affected by gravity.
 /// \param[out] _model Pointer to the new model.
 /// \return 'hxOK' if the function succeed or an error code otherwise.
-hxResult hxs_add_model(const char *_urdf, const char *_name,
+hxResult hxs_add_model(const char *_sdf, const char *_name,
   float _x, float _y, float _z, float _roll, float _pitch, float _yaw,
   bool _gravity, hxModel *_model);
 

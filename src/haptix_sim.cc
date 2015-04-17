@@ -92,7 +92,7 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
-  hxResult hxs_add_model(const char *_urdf, const char *_name,
+  hxResult hxs_add_model(const char *_sdf, const char *_name,
     float _x, float _y, float _z, float _roll, float _pitch, float _yaw,
     bool _gravity, hxModel *_model)
   {
@@ -106,7 +106,7 @@ extern "C" {
     req.mutable_orientation()->set_roll(_roll);
     req.mutable_orientation()->set_pitch(_pitch);
     req.mutable_orientation()->set_yaw(_yaw);
-    req.set_string_value(_urdf);
+    req.set_string_value(_sdf);
     req.set_gravity(_gravity);
 
     return hxs_call(service, __func__, req, rep, _model, hxs_convertModel);
