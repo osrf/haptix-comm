@@ -48,7 +48,7 @@ static std::mutex lastResultLock;
 static ignition::transport::Node *haptixSimUtilsNode = NULL;
 
 //////////////////////////////////////////////////
-/// \brief Private function that creates an Ignition Transport node
+/// \internal Private function that creates an Ignition Transport node
 /// or return a pointer to it if has been already created.
 /// \return Pointer to the Ignition Transport node.
 static ignition::transport::Node *getHxNode()
@@ -60,7 +60,7 @@ static ignition::transport::Node *getHxNode()
 }
 
 //////////////////////////////////////////////////
-/// \brief Private function that converts a protobuf message to a scalar.
+/// \internal Private function that converts a protobuf message to a scalar.
 /// \param[_in] Protobuf message with a [data] field.
 /// \param[_out] Output value.
 /// \return True if the function succeed or false otherwise.
@@ -76,7 +76,7 @@ template <typename T, typename T2> bool hxs_convertScalar(T _in, T2 *_out)
 }
 
 //////////////////////////////////////////////////
-/// \brief Private function that converts a protobuf hxTime message to a
+/// \internal Private function that converts a protobuf hxTime message to a
 /// C struct hxTime.
 /// \param[in] _in Protobuf message.
 /// \param[out] _out C-struct.
@@ -92,7 +92,7 @@ static bool hxs_convertTime(const haptix::comm::msgs::hxTime _in, hxTime *_out)
   return true;
 }
 //////////////////////////////////////////////////
-/// \brief Private function that converts a protobuf hxVector3 message to a
+/// \internal Private function that converts a protobuf hxVector3 message to a
 /// C struct hxVector3.
 /// \param[in] _in Protobuf message.
 /// \param[out] _out C-struct.
@@ -111,7 +111,7 @@ static bool hxs_convertVector3(const haptix::comm::msgs::hxVector3 _in,
 }
 
 //////////////////////////////////////////////////
-/// \brief Private function that converts a C struct hxVector3. to a
+/// \internal Private function that converts a C struct hxVector3. to a
 /// protobuf hxVector3 message.
 /// \param[in] _in C-struct.
 /// \param[out] _out Protobuf message.
@@ -136,8 +136,8 @@ static bool hxs_convertVector3(const hxVector3 *_in,
 }
 
 //////////////////////////////////////////////////
-/// \brief Private function that converts a protobuf hxQuaternion message to a
-/// C struct hxQuaternion.
+/// \internal Private function that converts a protobuf hxQuaternion message to
+/// a C struct hxQuaternion.
 /// \param[in] _in Protobuf message.
 /// \param[out] _out C-struct.
 /// \return True if the function succeed or false otherwise.
@@ -156,7 +156,7 @@ static bool hxs_convertQuaternion(const haptix::comm::msgs::hxQuaternion _in,
 }
 
 //////////////////////////////////////////////////
-/// \brief Private function that converts a C struct hxQuaternion to a
+/// \internal Private function that converts a C struct hxQuaternion to a
 /// protobuf hxQuaternion message.
 /// \param[in] _in C-struct.
 /// \param[out] _out Protobuf message.
@@ -182,8 +182,8 @@ static bool hxs_convertQuaternion(const hxQuaternion *_in,
 }
 
 //////////////////////////////////////////////////
-/// \brief Private function that converts a protobuf hxQuaternion message to a
-/// C struct hxQuaternion.
+/// \internal Private function that converts a protobuf hxQuaternion message to
+/// a C struct hxQuaternion.
 /// \param[in] _in Protobuf message.
 /// \param[out] _out C-struct.
 /// \return True if the function succeed or false otherwise.
@@ -200,7 +200,7 @@ static bool hxs_convertTransform(const haptix::comm::msgs::hxTransform _in,
 }
 
 //////////////////////////////////////////////////
-/// \brief Private function that converts a C struct hxQuaternion to a
+/// \internal Private function that converts a C struct hxQuaternion to a
 /// protobuf hxQuaternion message.
 /// \param[in] _in C-struct.
 /// \param[out] _out Protobuf message.
@@ -224,7 +224,7 @@ static bool hxs_convertTransform(const hxTransform *_in,
 }
 
 //////////////////////////////////////////////////
-/// \brief Private function that converts a protobuf hxJoint message to a
+/// \internal Private function that converts a protobuf hxJoint message to a
 /// C struct hxJoint.
 /// \param[in] _in Protobuf message.
 /// \param[out] _out C-struct.
@@ -254,7 +254,7 @@ static bool hxs_convertJoint(const haptix::comm::msgs::hxJoint _in,
 }
 
 //////////////////////////////////////////////////
-/// \brief Private function that converts a C struct hxJoint to a
+/// \internal Private function that converts a C struct hxJoint to a
 /// protobuf hxJoint message.
 /// \param[in] _in C-struct.
 /// \param[out] _out Protobuf message.
@@ -281,7 +281,7 @@ static bool hxs_convertJoint(const hxJoint *_in,
 }
 
 //////////////////////////////////////////////////
-/// \brief Private function that converts a protobuf hxLink message to a
+/// \internal Private function that converts a protobuf hxLink message to a
 /// C struct hxLink.
 /// \param[in] _in Protobuf message.
 /// \param[out] _out C-struct.
@@ -311,7 +311,7 @@ static bool hxs_convertLink(const haptix::comm::msgs::hxLink _in, hxLink *_out)
 }
 
 //////////////////////////////////////////////////
-/// \brief Private function that converts a C struct hxLink to a
+/// \internal Private function that converts a C struct hxLink to a
 /// protobuf hxLink message.
 /// \param[in] _in C-struct.
 /// \param[out] _out Protobuf message.
@@ -338,7 +338,7 @@ static bool hxs_convertLink(const hxLink *_in, haptix::comm::msgs::hxLink *_out)
 }
 
 //////////////////////////////////////////////////
-/// \brief Private function that converts a protobuf hxModel message to a
+/// \internal Private function that converts a protobuf hxModel message to a
 /// C struct hxModel.
 /// \param[in] _in Protobuf message.
 /// \param[out] _out C-struct.
@@ -379,7 +379,7 @@ static bool hxs_convertModel(const haptix::comm::msgs::hxModel _in,
 }
 
 //////////////////////////////////////////////////
-/// \brief Private function that converts a C struct hxModel to a
+/// \internal Private function that converts a C struct hxModel to a
 /// protobuf hxModel message.
 /// \param[in] _in C-struct.
 /// \param[out] _out Protobuf message.
@@ -421,8 +421,8 @@ static bool hxs_convertModel(const hxModel *_in,
 }
 
 //////////////////////////////////////////////////
-/// \brief Private function that converts a protobuf hxContactPoint_V message to
-/// a C struct hxContactPoints.
+/// \internal Private function that converts a protobuf hxContactPoint_V message
+/// to a C struct hxContactPoints.
 /// \param[in] _in Protobuf message.
 /// \param[out] _out C-struct.
 /// \return True if the function succeed or false otherwise.
@@ -436,7 +436,6 @@ static bool hxs_convertContactPoints(
 
   for (int i = 0; i < _out->contactCount; ++i)
   {
-
     if (_in.contacts(i).link1().size() > hxMAXNAMESIZE - 1)
     {
       std::cerr << "hxs_convertContactPoints() error: The name of the link1 ["
@@ -472,7 +471,7 @@ static bool hxs_convertContactPoints(
 }
 
 //////////////////////////////////////////////////
-/// \brief Private function that converts a protobuf hxSimInfo message to a
+/// \internal Private function that converts a protobuf hxSimInfo message to a
 /// C struct hxSimInfo.
 /// \param[in] _in Protobuf message.
 /// \param[out] _out C-struct.
