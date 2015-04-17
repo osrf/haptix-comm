@@ -8,8 +8,8 @@ set(msgs
   hxInt.proto
   hxJoint.proto
   hxLink.proto
-  hxQuaternion.proto
   hxModel.proto
+  hxQuaternion.proto
   hxRobot.proto
   hxParam.proto
   hxSensor.proto
