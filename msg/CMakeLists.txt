@@ -9,9 +9,9 @@ set(msgs
   hxJoint.proto
   hxLink.proto
   hxModel.proto
+  hxParam.proto
   hxQuaternion.proto
   hxRobot.proto
-  hxParam.proto
   hxSensor.proto
   hxSimInfo.proto
   hxString.proto
