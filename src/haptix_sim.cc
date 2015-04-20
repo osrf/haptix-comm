@@ -94,7 +94,7 @@ extern "C" {
   //////////////////////////////////////////////////
   hxResult hxs_add_model(const char *_sdf, const char *_name,
     float _x, float _y, float _z, float _roll, float _pitch, float _yaw,
-    bool _gravity, hxModel *_model)
+    int _gravity, hxModel *_model)
   {
     const std::string service = "/haptix/gazebo/hxs_add_model";
     haptix::comm::msgs::hxParam req;

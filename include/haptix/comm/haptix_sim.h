@@ -169,7 +169,7 @@ struct _hxModel {
   hxJoint joints[hxsMAXJOINTS];
 
   /// \brief Whether or not this model is affected by gravity.
-  bool gravity;
+  int gravity;
 };
 
 /// \def hxModel
@@ -285,7 +285,7 @@ hxResult hxs_set_state(const hxModel *_model);
 /// \return 'hxOK' if the function succeed or an error code otherwise.
 hxResult hxs_add_model(const char *_sdf, const char *_name,
   float _x, float _y, float _z, float _roll, float _pitch, float _yaw,
-  bool _gravity, hxModel *_model);
+  int _gravity, hxModel *_model);
 
 /// \brief Remove model.
 /// \param[in] _name Name of the model.
