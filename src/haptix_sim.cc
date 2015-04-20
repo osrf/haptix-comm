@@ -150,7 +150,7 @@ extern "C" {
     haptix::comm::msgs::hxParam req;
     haptix::comm::msgs::hxEmpty rep;
     req.set_name(_name);
-    req.set_int_value(_gravity);
+    req.set_gravity(_gravity);
 
     return hxs_call(service, __func__, req, rep);
   }

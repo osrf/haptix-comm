@@ -718,10 +718,26 @@ void onHxsSetModelGravity(const std::string &_service,
   // Check the name of the service received.
   EXPECT_EQ(_service, "/haptix/gazebo/hxs_set_model_gravity");
 
+  // Sanity check: The message should contain a model name.
+  if (!_req.has_name())
+  {
+    std::cerr << "onHxsSetModelGravity() error: Missing name in request"
+              << std::endl;
+    return;
+  }
+
+  // Sanity check: The message should contain a gravity flag.
+  if (!_req.has_gravity())
+  {
+    std::cerr << "onHxsSetModelGravity() error: Missing gravity in request"
+              << std::endl;
+    return;
+  }
+
   EXPECT_TRUE(_req.has_name());
-  EXPECT_TRUE(_req.has_int_value());
+  EXPECT_TRUE(_req.has_gravity());
   EXPECT_EQ(_req.name(), "model_1");
-  EXPECT_EQ(_req.int_value(), 1);
+  EXPECT_EQ(_req.gravity(), 1);
 
   _result = true;
 }

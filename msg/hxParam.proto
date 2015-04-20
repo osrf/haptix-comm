@@ -17,8 +17,7 @@ message hxParam
   optional hxJoint joint         = 6;
   optional float float_value     = 7;
   optional string string_value   = 8;
-  optional uint32 int_value      = 9;
-  optional hxEuler orientation   = 10;
-  optional string name           = 11;
-  optional bool gravity          = 12;
+  optional hxEuler orientation   = 9;
+  optional string name           = 10;
+  optional uint32 gravity        = 11;
 }
