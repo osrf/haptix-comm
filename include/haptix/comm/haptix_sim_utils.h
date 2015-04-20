@@ -235,11 +235,11 @@ static bool hxs_convertJoint(const haptix::comm::msgs::hxJoint _in,
   // Initialize the C struct.
   memset(_out, 0, sizeof(hxJoint));
 
-  if (_in.name().size() > hxMAXNAMESIZE - 1)
+  if (_in.name().size() > hxsMAXNAMESIZE - 1)
   {
     std::cerr << "hxs_convertJoint() error: The name of the joint ["
               << _in.name() << "] exceeds the maximum size allowed ("
-              << hxMAXNAMESIZE << " chars)." << std::endl;
+              << hxsMAXNAMESIZE << " chars)." << std::endl;
     return false;
   }
 
@@ -291,11 +291,11 @@ static bool hxs_convertLink(const haptix::comm::msgs::hxLink _in, hxLink *_out)
   // Initialize the C struct.
   memset(_out, 0, sizeof(hxLink));
 
-  if (_in.name().size() > hxMAXNAMESIZE - 1)
+  if (_in.name().size() > hxsMAXNAMESIZE - 1)
   {
     std::cerr << "hxs_convertLink() error: The name of the link ["
               << _in.name() << "] exceeds the maximum size allowed ("
-              << hxMAXNAMESIZE << " chars)." << std::endl;
+              << hxsMAXNAMESIZE << " chars)." << std::endl;
     return false;
   }
 
@@ -349,11 +349,11 @@ static bool hxs_convertModel(const haptix::comm::msgs::hxModel _in,
   // Initialize the C struct.
   memset(_out, 0, sizeof(hxModel));
 
-  if (_in.name().size() > hxMAXNAMESIZE - 1)
+  if (_in.name().size() > hxsMAXNAMESIZE - 1)
   {
     std::cerr << "hxs_convertModel() error: The name of the model ["
               << _in.name() << "] exceeds the maximum size allowed ("
-              << hxMAXNAMESIZE << " chars)." << std::endl;
+              << hxsMAXNAMESIZE << " chars)." << std::endl;
     return false;
   }
 
@@ -436,19 +436,19 @@ static bool hxs_convertContactPoints(
 
   for (int i = 0; i < _out->contactCount; ++i)
   {
-    if (_in.contacts(i).link1().size() > hxMAXNAMESIZE - 1)
+    if (_in.contacts(i).link1().size() > hxsMAXNAMESIZE - 1)
     {
       std::cerr << "hxs_convertContactPoints() error: The name of the link1 ["
                 << _in.contacts(i).link1() << "] exceeds the maximum size "
-                << "allowed (" << hxMAXNAMESIZE << " chars)." << std::endl;
+                << "allowed (" << hxsMAXNAMESIZE << " chars)." << std::endl;
       return false;
     }
 
-    if (_in.contacts(i).link2().size() > hxMAXNAMESIZE - 1)
+    if (_in.contacts(i).link2().size() > hxsMAXNAMESIZE - 1)
     {
       std::cerr << "hxs_convertContactPoints() error: The name of the link2 ["
                 << _in.contacts(i).link2() << "] exceeds the maximum size "
-                << "allowed (" << hxMAXNAMESIZE << " chars)." << std::endl;
+                << "allowed (" << hxsMAXNAMESIZE << " chars)." << std::endl;
       return false;
     }
 
