@@ -280,7 +280,7 @@ hxResult hxs_set_state(const hxModel *_model);
 /// \param[in] _roll Roll in global frame (radians).
 /// \param[in] _pitch Pitch in global frame (radians).
 /// \param[in] _yaw Yaw in global frame (radians).
-/// \param[in] _gravity True if the model is affected by gravity.
+/// \param[in] _gravity 1 if the model is affected by gravity or 0 otherwise.
 /// \param[out] _model Pointer to the new model.
 /// \return 'hxOK' if the function succeed or an error code otherwise.
 hxResult hxs_add_model(const char *_sdf, const char *_name,
@@ -300,14 +300,14 @@ hxResult hxs_model_transform(const char *_name, const hxTransform *_transform);
 
 /// \brief Get whether or not this model is affected by gravity.
 /// \param[in] _name Name of the model.
-/// \param[out] _gravity If true, the model is affected by gravity. If false,
-/// the model is free-floating
+/// \param[out] _gravity If 1, the model is affected by gravity.
+/// If 0, the model is free-floating.
 hxResult hxs_model_gravity(const char *_name, int *_gravity);
 
 /// \brief Set whether or not this model is affected by gravity.
 /// \param[in] _name Name of the model.
-/// \param[in] _gravity If true, the model is affected by gravity. If false,
-/// the model is free-floating
+/// \param[in] _gravity If 1, the model is affected by gravity.
+/// If 0, the model is free-floating.
 hxResult hxs_set_model_gravity(const char *_name, const int _gravity);
 
 /// \brief Set the linear velocity of a model.
