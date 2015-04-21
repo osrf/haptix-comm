@@ -511,7 +511,7 @@ hxResult hxs_call(const std::string &_service,
                   const REQ _req,
                   REP _rep,
                   T _dst,
-                  bool(*_f)(const REP _rep, T _dst))
+                  bool(*_f)(const REP _rep, T _dst)) // NOLINT
 {
   bool result;
   ignition::transport::Node *hxNode = getHxNode();
