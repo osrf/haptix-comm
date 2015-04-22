@@ -283,21 +283,6 @@ static bool hxs_convertJoint(const hxJoint *_in,
 }
 
 //////////////////////////////////////////////////
-/// \internal Private function that converts a protobuf hxWrench to a
-/// C struct hxWrench message.
-/// \param[in] _in C-struct.
-/// \param[out] _out Protobuf message.
-/// \return True if the function succeed or false otherwise.
-static bool hxs_convertWrench(const haptix::comm::msgs::hxWrench _in,
-  hxWrench *_out)
-{
-  bool result = true;
-  result &= hxs_convertVector3(_in.force(), &_out->force);
-  result &= hxs_convertVector3(_in.torque(), &_out->torque);
-  return result;
-}
-
-//////////////////////////////////////////////////
 /// \internal Private function that converts a C struct hxWrench to a
 /// protobuf hxWrench message.
 /// \param[in] _in C-struct.
@@ -378,8 +363,7 @@ static bool hxs_convertLink(const hxLink *_in, haptix::comm::msgs::hxLink *_out)
 static bool hxs_convertModel(const haptix::comm::msgs::hxModel _in,
   hxModel *_out)
 {
-  // Initialize the C struct.
-  memset(_out, 0, sizeof(hxModel));
+  // Initialize the C struct.  memset(_out, 0, sizeof(hxModel));
 
   if (_in.name().size() > hxsMAXNAMESIZE - 1)
   {
@@ -406,48 +390,6 @@ static bool hxs_convertModel(const haptix::comm::msgs::hxModel _in,
     hxs_convertJoint(_in.joints(i), &_out->joints[i]);
 
   _out->gravity_mode = _in.gravity_mode();
-
-  return true;
-}
-
-//////////////////////////////////////////////////
-/// \internal Private function that converts a C struct hxModel to a
-/// protobuf hxModel message.
-/// \param[in] _in C-struct.
-/// \param[out] _out Protobuf message.
-/// \return True if the function succeed or false otherwise.
-static bool hxs_convertModel(const hxModel *_in,
-  haptix::comm::msgs::hxModel *_out)
-{
-  if (!_in)
-  {
-    std::cerr << "hxs_convertModel() error: NULL input" << std::endl;
-    return false;
-  }
-
-  // Initialize the message.
-  _out->Clear();
-
-  _out->set_name(_in->name);
-
-  hxs_convertTransform(&(_in->transform), _out->mutable_transform());
-  _out->set_id(_in->id);
-
-  // Create the links.
-  for (int i = 0; i < _in->link_count; ++i)
-  {
-    haptix::comm::msgs::hxLink *link = _out->add_links();
-    hxs_convertLink(&_in->links[i], link);
-  }
-
-  // Create the joints.
-  for (int i = 0; i < _in->joint_count; ++i)
-  {
-    haptix::comm::msgs::hxJoint *joint = _out->add_joints();
-    hxs_convertJoint(&_in->joints[i], joint);
-  }
-
-  _out->set_gravity_mode(_in->gravity_mode);
 
   return true;
 }
