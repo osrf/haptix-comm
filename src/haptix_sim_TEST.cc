@@ -607,6 +607,71 @@ void onHxsTorque(const std::string &_service,
 }
 
 //////////////////////////////////////////////////
+/// \brief Provide a "hxs_wrench" service.
+void onHxsWrench(const std::string &_service,
+  const haptix::comm::msgs::hxParam &_req,
+  haptix::comm::msgs::hxEmpty &_rep,
+  bool &_result)
+{
+  _rep.Clear();
+  _result = false;
+
+  // TODO
+  // Check the name of the service received.
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_wrench");
+
+  // Sanity check: The message should contain a model name.
+  if (!_req.has_name())
+  {
+    std::cerr << "onHxsWrench() error: Missing name in request"
+              << std::endl;
+    return;
+  }
+
+  // Sanity check: The message should contain a link name.
+  if (!_req.has_string_value())
+  {
+    std::cerr << "onHxsWrench() error: Missing link name in request"
+              << std::endl;
+    return;
+  }
+
+  if (!_req.has_float_value())
+  {
+    std::cerr << "onHxsWrench() error: Missing duration in request"
+              << std::endl;
+    return;
+  }
+
+  // Sanity check: The message should contain a wrench.
+  if (!_req.has_wrench())
+  {
+    std::cerr << "onHxsWrench() error: Missing wrench in request"
+              << std::endl;
+    return;
+  }
+
+  // Verify the link received.
+  EXPECT_EQ(std::string(simState.models(0).name()), _req.name());
+  EXPECT_EQ(std::string(simState.models(0).links(0).name()),
+    _req.string_value());
+
+  // Verify the duration received.
+  EXPECT_FLOAT_EQ(_req.float_value(), 0.1);
+
+  // Verify the torque vector received.
+  EXPECT_FLOAT_EQ(_req.wrench().force().x(), 7.1);
+  EXPECT_FLOAT_EQ(_req.wrench().force().y(), 7.2);
+  EXPECT_FLOAT_EQ(_req.wrench().force().z(), 7.3);
+  EXPECT_FLOAT_EQ(_req.wrench().torque().x(), 7.4);
+  EXPECT_FLOAT_EQ(_req.wrench().torque().y(), 7.5);
+  EXPECT_FLOAT_EQ(_req.wrench().torque().z(), 7.6);
+
+  _result = true;
+}
+
+
+//////////////////////////////////////////////////
 /// \brief Provide a "hxs_reset" service.
 void onHxsReset(const std::string &_service,
   const haptix::comm::msgs::hxInt &_req,
@@ -1218,6 +1283,38 @@ TEST(hxsTest, hxs_torque)
   // Use the first link of the first model in simState.
   ASSERT_EQ(hxs_torque(simInfo.models[0].name,
       simInfo.models[0].links[0].name, &torque, 0.1), hxOK);
+}
+
+//////////////////////////////////////////////////
+/// \brief Check hxs_wrench.
+TEST(hxsTest, hxs_wrench)
+{
+  setup();
+
+  ignition::transport::Node node;
+  hxWrench wrench;
+  hxSimInfo simInfo;
+
+  // Advertise the "hxs_siminfo" service.
+  node.Advertise("/haptix/gazebo/hxs_siminfo", onHxsSimInfo);
+
+  // Advertise the "hxs_wrench" service.
+  node.Advertise("/haptix/gazebo/hxs_wrench", onHxsWrench);
+
+  // Request simulation information.
+  ASSERT_EQ(hxs_siminfo(&simInfo), hxOK);
+
+  // Set some torque/force.
+  wrench.force.x = 7.1;
+  wrench.force.y = 7.2;
+  wrench.force.z = 7.3;
+  wrench.torque.x = 7.4;
+  wrench.torque.y = 7.5;
+  wrench.torque.z = 7.6;
+
+  // Use the first link of the first model in simState.
+  ASSERT_EQ(hxs_wrench(simInfo.models[0].name,
+      simInfo.models[0].links[0].name, &wrench, 0.1), hxOK);
 }
 
 //////////////////////////////////////////////////
