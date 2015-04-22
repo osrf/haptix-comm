@@ -88,6 +88,7 @@ extern "C" {
     haptix::comm::msgs::hxEmpty rep;
     req.set_name(_model);
     req.add_joints();
+    req.mutable_joints(0)->set_name(_joint);
     req.mutable_joints(0)->set_pos(_pos);
     req.mutable_joints(0)->set_vel(_vel);
 
@@ -95,11 +96,11 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
-  hxResult hxs_set_model_link_state(const char *_model, const char *_joint,
+  hxResult hxs_set_model_link_state(const char *_model, const char *_link,
       const hxTransform *_transform, const hxVector3 *_lin_vel,
       const hxVector3 *_ang_vel)
   {
-    if (!_model || !_joint)
+    if (!_model || !_link)
     {
       std::cerr << "hxs_state() error: required string is NULL" << std::endl;
       return hxERROR;
@@ -115,6 +116,7 @@ extern "C" {
     haptix::comm::msgs::hxEmpty rep;
     req.set_name(_model);
     req.add_links();
+    req.mutable_links(0)->set_name(_link);
     if (!hxs_convertTransform(_transform, req.mutable_links(0)->mutable_transform()))
     {
       return hxERROR;

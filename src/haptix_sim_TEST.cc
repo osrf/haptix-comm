@@ -228,13 +228,15 @@ void onHxsJointState(const std::string &_service,
   // Check the name of the service received.
   EXPECT_EQ(_service, "/haptix/gazebo/hxs_set_model_joint_state");
 
-  // Verify the request. The model should be the first model in simState and
-  // the link should be the second link of the first model.
-  /*std::string msg1;
-  _req.SerializeToString(&msg1);
-  std::string msg2;
-  simState.models(0).SerializeToString(&msg2);
-  EXPECT_EQ(msg1, msg2);*/
+  // Verify the request.
+
+  EXPECT_EQ(_req.name(), "model 0");
+
+  EXPECT_EQ(_req.joints_size(), 1);
+
+  EXPECT_EQ(_req.joints(0).name(), "joint 1");
+  EXPECT_FLOAT_EQ(_req.joints(0).pos(), 1.0);
+  EXPECT_FLOAT_EQ(_req.joints(0).vel(), 2.0);
 
   _result = true;
 }
@@ -253,13 +255,25 @@ void onHxsLinkState(const std::string &_service,
   // Check the name of the service received.
   EXPECT_EQ(_service, "/haptix/gazebo/hxs_set_model_link_state");
 
-  // Verify the request. The model should be the first model in simState and
-  // the link should be the second link of the first model.
-  /*std::string msg1;
-  _req.SerializeToString(&msg1);
-  std::string msg2;
-  simState.models(0).SerializeToString(&msg2);
-  EXPECT_EQ(msg1, msg2);*/
+  EXPECT_EQ(_req.links_size(), 1);
+
+  EXPECT_EQ(_req.links(0).name(), "link 1");
+
+  EXPECT_FLOAT_EQ(_req.links(0).transform().pos().x(), 1.0);
+  EXPECT_FLOAT_EQ(_req.links(0).transform().pos().y(), 2.0);
+  EXPECT_FLOAT_EQ(_req.links(0).transform().pos().z(), 3.0);
+  EXPECT_FLOAT_EQ(_req.links(0).transform().orient().w(), 4.0);
+  EXPECT_FLOAT_EQ(_req.links(0).transform().orient().x(), 5.0);
+  EXPECT_FLOAT_EQ(_req.links(0).transform().orient().y(), 6.0);
+  EXPECT_FLOAT_EQ(_req.links(0).transform().orient().z(), 7.0);
+
+  EXPECT_FLOAT_EQ(_req.links(0).lin_vel().x(), 8.0);
+  EXPECT_FLOAT_EQ(_req.links(0).lin_vel().y(), 9.0);
+  EXPECT_FLOAT_EQ(_req.links(0).lin_vel().z(), 10.0);
+
+  EXPECT_FLOAT_EQ(_req.links(0).ang_vel().x(), 11.0);
+  EXPECT_FLOAT_EQ(_req.links(0).ang_vel().y(), 12.0);
+  EXPECT_FLOAT_EQ(_req.links(0).ang_vel().z(), 13.0);
 
   _result = true;
 }
@@ -951,14 +965,12 @@ TEST(hxsTest, hxs_set_model_joint_state)
   node.Advertise("/haptix/gazebo/hxs_siminfo", onHxsSimInfo);
 
   // Advertise the "hxs_state" service.
-  node.Advertise("/haptix/gazebo/hxs_set_model_joint_state", onHxsState);
+  node.Advertise("/haptix/gazebo/hxs_set_model_joint_state", onHxsJointState);
 
   // Request simulation information.
   ASSERT_EQ(hxs_siminfo(&simInfo), hxOK);
 
-  // TODO
-  // I'll use the first model stored in simState and the second joint.
-  //EXPECT_EQ(hxs_set_model_joint_state(, hxOK);
+  EXPECT_EQ(hxs_set_model_joint_state("model 0", "joint 1", 1.0, 2.0), hxOK);
 }
 
 //////////////////////////////////////////////////
@@ -974,14 +986,31 @@ TEST(hxsTest, hxs_set_model_link_state)
   node.Advertise("/haptix/gazebo/hxs_siminfo", onHxsSimInfo);
 
   // Advertise the "hxs_state" service.
-  node.Advertise("/haptix/gazebo/hxs_set_model_link_state", onHxsState);
+  node.Advertise("/haptix/gazebo/hxs_set_model_link_state", onHxsLinkState);
 
   // Request simulation information.
   ASSERT_EQ(hxs_siminfo(&simInfo), hxOK);
 
   // TODO
-  // I'll use the first model stored in simState and the second joint.
-  //EXPECT_EQ(hxs_set_model_joint_state(, hxOK);
+  hxTransform transform;
+  transform.pos.x = 1.0;
+  transform.pos.y = 2.0;
+  transform.pos.z = 3.0;
+  transform.orient.w = 4.0;
+  transform.orient.x = 5.0;
+  transform.orient.y = 6.0;
+  transform.orient.z = 7.0;
+  hxVector3 lin_vel;
+  lin_vel.x = 8.0;
+  lin_vel.y = 9.0;
+  lin_vel.z = 10.0;
+  hxVector3 ang_vel;
+  ang_vel.x = 11.0;
+  ang_vel.y = 12.0;
+  ang_vel.z = 13.0;
+
+  EXPECT_EQ(hxs_set_model_link_state("model 0", "link 1", &transform, &lin_vel,
+      &ang_vel), hxOK);
 }
 
 //////////////////////////////////////////////////
