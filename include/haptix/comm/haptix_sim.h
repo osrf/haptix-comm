@@ -296,7 +296,7 @@ hxResult hxs_set_model_joint_state(const char *_model, const char *_joint,
 /// \param[in] _lin_vel Desired linear velocity of the link.
 /// \param[in] _ang_vel Desired angular velocity of the link.
 /// \return 'hxOK' if the function succeed or an error code otherwise.
-hxResult hxs_set_model_link_state(const char *_model, const char *_joint,
+hxResult hxs_set_model_link_state(const char *_model, const char *_link,
     const hxTransform *_transform, const hxVector3 *_lin_vel,
     const hxVector3 *_ang_vel);
 
