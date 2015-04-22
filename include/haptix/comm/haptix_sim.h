@@ -87,6 +87,22 @@ struct _hxTransform
 /// orientation.
 typedef struct _hxTransform hxTransform;
 
+/// \def hxWrench
+/// \brief A force-torque pair, usually applied at a joint.
+struct _hxWrench
+{
+  /// \brief 3-dimensional force vector (Newtons).
+  hxVector3 force;
+
+  /// \brief 3-dimensional torque vector. The magnitude of the vector
+  /// represents the magnitude of the torque (in Newton meters). The direction
+  /// represents the 
+  hxVector3 torque;
+};
+
+/// \def hxWrench
+/// \brief A force-torque pair.
+typedef struct _hxWrench hxWrench;
 /// \brief information about a joint. A joint is a component of a model.
 struct _hxJoint
 {
@@ -105,8 +121,8 @@ struct _hxJoint
   /// \brief Torque due to actuation (N-m).
   float torque_motor;
 
-  /// \brief torque due to limits, damping, friction (N-m).
-  float torque_passive;
+  /// \brief Force/torque pair due to external disturbances.
+  hxWrench wrench_reactive;
 };
 
 /// \def hxJoint
@@ -124,16 +140,16 @@ struct _hxLink
   hxTransform transform;
 
   /// \brief Linear velocity (m/s).
-  hxVector3 linvel;
+  hxVector3 lin_vel;
 
   /// \brief Angular velocity (rad/s).
-  hxVector3 angvel;
+  hxVector3 ang_vel;
 
   /// \brief Linear acceleration (m/s/s).
-  hxVector3 linacc;
+  hxVector3 lin_acc;
 
   /// \brief Angular acceleration (rad/s/s).
-  hxVector3 angacc;
+  hxVector3 ang_acc;
 };
 
 /// \def hxLink
@@ -168,8 +184,8 @@ struct _hxModel {
   /// \sa joint_count
   hxJoint joints[hxsMAXJOINTS];
 
-  /// \brief Whether or not this model is affected by gravity.
-  int gravity;
+  /// \brief 1 if the model is affected by gravity, 0 otherwise.
+  int gravity_mode;
 };
 
 /// \def hxModel
@@ -196,11 +212,8 @@ struct _hxContactPoint
   /// \brief Normal distance (penetration depth) in link 1 frame (m).
   float distance;
 
-  /// \brief Contact force in link 1 frame (N).
-  hxVector3 force;
-
-  /// \brief Contact torque in link 1 frame (N).
-  hxVector3 torque;
+  /// \brief Contact force/torque pair in link 1 frame at "point".
+  hxWrench wrench;
 };
 
 /// \def hxContactPoint
@@ -211,7 +224,7 @@ typedef struct _hxContactPoint hxContactPoint;
 struct _hxContactPoints
 {
   /// \brief Number of currently active contacts.
-  int contactCount;
+  int contact_count;
 
   /// \brief Description of contacts.
   hxContactPoint contacts[hxsMAXCONTACT];
@@ -226,7 +239,7 @@ struct _hxSimInfo
 {
   /// \brief Number of models in simulation.
   /// This defines the range of elements in the "models" array.
-  int modelCount;
+  int model_count;
 
   /// \brief Array of models in simulation.
   /// \sa modelCount
@@ -265,11 +278,27 @@ hxResult hxs_set_camera_transform(const hxTransform *_transform);
 /// \return 'hxOK' if the function succeed or an error code otherwise.
 hxResult hxs_contacts(const char *_model, hxContactPoints *_contact);
 
-/// \brief Set simulation state (position and velocity) of _model
-/// based on the joint data contained in the struct.
-/// \param[in] _model Model information to set.
+/// \brief Set simulation state (position and velocity) of joint named "_joint"
+/// in model "_model" to the desired position and velocity.
+/// \param[in] _model Name of the model to set.
+/// \param[in] _joint Name of the joint to set.
+/// \param[in] _pos Desired position of the joint.
+/// \param[in] _vel Desired velocity of the joint.
 /// \return 'hxOK' if the function succeed or an error code otherwise.
-hxResult hxs_set_state(const hxModel *_model);
+hxResult hxs_set_model_joint_state(const char *_model, const char *_joint,
+    float _pos, float _vel);
+
+/// \brief Set simulation state (position and velocity) of link named "_link"
+/// in model "_model" to the desired position and velocity.
+/// \param[in] _model Name of the model to set.
+/// \param[in] _link Name of the link to set.
+/// \param[in] _transform Desired position and orientation of the link.
+/// \param[in] _lin_vel Desired linear velocity of the link.
+/// \param[in] _ang_vel Desired angular velocity of the link.
+/// \return 'hxOK' if the function succeed or an error code otherwise.
+hxResult hxs_set_model_link_state(const char *_model, const char *_link,
+    const hxTransform *_transform, const hxVector3 *_lin_vel,
+    const hxVector3 *_ang_vel);
 
 /// \brief Add model during runtime.
 /// \param[in] _sdf SDF xml description of the model.
@@ -280,12 +309,12 @@ hxResult hxs_set_state(const hxModel *_model);
 /// \param[in] _roll Roll in global frame (radians).
 /// \param[in] _pitch Pitch in global frame (radians).
 /// \param[in] _yaw Yaw in global frame (radians).
-/// \param[in] _gravity 1 if the model is affected by gravity or 0 otherwise.
+/// \param[in] _gravity_mode True if the model is affected by gravity.
 /// \param[out] _model Pointer to the new model.
 /// \return 'hxOK' if the function succeed or an error code otherwise.
 hxResult hxs_add_model(const char *_sdf, const char *_name,
   float _x, float _y, float _z, float _roll, float _pitch, float _yaw,
-  int _gravity, hxModel *_model);
+  int _gravity_mode, hxModel *_model);
 
 /// \brief Remove model.
 /// \param[in] _name Name of the model.
@@ -300,15 +329,15 @@ hxResult hxs_model_transform(const char *_name, const hxTransform *_transform);
 
 /// \brief Get whether or not this model is affected by gravity.
 /// \param[in] _name Name of the model.
-/// \param[out] _gravity If 1, the model is affected by gravity.
-/// If 0, the model is free-floating.
-hxResult hxs_model_gravity(const char *_name, int *_gravity);
+/// \param[out] _gravity If true, the model is affected by gravity. If false,
+/// the model is free-floating
+hxResult hxs_model_gravity_mode(const char *_name, int *_gravity_mode);
 
 /// \brief Set whether or not this model is affected by gravity.
 /// \param[in] _name Name of the model.
-/// \param[in] _gravity If 1, the model is affected by gravity.
-/// If 0, the model is free-floating.
-hxResult hxs_set_model_gravity(const char *_name, const int _gravity);
+/// \param[in] _gravity If true, the model is affected by gravity. If false,
+/// the model is free-floating
+hxResult hxs_set_model_gravity_mode(const char *_name, const int _gravity_mode);
 
 /// \brief Set the linear velocity of a model.
 /// \param[in] _name Name of the model.
@@ -341,6 +370,16 @@ hxResult hxs_force(const char *_modelName, const char *_linkName,
 /// \return 'hxOK' if the function succeed or an error code otherwise.
 hxResult hxs_torque(const char *_modelName, const char *_linkName,
     const hxVector3 *_torque, const float _duration);
+
+/// \brief Apply a wrench to a link.
+/// \param[in] _modelName Name of the model containing the link.
+/// \param[in] _linkName Name of the link.
+/// \param[in] _wrench Wrench to apply.
+/// \param[in] _duration Duration of the torque application in seconds. Set to 0
+/// for persistent duration.
+/// \return 'hxOK' if the function succeed or an error code otherwise.
+hxResult hxs_wrench(const char *_modelName, const char *_linkName,
+    const hxWrench *_wrench, const float _duration);
 
 /// \brief Send world reset command/Carry over limb pose between world reset.
 /// \param[in] _resetLimbPose Non-zero to reset the pose of the limb.

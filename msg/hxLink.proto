@@ -7,8 +7,8 @@ message hxLink
 {
   required string name           = 1;
   required hxTransform transform = 2;
-  required hxVector3 linvel      = 3;
-  required hxVector3 angvel      = 4;
-  required hxVector3 linacc      = 5;
-  required hxVector3 angacc      = 6;
+  required hxVector3 lin_vel      = 3;
+  required hxVector3 ang_vel      = 4;
+  required hxVector3 lin_acc      = 5;
+  required hxVector3 ang_acc      = 6;
 }

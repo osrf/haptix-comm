@@ -1,10 +1,12 @@
 package haptix.comm.msgs;
 
+import "hxWrench.proto";
+
 message hxJoint
 {
-  required string name          = 1;
-  required float pos            = 2;
-  required float vel            = 3;
-  required float torque_motor   = 4;
-  required float torque_passive = 5;
+  required string name              = 1;
+  required float pos                = 2;
+  required float vel                = 3;
+  required float torque_motor       = 4;
+  required hxWrench wrench_reactive = 5;
 }

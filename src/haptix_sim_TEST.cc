@@ -71,18 +71,18 @@ void setup()
       link->mutable_transform()->mutable_orient()->set_x(v + 0.4);
       link->mutable_transform()->mutable_orient()->set_y(v + 0.5);
       link->mutable_transform()->mutable_orient()->set_z(v + 0.6);
-      link->mutable_linvel()->set_x(v + 0.7);
-      link->mutable_linvel()->set_y(v + 0.8);
-      link->mutable_linvel()->set_z(v + 0.9);
-      link->mutable_angvel()->set_x(v + 1);
-      link->mutable_angvel()->set_y(v + 1.1);
-      link->mutable_angvel()->set_z(v + 1.2);
-      link->mutable_linacc()->set_x(v + 1.3);
-      link->mutable_linacc()->set_y(v + 1.4);
-      link->mutable_linacc()->set_z(v + 1.5);
-      link->mutable_angacc()->set_x(v + 1.6);
-      link->mutable_angacc()->set_y(v + 1.7);
-      link->mutable_angacc()->set_z(v + 1.8);
+      link->mutable_lin_vel()->set_x(v + 0.7);
+      link->mutable_lin_vel()->set_y(v + 0.8);
+      link->mutable_lin_vel()->set_z(v + 0.9);
+      link->mutable_ang_vel()->set_x(v + 1);
+      link->mutable_ang_vel()->set_y(v + 1.1);
+      link->mutable_ang_vel()->set_z(v + 1.2);
+      link->mutable_lin_acc()->set_x(v + 1.3);
+      link->mutable_lin_acc()->set_y(v + 1.4);
+      link->mutable_lin_acc()->set_z(v + 1.5);
+      link->mutable_ang_acc()->set_x(v + 1.6);
+      link->mutable_ang_acc()->set_y(v + 1.7);
+      link->mutable_ang_acc()->set_z(v + 1.8);
     }
     // Joints.
     for (int j = 0; j < kNumJointsPerModel; ++j)
@@ -93,10 +93,15 @@ void setup()
       joint->set_pos(v);
       joint->set_vel(v + 0.1);
       joint->set_torque_motor(v + 0.3);
-      joint->set_torque_passive(v + 0.4);
+      joint->mutable_wrench_reactive()->mutable_force()->set_x(v+0.4);
+      joint->mutable_wrench_reactive()->mutable_force()->set_y(v+0.5);
+      joint->mutable_wrench_reactive()->mutable_force()->set_z(v+0.6);
+      joint->mutable_wrench_reactive()->mutable_torque()->set_x(v+0.7);
+      joint->mutable_wrench_reactive()->mutable_torque()->set_y(v+0.8);
+      joint->mutable_wrench_reactive()->mutable_torque()->set_z(v+0.9);
     }
 
-    model->set_gravity(true);
+    model->set_gravity_mode(true);
   }
 
   // Camera.
@@ -125,12 +130,12 @@ void setup()
     contact->mutable_velocity()->set_x(i + 1.5);
     contact->mutable_velocity()->set_y(i + 1.6);
     contact->mutable_velocity()->set_z(i + 1.7);
-    contact->mutable_force()->set_x(i + 1.8);
-    contact->mutable_force()->set_y(i + 1.9);
-    contact->mutable_force()->set_z(i + 2);
-    contact->mutable_torque()->set_x(i + 2.1);
-    contact->mutable_torque()->set_y(i + 2.2);
-    contact->mutable_torque()->set_z(i + 2.3);
+    contact->mutable_wrench()->mutable_force()->set_x(i + 1.8);
+    contact->mutable_wrench()->mutable_force()->set_y(i + 1.9);
+    contact->mutable_wrench()->mutable_force()->set_z(i + 2);
+    contact->mutable_wrench()->mutable_torque()->set_x(i + 2.1);
+    contact->mutable_wrench()->mutable_torque()->set_y(i + 2.2);
+    contact->mutable_wrench()->mutable_torque()->set_z(i + 2.3);
   }
 }
 
@@ -210,8 +215,8 @@ void onHxsContactPoints(const std::string &_service,
 }
 
 //////////////////////////////////////////////////
-/// \brief Provide a "hxs_set_state" service.
-void onHxsState(const std::string &_service,
+/// \brief Provide a "hxs_set_model_joint_state" service.
+void onHxsJointState(const std::string &_service,
   const haptix::comm::msgs::hxModel &_req,
   haptix::comm::msgs::hxEmpty &_rep,
   bool &_result)
@@ -220,15 +225,54 @@ void onHxsState(const std::string &_service,
   _result = false;
 
   // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_set_state");
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_set_model_joint_state");
 
-  // Verify the request. The model should be the first model in simState and
-  // the link should be the second link of the first model.
-  std::string msg1;
-  _req.SerializeToString(&msg1);
-  std::string msg2;
-  simState.models(0).SerializeToString(&msg2);
-  EXPECT_EQ(msg1, msg2);
+  // Verify the request.
+
+  EXPECT_EQ(_req.name(), "model 0");
+
+  EXPECT_EQ(_req.joints_size(), 1);
+
+  EXPECT_EQ(_req.joints(0).name(), "joint 1");
+  EXPECT_FLOAT_EQ(_req.joints(0).pos(), 1.0);
+  EXPECT_FLOAT_EQ(_req.joints(0).vel(), 2.0);
+
+  _result = true;
+}
+
+//////////////////////////////////////////////////
+/// \brief Provide a "hxs_set_model_link_state" service.
+void onHxsLinkState(const std::string &_service,
+  const haptix::comm::msgs::hxModel &_req,
+  haptix::comm::msgs::hxEmpty &_rep,
+  bool &_result)
+{
+  // TODO
+  _rep.Clear();
+  _result = false;
+
+  // Check the name of the service received.
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_set_model_link_state");
+
+  EXPECT_EQ(_req.links_size(), 1);
+
+  EXPECT_EQ(_req.links(0).name(), "link 1");
+
+  EXPECT_FLOAT_EQ(_req.links(0).transform().pos().x(), 1.0);
+  EXPECT_FLOAT_EQ(_req.links(0).transform().pos().y(), 2.0);
+  EXPECT_FLOAT_EQ(_req.links(0).transform().pos().z(), 3.0);
+  EXPECT_FLOAT_EQ(_req.links(0).transform().orient().w(), 4.0);
+  EXPECT_FLOAT_EQ(_req.links(0).transform().orient().x(), 5.0);
+  EXPECT_FLOAT_EQ(_req.links(0).transform().orient().y(), 6.0);
+  EXPECT_FLOAT_EQ(_req.links(0).transform().orient().z(), 7.0);
+
+  EXPECT_FLOAT_EQ(_req.links(0).lin_vel().x(), 8.0);
+  EXPECT_FLOAT_EQ(_req.links(0).lin_vel().y(), 9.0);
+  EXPECT_FLOAT_EQ(_req.links(0).lin_vel().z(), 10.0);
+
+  EXPECT_FLOAT_EQ(_req.links(0).ang_vel().x(), 11.0);
+  EXPECT_FLOAT_EQ(_req.links(0).ang_vel().y(), 12.0);
+  EXPECT_FLOAT_EQ(_req.links(0).ang_vel().z(), 13.0);
 
   _result = true;
 }
@@ -277,10 +321,10 @@ void onHxsAddModel(const std::string &_service,
     return;
   }
 
-  // Sanity check: The message should contain a gravity field.
-  if (!_req.has_gravity())
+  // Sanity check: The message should contain a gravity_mode field.
+  if (!_req.has_gravity_mode())
   {
-    std::cerr << "onHxsAddModel() error: Missing gravity in request"
+    std::cerr << "onHxsAddModel() error: Missing gravity_mode in request"
               << std::endl;
     return;
   }
@@ -294,7 +338,7 @@ void onHxsAddModel(const std::string &_service,
   EXPECT_FLOAT_EQ(_req.orientation().roll(), 4.0);
   EXPECT_FLOAT_EQ(_req.orientation().pitch(), 5.0);
   EXPECT_FLOAT_EQ(_req.orientation().yaw(), 6.0);
-  EXPECT_TRUE(_req.gravity());
+  EXPECT_TRUE(_req.gravity_mode());
 
   // Return the first model of simState as an answer.
   _rep = simState.models(0);
@@ -385,7 +429,7 @@ void onHxsLinearVelocity(const std::string &_service,
   // Sanity check: The message should contain a vector3.
   if (!_req.has_vector3())
   {
-    std::cerr << "onHxsLinearVelocity() error: Missing linvel in request"
+    std::cerr << "onHxsLinearVelocity() error: Missing lin_vel in request"
               << std::endl;
     return;
   }
@@ -393,7 +437,7 @@ void onHxsLinearVelocity(const std::string &_service,
   // Verify the name.
   EXPECT_EQ(_req.name(), "model 1");
 
-  // Verify the linvel.
+  // Verify the lin_vel.
   EXPECT_FLOAT_EQ(_req.vector3().x(), 1.0);
   EXPECT_FLOAT_EQ(_req.vector3().y(), 1.1);
   EXPECT_FLOAT_EQ(_req.vector3().z(), 1.2);
@@ -425,7 +469,7 @@ void onHxsAngularVelocity(const std::string &_service,
   // Sanity check: The message should contain a vector3.
   if (!_req.has_vector3())
   {
-    std::cerr << "onHxsAngularVelocity() error: Missing angvel in request"
+    std::cerr << "onHxsAngularVelocity() error: Missing ang_vel in request"
               << std::endl;
     return;
   }
@@ -433,7 +477,7 @@ void onHxsAngularVelocity(const std::string &_service,
   // Verify the ID.
   EXPECT_EQ(_req.name(), "model 1");
 
-  // Verify the angvel.
+  // Verify the ang_vel.
   EXPECT_FLOAT_EQ(_req.vector3().x(), 2.0);
   EXPECT_FLOAT_EQ(_req.vector3().y(), 2.1);
   EXPECT_FLOAT_EQ(_req.vector3().z(), 2.2);
@@ -560,6 +604,71 @@ void onHxsTorque(const std::string &_service,
 
   _result = true;
 }
+
+//////////////////////////////////////////////////
+/// \brief Provide a "hxs_wrench" service.
+void onHxsWrench(const std::string &_service,
+  const haptix::comm::msgs::hxParam &_req,
+  haptix::comm::msgs::hxEmpty &_rep,
+  bool &_result)
+{
+  _rep.Clear();
+  _result = false;
+
+  // TODO
+  // Check the name of the service received.
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_wrench");
+
+  // Sanity check: The message should contain a model name.
+  if (!_req.has_name())
+  {
+    std::cerr << "onHxsWrench() error: Missing name in request"
+              << std::endl;
+    return;
+  }
+
+  // Sanity check: The message should contain a link name.
+  if (!_req.has_string_value())
+  {
+    std::cerr << "onHxsWrench() error: Missing link name in request"
+              << std::endl;
+    return;
+  }
+
+  if (!_req.has_float_value())
+  {
+    std::cerr << "onHxsWrench() error: Missing duration in request"
+              << std::endl;
+    return;
+  }
+
+  // Sanity check: The message should contain a wrench.
+  if (!_req.has_wrench())
+  {
+    std::cerr << "onHxsWrench() error: Missing wrench in request"
+              << std::endl;
+    return;
+  }
+
+  // Verify the link received.
+  EXPECT_EQ(std::string(simState.models(0).name()), _req.name());
+  EXPECT_EQ(std::string(simState.models(0).links(0).name()),
+    _req.string_value());
+
+  // Verify the duration received.
+  EXPECT_FLOAT_EQ(_req.float_value(), 0.1);
+
+  // Verify the torque vector received.
+  EXPECT_FLOAT_EQ(_req.wrench().force().x(), 7.1);
+  EXPECT_FLOAT_EQ(_req.wrench().force().y(), 7.2);
+  EXPECT_FLOAT_EQ(_req.wrench().force().z(), 7.3);
+  EXPECT_FLOAT_EQ(_req.wrench().torque().x(), 7.4);
+  EXPECT_FLOAT_EQ(_req.wrench().torque().y(), 7.5);
+  EXPECT_FLOAT_EQ(_req.wrench().torque().z(), 7.6);
+
+  _result = true;
+}
+
 
 //////////////////////////////////////////////////
 /// \brief Provide a "hxs_reset" service.
@@ -691,7 +800,7 @@ void onHxsStopLogging(const std::string &_service,
 }
 
 //////////////////////////////////////////////////
-/// \brief Provide a "hxs_model_gravity" service.
+/// \brief Provide a "hxs_model_gravity_mode" service.
 void onHxsModelGravity(const std::string &_service,
   const haptix::comm::msgs::hxString &_req,
   haptix::comm::msgs::hxInt &_rep,
@@ -700,7 +809,7 @@ void onHxsModelGravity(const std::string &_service,
   _rep.Clear();
 
   // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_model_gravity");
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_model_gravity_mode");
 
   EXPECT_EQ(_req.data(), "model_1");
   _rep.set_data(1);
@@ -709,14 +818,14 @@ void onHxsModelGravity(const std::string &_service,
 }
 
 //////////////////////////////////////////////////
-/// \brief Provide a "hxs_set_gravity" service.
+/// \brief Provide a "hxs_set_gravity_mode" service.
 void onHxsSetModelGravity(const std::string &_service,
   const haptix::comm::msgs::hxParam &_req,
   haptix::comm::msgs::hxEmpty &/*_rep*/,
   bool &_result)
 {
   // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_set_model_gravity");
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_set_model_gravity_mode");
 
   // Sanity check: The message should contain a model name.
   if (!_req.has_name())
@@ -726,18 +835,18 @@ void onHxsSetModelGravity(const std::string &_service,
     return;
   }
 
-  // Sanity check: The message should contain a gravity flag.
-  if (!_req.has_gravity())
+  // Sanity check: The message should contain a gravity_mode flag.
+  if (!_req.has_gravity_mode())
   {
-    std::cerr << "onHxsSetModelGravity() error: Missing gravity in request"
+    std::cerr << "onHxsSetModelGravity() error: Missing gravity_mode in request"
               << std::endl;
     return;
   }
 
   EXPECT_TRUE(_req.has_name());
-  EXPECT_TRUE(_req.has_gravity());
+  EXPECT_TRUE(_req.has_gravity_mode());
   EXPECT_EQ(_req.name(), "model_1");
-  EXPECT_EQ(_req.gravity(), 1);
+  EXPECT_EQ(_req.gravity_mode(), 1);
 
   _result = true;
 }
@@ -758,8 +867,8 @@ TEST(hxsTest, hxs_simInfo)
   ASSERT_EQ(hxs_siminfo(&simInfo), hxOK);
 
   // Check the model information
-  ASSERT_EQ(simInfo.modelCount, kNumModels);
-  for (int i = 0; i < simInfo.modelCount; ++i)
+  ASSERT_EQ(simInfo.model_count, kNumModels);
+  for (int i = 0; i < simInfo.model_count; ++i)
   {
     EXPECT_FLOAT_EQ(simInfo.models[i].transform.pos.x, i);
     EXPECT_FLOAT_EQ(simInfo.models[i].transform.pos.y, i + 0.1);
@@ -780,18 +889,18 @@ TEST(hxsTest, hxs_simInfo)
       EXPECT_FLOAT_EQ(simInfo.models[i].links[j].transform.orient.x, v + 0.4);
       EXPECT_FLOAT_EQ(simInfo.models[i].links[j].transform.orient.y, v + 0.5);
       EXPECT_FLOAT_EQ(simInfo.models[i].links[j].transform.orient.z, v + 0.6);
-      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].linvel.x, v + 0.7);
-      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].linvel.y, v + 0.8);
-      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].linvel.z, v + 0.9);
-      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].angvel.x, v + 1);
-      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].angvel.y, v + 1.1);
-      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].angvel.z, v + 1.2);
-      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].linacc.x, v + 1.3);
-      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].linacc.y, v + 1.4);
-      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].linacc.z, v + 1.5);
-      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].angacc.x, v + 1.6);
-      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].angacc.y, v + 1.7);
-      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].angacc.z, v + 1.8);
+      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].lin_vel.x, v + 0.7);
+      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].lin_vel.y, v + 0.8);
+      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].lin_vel.z, v + 0.9);
+      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].ang_vel.x, v + 1);
+      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].ang_vel.y, v + 1.1);
+      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].ang_vel.z, v + 1.2);
+      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].lin_acc.x, v + 1.3);
+      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].lin_acc.y, v + 1.4);
+      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].lin_acc.z, v + 1.5);
+      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].ang_acc.x, v + 1.6);
+      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].ang_acc.y, v + 1.7);
+      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].ang_acc.z, v + 1.8);
     }
     ASSERT_EQ(simInfo.models[i].joint_count, kNumJointsPerModel);
     for (int j = 0; j < simInfo.models[i].joint_count; ++j)
@@ -800,9 +909,14 @@ TEST(hxsTest, hxs_simInfo)
       EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].pos, v);
       EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].vel, v + 0.1);
       EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].torque_motor, v + 0.3);
-      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].torque_passive, v + 0.4);
+      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].wrench_reactive.force.x, v + 0.4);
+      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].wrench_reactive.force.y, v + 0.5);
+      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].wrench_reactive.force.z, v + 0.6);
+      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].wrench_reactive.torque.x, v + 0.7);
+      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].wrench_reactive.torque.y, v + 0.8);
+      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].wrench_reactive.torque.z, v + 0.9);
     }
-    EXPECT_TRUE(simInfo.models[i].gravity);
+    EXPECT_TRUE(simInfo.models[i].gravity_mode);
   }
 
   // Check the camera information.
@@ -879,8 +993,8 @@ TEST(hxsTest, hxs_contacts)
   ASSERT_EQ(hxs_contacts("model 0", &contactsInfo), hxOK);
 
   // Check the contacts information.
-  ASSERT_EQ(contactsInfo.contactCount, kNumContactPoints);
-  for (int i = 0; i < contactsInfo.contactCount; ++i)
+  ASSERT_EQ(contactsInfo.contact_count, kNumContactPoints);
+  for (int i = 0; i < contactsInfo.contact_count; ++i)
   {
     EXPECT_EQ(std::string(contactsInfo.contacts[i].link1),
       "link " + std::to_string(i));
@@ -893,18 +1007,18 @@ TEST(hxsTest, hxs_contacts)
     EXPECT_FLOAT_EQ(contactsInfo.contacts[i].normal.y, i + 0.6);
     EXPECT_FLOAT_EQ(contactsInfo.contacts[i].normal.z, i + 0.7);
     EXPECT_FLOAT_EQ(contactsInfo.contacts[i].distance, i + 1.4);
-    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].force.x, i + 1.8);
-    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].force.y, i + 1.9);
-    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].force.z, i + 2);
-    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].torque.x, i + 2.1);
-    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].torque.y, i + 2.2);
-    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].torque.z, i + 2.3);
+    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].wrench.force.x, i + 1.8);
+    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].wrench.force.y, i + 1.9);
+    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].wrench.force.z, i + 2);
+    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].wrench.torque.x, i + 2.1);
+    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].wrench.torque.y, i + 2.2);
+    EXPECT_FLOAT_EQ(contactsInfo.contacts[i].wrench.torque.z, i + 2.3);
   }
 }
 
 //////////////////////////////////////////////////
-/// \brief Check hxs_set_state.
-TEST(hxsTest, hxs_set_state)
+/// \brief Check hxs_set_model_joint_state.
+TEST(hxsTest, hxs_set_model_joint_state)
 {
   setup();
 
@@ -915,13 +1029,52 @@ TEST(hxsTest, hxs_set_state)
   node.Advertise("/haptix/gazebo/hxs_siminfo", onHxsSimInfo);
 
   // Advertise the "hxs_state" service.
-  node.Advertise("/haptix/gazebo/hxs_set_state", onHxsState);
+  node.Advertise("/haptix/gazebo/hxs_set_model_joint_state", onHxsJointState);
 
   // Request simulation information.
   ASSERT_EQ(hxs_siminfo(&simInfo), hxOK);
 
-  // I'll use the first model stored in simState and the second joint.
-  EXPECT_EQ(hxs_set_state(&simInfo.models[0]), hxOK);
+  EXPECT_EQ(hxs_set_model_joint_state("model 0", "joint 1", 1.0, 2.0), hxOK);
+}
+
+//////////////////////////////////////////////////
+/// \brief Check hxs_set_model_link_state.
+TEST(hxsTest, hxs_set_model_link_state)
+{
+  setup();
+
+  ignition::transport::Node node;
+  hxSimInfo simInfo;
+
+  // Advertise the "hxs_siminfo" service.
+  node.Advertise("/haptix/gazebo/hxs_siminfo", onHxsSimInfo);
+
+  // Advertise the "hxs_state" service.
+  node.Advertise("/haptix/gazebo/hxs_set_model_link_state", onHxsLinkState);
+
+  // Request simulation information.
+  ASSERT_EQ(hxs_siminfo(&simInfo), hxOK);
+
+  // TODO
+  hxTransform transform;
+  transform.pos.x = 1.0;
+  transform.pos.y = 2.0;
+  transform.pos.z = 3.0;
+  transform.orient.w = 4.0;
+  transform.orient.x = 5.0;
+  transform.orient.y = 6.0;
+  transform.orient.z = 7.0;
+  hxVector3 lin_vel;
+  lin_vel.x = 8.0;
+  lin_vel.y = 9.0;
+  lin_vel.z = 10.0;
+  hxVector3 ang_vel;
+  ang_vel.x = 11.0;
+  ang_vel.y = 12.0;
+  ang_vel.z = 13.0;
+
+  EXPECT_EQ(hxs_set_model_link_state("model 0", "link 1", &transform, &lin_vel,
+      &ang_vel), hxOK);
 }
 
 //////////////////////////////////////////////////
@@ -968,18 +1121,18 @@ TEST(hxsTest, hxs_add_model)
     EXPECT_FLOAT_EQ(model.links[i].transform.orient.x, v + 0.4);
     EXPECT_FLOAT_EQ(model.links[i].transform.orient.y, v + 0.5);
     EXPECT_FLOAT_EQ(model.links[i].transform.orient.z, v + 0.6);
-    EXPECT_FLOAT_EQ(model.links[i].linvel.x, v + 0.7);
-    EXPECT_FLOAT_EQ(model.links[i].linvel.y, v + 0.8);
-    EXPECT_FLOAT_EQ(model.links[i].linvel.z, v + 0.9);
-    EXPECT_FLOAT_EQ(model.links[i].angvel.x, v + 1);
-    EXPECT_FLOAT_EQ(model.links[i].angvel.y, v + 1.1);
-    EXPECT_FLOAT_EQ(model.links[i].angvel.z, v + 1.2);
-    EXPECT_FLOAT_EQ(model.links[i].linacc.x, v + 1.3);
-    EXPECT_FLOAT_EQ(model.links[i].linacc.y, v + 1.4);
-    EXPECT_FLOAT_EQ(model.links[i].linacc.z, v + 1.5);
-    EXPECT_FLOAT_EQ(model.links[i].angacc.x, v + 1.6);
-    EXPECT_FLOAT_EQ(model.links[i].angacc.y, v + 1.7);
-    EXPECT_FLOAT_EQ(model.links[i].angacc.z, v + 1.8);
+    EXPECT_FLOAT_EQ(model.links[i].lin_vel.x, v + 0.7);
+    EXPECT_FLOAT_EQ(model.links[i].lin_vel.y, v + 0.8);
+    EXPECT_FLOAT_EQ(model.links[i].lin_vel.z, v + 0.9);
+    EXPECT_FLOAT_EQ(model.links[i].ang_vel.x, v + 1);
+    EXPECT_FLOAT_EQ(model.links[i].ang_vel.y, v + 1.1);
+    EXPECT_FLOAT_EQ(model.links[i].ang_vel.z, v + 1.2);
+    EXPECT_FLOAT_EQ(model.links[i].lin_acc.x, v + 1.3);
+    EXPECT_FLOAT_EQ(model.links[i].lin_acc.y, v + 1.4);
+    EXPECT_FLOAT_EQ(model.links[i].lin_acc.z, v + 1.5);
+    EXPECT_FLOAT_EQ(model.links[i].ang_acc.x, v + 1.6);
+    EXPECT_FLOAT_EQ(model.links[i].ang_acc.y, v + 1.7);
+    EXPECT_FLOAT_EQ(model.links[i].ang_acc.z, v + 1.8);
   }
   ASSERT_EQ(model.joint_count, kNumJointsPerModel);
   for (int i = 0; i < model.joint_count; ++i)
@@ -988,9 +1141,14 @@ TEST(hxsTest, hxs_add_model)
     EXPECT_FLOAT_EQ(model.joints[i].pos, v);
     EXPECT_FLOAT_EQ(model.joints[i].vel, v + 0.1);
     EXPECT_FLOAT_EQ(model.joints[i].torque_motor, v + 0.3);
-    EXPECT_FLOAT_EQ(model.joints[i].torque_passive, v + 0.4);
+    EXPECT_FLOAT_EQ(model.joints[i].wrench_reactive.force.x, v + 0.4);
+    EXPECT_FLOAT_EQ(model.joints[i].wrench_reactive.force.y, v + 0.5);
+    EXPECT_FLOAT_EQ(model.joints[i].wrench_reactive.force.z, v + 0.6);
+    EXPECT_FLOAT_EQ(model.joints[i].wrench_reactive.torque.x, v + 0.7);
+    EXPECT_FLOAT_EQ(model.joints[i].wrench_reactive.torque.y, v + 0.8);
+    EXPECT_FLOAT_EQ(model.joints[i].wrench_reactive.torque.z, v + 0.9);
   }
-  EXPECT_TRUE(model.gravity);
+  EXPECT_TRUE(model.gravity_mode);
 }
 
 //////////////////////////////////////////////////
@@ -1037,16 +1195,16 @@ TEST(hxsTest, hxs_linear_velocity)
   setup();
 
   ignition::transport::Node node;
-  hxVector3 linvel;
+  hxVector3 lin_vel;
 
   // Advertise the "hxs_linear_velocity" service.
   node.Advertise("/haptix/gazebo/hxs_linear_velocity", onHxsLinearVelocity);
 
-  linvel.x = 1.0;
-  linvel.y = 1.1;
-  linvel.z = 1.2;
+  lin_vel.x = 1.0;
+  lin_vel.y = 1.1;
+  lin_vel.z = 1.2;
 
-  ASSERT_EQ(hxs_linear_velocity("model 1", &linvel), hxOK);
+  ASSERT_EQ(hxs_linear_velocity("model 1", &lin_vel), hxOK);
 }
 
 //////////////////////////////////////////////////
@@ -1056,16 +1214,16 @@ TEST(hxsTest, hxs_angular_velocity)
   setup();
 
   ignition::transport::Node node;
-  hxVector3 angvel;
+  hxVector3 ang_vel;
 
   // Advertise the "hxs_angular_velocity" service.
   node.Advertise("/haptix/gazebo/hxs_angular_velocity", onHxsAngularVelocity);
 
-  angvel.x = 2.0;
-  angvel.y = 2.1;
-  angvel.z = 2.2;
+  ang_vel.x = 2.0;
+  ang_vel.y = 2.1;
+  ang_vel.z = 2.2;
 
-  ASSERT_EQ(hxs_angular_velocity("model 1", &angvel), hxOK);
+  ASSERT_EQ(hxs_angular_velocity("model 1", &ang_vel), hxOK);
 }
 
 //////////////////////////////////////////////////
@@ -1124,6 +1282,38 @@ TEST(hxsTest, hxs_torque)
   // Use the first link of the first model in simState.
   ASSERT_EQ(hxs_torque(simInfo.models[0].name,
       simInfo.models[0].links[0].name, &torque, 0.1), hxOK);
+}
+
+//////////////////////////////////////////////////
+/// \brief Check hxs_wrench.
+TEST(hxsTest, hxs_wrench)
+{
+  setup();
+
+  ignition::transport::Node node;
+  hxWrench wrench;
+  hxSimInfo simInfo;
+
+  // Advertise the "hxs_siminfo" service.
+  node.Advertise("/haptix/gazebo/hxs_siminfo", onHxsSimInfo);
+
+  // Advertise the "hxs_wrench" service.
+  node.Advertise("/haptix/gazebo/hxs_wrench", onHxsWrench);
+
+  // Request simulation information.
+  ASSERT_EQ(hxs_siminfo(&simInfo), hxOK);
+
+  // Set some torque/force.
+  wrench.force.x = 7.1;
+  wrench.force.y = 7.2;
+  wrench.force.z = 7.3;
+  wrench.torque.x = 7.4;
+  wrench.torque.y = 7.5;
+  wrench.torque.z = 7.6;
+
+  // Use the first link of the first model in simState.
+  ASSERT_EQ(hxs_wrench(simInfo.models[0].name,
+      simInfo.models[0].links[0].name, &wrench, 0.1), hxOK);
 }
 
 //////////////////////////////////////////////////
@@ -1247,31 +1437,31 @@ TEST(hxsTest, hxs_stop_logging)
 }
 
 //////////////////////////////////////////////////
-/// \brief Check hxs_model_gravity.
-TEST(hxsTest, hxs_model_gravity)
+/// \brief Check hxs_model_gravity_mode.
+TEST(hxsTest, hxs_model_gravity_mode)
 {
   setup();
 
   ignition::transport::Node node;
 
-  // Advertise the "hxs_model_gravity" service.
-  node.Advertise("/haptix/gazebo/hxs_model_gravity", onHxsModelGravity);
+  // Advertise the "hxs_model_gravity_mode" service.
+  node.Advertise("/haptix/gazebo/hxs_model_gravity_mode", onHxsModelGravity);
 
-  int gravity = 0;
-  ASSERT_EQ(hxs_model_gravity("model_1", &gravity), hxOK);
-  EXPECT_EQ(gravity, 1);
+  int gravity_mode = 0;
+  ASSERT_EQ(hxs_model_gravity_mode("model_1", &gravity_mode), hxOK);
+  EXPECT_EQ(gravity_mode, 1);
 }
 
 //////////////////////////////////////////////////
-/// \brief Check hxs_set_model_gravity.
-TEST(hxsTest, hxs_set_model_gravity)
+/// \brief Check hxs_set_model_gravity_mode.
+TEST(hxsTest, hxs_set_model_gravity_mode)
 {
   setup();
 
   ignition::transport::Node node;
 
-  // Advertise the "hxs_set_model_gravity" service.
-  node.Advertise("/haptix/gazebo/hxs_set_model_gravity", onHxsSetModelGravity);
+  // Advertise the "hxs_set_model_gravity_mode" service.
+  node.Advertise("/haptix/gazebo/hxs_set_model_gravity_mode", onHxsSetModelGravity);
 
-  ASSERT_EQ(hxs_set_model_gravity("model_1", 1), hxOK);
+  ASSERT_EQ(hxs_set_model_gravity_mode("model_1", 1), hxOK);
 }
