@@ -21,10 +21,7 @@
 #include "msg/hxContactPoint.pb.h"
 #include "msg/hxEmpty.pb.h"
 #include "msg/hxInt.pb.h"
-#include "msg/hxJoint.pb.h"
-#include "msg/hxLink.pb.h"
 #include "msg/hxModel.pb.h"
-#include "msg/hxQuaternion.pb.h"
 #include "msg/hxParam.pb.h"
 #include "msg/hxSimInfo.pb.h"
 #include "msg/hxString.pb.h"
@@ -48,7 +45,8 @@ extern "C" {
     const std::string service = "/haptix/gazebo/hxs_camera_transform";
     haptix::comm::msgs::hxEmpty req;
     haptix::comm::msgs::hxTransform rep;
-    return hxs_call(service, __func__, req, rep, _transform, hxs_convertTransform);
+    return hxs_call(service, __func__, req, rep, _transform,
+      hxs_convertTransform);
   }
 
   //////////////////////////////////////////////////
@@ -71,53 +69,93 @@ extern "C" {
     haptix::comm::msgs::hxString req;
     req.set_data(_model);
     haptix::comm::msgs::hxContactPoint_V rep;
-    return hxs_call(service, __func__, req, rep, _contact, hxs_convertContactPoints);
+    return hxs_call(service, __func__, req, rep, _contact,
+      hxs_convertContactPoints);
   }
 
   //////////////////////////////////////////////////
-  hxResult hxs_set_state(const hxModel *_model)
+  hxResult hxs_set_model_joint_state(const char *_model, const char *_joint,
+    float _pos, float _vel)
   {
-    if (!_model)
+    if (!_model || !_joint)
     {
-      std::cerr << "hxs_state() error: model is NULL" << std::endl;
+      std::cerr << "hxs_state() error: required string is NULL" << std::endl;
       return hxERROR;
     }
 
-    const std::string service = "/haptix/gazebo/hxs_set_state";
+    const std::string service = "/haptix/gazebo/hxs_set_model_joint_state";
     haptix::comm::msgs::hxModel req;
     haptix::comm::msgs::hxEmpty rep;
-    if (!hxs_convertModel(_model, &req))
-      return hxERROR;
+    req.set_name(_model);
+    req.add_joints();
+    req.mutable_joints(0)->set_pos(_pos);
+    req.mutable_joints(0)->set_vel(_vel);
 
     return hxs_call(service, __func__, req, rep);
   }
 
   //////////////////////////////////////////////////
-  hxResult hxs_add_model(const char *_urdf, const char *_name,
+  hxResult hxs_set_model_link_state(const char *_model, const char *_joint,
+      const hxTransform *_transform, const hxVector3 *_lin_vel,
+      const hxVector3 *_ang_vel)
+  {
+    if (!_model || !_joint)
+    {
+      std::cerr << "hxs_state() error: required string is NULL" << std::endl;
+      return hxERROR;
+    }
+    if (!_transform || !_lin_vel || !_ang_vel)
+    {
+      std::cerr << "hxs_state() error: required struct is NULL" << std::endl;
+      return hxERROR;
+    }
+
+    const std::string service = "/haptix/gazebo/hxs_set_model_link_state";
+    haptix::comm::msgs::hxModel req;
+    haptix::comm::msgs::hxEmpty rep;
+    req.set_name(_model);
+    req.add_links();
+    if (!hxs_convertTransform(_transform, req.mutable_links(0)->mutable_transform()))
+    {
+      return hxERROR;
+    }
+    if (!hxs_convertVector3(_lin_vel, req.mutable_links(0)->mutable_lin_vel()))
+    {
+      return hxERROR;
+    }
+    if (!hxs_convertVector3(_ang_vel, req.mutable_links(0)->mutable_ang_vel()))
+    {
+      return hxERROR;
+    }
+
+    return hxs_call(service, __func__, req, rep);
+  }
+
+  //////////////////////////////////////////////////
+  hxResult hxs_add_model(const char *_sdf, const char *_name,
     float _x, float _y, float _z, float _roll, float _pitch, float _yaw,
-    hxModel *_model)
+    int _gravity_mode, hxModel *_model)
   {
     const std::string service = "/haptix/gazebo/hxs_add_model";
-    haptix::comm::msgs::hxVector3 pos;
-    haptix::comm::msgs::hxEuler orient;
     haptix::comm::msgs::hxParam req;
     haptix::comm::msgs::hxModel rep;
     req.set_name(std::string(_name));
-    req.mutable_pos()->set_x(_x);
-    req.mutable_pos()->set_y(_y);
-    req.mutable_pos()->set_z(_z);
+    req.mutable_vector3()->set_x(_x);
+    req.mutable_vector3()->set_y(_y);
+    req.mutable_vector3()->set_z(_z);
     req.mutable_orientation()->set_roll(_roll);
     req.mutable_orientation()->set_pitch(_pitch);
     req.mutable_orientation()->set_yaw(_yaw);
-    req.set_string_value(_urdf);
+    req.set_string_value(_sdf);
+    req.set_gravity_mode(_gravity_mode);
 
     return hxs_call(service, __func__, req, rep, _model, hxs_convertModel);
   }
 
   //////////////////////////////////////////////////
-  hxResult hxs_remove_model_id(const char *_name)
+  hxResult hxs_remove_model(const char *_name)
   {
-    const std::string service = "/haptix/gazebo/hxs_remove_model_id";
+    const std::string service = "/haptix/gazebo/hxs_remove_model";
     haptix::comm::msgs::hxString req;
     req.set_data(_name);
     haptix::comm::msgs::hxEmpty rep;
@@ -135,27 +173,48 @@ extern "C" {
       return hxERROR;
     return hxs_call(service, __func__, req, rep);
   }
+  //////////////////////////////////////////////////
+  hxResult hxs_model_gravity_mode(const char *_name, int *_gravity_mode)
+  {
+    const std::string service = "/haptix/gazebo/hxs_model_gravity_mode";
+    haptix::comm::msgs::hxString req;
+    haptix::comm::msgs::hxInt rep;
+    req.set_data(_name);
+    return hxs_call(service, __func__, req, rep, _gravity_mode, hxs_convertScalar);
+  }
 
   //////////////////////////////////////////////////
-  hxResult hxs_linear_velocity(const char *_name, const hxVector3 *_linvel)
+  hxResult hxs_set_model_gravity_mode(const char *_name, const int _gravity_mode)
+  {
+    const std::string service = "/haptix/gazebo/hxs_set_model_gravity_mode";
+    haptix::comm::msgs::hxParam req;
+    haptix::comm::msgs::hxEmpty rep;
+    req.set_name(_name);
+    req.set_gravity_mode(_gravity_mode);
+
+    return hxs_call(service, __func__, req, rep);
+  }
+
+  //////////////////////////////////////////////////
+  hxResult hxs_linear_velocity(const char *_name, const hxVector3 *_lin_vel)
   {
     const std::string service = "/haptix/gazebo/hxs_linear_velocity";
     haptix::comm::msgs::hxParam req;
     haptix::comm::msgs::hxEmpty rep;
     req.set_name(_name);
-    if (!hxs_convertVector3(_linvel, req.mutable_vector3()))
+    if (!hxs_convertVector3(_lin_vel, req.mutable_vector3()))
       return hxERROR;
     return hxs_call(service, __func__, req, rep);
   }
 
   //////////////////////////////////////////////////
-  hxResult hxs_angular_velocity(const char *_name, const hxVector3 *_angvel)
+  hxResult hxs_angular_velocity(const char *_name, const hxVector3 *_ang_vel)
   {
     const std::string service = "/haptix/gazebo/hxs_angular_velocity";
     haptix::comm::msgs::hxParam req;
     haptix::comm::msgs::hxEmpty rep;
     req.set_name(_name);
-    if (!hxs_convertVector3(_angvel, req.mutable_vector3()))
+    if (!hxs_convertVector3(_ang_vel, req.mutable_vector3()))
       return hxERROR;
     return hxs_call(service, __func__, req, rep);
   }
@@ -187,6 +246,21 @@ extern "C" {
     req.set_string_value(_linkName);
     req.set_float_value(_duration);
     if (!hxs_convertVector3(_torque, req.mutable_vector3()))
+      return hxERROR;
+    haptix::comm::msgs::hxEmpty rep;
+    return hxs_call(service, __func__, req, rep);
+  }
+
+  //////////////////////////////////////////////////
+  hxResult hxs_wrench(const char *_modelName, const char *_linkName,
+      const hxWrench *_wrench, const float _duration)
+  {
+    const std::string service = "/haptix/gazebo/hxs_wrench";
+    haptix::comm::msgs::hxParam req;
+    req.set_name(_modelName);
+    req.set_string_value(_linkName);
+    req.set_float_value(_duration);
+    if (!hxs_convertWrench(_wrench, req.mutable_wrench()))
       return hxERROR;
     haptix::comm::msgs::hxEmpty rep;
     return hxs_call(service, __func__, req, rep);

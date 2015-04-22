@@ -6,6 +6,7 @@ import "hxLink.proto";
 import "hxModel.proto";
 import "hxTransform.proto";
 import "hxVector3.proto";
+import "hxWrench.proto";
 
 message hxParam
 {
@@ -15,9 +16,10 @@ message hxParam
   optional hxTransform transform = 4;
   optional hxModel model         = 5;
   optional hxJoint joint         = 6;
-  optional float float_value     = 7;
-  optional string string_value   = 8;
-  optional hxVector3 pos         = 9;
+  optional hxWrench wrench       = 7;
+  optional float float_value     = 8;
+  optional string string_value   = 9;
   optional hxEuler orientation   = 10;
   optional string name           = 11;
+  optional uint32 gravity_mode   = 12;
 }

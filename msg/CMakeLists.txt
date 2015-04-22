@@ -18,6 +18,7 @@ set(msgs
   hxTime.proto
   hxTransform.proto
   hxVector3.proto
+  hxWrench.proto
 )
 
 add_executable(haptixmsgs_out generator/HaptixGenerator.cc generator/haptix_generator.cc)
