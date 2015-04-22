@@ -255,34 +255,6 @@ static bool hxs_convertJoint(const haptix::comm::msgs::hxJoint _in,
 }
 
 //////////////////////////////////////////////////
-/// \internal Private function that converts a C struct hxJoint to a
-/// protobuf hxJoint message.
-/// \param[in] _in C-struct.
-/// \param[out] _out Protobuf message.
-/// \return True if the function succeed or false otherwise.
-static bool hxs_convertJoint(const hxJoint *_in,
-  haptix::comm::msgs::hxJoint *_out)
-{
-  if (!_in)
-  {
-    std::cerr << "hxs_convertJoint() error: NULL input" << std::endl;
-    return false;
-  }
-
-  // Initialize the message.
-  _out->Clear();
-
-  _out->set_name(std::string(_in->name));
-  _out->set_pos(_in->pos);
-  _out->set_vel(_in->vel);
-  _out->set_torque_motor(_in->torque_motor);
-  hxs_convertVector3(&_in->wrench_reactive.force, _out->mutable_wrench_reactive()->mutable_force());
-  hxs_convertVector3(&_in->wrench_reactive.torque, _out->mutable_wrench_reactive()->mutable_torque());
-
-  return true;
-}
-
-//////////////////////////////////////////////////
 /// \internal Private function that converts a C struct hxWrench to a
 /// protobuf hxWrench message.
 /// \param[in] _in C-struct.
@@ -323,33 +295,6 @@ static bool hxs_convertLink(const haptix::comm::msgs::hxLink _in, hxLink *_out)
   hxs_convertVector3(_in.ang_vel(), &_out->ang_vel);
   hxs_convertVector3(_in.lin_acc(), &_out->lin_acc);
   hxs_convertVector3(_in.ang_acc(), &_out->ang_acc);
-
-  return true;
-}
-
-//////////////////////////////////////////////////
-/// \internal Private function that converts a C struct hxLink to a
-/// protobuf hxLink message.
-/// \param[in] _in C-struct.
-/// \param[out] _out Protobuf message.
-/// \return True if the function succeed or false otherwise.
-static bool hxs_convertLink(const hxLink *_in, haptix::comm::msgs::hxLink *_out)
-{
-  if (!_in)
-  {
-    std::cerr << "hxs_convertLink() error: NULL input" << std::endl;
-    return false;
-  }
-
-  // Initialize the message.
-  _out->Clear();
-
-  _out->set_name(std::string(_in->name));
-  hxs_convertTransform(&_in->transform, _out->mutable_transform());
-  hxs_convertVector3(&_in->lin_vel, _out->mutable_lin_vel());
-  hxs_convertVector3(&_in->ang_vel, _out->mutable_ang_vel());
-  hxs_convertVector3(&_in->lin_acc, _out->mutable_lin_acc());
-  hxs_convertVector3(&_in->ang_acc, _out->mutable_ang_acc());
 
   return true;
 }
