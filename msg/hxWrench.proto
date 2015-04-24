@@ -1,0 +1,9 @@
+package haptix.comm.msgs;
+
+import "hxVector3.proto";
+
+message hxWrench
+{
+  required hxVector3 force  = 1;
+  required hxVector3 torque = 2;
+}
