@@ -824,6 +824,8 @@ void onHxsSetModelGravity(const std::string &_service,
   haptix::comm::msgs::hxEmpty &/*_rep*/,
   bool &_result)
 {
+  _result = false;
+
   // Check the name of the service received.
   EXPECT_EQ(_service, "/haptix/gazebo/hxs_set_model_gravity_mode");
 
@@ -847,6 +849,121 @@ void onHxsSetModelGravity(const std::string &_service,
   EXPECT_TRUE(_req.has_gravity_mode());
   EXPECT_EQ(_req.name(), "model_1");
   EXPECT_EQ(_req.gravity_mode(), 1);
+
+  _result = true;
+}
+
+//////////////////////////////////////////////////
+/// \brief Provide a "hxs_set_model_color" service.
+void onHxsSetModelColor(const std::string &_service,
+  const haptix::comm::msgs::hxParam &_req,
+  haptix::comm::msgs::hxEmpty &/*_rep*/,
+  bool &_result)
+{
+  _result = false;
+
+  // Check the name of the service received.
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_set_model_color");
+
+  // Sanity check: The message should contain a model name.
+  if (!_req.has_name())
+  {
+    std::cerr << "onHxsSetModelColor() error: Missing name in request"
+              << std::endl;
+    return;
+  }
+
+  // Sanity check: The message should contain a color.
+  if (!_req.has_color())
+  {
+    std::cerr << "onHxsSetModelColor() error: Missing color in request"
+              << std::endl;
+    return;
+  }
+
+  EXPECT_EQ(_req.name(), "model_1");
+  EXPECT_FLOAT_EQ(_req.color().r(), 0.5);
+  EXPECT_FLOAT_EQ(_req.color().g(), 0.6);
+  EXPECT_FLOAT_EQ(_req.color().b(), 0.7);
+  EXPECT_FLOAT_EQ(_req.color().alpha(), 0.8);
+
+  _result = true;
+}
+
+//////////////////////////////////////////////////
+/// \brief Provide a "hxs_model_color" service.
+void onHxsModelColor(const std::string &_service,
+  const haptix::comm::msgs::hxString &_req,
+  haptix::comm::msgs::hxColor &_rep,
+  bool &_result)
+{
+  _rep.Clear();
+  _result = false;
+
+  // Check the name of the service received.
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_model_color");
+
+  EXPECT_EQ(_req.data(), "model_1");
+
+  _rep.set_r(0.1);
+  _rep.set_g(0.2);
+  _rep.set_b(0.3);
+  _rep.set_alpha(0.4);
+
+  _result = true;
+}
+
+//////////////////////////////////////////////////
+/// \brief Provide a "hxs_set_model_collide_mode" service.
+void onHxsSetModelCollideMode(const std::string &_service,
+  const haptix::comm::msgs::hxParam &_req,
+  haptix::comm::msgs::hxEmpty &/*_rep*/,
+  bool &_result)
+{
+  _result = false;
+
+  // Check the name of the service received.
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_set_model_collide_mode");
+
+  // Sanity check: The message should contain a model name.
+  if (!_req.has_name())
+  {
+    std::cerr << "onHxsSetModelCollideMode() error: Missing name in request"
+              << std::endl;
+    return;
+  }
+
+  // Sanity check: The message should contain a collide mode.
+  if (!_req.has_collision_mode())
+  {
+    std::cerr << "onHxsSetModelCollideMode() error: Missing collide mode in "
+              << "request" << std::endl;
+    return;
+  }
+
+  EXPECT_EQ(_req.name(), "model_1");
+  EXPECT_EQ(_req.collision_mode().mode(),
+    haptix::comm::msgs::hxCollisionMode::COLLIDE);
+
+  _result = true;
+}
+
+//////////////////////////////////////////////////
+/// \brief Provide a "hxs_model_collide_mode" service.
+void onHxsModelCollideMode(const std::string &_service,
+  const haptix::comm::msgs::hxString &_req,
+  haptix::comm::msgs::hxCollisionMode &_rep,
+  bool &_result)
+{
+  _rep.Clear();
+  _result = false;
+
+  // Check the name of the service received.
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_model_collide_mode");
+
+  EXPECT_EQ(_req.data(), "model_1");
+
+  _rep.set_mode(haptix::comm::msgs::hxCollisionMode::DETECTION_ONLY);
 
   _result = true;
 }
@@ -1461,7 +1578,86 @@ TEST(hxsTest, hxs_set_model_gravity_mode)
   ignition::transport::Node node;
 
   // Advertise the "hxs_set_model_gravity_mode" service.
-  node.Advertise("/haptix/gazebo/hxs_set_model_gravity_mode", onHxsSetModelGravity);
+  node.Advertise("/haptix/gazebo/hxs_set_model_gravity_mode",
+    onHxsSetModelGravity);
 
   ASSERT_EQ(hxs_set_model_gravity_mode("model_1", 1), hxOK);
+}
+
+//////////////////////////////////////////////////
+/// \brief Check hxs_set_model_color.
+TEST(hxsTest, hxs_set_model_color)
+{
+  setup();
+
+  ignition::transport::Node node;
+  hxColor color;
+
+  // Advertise the "hxs_set_model_color" service.
+  node.Advertise("/haptix/gazebo/hxs_set_model_color", onHxsSetModelColor);
+
+  color.r = 0.5;
+  color.g = 0.6;
+  color.b = 0.7;
+  color.alpha = 0.8;
+
+  ASSERT_EQ(hxs_set_model_color("model_1", &color), hxOK);
+}
+
+//////////////////////////////////////////////////
+/// \brief Check hxs_model_color.
+TEST(hxsTest, hxs_model_color)
+{
+  setup();
+
+  ignition::transport::Node node;
+  hxColor color;
+
+  // Advertise the "hxs_model_color" service.
+  node.Advertise("/haptix/gazebo/hxs_model_color", onHxsModelColor);
+
+  ASSERT_EQ(hxs_model_color("model_1", &color), hxOK);
+
+  // Check the color received.
+  EXPECT_FLOAT_EQ(color.r, 0.1);
+  EXPECT_FLOAT_EQ(color.g, 0.2);
+  EXPECT_FLOAT_EQ(color.b, 0.3);
+  EXPECT_FLOAT_EQ(color.alpha, 0.4);
+}
+
+//////////////////////////////////////////////////
+/// \brief Check hxs_set_model_collide_mode.
+TEST(hxsTest, hxs_set_model_collide_mode)
+{
+  setup();
+
+  ignition::transport::Node node;
+  hxCollisionMode collideMode;
+
+  // Advertise the "hxs_set_model_collide_mode" service.
+  node.Advertise("/haptix/gazebo/hxs_set_model_collide_mode",
+    onHxsSetModelCollideMode);
+
+  collideMode = COLLIDE;
+
+  ASSERT_EQ(hxs_set_model_collide_mode("model_1", &collideMode), hxOK);
+}
+
+//////////////////////////////////////////////////
+/// \brief Check hxs_model_collide_mode.
+TEST(hxsTest, hxs_model_collide_mode)
+{
+  setup();
+
+  ignition::transport::Node node;
+  hxCollisionMode collideMode;
+
+  // Advertise the "hxs_model_collide_mode" service.
+  node.Advertise("/haptix/gazebo/hxs_model_collide_mode",
+    onHxsModelCollideMode);
+
+  ASSERT_EQ(hxs_model_collide_mode("model_1", &collideMode), hxOK);
+
+  // Check the collide mode received.
+  EXPECT_EQ(collideMode, DETECTION_ONLY);
 }

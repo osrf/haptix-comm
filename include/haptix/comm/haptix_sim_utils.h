@@ -26,6 +26,8 @@
 #include <mutex>
 #include <ignition/transport.hh>
 #include "haptix/comm/haptix.h"
+#include "msg/hxCollisionMode.pb.h"
+#include "msg/hxColor.pb.h"
 #include "msg/hxContactPoint_V.pb.h"
 #include "msg/hxEmpty.pb.h"
 #include "msg/hxJoint.pb.h"
@@ -177,6 +179,58 @@ static bool hxs_convertQuaternion(const hxQuaternion *_in,
   _out->set_x(_in->x);
   _out->set_y(_in->y);
   _out->set_z(_in->z);
+
+  return true;
+}
+
+//////////////////////////////////////////////////
+/// \internal Private function that converts a protobuf hxColor message to
+/// a C struct hxColor.
+/// \param[in] _in Protobuf message.
+/// \param[out] _out C-struct.
+/// \return True if the function succeed or false otherwise.
+static bool hxs_convertColor(const haptix::comm::msgs::hxColor _in,
+  hxColor *_out)
+{
+  // Initialize the C struct.
+  memset(_out, 0, sizeof(hxColor));
+
+  _out->r = _in.r();
+  _out->g = _in.g();
+  _out->b = _in.b();
+  _out->alpha = _in.alpha();
+
+  return true;
+}
+
+//////////////////////////////////////////////////
+/// \internal Private function that converts a protobuf hxCollisionMode message
+/// to a C struct hxCollisionMode.
+/// \param[in] _in Protobuf message.
+/// \param[out] _out C-struct.
+/// \return True if the function succeed or false otherwise.
+static bool hxs_convertCollisionMode(
+  const haptix::comm::msgs::hxCollisionMode _in, hxCollisionMode *_out)
+{
+  // Initialize the C struct.
+  memset(_out, 0, sizeof(hxCollisionMode));
+
+  switch (_in.mode())
+  {
+    case haptix::comm::msgs::hxCollisionMode::NO_COLLIDE:
+      *_out = NO_COLLIDE;
+      break;
+    case haptix::comm::msgs::hxCollisionMode::DETECTION_ONLY:
+      *_out = DETECTION_ONLY;
+      break;
+    case haptix::comm::msgs::hxCollisionMode::COLLIDE:
+      *_out = COLLIDE;
+      break;
+    default:
+      std::cerr << "hxs_convertCollisionMode() error: Unkown collision mode ["
+                << _in.mode() << "]" << std::endl;
+      return false;
+  }
 
   return true;
 }

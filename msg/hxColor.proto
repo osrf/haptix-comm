@@ -1,0 +1,9 @@
+package haptix.comm.msgs;
+
+message hxColor
+{
+  required float r     = 1;
+  required float g     = 2;
+  required float b     = 3;
+  required float alpha = 4;
+}

@@ -342,4 +342,80 @@ extern "C" {
     haptix::comm::msgs::hxEmpty rep;
     return hxs_call(service, __func__, req, rep);
   }
+
+  //////////////////////////////////////////////////
+  hxResult hxs_set_model_color(const char *_model, const hxColor *_color)
+  {
+    const std::string service = "/haptix/gazebo/hxs_set_model_color";
+    haptix::comm::msgs::hxParam req;
+    haptix::comm::msgs::hxEmpty rep;
+
+    req.set_name(_model);
+    req.mutable_color()->set_r(_color->r);
+    req.mutable_color()->set_g(_color->g);
+    req.mutable_color()->set_b(_color->b);
+    req.mutable_color()->set_alpha(_color->alpha);
+    return hxs_call(service, __func__, req, rep);
+  }
+
+  //////////////////////////////////////////////////
+  hxResult hxs_model_color(const char *_model, hxColor *_color)
+  {
+    const std::string service = "/haptix/gazebo/hxs_model_color";
+    haptix::comm::msgs::hxString req;
+    haptix::comm::msgs::hxColor rep;
+
+    req.set_data(_model);
+    return hxs_call(service, __func__, req, rep, _color, hxs_convertColor);
+  }
+
+  //////////////////////////////////////////////////
+  hxResult hxs_set_model_collide_mode(const char *_model,
+    const hxCollisionMode *_collide_mode)
+  {
+    const std::string service = "/haptix/gazebo/hxs_set_model_collide_mode";
+    haptix::comm::msgs::hxParam req;
+    haptix::comm::msgs::hxEmpty rep;
+
+    if (!_collide_mode)
+    {
+      printf("hxs_set_model_collide_mode() error: NULL collide mode\n");
+      return hxERROR;
+    }
+
+    req.set_name(_model);
+    switch (*_collide_mode)
+    {
+      case NO_COLLIDE:
+        req.mutable_collision_mode()->set_mode(
+          haptix::comm::msgs::hxCollisionMode::NO_COLLIDE);
+        break;
+      case DETECTION_ONLY:
+        req.mutable_collision_mode()->set_mode(
+          haptix::comm::msgs::hxCollisionMode::DETECTION_ONLY);
+        break;
+      case COLLIDE:
+        req.mutable_collision_mode()->set_mode(
+          haptix::comm::msgs::hxCollisionMode::COLLIDE);
+        break;
+      default:
+        printf("hxs_set_model_collide_mode() Unknown collide_mode [%d]\n",
+          *_collide_mode);
+        return hxERROR;
+    }
+    return hxs_call(service, __func__, req, rep);
+  }
+
+  //////////////////////////////////////////////////
+  hxResult hxs_model_collide_mode(const char *_model,
+    hxCollisionMode *_collide_mode)
+  {
+    const std::string service = "/haptix/gazebo/hxs_model_collide_mode";
+    haptix::comm::msgs::hxString req;
+    haptix::comm::msgs::hxCollisionMode rep;
+
+    req.set_data(_model);
+    return hxs_call(service, __func__, req, rep, _collide_mode,
+      hxs_convertCollisionMode);
+  }
 }

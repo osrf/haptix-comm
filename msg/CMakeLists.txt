@@ -1,4 +1,6 @@
 set(msgs
+  hxCollisionMode.proto
+  hxColor.proto
   hxCommand.proto
   hxContactPoint.proto
   hxContactPoint_V.proto
