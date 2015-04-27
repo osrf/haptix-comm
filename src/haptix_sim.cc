@@ -389,17 +389,17 @@ extern "C" {
     req.set_name(_model);
     switch (*_collide_mode)
     {
-      case NO_COLLIDE:
+      case hxsNOCOLLIDE:
         req.mutable_collision_mode()->set_mode(
-          haptix::comm::msgs::hxCollisionMode::NO_COLLIDE);
+          haptix::comm::msgs::hxCollisionMode::hxsNOCOLLIDE);
         break;
-      case DETECTION_ONLY:
+      case hxsDETECTIONONLY:
         req.mutable_collision_mode()->set_mode(
-          haptix::comm::msgs::hxCollisionMode::DETECTION_ONLY);
+          haptix::comm::msgs::hxCollisionMode::hxsDETECTIONONLY);
         break;
-      case COLLIDE:
+      case hxsCOLLIDE:
         req.mutable_collision_mode()->set_mode(
-          haptix::comm::msgs::hxCollisionMode::COLLIDE);
+          haptix::comm::msgs::hxCollisionMode::hxsCOLLIDE);
         break;
       default:
         printf("hxs_set_model_collide_mode() Unknown collide_mode [%d]\n",

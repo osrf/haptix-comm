@@ -17,9 +17,9 @@ message hxCollisionMode
 {
   enum Mode
   {
-    NO_COLLIDE     = 1;
-    DETECTION_ONLY = 2;
-    COLLIDE        = 3;
+    hxsNOCOLLIDE     = 1;
+    hxsDETECTIONONLY = 2;
+    hxsCOLLIDE       = 3;
   }
 
   required Mode mode = 1;

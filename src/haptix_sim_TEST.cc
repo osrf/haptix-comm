@@ -943,7 +943,7 @@ void onHxsSetModelCollideMode(const std::string &_service,
 
   EXPECT_EQ(_req.name(), "model_1");
   EXPECT_EQ(_req.collision_mode().mode(),
-    haptix::comm::msgs::hxCollisionMode::COLLIDE);
+    haptix::comm::msgs::hxCollisionMode::hxsCOLLIDE);
 
   _result = true;
 }
@@ -963,7 +963,7 @@ void onHxsModelCollideMode(const std::string &_service,
 
   EXPECT_EQ(_req.data(), "model_1");
 
-  _rep.set_mode(haptix::comm::msgs::hxCollisionMode::DETECTION_ONLY);
+  _rep.set_mode(haptix::comm::msgs::hxCollisionMode::hxsDETECTIONONLY);
 
   _result = true;
 }
@@ -1644,7 +1644,7 @@ TEST(hxsTest, hxs_set_model_collide_mode)
   node.Advertise("/haptix/gazebo/hxs_set_model_collide_mode",
     onHxsSetModelCollideMode);
 
-  collideMode = COLLIDE;
+  collideMode = hxsCOLLIDE;
 
   ASSERT_EQ(hxs_set_model_collide_mode("model_1", &collideMode), hxOK);
 }
@@ -1665,5 +1665,5 @@ TEST(hxsTest, hxs_model_collide_mode)
   ASSERT_EQ(hxs_model_collide_mode("model_1", &collideMode), hxOK);
 
   // Check the collide mode received.
-  EXPECT_EQ(collideMode, DETECTION_ONLY);
+  EXPECT_EQ(collideMode, hxsDETECTIONONLY);
 }

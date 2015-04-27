@@ -217,14 +217,14 @@ static bool hxs_convertCollisionMode(
 
   switch (_in.mode())
   {
-    case haptix::comm::msgs::hxCollisionMode::NO_COLLIDE:
-      *_out = NO_COLLIDE;
+    case haptix::comm::msgs::hxCollisionMode::hxsNOCOLLIDE:
+      *_out = hxsNOCOLLIDE;
       break;
-    case haptix::comm::msgs::hxCollisionMode::DETECTION_ONLY:
-      *_out = DETECTION_ONLY;
+    case haptix::comm::msgs::hxCollisionMode::hxsDETECTIONONLY:
+      *_out = hxsDETECTIONONLY;
       break;
-    case haptix::comm::msgs::hxCollisionMode::COLLIDE:
-      *_out = COLLIDE;
+    case haptix::comm::msgs::hxCollisionMode::hxsCOLLIDE:
+      *_out = hxsCOLLIDE;
       break;
     default:
       std::cerr << "hxs_convertCollisionMode() error: Unkown collision mode ["

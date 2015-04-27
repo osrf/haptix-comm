@@ -49,16 +49,16 @@ extern "C" {
 /// \sa hxs_set_model_collide_mode
 /// \sa hxs_model_collide_mode
 /// \brief The different collision modes for simulation objects.
-/// NO_COLLIDE means the object will pass through other objects, and the
+/// hxsNOCOLLIDE means the object will pass through other objects, and the
 /// simulation does not know if this event occurs. hxs_contacts will not
 /// generate contact points.
-/// DETECTION_ONLY means that the object will pass through other objects, and
+/// hxsDETECTIONONLY means that the object will pass through other objects, and
 /// the simulation will detect when the object collides. hxs_contacts will
 /// generate contact points when this happens, but the force and torque values
 /// of the hxContactPoint struct will be invalid.
-/// COLLIDE means that the object will obey the laws of physics and the
+/// hxsCOLLIDE means that the object will obey the laws of physics and the
 /// simulation will generate forces when it collides with other objects.
-typedef enum {NO_COLLIDE, DETECTION_ONLY, COLLIDE} hxCollisionMode;
+typedef enum {hxsNOCOLLIDE, hxsDETECTIONONLY, hxsCOLLIDE} hxCollisionMode;
 
 // ---------- data structures ----------
 
