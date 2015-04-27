@@ -117,7 +117,8 @@ extern "C" {
     req.set_name(_model);
     req.add_links();
     req.mutable_links(0)->set_name(_link);
-    if (!hxs_convertTransform(_transform, req.mutable_links(0)->mutable_transform()))
+    if (!hxs_convertTransform(_transform,
+      req.mutable_links(0)->mutable_transform()))
     {
       return hxERROR;
     }
@@ -182,11 +183,13 @@ extern "C" {
     haptix::comm::msgs::hxString req;
     haptix::comm::msgs::hxInt rep;
     req.set_data(_name);
-    return hxs_call(service, __func__, req, rep, _gravity_mode, hxs_convertScalar);
+    return hxs_call(service, __func__, req, rep, _gravity_mode,
+      hxs_convertScalar);
   }
 
   //////////////////////////////////////////////////
-  hxResult hxs_set_model_gravity_mode(const char *_name, const int _gravity_mode)
+  hxResult hxs_set_model_gravity_mode(const char *_name,
+    const int _gravity_mode)
   {
     const std::string service = "/haptix/gazebo/hxs_set_model_gravity_mode";
     haptix::comm::msgs::hxParam req;

@@ -302,8 +302,10 @@ static bool hxs_convertJoint(const haptix::comm::msgs::hxJoint _in,
   _out->pos = _in.pos();
   _out->vel = _in.vel();
   _out->torque_motor = _in.torque_motor();
-  hxs_convertVector3(_in.wrench_reactive().force(), &_out->wrench_reactive.force);
-  hxs_convertVector3(_in.wrench_reactive().torque(), &_out->wrench_reactive.torque);
+  hxs_convertVector3(_in.wrench_reactive().force(),
+    &_out->wrench_reactive.force);
+  hxs_convertVector3(_in.wrench_reactive().torque(),
+    &_out->wrench_reactive.torque);
 
   return true;
 }
@@ -436,8 +438,10 @@ static bool hxs_convertContactPoints(
     hxs_convertVector3(_in.contacts(i).point(), &_out->contacts[i].point);
     hxs_convertVector3(_in.contacts(i).normal(), &_out->contacts[i].normal);
     _out->contacts[i].distance = _in.contacts(i).distance();
-    hxs_convertVector3(_in.contacts(i).wrench().force(), &_out->contacts[i].wrench.force);
-    hxs_convertVector3(_in.contacts(i).wrench().torque(), &_out->contacts[i].wrench.torque);
+    hxs_convertVector3(_in.contacts(i).wrench().force(),
+      &_out->contacts[i].wrench.force);
+    hxs_convertVector3(_in.contacts(i).wrench().torque(),
+      &_out->contacts[i].wrench.torque);
   }
 
   return true;
@@ -484,7 +488,7 @@ hxResult hxs_call(const std::string &_service,
                   const REQ _req,
                   REP _rep,
                   T _dst,
-                  bool(*_f)(const REP _rep, T _dst)) // NOLINT
+                  bool (*_f)(const REP _rep, T _dst))
 {
   bool result;
   ignition::transport::Node *hxNode = getHxNode();

@@ -1026,12 +1026,18 @@ TEST(hxsTest, hxs_simInfo)
       EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].pos, v);
       EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].vel, v + 0.1);
       EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].torque_motor, v + 0.3);
-      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].wrench_reactive.force.x, v + 0.4);
-      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].wrench_reactive.force.y, v + 0.5);
-      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].wrench_reactive.force.z, v + 0.6);
-      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].wrench_reactive.torque.x, v + 0.7);
-      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].wrench_reactive.torque.y, v + 0.8);
-      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].wrench_reactive.torque.z, v + 0.9);
+      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].wrench_reactive.force.x,
+        v + 0.4);
+      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].wrench_reactive.force.y,
+        v + 0.5);
+      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].wrench_reactive.force.z,
+        v + 0.6);
+      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].wrench_reactive.torque.x,
+        v + 0.7);
+      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].wrench_reactive.torque.y,
+        v + 0.8);
+      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].wrench_reactive.torque.z,
+        v + 0.9);
     }
     EXPECT_TRUE(simInfo.models[i].gravity_mode);
   }
