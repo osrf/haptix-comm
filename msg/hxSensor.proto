@@ -1,24 +1,41 @@
 package haptix.comm.msgs;
 
+message imu
+{
+  required float x = 1;
+  required float y = 2;
+  required float z = 3;
+}
+
+message quaternion
+{
+  required float w = 1;
+  required float x = 2;
+  required float y = 3;
+  required float z = 4;
+}
+
+message time
+{
+  required uint64 sec  = 1;
+  required uint64 nsec = 2;
+}
+
 /// \ingroup haptix_comm_msgs
 /// \interface hxSensor
 /// \brief Sensor message. This message specifies the sensor information gained
 /// in a simulation update.
 
-import "hxQuaternion.proto";
-import "hxTime.proto";
-import "hxVector3.proto";
-
 message hxSensor
 {
-  repeated float motor_pos              = 1 [packed=true];
-  repeated float motor_vel              = 2 [packed=true];
-  repeated float motor_torque           = 3 [packed=true];
-  repeated float joint_pos              = 4 [packed=true];
-  repeated float joint_vel              = 5 [packed=true];
-  repeated float contact                = 6 [packed=true];
-  repeated hxVector3 imu_linear_acc     = 7;
-  repeated hxVector3 imu_angular_vel    = 8;
-  repeated hxQuaternion imu_orientation = 9;
-  required hxTime time_stamp            = 10;
+  repeated float motor_pos            = 1 [packed=true];
+  repeated float motor_vel            = 2 [packed=true];
+  repeated float motor_torque         = 3 [packed=true];
+  repeated float joint_pos            = 4 [packed=true];
+  repeated float joint_vel            = 5 [packed=true];
+  repeated float contact              = 6 [packed=true];
+  repeated imu imu_linear_acc         = 7;
+  repeated imu imu_angular_vel        = 8;
+  repeated quaternion imu_orientation = 9;
+  required time time_stamp            = 10;
 }
