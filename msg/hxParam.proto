@@ -1,5 +1,10 @@
 package haptix.comm.msgs;
 
+/// \ingroup haptix_comm_msgs
+/// \interface hxParam
+/// \brief Message used as a parameter in multiple service requests using
+/// ignition transport.
+
 import "hxCollisionMode.proto";
 import "hxColor.proto";
 import "hxEuler.proto";

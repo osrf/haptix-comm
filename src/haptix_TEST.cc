@@ -100,11 +100,11 @@ void onUpdate(const std::string &_service,
 
   for (int i = 0; i < NumIMUs; ++i)
   {
-    haptix::comm::msgs::imu *linear_acc = _rep.add_imu_linear_acc();
+    haptix::comm::msgs::hxVector3 *linear_acc = _rep.add_imu_linear_acc();
     linear_acc->set_x(i);
     linear_acc->set_y(i + 1);
     linear_acc->set_z(i + 2);
-    haptix::comm::msgs::imu *angular_vel = _rep.add_imu_angular_vel();
+    haptix::comm::msgs::hxVector3 *angular_vel = _rep.add_imu_angular_vel();
     angular_vel->set_x(i + 3);
     angular_vel->set_y(i + 4);
     angular_vel->set_z(i + 5);
@@ -144,11 +144,11 @@ void onRead(const std::string &_service,
 
   for (int i = 0; i < NumIMUs; ++i)
   {
-    haptix::comm::msgs::imu *linear_acc = _rep.add_imu_linear_acc();
+    haptix::comm::msgs::hxVector3 *linear_acc = _rep.add_imu_linear_acc();
     linear_acc->set_x(i);
     linear_acc->set_y(i + 1);
     linear_acc->set_z(i + 2);
-    haptix::comm::msgs::imu *angular_vel = _rep.add_imu_angular_vel();
+    haptix::comm::msgs::hxVector3 *angular_vel = _rep.add_imu_angular_vel();
     angular_vel->set_x(i + 3);
     angular_vel->set_y(i + 4);
     angular_vel->set_z(i + 5);

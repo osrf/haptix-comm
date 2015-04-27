@@ -1,5 +1,9 @@
 package haptix.comm.msgs;
 
+/// \ingroup haptix_comm_msgs
+/// \interface hxVector3
+/// \brief Message for a vector3 float.
+
 message hxVector3
 {
   required float x = 1;

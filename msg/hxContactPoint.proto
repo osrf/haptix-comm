@@ -1,5 +1,9 @@
 package haptix.comm.msgs;
 
+/// \ingroup haptix_comm_msgs
+/// \interface hxContactPoint
+/// \brief Information about a contact point.
+
 import "hxVector3.proto";
 import "hxWrench.proto";
 

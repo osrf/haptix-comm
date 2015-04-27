@@ -1,5 +1,9 @@
 package haptix.comm.msgs;
 
+/// \ingroup haptix_comm_msgs
+/// \interface hxWrench
+/// \brief A force-torque pair message.
+
 import "hxVector3.proto";
 
 message hxWrench
