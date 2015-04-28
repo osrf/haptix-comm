@@ -2,18 +2,37 @@
 #include <string.h>
 #include "mex.h"
 #include "haptix/comm/haptix.h"
+#include "haptix/comm/haptix_sim.h"
 
+// Simulation/hardware functions
 void hxgz_connect (int nlhs, mxArray *plhs[],
-             int nrhs, const mxArray *prhs[]);
-void hxgz_close (int nlhs, mxArray *plhs[],
-            int nrhs, const mxArray *prhs[]);
-void hxgz_read_sensors (int nlhs, mxArray *plhs[],
                    int nrhs, const mxArray *prhs[]);
+void hxgz_close (int nlhs, mxArray *plhs[],
+                 int nrhs, const mxArray *prhs[]);
+void hxgz_read_sensors (int nlhs, mxArray *plhs[],
+                        int nrhs, const mxArray *prhs[]);
 void hxgz_robot_info (int nlhs, mxArray *plhs[],
                       int nrhs, const mxArray *prhs[]);
 void hxgz_update (int nlhs, mxArray *plhs[],
                   int nrhs, const mxArray *prhs[]);
+
+// Simulation-specific functions
+void hxgzs_siminfo (int nlhs, mxArray *plhs[],
+                    int nrhs, const mxArray *prhs[]);
+void hxgzs_camera_transform (int nlhs, mxArray *plhs[],
+                             int nrhs, const mxArray *prhs[]);
+
+// Data structure conversion helpers
 mxArray* sensor_to_matlab (hxSensor* hs);
+mxArray* vector3_to_matlab (hxVector3* h);
+mxArray* quaternion_to_matlab (hxQuaternion* h);
+mxArray* transform_to_matlab (hxTransform* h);
+mxArray* link_to_matlab (hxLink* h);
+mxArray* wrench_to_matlab (hxWrench* h);
+mxArray* joint_to_matlab (hxJoint* h);
+mxArray* model_to_matlab (hxModel* h);
+mxArray* contactpoint_to_matlab (hxContactPoint* h);
+mxArray* color_to_matlab (hxColor* h);
 
 // Global info instance, for later reference
 static hxRobotInfo g_info;
@@ -55,6 +74,8 @@ mexFunction (int nlhs, mxArray *plhs[],
     hxgz_read_sensors(nlhs, plhs, nrhs-1, prhs+1);
   else if (!strcmp(funcName, "close"))
     hxgz_close(nlhs, plhs, nrhs-1, prhs+1);
+  else if (!strcmp(funcName, "siminfo"))
+    hxgzs_siminfo(nlhs, plhs, nrhs-1, prhs+1);
   else
     mexErrMsgIdAndTxt("HAPTIX:hxgz", "Unknown command");
 }
@@ -338,4 +359,296 @@ sensor_to_matlab (hxSensor* hs)
   mxSetField(s, 0, "imu_orientation", imuOrientationArray);
 
   return s;
+}
+
+mxArray*
+vector3_to_matlab (hxVector3* h)
+{
+  mxArray *array = mxCreateDoubleMatrix(3, 1, mxREAL);
+  double *data = mxGetPr(array);
+  data[0] = h->x;
+  data[1] = h->y;
+  data[2] = h->z;
+
+  return array;
+}
+
+mxArray*
+quaternion_to_matlab (hxQuaternion* h)
+{
+  mxArray *array = mxCreateDoubleMatrix(4, 1, mxREAL);
+  double *data = mxGetPr(array);
+  data[0] = h->w;
+  data[1] = h->x;
+  data[2] = h->y;
+  data[3] = h->z;
+
+  return array;
+}
+
+mxArray*
+transform_to_matlab (hxTransform* h)
+{
+  const char *keys[] = {"pos", "orient"};
+  mxArray *s = mxCreateStructMatrix(1, 1, 2, keys);
+
+  mxArray *posArray = vector3_to_matlab(&(h->pos));
+  mxArray *orientArray = quaternion_to_matlab(&(h->orient));
+
+  mxSetField(s, 0, "pos", posArray);
+  mxSetField(s, 0, "orient", orientArray);
+
+  return s;
+}
+
+mxArray*
+link_to_matlab (hxLink* h)
+{
+  const char *keys[] = {"name",
+                        "transform",
+                        "lin_vel",
+                        "ang_vel",
+                        "lin_acc",
+                        "ang_acc"};
+  mxArray *s = mxCreateStructMatrix(1, 1, 6, keys);
+
+  mxArray* nameArray = mxCreateString(h->name);
+  mxArray* transformArray = transform_to_matlab(&(h->transform));
+  mxArray* linVelArray = vector3_to_matlab(&(h->lin_vel));
+  mxArray* angVelArray = vector3_to_matlab(&(h->ang_vel));
+  mxArray* linAccArray = vector3_to_matlab(&(h->lin_acc));
+  mxArray* angAccArray = vector3_to_matlab(&(h->ang_acc));
+
+  mxSetField(s, 0, "name", nameArray);
+  mxSetField(s, 0, "transform", transformArray);
+  mxSetField(s, 0, "lin_vel", linVelArray);
+  mxSetField(s, 0, "ang_vel", angVelArray);
+  mxSetField(s, 0, "lin_acc", linAccArray);
+  mxSetField(s, 0, "ang_acc", angAccArray);
+
+  return s;
+}
+
+mxArray*
+wrench_to_matlab (hxWrench* h)
+{
+  const char *keys[] = {"force", "torque"};
+  mxArray *s = mxCreateStructMatrix(1, 1, 2, keys);
+
+  mxArray *forceArray = vector3_to_matlab(&(h->force));
+  mxArray *torqueArray = vector3_to_matlab(&(h->torque));
+
+  mxSetField(s, 0, "force", forceArray);
+  mxSetField(s, 0, "torque", torqueArray);
+
+  return s;
+}
+
+mxArray*
+joint_to_matlab (hxJoint* h)
+{
+  const char *keys[] = {"name",
+                        "pos",
+                        "vel",
+                        "acc",
+                        "torque_motor",
+                        "wrench_reactive"};
+  mxArray *s = mxCreateStructMatrix(1, 1, 6, keys);
+
+  mxArray *nameArray = mxCreateString(h->name);
+  mxArray *posArray = mxCreateDoubleMatrix(1, 1, mxREAL);
+  mxArray *velArray = mxCreateDoubleMatrix(1, 1, mxREAL);
+  mxArray *accArray = mxCreateDoubleMatrix(1, 1, mxREAL);
+  mxArray *torqueMotorArray = mxCreateDoubleMatrix(1, 1, mxREAL);
+  mxArray *wrenchReactiveArray = wrench_to_matlab(&(h->wrench_reactive));
+
+  double* posData = mxGetPr(posArray);
+  double* velData = mxGetPr(velArray);
+  double* accData = mxGetPr(accArray);
+  double* torqueMotorData = mxGetPr(torqueMotorArray);
+
+  posData[0] = h->pos;
+  velData[0] = h->vel;
+  accData[0] = h->acc;
+  torqueMotorData[0] = h->torque_motor;
+
+  mxSetField(s, 0, "name", nameArray);
+  mxSetField(s, 0, "pos", posArray);
+  mxSetField(s, 0, "vel", velArray);
+  mxSetField(s, 0, "acc", accArray);
+  mxSetField(s, 0, "torque_motor", torqueMotorArray);
+  mxSetField(s, 0, "wrench_reactive", wrenchReactiveArray);
+
+  return s;
+}
+
+mxArray*
+model_to_matlab (hxModel* h)
+{
+  const char *keys[] = {"name",
+                        "transform",
+                        "id",
+                        "links",
+                        "joints",
+                        "gravity_mode"};
+  mxArray *s = mxCreateStructMatrix(1, 1, 6, keys);
+
+  mxArray *nameArray = mxCreateString(h->name);
+  mxArray *transformArray = transform_to_matlab(&(h->transform));
+  mxArray *idArray = mxCreateDoubleMatrix(1, 1, mxREAL);
+  // TODO: Look for a way to build an array of structures without having to
+  // create this extra layers of field names.  E.g., have the "links" field be
+  // an array of link structures, so that you can access each one as:
+  //   links(42)
+  // instead of
+  //   links(42).link
+  // I looked around a bit but could not find a way to do that.
+  const char *linksKeys[] = {"link"};
+  mxArray *linksArray = mxCreateStructMatrix(h->link_count, 1, 1, linksKeys);
+  const char *jointsKeys[] = {"joint"};
+  mxArray *jointsArray = mxCreateStructMatrix(h->joint_count, 1, 1, jointsKeys);
+  mxArray *gravityModeArray = mxCreateDoubleMatrix(1, 1, mxREAL);
+
+  double* idData = mxGetPr(idArray);
+  double* gravityModeData = mxGetPr(gravityModeArray);
+
+  idData[0] = h->id;
+  int i;
+  for(i=0; i<h->link_count; ++i)
+    mxSetField(linksArray, i, "link", link_to_matlab(h->links+i));
+  for(i=0; i<h->joint_count; ++i)
+    mxSetField(jointsArray, i, "link", joint_to_matlab(h->joints+i));
+  gravityModeData[0] = h->gravity_mode;
+
+  mxSetField(s, 0, "name", nameArray);
+  mxSetField(s, 0, "transform", transformArray);
+  mxSetField(s, 0, "id", idArray);
+  mxSetField(s, 0, "links", linksArray);
+  mxSetField(s, 0, "joints", jointsArray);
+  mxSetField(s, 0, "gravity_mode", gravityModeArray);
+
+  return s;
+}
+
+mxArray*
+contactpoint_to_matlab (hxContactPoint* h)
+{
+  const char *keys[] = {"link1",
+                        "link2",
+                        "point",
+                        "normal",
+                        "distance",
+                        "wrench"};
+  mxArray *s = mxCreateStructMatrix(1, 1, 6, keys);
+
+  mxArray *link1Array = mxCreateString(h->link1);
+  mxArray *link2Array = mxCreateString(h->link2);
+  mxArray *pointArray = vector3_to_matlab(&(h->point));
+  mxArray *normalArray = vector3_to_matlab(&(h->normal));
+  mxArray *distanceArray = mxCreateDoubleMatrix(1, 1, mxREAL);
+  mxArray *wrenchArray = wrench_to_matlab(&(h->wrench));
+
+  double* distanceData = mxGetPr(distanceArray);
+
+  distanceData[0] = h->distance;
+
+  mxSetField(s, 0, "link1", link1Array);
+  mxSetField(s, 0, "link2", link2Array);
+  mxSetField(s, 0, "point", pointArray);
+  mxSetField(s, 0, "normal", normalArray);
+  mxSetField(s, 0, "distance", distanceArray);
+  mxSetField(s, 0, "wrench", wrenchArray);
+
+  return s;
+}
+
+mxArray*
+color_to_matlab (hxColor* h)
+{
+  mxArray *array = mxCreateDoubleMatrix(4, 1, mxREAL);
+  double *data = mxGetPr(array);
+  data[0] = h->r;
+  data[1] = h->g;
+  data[2] = h->b;
+  data[3] = h->alpha;
+
+  return array;
+}
+
+hxVector3*
+matlab_to_vector(mxArray* m)
+{
+}
+
+hxQuaternion*
+matlab_to_quaternion(mxArray* m)
+{
+}
+
+hxTransform*
+matlab_to_transform(mxArray* m)
+{
+}
+
+hxColor*
+matlab_to_color(mxArray* m)
+{
+}
+
+void
+hxgzs_siminfo (int nlhs, mxArray *plhs[],
+               int nrhs, const mxArray *prhs[])
+{
+  hxSimInfo h;
+
+  // Request robot information.
+  if (hxs_siminfo(&h) != hxOK)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_siminfo", hx_last_result());
+
+  // Create a Matlab structure array.
+  const char *keys[] = {"models",
+                        "camera_transform"};
+  mxArray *s = mxCreateStructMatrix (1, 1, 2, keys);
+
+  const char *modelsKeys[] = {"model"};
+  mxArray *modelsArray =
+    mxCreateStructMatrix(h.model_count, 1, 1, modelsKeys);
+  mxArray* cameraTransformArray =
+    transform_to_matlab(&(h.camera_transform));
+
+  int i;
+  for(i=0; i<h.model_count; ++i)
+    mxSetField(modelsArray, i, "model", model_to_matlab(h.models+i));
+
+  mxSetField(s, 0, "models", modelsArray);
+  mxSetField(s, 0, "camera_transform", cameraTransformArray);
+
+  // Set the output arguments.
+  plhs[0] = s;
+}
+
+void
+hxgzs_camera_transform (int nlhs, mxArray *plhs[],
+                        int nrhs, const mxArray *prhs[])
+{
+  hxTransform h;
+
+  // Request robot information.
+  if (hxs_camera_transform(&h) != hxOK)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_camera_transform", hx_last_result());
+
+  plhs[0] = transform_to_matlab(&h);
+}
+
+void
+hxgzs_set_camera_transform (int nlhs, mxArray *plhs[],
+                            int nrhs, const mxArray *prhs[])
+{
+  hxTransform h;
+
+  // Request robot information.
+  if (hxs_camera_transform(&h) != hxOK)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_camera_transform", hx_last_result());
+
+  plhs[0] = transform_to_matlab(&h);
 }
