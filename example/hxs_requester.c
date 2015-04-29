@@ -25,14 +25,14 @@
 //////////////////////////////////////////////////
 int main(int argc, char **argv)
 {
-  hxSimInfo simInfo;
-  hxTransform cameraTransform;
-  hxContactPoints contactPoints;
+  hxsSimInfo simInfo;
+  hxsTransform cameraTransform;
+  hxsContactPoints contactPoints;
   hxTime time;
-  hxColor color;
+  hxsColor color;
 
   // Requesting simulation information.
-  if (hxs_siminfo(&simInfo) != hxOK)
+  if (hxs_sim_info(&simInfo) != hxOK)
   {
     printf("hxs_siminfo(): Request error.\n");
     return -1;
