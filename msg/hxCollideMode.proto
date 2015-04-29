@@ -1,7 +1,7 @@
 package haptix.comm.msgs;
 
 /// \ingroup haptix_comm_msgs
-/// \interface hxCollisionMode
+/// \interface hxCollideMode
 /// \brief Information about the collision modes for simulated objects.
 /// NO_COLLIDE means the object will pass through other objects, and the
 /// simulation does not know if this event occurs. hxs_contacts will not
@@ -13,7 +13,7 @@ package haptix.comm.msgs;
 /// COLLIDE means that the object will obey the laws of physics and the
 /// simulation will generate forces when it collides with other objects.
 
-message hxCollisionMode
+message hxCollideMode
 {
   enum Mode
   {
