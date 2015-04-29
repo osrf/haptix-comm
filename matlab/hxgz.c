@@ -21,8 +21,18 @@ void hxgzs_siminfo (int nlhs, mxArray *plhs[],
                     int nrhs, const mxArray *prhs[]);
 void hxgzs_camera_transform (int nlhs, mxArray *plhs[],
                              int nrhs, const mxArray *prhs[]);
+void hxgzs_set_camera_transform (int nlhs, mxArray *plhs[],
+                                 int nrhs, const mxArray *prhs[]);
+void hxgzs_contacts (int nlhs, mxArray *plhs[],
+                     int nrhs, const mxArray *prhs[]);
+void hxgzs_set_model_joint_state (int nlhs, mxArray *plhs[],
+                                  int nrhs, const mxArray *prhs[]);
+void hxgzs_set_model_link_state (int nlhs, mxArray *plhs[],
+                                 int nrhs, const mxArray *prhs[]);
 
 // Data structure conversion helpers
+//
+// haptix-comm types -> MATLAB arrays
 mxArray* sensor_to_matlab (hxSensor* hs);
 mxArray* vector3_to_matlab (hxVector3* h);
 mxArray* quaternion_to_matlab (hxQuaternion* h);
@@ -31,8 +41,15 @@ mxArray* link_to_matlab (hxLink* h);
 mxArray* wrench_to_matlab (hxWrench* h);
 mxArray* joint_to_matlab (hxJoint* h);
 mxArray* model_to_matlab (hxModel* h);
-mxArray* contactpoint_to_matlab (hxContactPoint* h);
+mxArray* contactpoints_to_matlab (hxContactPoints* h);
 mxArray* color_to_matlab (hxColor* h);
+//
+// MATLAB arrays -> haptix-comm types
+hxVector3 matlab_to_vector3 (const mxArray* m);
+hxQuaternion matlab_to_quaternion (const mxArray* m);
+hxTransform matlab_to_transform (const mxArray* m);
+hxColor matlab_to_color (const mxArray* m);
+
 
 // Global info instance, for later reference
 static hxRobotInfo g_info;
@@ -76,6 +93,16 @@ mexFunction (int nlhs, mxArray *plhs[],
     hxgz_close(nlhs, plhs, nrhs-1, prhs+1);
   else if (!strcmp(funcName, "siminfo"))
     hxgzs_siminfo(nlhs, plhs, nrhs-1, prhs+1);
+  else if (!strcmp(funcName, "camera_transform"))
+    hxgzs_camera_transform(nlhs, plhs, nrhs-1, prhs+1);
+  else if (!strcmp(funcName, "set_camera_transform"))
+    hxgzs_set_camera_transform(nlhs, plhs, nrhs-1, prhs+1);
+  else if (!strcmp(funcName, "contacts"))
+    hxgzs_contacts(nlhs, plhs, nrhs-1, prhs+1);
+  else if (!strcmp(funcName, "set_model_joint_state"))
+    hxgzs_set_model_joint_state(nlhs, plhs, nrhs-1, prhs+1);
+  else if (!strcmp(funcName, "set_model_link_state"))
+    hxgzs_set_model_link_state(nlhs, plhs, nrhs-1, prhs+1);
   else
     mexErrMsgIdAndTxt("HAPTIX:hxgz", "Unknown command");
 }
@@ -531,7 +558,7 @@ model_to_matlab (hxModel* h)
 }
 
 mxArray*
-contactpoint_to_matlab (hxContactPoint* h)
+contactpoints_to_matlab (hxContactPoints* h)
 {
   const char *keys[] = {"link1",
                         "link2",
@@ -539,25 +566,29 @@ contactpoint_to_matlab (hxContactPoint* h)
                         "normal",
                         "distance",
                         "wrench"};
-  mxArray *s = mxCreateStructMatrix(1, 1, 6, keys);
+  mxArray *s = mxCreateStructMatrix(h->contact_count, 1, 6, keys);
 
-  mxArray *link1Array = mxCreateString(h->link1);
-  mxArray *link2Array = mxCreateString(h->link2);
-  mxArray *pointArray = vector3_to_matlab(&(h->point));
-  mxArray *normalArray = vector3_to_matlab(&(h->normal));
-  mxArray *distanceArray = mxCreateDoubleMatrix(1, 1, mxREAL);
-  mxArray *wrenchArray = wrench_to_matlab(&(h->wrench));
-
-  double* distanceData = mxGetPr(distanceArray);
-
-  distanceData[0] = h->distance;
-
-  mxSetField(s, 0, "link1", link1Array);
-  mxSetField(s, 0, "link2", link2Array);
-  mxSetField(s, 0, "point", pointArray);
-  mxSetField(s, 0, "normal", normalArray);
-  mxSetField(s, 0, "distance", distanceArray);
-  mxSetField(s, 0, "wrench", wrenchArray);
+  int i;
+  for (i=0; i<h->contact_count; ++i)
+  {
+    mxArray *link1Array = mxCreateString(h->contacts[i].link1);
+    mxArray *link2Array = mxCreateString(h->contacts[i].link2);
+    mxArray *pointArray = vector3_to_matlab(&(h->contacts[i].point));
+    mxArray *normalArray = vector3_to_matlab(&(h->contacts[i].normal));
+    mxArray *distanceArray = mxCreateDoubleMatrix(1, 1, mxREAL);
+    mxArray *wrenchArray = wrench_to_matlab(&(h->contacts[i].wrench));
+  
+    double* distanceData = mxGetPr(distanceArray);
+  
+    distanceData[0] = h->contacts[i].distance;
+  
+    mxSetField(s, i, "link1", link1Array);
+    mxSetField(s, i, "link2", link2Array);
+    mxSetField(s, i, "point", pointArray);
+    mxSetField(s, i, "normal", normalArray);
+    mxSetField(s, i, "distance", distanceArray);
+    mxSetField(s, i, "wrench", wrenchArray);
+  }
 
   return s;
 }
@@ -575,24 +606,77 @@ color_to_matlab (hxColor* h)
   return array;
 }
 
-hxVector3*
-matlab_to_vector(mxArray* m)
+hxVector3
+matlab_to_vector3 (const mxArray* m)
 {
+  hxVector3 v;
+
+  if (mxGetM(m) != 3 || mxGetN(m) != 1)
+    mexErrMsgIdAndTxt("HAPTIX:matlab_to_vector3", "Expects 3x1 column vector");
+
+  double *d = mxGetPr(m);
+  v.x = d[0];
+  v.y = d[1];
+  v.z = d[2];
+
+  return v;
 }
 
-hxQuaternion*
-matlab_to_quaternion(mxArray* m)
+hxQuaternion
+matlab_to_quaternion (const mxArray* m)
 {
+  hxQuaternion q;
+
+  if (mxGetM(m) != 4 || mxGetN(m) != 1)
+    mexErrMsgIdAndTxt("HAPTIX:matlab_to_quaternion", "Expects 4x1 column vector");
+
+  double *d = mxGetPr(m);
+  q.w = d[0];
+  q.x = d[1];
+  q.y = d[2];
+  q.z = d[3];
+
+  return q;
 }
 
-hxTransform*
-matlab_to_transform(mxArray* m)
+hxTransform
+matlab_to_transform (const mxArray* m)
 {
+  hxTransform t;
+  mxArray* v;
+
+  // Sanity check: Verify that the first input argument is a struct.
+  if (!mxIsStruct(m))
+    mexErrMsgIdAndTxt("HAPTIX:matlab_to_transform", "Expects struct");
+
+  // Sanity check: Verify that the struct has fields:
+  // pos, orient
+  if (mxGetNumberOfFields(m) != 2)
+    mexErrMsgIdAndTxt("HAPTIX:matlab_to_transform", "Expects 2 fields");
+
+  v = mxGetField(m, 0, "pos");
+  t.pos = matlab_to_vector3(v);
+  v = mxGetField(m, 0, "orient");
+  t.orient = matlab_to_quaternion(v);
+
+  return t;
 }
 
-hxColor*
-matlab_to_color(mxArray* m)
+hxColor
+matlab_to_color (const mxArray* m)
 {
+  hxColor c;
+
+  if (mxGetM(m) != 4 || mxGetN(m) != 1)
+    mexErrMsgIdAndTxt("HAPTIX:matlab_to_color", "Expects 4x1 column vector");
+
+  double *d = mxGetPr(m);
+  c.r = d[0];
+  c.g = d[1];
+  c.b = d[2];
+  c.alpha = d[3];
+
+  return c;
 }
 
 void
@@ -633,7 +717,6 @@ hxgzs_camera_transform (int nlhs, mxArray *plhs[],
 {
   hxTransform h;
 
-  // Request robot information.
   if (hxs_camera_transform(&h) != hxOK)
     mexErrMsgIdAndTxt("HAPTIX:hxs_camera_transform", hx_last_result());
 
@@ -646,9 +729,89 @@ hxgzs_set_camera_transform (int nlhs, mxArray *plhs[],
 {
   hxTransform h;
 
-  // Request robot information.
-  if (hxs_camera_transform(&h) != hxOK)
-    mexErrMsgIdAndTxt("HAPTIX:hxs_camera_transform", hx_last_result());
+  if (nrhs != 1)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_set_camera_transform", "Expects 1 argument");
 
-  plhs[0] = transform_to_matlab(&h);
+  h = matlab_to_transform(prhs[0]);
+
+  if (hxs_set_camera_transform(&h) != hxOK)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_set_camera_transform", hx_last_result());
+}
+
+void
+hxgzs_contacts (int nlhs, mxArray *plhs[],
+                int nrhs, const mxArray *prhs[])
+{
+  hxContactPoints h;
+  char m[hxsMAXNAMESIZE];
+
+  if (nrhs != 1)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_contacts", "Expects 1 argument");
+
+  if (mxGetString(prhs[0], m, sizeof(m)))
+    mexErrMsgIdAndTxt("HAPTIX:hxs_contacts", "Failed to determine model name");
+
+  if (hxs_contacts(m, &h) != hxOK)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_contacts", hx_last_result());
+
+  plhs[0] = contactpoints_to_matlab(&h);
+}
+
+void
+hxgzs_set_model_joint_state (int nlhs, mxArray *plhs[],
+                             int nrhs, const mxArray *prhs[])
+{
+  char m[hxsMAXNAMESIZE];
+  char j[hxsMAXNAMESIZE];
+  double *d;
+  float pos, vel;
+
+  if (nrhs != 4)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_set_model_joint_state", "Expects 4 arguments");
+
+  if (mxGetString(prhs[0], m, sizeof(m)))
+    mexErrMsgIdAndTxt("HAPTIX:hxs_set_model_joint_state", "Failed to determine model name");
+  if (mxGetString(prhs[1], j, sizeof(j)))
+    mexErrMsgIdAndTxt("HAPTIX:hxs_set_model_joint_state",
+      "Failed to determine joint name");
+  d = mxGetPr(prhs[2]);
+  pos = d[0];
+  d = mxGetPr(prhs[3]);
+  vel = d[0];
+
+  if (hxs_set_model_joint_state(m, j, pos, vel) != hxOK)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_set_model_joint_state", hx_last_result());
+}
+
+void
+hxgzs_set_model_link_state (int nlhs, mxArray *plhs[],
+                            int nrhs, const mxArray *prhs[])
+{
+  char m[hxsMAXNAMESIZE];
+  char l[hxsMAXNAMESIZE];
+  hxTransform t;
+  hxVector3 lin_vel;
+  hxVector3 ang_vel;
+
+  if (nrhs != 5)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_set_model_joint_state", "Expects 5 arguments");
+
+  if (mxGetString(prhs[0], m, sizeof(m)))
+    mexErrMsgIdAndTxt("HAPTIX:hxs_set_model_link_state",
+      "Failed to determine model name");
+  if (mxGetString(prhs[1], l, sizeof(l)))
+    mexErrMsgIdAndTxt("HAPTIX:hxs_set_model_link_state",
+      "Failed to determine link name");
+  t = matlab_to_transform(prhs[2]);
+  lin_vel = matlab_to_vector3(prhs[3]);
+  ang_vel = matlab_to_vector3(prhs[4]);
+
+  if (hxs_set_model_link_state(m, l, &t, &lin_vel, &ang_vel) != hxOK)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_set_model_link_state", hx_last_result());
+}
+
+void
+hxgzs_add_model (int nlhs, mxArray *plhs[],
+                 int nrhs, const mxArray *prhs[])
+{
 }
