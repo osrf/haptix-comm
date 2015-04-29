@@ -5,7 +5,7 @@ package haptix.comm.msgs;
 /// \brief Message used as a parameter in multiple service requests using
 /// ignition transport.
 
-import "hxCollisionMode.proto";
+import "hxCollideMode.proto";
 import "hxColor.proto";
 import "hxEuler.proto";
 import "hxJoint.proto";
@@ -30,5 +30,5 @@ message hxParam
   optional string name                    = 11;
   optional uint32 gravity_mode            = 12;
   optional hxColor color                  = 13;
-  optional hxCollisionMode collision_mode = 14;
+  optional hxCollideMode collide_mode = 14;
 }

@@ -45,20 +45,20 @@ extern "C" {
 /// \brief Maximum number of characters allowed per name.
 #define hxsMAXNAMESIZE 100
 
-/// \def hxCollisionMode
+/// \def hxCollideMode
 /// \sa hxs_set_model_collide_mode
 /// \sa hxs_model_collide_mode
 /// \brief The different collision modes for simulation objects.
-/// hxsNOCOLLIDE means the object will pass through other objects, and the
+/// NO_COLLIDE means the object will pass through other objects, and the
 /// simulation does not know if this event occurs. hxs_contacts will not
 /// generate contact points.
-/// hxsDETECTIONONLY means that the object will pass through other objects, and
+/// DETECTION_ONLY means that the object will pass through other objects, and
 /// the simulation will detect when the object collides. hxs_contacts will
 /// generate contact points when this happens, but the force and torque values
 /// of the hxContactPoint struct will be invalid.
-/// hxsCOLLIDE means that the object will obey the laws of physics and the
+/// COLLIDE means that the object will obey the laws of physics and the
 /// simulation will generate forces when it collides with other objects.
-typedef enum {hxsNOCOLLIDE, hxsDETECTIONONLY, hxsCOLLIDE} hxCollisionMode;
+typedef enum {hxsNOCOLLIDE, hxsDETECTIONONLY, hxsCOLLIDE} hxCollideMode;
 
 // ---------- data structures ----------
 
@@ -75,7 +75,7 @@ struct _hxVector3
 /// translation.
 typedef struct _hxVector3 hxVector3;
 
-/// \brief A 4-tupe representing a color in RGBA space.
+/// \brief A 4-tuple representing a color in RGBA space.
 struct _hxColor
 {
   float r;
@@ -85,7 +85,7 @@ struct _hxColor
 };
 
 /// \def hxColor
-/// \brief A 4-tupe representing a color in RGBA space.
+/// \brief A 4-tuple representing a color in RGBA space.
 /// r, g, b are numbers between 0 and 1 representing the red, green, and blue
 /// levels, and alpha is a number between 0 and 1 representing the transparency
 /// (0 is invisible, 1 is opaque).
@@ -291,7 +291,7 @@ typedef struct _hxSimInfo hxSimInfo;
 /// \param[out] _siminfo Simulation information requested.
 /// \sa _hxSimInfo
 /// \return 'hxOK' if the function succeed or an error code otherwise.
-hxResult hxs_siminfo(hxSimInfo *_siminfo);
+hxResult hxs_sim_info(hxSimInfo *_siminfo);
 
 /// \brief Get information about the simulation camera.
 /// \param[out] _camera Information about the simulation camera.
@@ -470,18 +470,18 @@ hxResult hxs_model_color(const char *_model, hxColor *_color);
 /// \brief Set the collide mode of the object.
 /// \param[in] _model Name of the model.
 /// \param[in] _collide_mode The collide mode of the object.
-/// \sa hxCollisionMode
+/// \sa hxCollideMode
 /// \return 'hxOK' if the function succeed or an error code otherwise.
 hxResult hxs_set_model_collide_mode(const char *_model,
-    const hxCollisionMode *_collide_mode);
+    const hxCollideMode *_collide_mode);
 
 /// \brief Get the collide mode of the object.
 /// \param[in] _model Name of the model.
 /// \param[out] _collide_mode The collide mode of the object.
-/// \sa hxCollisionMode
+/// \sa hxCollideMode
 /// \return 'hxOK' if the function succeed or an error code otherwise.
 hxResult hxs_model_collide_mode(const char *_model,
-    hxCollisionMode *_collide_mode);
+    hxCollideMode *_collide_mode);
 
 #ifdef __cplusplus
 }

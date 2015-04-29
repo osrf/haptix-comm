@@ -26,7 +26,7 @@
 #include <mutex>
 #include <ignition/transport.hh>
 #include "haptix/comm/haptix.h"
-#include "msg/hxCollisionMode.pb.h"
+#include "msg/hxCollideMode.pb.h"
 #include "msg/hxColor.pb.h"
 #include "msg/hxContactPoint_V.pb.h"
 #include "msg/hxEmpty.pb.h"
@@ -204,26 +204,26 @@ static bool hxs_convertColor(const haptix::comm::msgs::hxColor _in,
 }
 
 //////////////////////////////////////////////////
-/// \internal Private function that converts a protobuf hxCollisionMode message
-/// to a C struct hxCollisionMode.
+/// \internal Private function that converts a protobuf hxCollideMode message
+/// to a C struct hxCollideMode.
 /// \param[in] _in Protobuf message.
 /// \param[out] _out C-struct.
 /// \return True if the function succeed or false otherwise.
 static bool hxs_convertCollisionMode(
-  const haptix::comm::msgs::hxCollisionMode _in, hxCollisionMode *_out)
+  const haptix::comm::msgs::hxCollideMode _in, hxCollideMode *_out)
 {
   // Initialize the C struct.
-  memset(_out, 0, sizeof(hxCollisionMode));
+  memset(_out, 0, sizeof(hxCollideMode));
 
   switch (_in.mode())
   {
-    case haptix::comm::msgs::hxCollisionMode::hxsNOCOLLIDE:
+    case haptix::comm::msgs::hxCollideMode::hxsNOCOLLIDE:
       *_out = hxsNOCOLLIDE;
       break;
-    case haptix::comm::msgs::hxCollisionMode::hxsDETECTIONONLY:
+    case haptix::comm::msgs::hxCollideMode::hxsDETECTIONONLY:
       *_out = hxsDETECTIONONLY;
       break;
-    case haptix::comm::msgs::hxCollisionMode::hxsCOLLIDE:
+    case haptix::comm::msgs::hxCollideMode::hxsCOLLIDE:
       *_out = hxsCOLLIDE;
       break;
     default:

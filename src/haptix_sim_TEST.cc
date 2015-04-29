@@ -140,7 +140,7 @@ void setup()
 }
 
 //////////////////////////////////////////////////
-/// \brief Provide a "hxs_siminfo" service.
+/// \brief Provide a "hxs_sim_info" service.
 void onHxsSimInfo(const std::string &_service,
   const haptix::comm::msgs::hxEmpty &/*_req*/,
   haptix::comm::msgs::hxSimInfo &_rep,
@@ -149,7 +149,7 @@ void onHxsSimInfo(const std::string &_service,
   _rep.Clear();
 
   // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_siminfo");
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_sim_info");
 
   // Create some dummy response.
   _rep = simState;
@@ -934,7 +934,7 @@ void onHxsSetModelCollideMode(const std::string &_service,
   }
 
   // Sanity check: The message should contain a collide mode.
-  if (!_req.has_collision_mode())
+  if (!_req.has_collide_mode())
   {
     std::cerr << "onHxsSetModelCollideMode() error: Missing collide mode in "
               << "request" << std::endl;
@@ -942,8 +942,8 @@ void onHxsSetModelCollideMode(const std::string &_service,
   }
 
   EXPECT_EQ(_req.name(), "model_1");
-  EXPECT_EQ(_req.collision_mode().mode(),
-    haptix::comm::msgs::hxCollisionMode::hxsCOLLIDE);
+  EXPECT_EQ(_req.collide_mode().mode(),
+    haptix::comm::msgs::hxCollideMode::hxsCOLLIDE);
 
   _result = true;
 }
@@ -952,7 +952,7 @@ void onHxsSetModelCollideMode(const std::string &_service,
 /// \brief Provide a "hxs_model_collide_mode" service.
 void onHxsModelCollideMode(const std::string &_service,
   const haptix::comm::msgs::hxString &_req,
-  haptix::comm::msgs::hxCollisionMode &_rep,
+  haptix::comm::msgs::hxCollideMode &_rep,
   bool &_result)
 {
   _rep.Clear();
@@ -963,7 +963,7 @@ void onHxsModelCollideMode(const std::string &_service,
 
   EXPECT_EQ(_req.data(), "model_1");
 
-  _rep.set_mode(haptix::comm::msgs::hxCollisionMode::hxsDETECTIONONLY);
+  _rep.set_mode(haptix::comm::msgs::hxCollideMode::hxsDETECTIONONLY);
 
   _result = true;
 }
@@ -977,11 +977,11 @@ TEST(hxsTest, hxs_simInfo)
   ignition::transport::Node node;
   hxSimInfo simInfo;
 
-  // Advertise the "hxs_siminfo" service.
-  node.Advertise("/haptix/gazebo/hxs_siminfo", onHxsSimInfo);
+  // Advertise the "hxs_sim_info" service.
+  node.Advertise("/haptix/gazebo/hxs_sim_info", onHxsSimInfo);
 
   // Request simulation information.
-  ASSERT_EQ(hxs_siminfo(&simInfo), hxOK);
+  ASSERT_EQ(hxs_sim_info(&simInfo), hxOK);
 
   // Check the model information
   ASSERT_EQ(simInfo.model_count, kNumModels);
@@ -1086,11 +1086,11 @@ TEST(hxsTest, hxs_set_camera_transform)
   ignition::transport::Node node;
   hxSimInfo simInfo;
 
-  // Advertise the "hxs_siminfo" service.
-  node.Advertise("/haptix/gazebo/hxs_siminfo", onHxsSimInfo);
+  // Advertise the "hxs_sim_info" service.
+  node.Advertise("/haptix/gazebo/hxs_sim_info", onHxsSimInfo);
 
   // Request simulation information.
-  ASSERT_EQ(hxs_siminfo(&simInfo), hxOK);
+  ASSERT_EQ(hxs_sim_info(&simInfo), hxOK);
 
   // Advertise the "hxs_camera_transform" service.
   node.Advertise("/haptix/gazebo/hxs_set_camera_transform",
@@ -1148,14 +1148,14 @@ TEST(hxsTest, hxs_set_model_joint_state)
   ignition::transport::Node node;
   hxSimInfo simInfo;
 
-  // Advertise the "hxs_siminfo" service.
-  node.Advertise("/haptix/gazebo/hxs_siminfo", onHxsSimInfo);
+  // Advertise the "hxs_sim_info" service.
+  node.Advertise("/haptix/gazebo/hxs_sim_info", onHxsSimInfo);
 
   // Advertise the "hxs_state" service.
   node.Advertise("/haptix/gazebo/hxs_set_model_joint_state", onHxsJointState);
 
   // Request simulation information.
-  ASSERT_EQ(hxs_siminfo(&simInfo), hxOK);
+  ASSERT_EQ(hxs_sim_info(&simInfo), hxOK);
 
   EXPECT_EQ(hxs_set_model_joint_state("model 0", "joint 1", 1.0, 2.0), hxOK);
 }
@@ -1169,14 +1169,14 @@ TEST(hxsTest, hxs_set_model_link_state)
   ignition::transport::Node node;
   hxSimInfo simInfo;
 
-  // Advertise the "hxs_siminfo" service.
-  node.Advertise("/haptix/gazebo/hxs_siminfo", onHxsSimInfo);
+  // Advertise the "hxs_sim_info" service.
+  node.Advertise("/haptix/gazebo/hxs_sim_info", onHxsSimInfo);
 
   // Advertise the "hxs_state" service.
   node.Advertise("/haptix/gazebo/hxs_set_model_link_state", onHxsLinkState);
 
   // Request simulation information.
-  ASSERT_EQ(hxs_siminfo(&simInfo), hxOK);
+  ASSERT_EQ(hxs_sim_info(&simInfo), hxOK);
 
   // TODO
   hxTransform transform;
@@ -1298,14 +1298,14 @@ TEST(hxsTest, hxs_model_transform)
   ignition::transport::Node node;
   hxSimInfo simInfo;
 
-  // Advertise the "hxs_siminfo" service.
-  node.Advertise("/haptix/gazebo/hxs_siminfo", onHxsSimInfo);
+  // Advertise the "hxs_sim_info" service.
+  node.Advertise("/haptix/gazebo/hxs_sim_info", onHxsSimInfo);
 
   // Advertise the "hxs_model_transform" service.
   node.Advertise("/haptix/gazebo/hxs_model_transform", onHxsModelTransform);
 
   // Request simulation information.
-  ASSERT_EQ(hxs_siminfo(&simInfo), hxOK);
+  ASSERT_EQ(hxs_sim_info(&simInfo), hxOK);
 
   // Let's use the transform from the second model.
   ASSERT_EQ(hxs_model_transform("model 1", &simInfo.models[1].transform), hxOK);
@@ -1359,14 +1359,14 @@ TEST(hxsTest, hxs_force)
   hxVector3 force;
   hxSimInfo simInfo;
 
-  // Advertise the "hxs_siminfo" service.
-  node.Advertise("/haptix/gazebo/hxs_siminfo", onHxsSimInfo);
+  // Advertise the "hxs_sim_info" service.
+  node.Advertise("/haptix/gazebo/hxs_sim_info", onHxsSimInfo);
 
   // Advertise the "hxs_force" service.
   node.Advertise("/haptix/gazebo/hxs_force", onHxsForce);
 
   // Request simulation information.
-  ASSERT_EQ(hxs_siminfo(&simInfo), hxOK);
+  ASSERT_EQ(hxs_sim_info(&simInfo), hxOK);
 
   // Set some force.
   force.x = 5.1;
@@ -1388,14 +1388,14 @@ TEST(hxsTest, hxs_torque)
   hxVector3 torque;
   hxSimInfo simInfo;
 
-  // Advertise the "hxs_siminfo" service.
-  node.Advertise("/haptix/gazebo/hxs_siminfo", onHxsSimInfo);
+  // Advertise the "hxs_sim_info" service.
+  node.Advertise("/haptix/gazebo/hxs_sim_info", onHxsSimInfo);
 
   // Advertise the "hxs_torque" service.
   node.Advertise("/haptix/gazebo/hxs_torque", onHxsTorque);
 
   // Request simulation information.
-  ASSERT_EQ(hxs_siminfo(&simInfo), hxOK);
+  ASSERT_EQ(hxs_sim_info(&simInfo), hxOK);
 
   // Set some force.
   torque.x = 6.1;
@@ -1417,14 +1417,14 @@ TEST(hxsTest, hxs_wrench)
   hxWrench wrench;
   hxSimInfo simInfo;
 
-  // Advertise the "hxs_siminfo" service.
-  node.Advertise("/haptix/gazebo/hxs_siminfo", onHxsSimInfo);
+  // Advertise the "hxs_sim_info" service.
+  node.Advertise("/haptix/gazebo/hxs_sim_info", onHxsSimInfo);
 
   // Advertise the "hxs_wrench" service.
   node.Advertise("/haptix/gazebo/hxs_wrench", onHxsWrench);
 
   // Request simulation information.
-  ASSERT_EQ(hxs_siminfo(&simInfo), hxOK);
+  ASSERT_EQ(hxs_sim_info(&simInfo), hxOK);
 
   // Set some torque/force.
   wrench.force.x = 7.1;
@@ -1638,7 +1638,7 @@ TEST(hxsTest, hxs_set_model_collide_mode)
   setup();
 
   ignition::transport::Node node;
-  hxCollisionMode collideMode;
+  hxCollideMode collideMode;
 
   // Advertise the "hxs_set_model_collide_mode" service.
   node.Advertise("/haptix/gazebo/hxs_set_model_collide_mode",
@@ -1656,7 +1656,7 @@ TEST(hxsTest, hxs_model_collide_mode)
   setup();
 
   ignition::transport::Node node;
-  hxCollisionMode collideMode;
+  hxCollideMode collideMode;
 
   // Advertise the "hxs_model_collide_mode" service.
   node.Advertise("/haptix/gazebo/hxs_model_collide_mode",

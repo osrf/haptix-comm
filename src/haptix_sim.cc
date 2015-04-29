@@ -31,9 +31,9 @@
 
 extern "C" {
   //////////////////////////////////////////////////
-  hxResult hxs_siminfo(hxSimInfo *_siminfo)
+  hxResult hxs_sim_info(hxSimInfo *_siminfo)
   {
-    const std::string service = "/haptix/gazebo/hxs_siminfo";
+    const std::string service = "/haptix/gazebo/hxs_sim_info";
     haptix::comm::msgs::hxEmpty req;
     haptix::comm::msgs::hxSimInfo rep;
     return hxs_call(service, __func__, req, rep, _siminfo, hxs_convertSimInfo);
@@ -374,7 +374,7 @@ extern "C" {
 
   //////////////////////////////////////////////////
   hxResult hxs_set_model_collide_mode(const char *_model,
-    const hxCollisionMode *_collide_mode)
+    const hxCollideMode *_collide_mode)
   {
     const std::string service = "/haptix/gazebo/hxs_set_model_collide_mode";
     haptix::comm::msgs::hxParam req;
@@ -390,16 +390,16 @@ extern "C" {
     switch (*_collide_mode)
     {
       case hxsNOCOLLIDE:
-        req.mutable_collision_mode()->set_mode(
-          haptix::comm::msgs::hxCollisionMode::hxsNOCOLLIDE);
+        req.mutable_collide_mode()->set_mode(
+          haptix::comm::msgs::hxCollideMode::hxsNOCOLLIDE);
         break;
       case hxsDETECTIONONLY:
-        req.mutable_collision_mode()->set_mode(
-          haptix::comm::msgs::hxCollisionMode::hxsDETECTIONONLY);
+        req.mutable_collide_mode()->set_mode(
+          haptix::comm::msgs::hxCollideMode::hxsDETECTIONONLY);
         break;
       case hxsCOLLIDE:
-        req.mutable_collision_mode()->set_mode(
-          haptix::comm::msgs::hxCollisionMode::hxsCOLLIDE);
+        req.mutable_collide_mode()->set_mode(
+          haptix::comm::msgs::hxCollideMode::hxsCOLLIDE);
         break;
       default:
         printf("hxs_set_model_collide_mode() Unknown collide_mode [%d]\n",
@@ -411,11 +411,11 @@ extern "C" {
 
   //////////////////////////////////////////////////
   hxResult hxs_model_collide_mode(const char *_model,
-    hxCollisionMode *_collide_mode)
+    hxCollideMode *_collide_mode)
   {
     const std::string service = "/haptix/gazebo/hxs_model_collide_mode";
     haptix::comm::msgs::hxString req;
-    haptix::comm::msgs::hxCollisionMode rep;
+    haptix::comm::msgs::hxCollideMode rep;
 
     req.set_data(_model);
     return hxs_call(service, __func__, req, rep, _collide_mode,

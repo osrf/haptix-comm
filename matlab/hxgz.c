@@ -17,7 +17,7 @@ void hxgz_update (int nlhs, mxArray *plhs[],
                   int nrhs, const mxArray *prhs[]);
 
 // Simulation-specific functions
-void hxgzs_siminfo (int nlhs, mxArray *plhs[],
+void hxgzs_sim_info (int nlhs, mxArray *plhs[],
                     int nrhs, const mxArray *prhs[]);
 void hxgzs_camera_transform (int nlhs, mxArray *plhs[],
                              int nrhs, const mxArray *prhs[]);
@@ -91,8 +91,8 @@ mexFunction (int nlhs, mxArray *plhs[],
     hxgz_read_sensors(nlhs, plhs, nrhs-1, prhs+1);
   else if (!strcmp(funcName, "close"))
     hxgz_close(nlhs, plhs, nrhs-1, prhs+1);
-  else if (!strcmp(funcName, "siminfo"))
-    hxgzs_siminfo(nlhs, plhs, nrhs-1, prhs+1);
+  else if (!strcmp(funcName, "sim_info"))
+    hxgzs_sim_info(nlhs, plhs, nrhs-1, prhs+1);
   else if (!strcmp(funcName, "camera_transform"))
     hxgzs_camera_transform(nlhs, plhs, nrhs-1, prhs+1);
   else if (!strcmp(funcName, "set_camera_transform"))
@@ -680,14 +680,14 @@ matlab_to_color (const mxArray* m)
 }
 
 void
-hxgzs_siminfo (int nlhs, mxArray *plhs[],
+hxgzs_sim_info (int nlhs, mxArray *plhs[],
                int nrhs, const mxArray *prhs[])
 {
   hxSimInfo h;
 
   // Request robot information.
-  if (hxs_siminfo(&h) != hxOK)
-    mexErrMsgIdAndTxt("HAPTIX:hxs_siminfo", hx_last_result());
+  if (hxs_sim_info(&h) != hxOK)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_sim_info", hx_last_result());
 
   // Create a Matlab structure array.
   const char *keys[] = {"models",

@@ -26,11 +26,53 @@
 int main(int argc, char **argv)
 {
   hxSimInfo simInfo;
+  hxTransform cameraTransform;
+  hxContactPoints contactPoints;
+  hxTime time;
+  hxColor color;
 
   // Requesting simulation information.
   if (hxs_siminfo(&simInfo) != hxOK)
   {
     printf("hxs_siminfo(): Request error.\n");
+    return -1;
+  }
+
+  if (hxs_camera_transform(&cameraTransform) != hxOK)
+  {
+    printf("hxs_camera_transform(): Request error.\n");
+    return -1;
+  }
+
+  if (hxs_set_camera_transform(&cameraTransform) != hxOK)
+  {
+    printf("hxs_set_camera_transform(): Request error.\n");
+    return -1;
+  }
+
+  if (hxs_contacts("cricket_ball", &contactPoints) != hxOK)
+  {
+    printf("hxs_contacts(): Request error.\n");
+    return -1;
+  }
+
+  // etc. etc.
+
+  /*if (hxs_timer(&time) != hxOK)
+  {
+    printf("hxs_timer(): Request error.\n");
+    return -1;
+  }*/
+
+  if (hxs_model_color("cricket_ball", &color) != hxOK)
+  {
+    printf("hxs_model_color(): Request error.\n");
+    return -1;
+  }
+
+  if (hxs_set_model_color("cricket_ball", &color) != hxOK)
+  {
+    printf("hxs_set_model_color(): Request error.\n");
     return -1;
   }
 
