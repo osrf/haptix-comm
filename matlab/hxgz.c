@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <string.h>
+#include <stdio.h>
 #include "mex.h"
 #include "haptix/comm/haptix.h"
 #include "haptix/comm/haptix_sim.h"
@@ -29,6 +30,8 @@ void hxgzs_set_model_joint_state (int nlhs, mxArray *plhs[],
                                   int nrhs, const mxArray *prhs[]);
 void hxgzs_set_model_link_state (int nlhs, mxArray *plhs[],
                                  int nrhs, const mxArray *prhs[]);
+void hxgzs_add_model (int nlhs, mxArray *plhs[],
+                      int nrhs, const mxArray *prhs[]);
 
 // Data structure conversion helpers
 //
@@ -103,6 +106,8 @@ mexFunction (int nlhs, mxArray *plhs[],
     hxgzs_set_model_joint_state(nlhs, plhs, nrhs-1, prhs+1);
   else if (!strcmp(funcName, "set_model_link_state"))
     hxgzs_set_model_link_state(nlhs, plhs, nrhs-1, prhs+1);
+  else if (!strcmp(funcName, "add_model"))
+    hxgzs_add_model(nlhs, plhs, nrhs-1, prhs+1);
   else
     mexErrMsgIdAndTxt("HAPTIX:hxgz", "Unknown command");
 }
@@ -814,4 +819,43 @@ void
 hxgzs_add_model (int nlhs, mxArray *plhs[],
                  int nrhs, const mxArray *prhs[])
 {
+  char *sdf;
+  char name[hxsMAXNAMESIZE];
+  float x, y, z, roll, pitch, yaw;
+  int gravity_mode;
+  hxModel model;
+
+  if (nrhs != 5)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_add_model", "Expects 5 arguments");
+
+  size_t sdfLen = mxGetN(prhs[0]) + 1;
+  sdf = (char*)calloc(sdfLen, sizeof(char*));
+  if (mxGetString(prhs[0], sdf, sdfLen))
+    mexErrMsgIdAndTxt("HAPTIX:hxs_add_model", "Failed to determine sdf");
+  if (mxGetString(prhs[1], name, sizeof(name)))
+    mexErrMsgIdAndTxt("HAPTIX:hxs_add_model", "Failed to determine name");
+
+  double *d;
+  if (mxGetM(prhs[2]) != 3 || mxGetN(prhs[2]) != 1)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_add_model", "Expects 3x1 column vector");
+  d = mxGetPr(prhs[2]);
+  x = d[0];
+  y = d[1];
+  z = d[2];
+  if (mxGetM(prhs[3]) != 3 || mxGetN(prhs[3]) != 1)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_add_model", "Expects 3x1 column vector");
+  d = mxGetPr(prhs[3]);
+  roll = d[0];
+  pitch = d[1];
+  yaw = d[2];
+  if (mxGetM(prhs[4]) != 1 || mxGetN(prhs[4]) != 1)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_add_model", "Expects scalar");
+  d = mxGetPr(prhs[4]);
+  gravity_mode = d[0];
+
+  if (hxs_add_model(sdf, name, x, y, z, 
+                    roll, pitch, yaw, gravity_mode, &model) != hxOK)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_set_model_link_state", hx_last_result());
+
+  plhs[0] = model_to_matlab(&model);
 }
