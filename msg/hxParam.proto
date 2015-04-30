@@ -30,5 +30,5 @@ message hxParam
   optional string name                    = 11;
   optional uint32 gravity_mode            = 12;
   optional hxColor color                  = 13;
-  optional hxCollideMode collide_mode = 14;
+  optional hxCollideMode collide_mode     = 14;
 }

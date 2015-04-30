@@ -73,6 +73,11 @@ template <typename T, typename T2> bool hxs_convertScalar(T _in, T2 *_out)
     std::cerr << "hxs_convertScalar() error: No [data] in msg" << std::endl;
     return false;
   }
+  if (!_out)
+  {
+    std::cerr << "hxs_convertScalar() error: NULL output" << std::endl;
+    return false;
+  }
   *_out = _in.data();
   return true;
 }
@@ -85,6 +90,11 @@ template <typename T, typename T2> bool hxs_convertScalar(T _in, T2 *_out)
 /// \return True if the function succeed or false otherwise.
 static bool hxs_convertTime(const haptix::comm::msgs::hxTime _in, hxTime *_out)
 {
+  if (!_out)
+  {
+    std::cerr << "hxs_convertTime() error: NULL output" << std::endl;
+    return false;
+  }
   // Initialize the C struct.
   memset(_out, 0, sizeof(hxTime));
 
@@ -102,6 +112,11 @@ static bool hxs_convertTime(const haptix::comm::msgs::hxTime _in, hxTime *_out)
 static bool hxs_convertVector3(const haptix::comm::msgs::hxVector3 _in,
   hxsVector3 *_out)
 {
+  if (!_out)
+  {
+    std::cerr << "hxs_convertVector3() error: NULL output" << std::endl;
+    return false;
+  }
   // Initialize the C struct.
   memset(_out, 0, sizeof(hxsVector3));
 
@@ -126,6 +141,11 @@ static bool hxs_convertVector3(const hxsVector3 *_in,
     std::cerr << "hxs_convertVector3() error: NULL input" << std::endl;
     return false;
   }
+  if (!_out)
+  {
+    std::cerr << "hxs_convertVector3() error: NULL output" << std::endl;
+    return false;
+  }
 
   // Initialize the protobuf message.
   _out->Clear();
@@ -146,6 +166,11 @@ static bool hxs_convertVector3(const hxsVector3 *_in,
 static bool hxs_convertQuaternion(const haptix::comm::msgs::hxQuaternion _in,
   hxsQuaternion *_out)
 {
+  if (!_out)
+  {
+    std::cerr << "hxs_convertQuaternion() error: NULL output" << std::endl;
+    return false;
+  }
   // Initialize the C struct.
   memset(_out, 0, sizeof(hxsQuaternion));
 
@@ -171,6 +196,11 @@ static bool hxs_convertQuaternion(const hxsQuaternion *_in,
     std::cerr << "hxs_convertQuaternion() error: NULL input" << std::endl;
     return false;
   }
+  if (!_out)
+  {
+    std::cerr << "hxs_convertQuaternion() error: NULL output" << std::endl;
+    return false;
+  }
 
   // Initialize the protobuf message.
   _out->Clear();
@@ -192,6 +222,11 @@ static bool hxs_convertQuaternion(const hxsQuaternion *_in,
 static bool hxs_convertColor(const haptix::comm::msgs::hxColor _in,
   hxsColor *_out)
 {
+  if (!_out)
+  {
+    std::cerr << "hxs_convertColor() error: NULL output" << std::endl;
+    return false;
+  }
   // Initialize the C struct.
   memset(_out, 0, sizeof(hxsColor));
 
@@ -212,6 +247,11 @@ static bool hxs_convertColor(const haptix::comm::msgs::hxColor _in,
 static bool hxs_convertCollisionMode(
   const haptix::comm::msgs::hxCollideMode _in, hxsCollideMode *_out)
 {
+  if (!_out)
+  {
+    std::cerr << "hxs_convertCollisionMode() error: NULL output" << std::endl;
+    return false;
+  }
   // Initialize the C struct.
   memset(_out, 0, sizeof(hxsCollideMode));
 
@@ -244,13 +284,19 @@ static bool hxs_convertCollisionMode(
 static bool hxs_convertTransform(const haptix::comm::msgs::hxTransform _in,
   hxsTransform *_out)
 {
+  if (!_out)
+  {
+    std::cerr << "hxs_convertTransform() error: NULL output" << std::endl;
+    return false;
+  }
   // Initialize the C struct.
   memset(_out, 0, sizeof(hxsTransform));
 
-  hxs_convertVector3(_in.pos(), &_out->pos);
-  hxs_convertQuaternion(_in.orient(), &_out->orient);
+  bool result = true;
+  result &= hxs_convertVector3(_in.pos(), &_out->pos);
+  result &= hxs_convertQuaternion(_in.orient(), &_out->orient);
 
-  return true;
+  return result;
 }
 
 //////////////////////////////////////////////////
@@ -262,6 +308,11 @@ static bool hxs_convertTransform(const haptix::comm::msgs::hxTransform _in,
 static bool hxs_convertTransform(const hxsTransform *_in,
   haptix::comm::msgs::hxTransform *_out)
 {
+  if (!_out)
+  {
+    std::cerr << "hxs_convertTransform() error: NULL output" << std::endl;
+    return false;
+  }
   if (!_in)
   {
     std::cerr << "hxs_convertTransform() error: NULL input" << std::endl;
@@ -271,10 +322,11 @@ static bool hxs_convertTransform(const hxsTransform *_in,
   // Initialize the message.
   _out->Clear();
 
-  hxs_convertVector3(&(_in->pos), _out->mutable_pos());
-  hxs_convertQuaternion(&(_in->orient), _out->mutable_orient());
+  bool result = true;
+  result &= hxs_convertVector3(&(_in->pos), _out->mutable_pos());
+  result &= hxs_convertQuaternion(&(_in->orient), _out->mutable_orient());
 
-  return true;
+  return result;
 }
 
 //////////////////////////////////////////////////
@@ -286,6 +338,11 @@ static bool hxs_convertTransform(const hxsTransform *_in,
 static bool hxs_convertJoint(const haptix::comm::msgs::hxJoint _in,
   hxsJoint *_out)
 {
+  if (!_out)
+  {
+    std::cerr << "hxs_convertJoint() error: NULL output" << std::endl;
+    return false;
+  }
   // Initialize the C struct.
   memset(_out, 0, sizeof(hxsJoint));
 
@@ -302,12 +359,14 @@ static bool hxs_convertJoint(const haptix::comm::msgs::hxJoint _in,
   _out->pos = _in.pos();
   _out->vel = _in.vel();
   _out->torque_motor = _in.torque_motor();
-  hxs_convertVector3(_in.wrench_reactive().force(),
+
+  bool result = true;
+  result &= hxs_convertVector3(_in.wrench_reactive().force(),
     &_out->wrench_reactive.force);
-  hxs_convertVector3(_in.wrench_reactive().torque(),
+  result &= hxs_convertVector3(_in.wrench_reactive().torque(),
     &_out->wrench_reactive.torque);
 
-  return true;
+  return result;
 }
 
 //////////////////////////////////////////////////
@@ -319,6 +378,16 @@ static bool hxs_convertJoint(const haptix::comm::msgs::hxJoint _in,
 static bool hxs_convertWrench(const hxsWrench *_in,
   haptix::comm::msgs::hxWrench *_out)
 {
+  if (!_in)
+  {
+    std::cerr << "hxs_convertWrench() error: NULL input" << std::endl;
+    return false;
+  }
+  if (!_out)
+  {
+    std::cerr << "hxs_convertWrench() error: NULL output" << std::endl;
+    return false;
+  }
   bool result = true;
   result &= hxs_convertVector3(&_in->force, _out->mutable_force());
   result &= hxs_convertVector3(&_in->torque, _out->mutable_torque());
@@ -333,6 +402,11 @@ static bool hxs_convertWrench(const hxsWrench *_in,
 /// \return True if the function succeed or false otherwise.
 static bool hxs_convertLink(const haptix::comm::msgs::hxLink _in, hxsLink *_out)
 {
+  if (!_out)
+  {
+    std::cerr << "hxs_convertLink() error: NULL output" << std::endl;
+    return false;
+  }
   // Initialize the C struct.
   memset(_out, 0, sizeof(hxsLink));
 
@@ -346,13 +420,14 @@ static bool hxs_convertLink(const haptix::comm::msgs::hxLink _in, hxsLink *_out)
 
   strncpy(_out->name, _in.name().c_str(), strlen(_in.name().c_str()));
   _out->name[strlen(_in.name().c_str())] = '\0';
-  hxs_convertTransform(_in.transform(), &_out->transform);
-  hxs_convertVector3(_in.lin_vel(), &_out->lin_vel);
-  hxs_convertVector3(_in.ang_vel(), &_out->ang_vel);
-  hxs_convertVector3(_in.lin_acc(), &_out->lin_acc);
-  hxs_convertVector3(_in.ang_acc(), &_out->ang_acc);
+  bool result = true;
+  result &= hxs_convertTransform(_in.transform(), &_out->transform);
+  result &= hxs_convertVector3(_in.lin_vel(), &_out->lin_vel);
+  result &= hxs_convertVector3(_in.ang_vel(), &_out->ang_vel);
+  result &= hxs_convertVector3(_in.lin_acc(), &_out->lin_acc);
+  result &= hxs_convertVector3(_in.ang_acc(), &_out->ang_acc);
 
-  return true;
+  return result;
 }
 
 //////////////////////////////////////////////////
@@ -364,7 +439,13 @@ static bool hxs_convertLink(const haptix::comm::msgs::hxLink _in, hxsLink *_out)
 static bool hxs_convertModel(const haptix::comm::msgs::hxModel _in,
   hxsModel *_out)
 {
-  // Initialize the C struct.  memset(_out, 0, sizeof(hxModel));
+  if (!_out)
+  {
+    std::cerr << "hxs_convertModel() error: NULL output" << std::endl;
+    return false;
+  }
+  // Initialize the C struct. 
+  memset(_out, 0, sizeof(hxsModel));
 
   if (_in.name().size() > hxsMAXNAMESIZE - 1)
   {
@@ -382,17 +463,18 @@ static bool hxs_convertModel(const haptix::comm::msgs::hxModel _in,
   _out->link_count = _in.links_size();
   _out->joint_count = _in.joints_size();
 
+  bool result = true;
   // Fill the links.
   for (int i = 0; i < _out->link_count; ++i)
-    hxs_convertLink(_in.links(i), &_out->links[i]);
+    result &= hxs_convertLink(_in.links(i), &_out->links[i]);
 
   // Fill the joints.
   for (int i = 0; i < _out->joint_count; ++i)
-    hxs_convertJoint(_in.joints(i), &_out->joints[i]);
+    result &= hxs_convertJoint(_in.joints(i), &_out->joints[i]);
 
   _out->gravity_mode = _in.gravity_mode();
 
-  return true;
+  return result;
 }
 
 //////////////////////////////////////////////////
@@ -404,11 +486,17 @@ static bool hxs_convertModel(const haptix::comm::msgs::hxModel _in,
 static bool hxs_convertContactPoints(
   const haptix::comm::msgs::hxContactPoint_V _in, hxsContactPoints *_out)
 {
+  if (!_out)
+  {
+    std::cerr << "hxs_convertContactPoints() error: NULL output" << std::endl;
+    return false;
+  }
   // Initialize the C struct.
   memset(_out, 0, sizeof(hxsContactPoints));
 
   _out->contact_count = _in.contacts_size();
 
+  bool result = true;
   for (int i = 0; i < _out->contact_count; ++i)
   {
     if (_in.contacts(i).link1().size() > hxsMAXNAMESIZE - 1)
@@ -435,16 +523,18 @@ static bool hxs_convertContactPoints(
       strlen(_in.contacts(i).link2().c_str()));
     _out->contacts[i].link2[strlen(_in.contacts(i).link2().c_str())] = '\0';
 
-    hxs_convertVector3(_in.contacts(i).point(), &_out->contacts[i].point);
-    hxs_convertVector3(_in.contacts(i).normal(), &_out->contacts[i].normal);
+    result &=
+        hxs_convertVector3(_in.contacts(i).point(), &_out->contacts[i].point);
+    result &=
+        hxs_convertVector3(_in.contacts(i).normal(), &_out->contacts[i].normal);
     _out->contacts[i].distance = _in.contacts(i).distance();
-    hxs_convertVector3(_in.contacts(i).wrench().force(),
+    result &= hxs_convertVector3(_in.contacts(i).wrench().force(),
       &_out->contacts[i].wrench.force);
-    hxs_convertVector3(_in.contacts(i).wrench().torque(),
+    result &= hxs_convertVector3(_in.contacts(i).wrench().torque(),
       &_out->contacts[i].wrench.torque);
   }
 
-  return true;
+  return result;
 }
 
 //////////////////////////////////////////////////
@@ -456,19 +546,25 @@ static bool hxs_convertContactPoints(
 static bool hxs_convertSimInfo(const haptix::comm::msgs::hxSimInfo _in,
   hxsSimInfo *_out)
 {
+  if (!_out)
+  {
+    std::cerr << "hxs_convertSimInfo() error: NULL output" << std::endl;
+    return false;
+  }
   // Initialize the C struct.
   memset(_out, 0, sizeof(hxsSimInfo));
 
   _out->model_count = _in.models_size();
 
+  bool result = true;
   // Fill the models.
   for (int i = 0; i < _out->model_count; ++i)
-    hxs_convertModel(_in.models(i), &_out->models[i]);
+    result &= hxs_convertModel(_in.models(i), &_out->models[i]);
 
   // Fill the camera.
-  hxs_convertTransform(_in.camera_transform(), &_out->camera_transform);
+  result &= hxs_convertTransform(_in.camera_transform(), &_out->camera_transform);
 
-  return true;
+  return result;
 }
 
 //////////////////////////////////////////////////
