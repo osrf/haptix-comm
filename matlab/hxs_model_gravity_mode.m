@@ -4,6 +4,6 @@
 %
 %TODO: document
 
-function result = hxs_model_gravity_mode()
-  result = hxgz("model_gravity_mode");
+function result = hxs_model_gravity_mode(name)
+  result = hxgz("model_gravity_mode", name);
 end

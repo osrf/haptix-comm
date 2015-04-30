@@ -1,9 +1,9 @@
-%SET_MODEL_COLLIDE_MODE
+%HXS_SET_MODEL_COLLIDE_MODE
 %
-% result = set_model_collide_mode()
+% set_model_collide_mode(name, collide_mode)
 %
 %TODO: document
 
-function result = hxs_set_model_collide_mode()
-  result = hxgz("set_model_collide_mode");
+function hxs_set_model_collide_mode(name, collide_mode)
+  hxgz("set_model_collide_mode", name, collide_mode);
 end

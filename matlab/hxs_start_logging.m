@@ -1,9 +1,9 @@
-%START_LOGGING
+%HXS_START_LOGGING
 %
-% result = start_logging()
+% start_logging(filename)
 %
 %TODO: document
 
-function result = hxs_start_logging()
-  result = hxgz("start_logging");
+function hxs_start_logging(filename)
+  hxgz("start_logging", filename);
 end

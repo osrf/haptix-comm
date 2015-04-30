@@ -1,9 +1,9 @@
 %START_TIMER
 %
-% result = start_timer()
+% start_timer()
 %
 %TODO: document
 
-function result = hxs_start_timer()
-  result = hxgz("start_timer");
+function hxs_start_timer()
+  hxgz("start_timer");
 end

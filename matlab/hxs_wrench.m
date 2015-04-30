@@ -1,9 +1,9 @@
-%WRENCH
+%HXS_WRENCH
 %
-% result = wrench()
+% wrench(model, link, wrench, duration)
 %
 %TODO: document
 
-function result = hxs_wrench()
-  result = hxgz("wrench");
+function hxs_wrench(model, link, wrench, duration)
+  hxgz("wrench", model, link, wrench, duration);
 end

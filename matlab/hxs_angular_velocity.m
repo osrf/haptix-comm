@@ -1,9 +1,9 @@
-%ANGULAR_VELOCITY
+%HXS_ANGULAR_VELOCITY
 %
 % result = angular_velocity()
 %
 %TODO: document
 
-function result = hxs_angular_velocity()
-  result = hxgz("angular_velocity");
+function hxs_angular_velocity(name, velocity)
+  hxgz("angular_velocity", name, velocity);
 end

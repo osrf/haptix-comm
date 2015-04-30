@@ -1,4 +1,4 @@
-%CAMERA_TRANSFORM
+%HXS_CAMERA_TRANSFORM
 %
 % result = camera_transform()
 %

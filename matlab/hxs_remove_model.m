@@ -1,9 +1,9 @@
-%REMOVE_MODEL
+%HXS_REMOVE_MODEL
 %
 % result = remove_model()
 %
 %TODO: document
 
-function result = hxs_remove_model()
-  result = hxgz("remove_model");
+function hxs_remove_model(name)
+  hxgz("remove_model", name);
 end

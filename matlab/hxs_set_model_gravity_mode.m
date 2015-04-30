@@ -1,9 +1,9 @@
-%SET_MODEL_GRAVITY_MODE
+%HXS_SET_MODEL_GRAVITY_MODE
 %
-% result = set_model_gravity_mode()
+% set_model_gravity_mode(name, gravity_mode)
 %
 %TODO: document
 
-function result = hxs_set_model_gravity_mode()
-  result = hxgz("set_model_gravity_mode");
+function hxs_set_model_gravity_mode(name, gravity_mode)
+  hxgz("set_model_gravity_mode", name, gravity_mode);
 end

@@ -1,9 +1,9 @@
-%STOP_TIMER
+%HXS_STOP_TIMER
 %
-% result = stop_timer()
+% stop_timer()
 %
 %TODO: document
 
-function result = hxs_stop_timer()
-  result = hxgz("stop_timer");
+function hxs_stop_timer()
+  hxgz("stop_timer");
 end

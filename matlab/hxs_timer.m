@@ -1,4 +1,4 @@
-%TIMER
+%HXS_TIMER
 %
 % result = timer()
 %

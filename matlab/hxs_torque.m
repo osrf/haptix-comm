@@ -1,9 +1,9 @@
-%TORQUE
+%HXS_TORQUE
 %
-% result = torque()
+% torque(model, link, torque, duration)
 %
 %TODO: document
 
-function result = hxs_torque()
-  result = hxgz("torque");
+function hxs_torque(model, link, torque, duration)
+  hxgz("torque", model, link, torque, duration);
 end

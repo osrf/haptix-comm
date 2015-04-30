@@ -1,9 +1,9 @@
-%SET_MODEL_COLOR
+%HXS_SET_MODEL_COLOR
 %
-% result = set_model_color()
+% set_model_color(name, color)
 %
 %TODO: document
 
-function result = hxs_set_model_color()
-  result = hxgz("set_model_color");
+function hxs_set_model_color(name, color)
+  hxgz("set_model_color", name, color);
 end

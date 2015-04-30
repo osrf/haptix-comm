@@ -1,4 +1,4 @@
-%SIM_INFO
+%HXS_SIM_INFO
 %
 % result = sim_info()
 %

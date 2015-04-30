@@ -1,9 +1,9 @@
-%RESET
+%HXS_RESET
 %
 % result = reset()
 %
 %TODO: document
 
-function result = hxs_reset()
-  result = hxgz("reset");
+function hxs_reset(reset_limb_pose)
+  hxgz("reset", reset_limb_pose);
 end

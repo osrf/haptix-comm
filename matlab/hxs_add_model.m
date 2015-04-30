@@ -1,4 +1,4 @@
-%ADD_MODEL Add model during runtime.
+%HXS_ADD_MODEL Add model during runtime.
 %
 % model = add_model(sdf, name, pos, orient, gravity_mode)
 %

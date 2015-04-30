@@ -1,9 +1,9 @@
-%RESET_TIMER
+%HXS_RESET_TIMER
 %
 % result = reset_timer()
 %
 %TODO: document
 
-function result = hxs_reset_timer()
-  result = hxgz("reset_timer");
+function hxs_reset_timer()
+  hxgz("reset_timer");
 end

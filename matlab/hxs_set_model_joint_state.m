@@ -1,9 +1,9 @@
-%SET_MODEL_JOINT_STATE
+%HXS_SET_MODEL_JOINT_STATE
 %
-% result = set_model_joint_state()
+% set_model_joint_state(model, joint, position, velocity)
 %
 %TODO: document
 
-function result = hxs_set_model_joint_state()
-  result = hxgz("set_model_joint_state");
+function hxs_set_model_joint_state(model, joint, position, velocity)
+  hxgz("set_model_joint_state", model, joint, position, velocity);
 end

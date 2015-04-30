@@ -1,9 +1,9 @@
-%SET_MODEL_LINK_STATE
+%HXS_SET_MODEL_LINK_STATE
 %
-% result = set_model_link_state()
+% set_model_link_state(model, link, transform, lin_vel, ang_vel)
 %
 %TODO: document
 
-function result = hxs_set_model_link_state()
-  result = hxgz("set_model_link_state");
+function hxs_set_model_link_state(model, link, transform, lin_vel, ang_vel)
+  hxgz("set_model_link_state", model, link, transform, lin_vel, ang_vel);
 end

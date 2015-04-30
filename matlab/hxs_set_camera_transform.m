@@ -1,9 +1,9 @@
-%SET_CAMERA_TRANSFORM
+%HXS_SET_CAMERA_TRANSFORM
 %
-% result = set_camera_transform()
+% set_camera_transform(transform)
 %
 %TODO: document
 
-function result = hxs_set_camera_transform()
-  result = hxgz("set_camera_transform");
+function hxs_set_camera_transform(transform)
+  hxgz("set_camera_transform", transform);
 end

@@ -1,4 +1,4 @@
-%IS_LOGGING
+%HXS_IS_LOGGING
 %
 % result = is_logging()
 %
