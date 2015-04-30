@@ -302,10 +302,11 @@ static bool hxs_convertTransform(const haptix::comm::msgs::hxTransform _in,
   // Initialize the C struct.
   memset(_out, 0, sizeof(hxsTransform));
 
-  hxs_convertVector3(_in.pos(), &_out->pos);
-  hxs_convertQuaternion(_in.orient(), &_out->orient);
+  bool result = true;
+  result &= hxs_convertVector3(_in.pos(), &_out->pos);
+  result &= hxs_convertQuaternion(_in.orient(), &_out->orient);
 
-  return true;
+  return result;
 }
 
 //////////////////////////////////////////////////
@@ -332,10 +333,11 @@ static bool hxs_convertTransform(const hxsTransform *_in,
   // Initialize the message.
   _out->Clear();
 
-  hxs_convertVector3(&(_in->pos), _out->mutable_pos());
-  hxs_convertQuaternion(&(_in->orient), _out->mutable_orient());
+  bool result = true;
+  result &= hxs_convertVector3(&(_in->pos), _out->mutable_pos());
+  result &= hxs_convertQuaternion(&(_in->orient), _out->mutable_orient());
 
-  return true;
+  return result;
 }
 
 //////////////////////////////////////////////////
@@ -369,12 +371,15 @@ static bool hxs_convertJoint(const haptix::comm::msgs::hxJoint _in,
   _out->pos = _in.pos();
   _out->vel = _in.vel();
   _out->torque_motor = _in.torque_motor();
-  hxs_convertVector3(_in.wrench_reactive().force(),
+
+  bool result = true;
+  result &= hxs_convertVector3(_in.wrench_reactive().force(),
     &_out->wrench_reactive.force);
-  hxs_convertVector3(_in.wrench_reactive().torque(),
+
+  result &= hxs_convertVector3(_in.wrench_reactive().torque(),
     &_out->wrench_reactive.torque);
 
-  return true;
+  return result;
 }
 
 //////////////////////////////////////////////////
@@ -431,13 +436,15 @@ static bool hxs_convertLink(const haptix::comm::msgs::hxLink _in, hxsLink *_out)
 
   strncpy(_out->name, _in.name().c_str(), strlen(_in.name().c_str()));
   _out->name[strlen(_in.name().c_str())] = '\0';
-  hxs_convertTransform(_in.transform(), &_out->transform);
-  hxs_convertVector3(_in.lin_vel(), &_out->lin_vel);
-  hxs_convertVector3(_in.ang_vel(), &_out->ang_vel);
-  hxs_convertVector3(_in.lin_acc(), &_out->lin_acc);
-  hxs_convertVector3(_in.ang_acc(), &_out->ang_acc);
 
-  return true;
+  bool result = true;
+  result &= hxs_convertTransform(_in.transform(), &_out->transform);
+  result &= hxs_convertVector3(_in.lin_vel(), &_out->lin_vel);
+  result &= hxs_convertVector3(_in.ang_vel(), &_out->ang_vel);
+  result &= hxs_convertVector3(_in.lin_acc(), &_out->lin_acc);
+  result &= hxs_convertVector3(_in.ang_acc(), &_out->ang_acc);
+
+  return result;
 }
 
 //////////////////////////////////////////////////
@@ -469,22 +476,23 @@ static bool hxs_convertModel(const haptix::comm::msgs::hxModel _in,
   strncpy(_out->name, _in.name().c_str(), strlen(_in.name().c_str()));
   _out->name[strlen(_in.name().c_str())] = '\0';
 
-  hxs_convertTransform(_in.transform(), &(_out->transform));
+  bool result = true;
+  result &= hxs_convertTransform(_in.transform(), &(_out->transform));
   _out->id = _in.id();
   _out->link_count = _in.links_size();
   _out->joint_count = _in.joints_size();
 
   // Fill the links.
   for (int i = 0; i < _out->link_count; ++i)
-    hxs_convertLink(_in.links(i), &_out->links[i]);
+    result &= hxs_convertLink(_in.links(i), &_out->links[i]);
 
   // Fill the joints.
   for (int i = 0; i < _out->joint_count; ++i)
-    hxs_convertJoint(_in.joints(i), &_out->joints[i]);
+    result &= hxs_convertJoint(_in.joints(i), &_out->joints[i]);
 
   _out->gravity_mode = _in.gravity_mode();
 
-  return true;
+  return result;
 }
 
 //////////////////////////////////////////////////
@@ -506,6 +514,8 @@ static bool hxs_convertContactPoints(
   memset(_out, 0, sizeof(hxsContactPoints));
 
   _out->contact_count = _in.contacts_size();
+
+  bool result = true;
 
   for (int i = 0; i < _out->contact_count; ++i)
   {
@@ -533,16 +543,18 @@ static bool hxs_convertContactPoints(
       strlen(_in.contacts(i).link2().c_str()));
     _out->contacts[i].link2[strlen(_in.contacts(i).link2().c_str())] = '\0';
 
-    hxs_convertVector3(_in.contacts(i).point(), &_out->contacts[i].point);
-    hxs_convertVector3(_in.contacts(i).normal(), &_out->contacts[i].normal);
+    result &= hxs_convertVector3(_in.contacts(i).point(),
+      &_out->contacts[i].point);
+    result &= hxs_convertVector3(_in.contacts(i).normal(),
+      &_out->contacts[i].normal);
     _out->contacts[i].distance = _in.contacts(i).distance();
-    hxs_convertVector3(_in.contacts(i).wrench().force(),
+    result &= hxs_convertVector3(_in.contacts(i).wrench().force(),
       &_out->contacts[i].wrench.force);
-    hxs_convertVector3(_in.contacts(i).wrench().torque(),
+    result &= hxs_convertVector3(_in.contacts(i).wrench().torque(),
       &_out->contacts[i].wrench.torque);
   }
 
-  return true;
+  return result;
 }
 
 //////////////////////////////////////////////////
@@ -565,14 +577,17 @@ static bool hxs_convertSimInfo(const haptix::comm::msgs::hxSimInfo _in,
 
   _out->model_count = _in.models_size();
 
+  bool result = true;
+
   // Fill the models.
   for (int i = 0; i < _out->model_count; ++i)
-    hxs_convertModel(_in.models(i), &_out->models[i]);
+    result &= hxs_convertModel(_in.models(i), &_out->models[i]);
 
   // Fill the camera.
-  hxs_convertTransform(_in.camera_transform(), &_out->camera_transform);
+  result &= hxs_convertTransform(_in.camera_transform(),
+    &_out->camera_transform);
 
-  return true;
+  return result;
 }
 
 //////////////////////////////////////////////////
