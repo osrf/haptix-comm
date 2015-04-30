@@ -7,7 +7,7 @@ set (matlab_files
        hx_read_sensors.m
        hx_robot_info.m
        hx_update.m
-       hxs_siminfo.m
+       hxs_sim_info.m
        hxs_camera_transform.m
        hxs_set_camera_transform.m
        hxs_contacts.m

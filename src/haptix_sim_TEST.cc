@@ -975,7 +975,7 @@ TEST(hxsTest, hxs_simInfo)
   setup();
 
   ignition::transport::Node node;
-  hxSimInfo simInfo;
+  hxsSimInfo simInfo;
 
   // Advertise the "hxs_sim_info" service.
   node.Advertise("/haptix/gazebo/hxs_sim_info", onHxsSimInfo);
@@ -1059,7 +1059,7 @@ TEST(hxsTest, hxs_camera_transform)
   setup();
 
   ignition::transport::Node node;
-  hxTransform camInfo;
+  hxsTransform camInfo;
 
   // Advertise the "hxs_camera" service.
   node.Advertise("/haptix/gazebo/hxs_camera_transform", onHxsCamera);
@@ -1084,7 +1084,7 @@ TEST(hxsTest, hxs_set_camera_transform)
   setup();
 
   ignition::transport::Node node;
-  hxSimInfo simInfo;
+  hxsSimInfo simInfo;
 
   // Advertise the "hxs_sim_info" service.
   node.Advertise("/haptix/gazebo/hxs_sim_info", onHxsSimInfo);
@@ -1107,7 +1107,7 @@ TEST(hxsTest, hxs_contacts)
   setup();
 
   ignition::transport::Node node;
-  hxContactPoints contactsInfo;
+  hxsContactPoints contactsInfo;
 
   // Advertise the "hxs_contacts" service.
   node.Advertise("/haptix/gazebo/hxs_contacts", onHxsContactPoints);
@@ -1146,7 +1146,7 @@ TEST(hxsTest, hxs_set_model_joint_state)
   setup();
 
   ignition::transport::Node node;
-  hxSimInfo simInfo;
+  hxsSimInfo simInfo;
 
   // Advertise the "hxs_sim_info" service.
   node.Advertise("/haptix/gazebo/hxs_sim_info", onHxsSimInfo);
@@ -1167,7 +1167,7 @@ TEST(hxsTest, hxs_set_model_link_state)
   setup();
 
   ignition::transport::Node node;
-  hxSimInfo simInfo;
+  hxsSimInfo simInfo;
 
   // Advertise the "hxs_sim_info" service.
   node.Advertise("/haptix/gazebo/hxs_sim_info", onHxsSimInfo);
@@ -1179,7 +1179,7 @@ TEST(hxsTest, hxs_set_model_link_state)
   ASSERT_EQ(hxs_sim_info(&simInfo), hxOK);
 
   // TODO
-  hxTransform transform;
+  hxsTransform transform;
   transform.pos.x = 1.0;
   transform.pos.y = 2.0;
   transform.pos.z = 3.0;
@@ -1187,11 +1187,11 @@ TEST(hxsTest, hxs_set_model_link_state)
   transform.orient.x = 5.0;
   transform.orient.y = 6.0;
   transform.orient.z = 7.0;
-  hxVector3 lin_vel;
+  hxsVector3 lin_vel;
   lin_vel.x = 8.0;
   lin_vel.y = 9.0;
   lin_vel.z = 10.0;
-  hxVector3 ang_vel;
+  hxsVector3 ang_vel;
   ang_vel.x = 11.0;
   ang_vel.y = 12.0;
   ang_vel.z = 13.0;
@@ -1209,7 +1209,7 @@ TEST(hxsTest, hxs_add_model)
   ignition::transport::Node node;
   std::string urdf = "fake URDF";
   std::string name = "model 1";
-  hxModel model;
+  hxsModel model;
   float x = 1.0;
   float y = 2.0;
   float z = 3.0;
@@ -1296,7 +1296,7 @@ TEST(hxsTest, hxs_model_transform)
   setup();
 
   ignition::transport::Node node;
-  hxSimInfo simInfo;
+  hxsSimInfo simInfo;
 
   // Advertise the "hxs_sim_info" service.
   node.Advertise("/haptix/gazebo/hxs_sim_info", onHxsSimInfo);
@@ -1318,7 +1318,7 @@ TEST(hxsTest, hxs_linear_velocity)
   setup();
 
   ignition::transport::Node node;
-  hxVector3 lin_vel;
+  hxsVector3 lin_vel;
 
   // Advertise the "hxs_linear_velocity" service.
   node.Advertise("/haptix/gazebo/hxs_linear_velocity", onHxsLinearVelocity);
@@ -1337,7 +1337,7 @@ TEST(hxsTest, hxs_angular_velocity)
   setup();
 
   ignition::transport::Node node;
-  hxVector3 ang_vel;
+  hxsVector3 ang_vel;
 
   // Advertise the "hxs_angular_velocity" service.
   node.Advertise("/haptix/gazebo/hxs_angular_velocity", onHxsAngularVelocity);
@@ -1356,8 +1356,8 @@ TEST(hxsTest, hxs_force)
   setup();
 
   ignition::transport::Node node;
-  hxVector3 force;
-  hxSimInfo simInfo;
+  hxsVector3 force;
+  hxsSimInfo simInfo;
 
   // Advertise the "hxs_sim_info" service.
   node.Advertise("/haptix/gazebo/hxs_sim_info", onHxsSimInfo);
@@ -1385,8 +1385,8 @@ TEST(hxsTest, hxs_torque)
   setup();
 
   ignition::transport::Node node;
-  hxVector3 torque;
-  hxSimInfo simInfo;
+  hxsVector3 torque;
+  hxsSimInfo simInfo;
 
   // Advertise the "hxs_sim_info" service.
   node.Advertise("/haptix/gazebo/hxs_sim_info", onHxsSimInfo);
@@ -1414,8 +1414,8 @@ TEST(hxsTest, hxs_wrench)
   setup();
 
   ignition::transport::Node node;
-  hxWrench wrench;
-  hxSimInfo simInfo;
+  hxsWrench wrench;
+  hxsSimInfo simInfo;
 
   // Advertise the "hxs_sim_info" service.
   node.Advertise("/haptix/gazebo/hxs_sim_info", onHxsSimInfo);
@@ -1597,7 +1597,7 @@ TEST(hxsTest, hxs_set_model_color)
   setup();
 
   ignition::transport::Node node;
-  hxColor color;
+  hxsColor color;
 
   // Advertise the "hxs_set_model_color" service.
   node.Advertise("/haptix/gazebo/hxs_set_model_color", onHxsSetModelColor);
@@ -1617,7 +1617,7 @@ TEST(hxsTest, hxs_model_color)
   setup();
 
   ignition::transport::Node node;
-  hxColor color;
+  hxsColor color;
 
   // Advertise the "hxs_model_color" service.
   node.Advertise("/haptix/gazebo/hxs_model_color", onHxsModelColor);
@@ -1638,7 +1638,7 @@ TEST(hxsTest, hxs_set_model_collide_mode)
   setup();
 
   ignition::transport::Node node;
-  hxCollideMode collideMode;
+  hxsCollideMode collideMode;
 
   // Advertise the "hxs_set_model_collide_mode" service.
   node.Advertise("/haptix/gazebo/hxs_set_model_collide_mode",
@@ -1656,7 +1656,7 @@ TEST(hxsTest, hxs_model_collide_mode)
   setup();
 
   ignition::transport::Node node;
-  hxCollideMode collideMode;
+  hxsCollideMode collideMode;
 
   // Advertise the "hxs_model_collide_mode" service.
   node.Advertise("/haptix/gazebo/hxs_model_collide_mode",

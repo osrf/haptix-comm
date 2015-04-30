@@ -37,21 +37,21 @@ void hxgzs_add_model (int nlhs, mxArray *plhs[],
 //
 // haptix-comm types -> MATLAB arrays
 mxArray* sensor_to_matlab (hxSensor* hs);
-mxArray* vector3_to_matlab (hxVector3* h);
-mxArray* quaternion_to_matlab (hxQuaternion* h);
-mxArray* transform_to_matlab (hxTransform* h);
-mxArray* link_to_matlab (hxLink* h);
-mxArray* wrench_to_matlab (hxWrench* h);
-mxArray* joint_to_matlab (hxJoint* h);
-mxArray* model_to_matlab (hxModel* h);
-mxArray* contactpoints_to_matlab (hxContactPoints* h);
-mxArray* color_to_matlab (hxColor* h);
+mxArray* vector3_to_matlab (hxsVector3* h);
+mxArray* quaternion_to_matlab (hxsQuaternion* h);
+mxArray* transform_to_matlab (hxsTransform* h);
+mxArray* link_to_matlab (hxsLink* h);
+mxArray* wrench_to_matlab (hxsWrench* h);
+mxArray* joint_to_matlab (hxsJoint* h);
+mxArray* model_to_matlab (hxsModel* h);
+mxArray* contactpoints_to_matlab (hxsContactPoints* h);
+mxArray* color_to_matlab (hxsColor* h);
 //
 // MATLAB arrays -> haptix-comm types
-hxVector3 matlab_to_vector3 (const mxArray* m);
-hxQuaternion matlab_to_quaternion (const mxArray* m);
-hxTransform matlab_to_transform (const mxArray* m);
-hxColor matlab_to_color (const mxArray* m);
+hxsVector3 matlab_to_vector3 (const mxArray* m);
+hxsQuaternion matlab_to_quaternion (const mxArray* m);
+hxsTransform matlab_to_transform (const mxArray* m);
+hxsColor matlab_to_color (const mxArray* m);
 
 
 // Global info instance, for later reference
@@ -394,7 +394,7 @@ sensor_to_matlab (hxSensor* hs)
 }
 
 mxArray*
-vector3_to_matlab (hxVector3* h)
+vector3_to_matlab (hxsVector3* h)
 {
   mxArray *array = mxCreateDoubleMatrix(3, 1, mxREAL);
   double *data = mxGetPr(array);
@@ -406,7 +406,7 @@ vector3_to_matlab (hxVector3* h)
 }
 
 mxArray*
-quaternion_to_matlab (hxQuaternion* h)
+quaternion_to_matlab (hxsQuaternion* h)
 {
   mxArray *array = mxCreateDoubleMatrix(4, 1, mxREAL);
   double *data = mxGetPr(array);
@@ -419,7 +419,7 @@ quaternion_to_matlab (hxQuaternion* h)
 }
 
 mxArray*
-transform_to_matlab (hxTransform* h)
+transform_to_matlab (hxsTransform* h)
 {
   const char *keys[] = {"pos", "orient"};
   mxArray *s = mxCreateStructMatrix(1, 1, 2, keys);
@@ -434,7 +434,7 @@ transform_to_matlab (hxTransform* h)
 }
 
 mxArray*
-link_to_matlab (hxLink* h)
+link_to_matlab (hxsLink* h)
 {
   const char *keys[] = {"name",
                         "transform",
@@ -462,7 +462,7 @@ link_to_matlab (hxLink* h)
 }
 
 mxArray*
-wrench_to_matlab (hxWrench* h)
+wrench_to_matlab (hxsWrench* h)
 {
   const char *keys[] = {"force", "torque"};
   mxArray *s = mxCreateStructMatrix(1, 1, 2, keys);
@@ -477,7 +477,7 @@ wrench_to_matlab (hxWrench* h)
 }
 
 mxArray*
-joint_to_matlab (hxJoint* h)
+joint_to_matlab (hxsJoint* h)
 {
   const char *keys[] = {"name",
                         "pos",
@@ -515,7 +515,7 @@ joint_to_matlab (hxJoint* h)
 }
 
 mxArray*
-model_to_matlab (hxModel* h)
+model_to_matlab (hxsModel* h)
 {
   const char *keys[] = {"name",
                         "transform",
@@ -563,7 +563,7 @@ model_to_matlab (hxModel* h)
 }
 
 mxArray*
-contactpoints_to_matlab (hxContactPoints* h)
+contactpoints_to_matlab (hxsContactPoints* h)
 {
   const char *keys[] = {"link1",
                         "link2",
@@ -599,7 +599,7 @@ contactpoints_to_matlab (hxContactPoints* h)
 }
 
 mxArray*
-color_to_matlab (hxColor* h)
+color_to_matlab (hxsColor* h)
 {
   mxArray *array = mxCreateDoubleMatrix(4, 1, mxREAL);
   double *data = mxGetPr(array);
@@ -611,10 +611,10 @@ color_to_matlab (hxColor* h)
   return array;
 }
 
-hxVector3
+hxsVector3
 matlab_to_vector3 (const mxArray* m)
 {
-  hxVector3 v;
+  hxsVector3 v;
 
   if (mxGetM(m) != 3 || mxGetN(m) != 1)
     mexErrMsgIdAndTxt("HAPTIX:matlab_to_vector3", "Expects 3x1 column vector");
@@ -627,10 +627,10 @@ matlab_to_vector3 (const mxArray* m)
   return v;
 }
 
-hxQuaternion
+hxsQuaternion
 matlab_to_quaternion (const mxArray* m)
 {
-  hxQuaternion q;
+  hxsQuaternion q;
 
   if (mxGetM(m) != 4 || mxGetN(m) != 1)
     mexErrMsgIdAndTxt("HAPTIX:matlab_to_quaternion", "Expects 4x1 column vector");
@@ -644,10 +644,10 @@ matlab_to_quaternion (const mxArray* m)
   return q;
 }
 
-hxTransform
+hxsTransform
 matlab_to_transform (const mxArray* m)
 {
-  hxTransform t;
+  hxsTransform t;
   mxArray* v;
 
   // Sanity check: Verify that the first input argument is a struct.
@@ -667,10 +667,10 @@ matlab_to_transform (const mxArray* m)
   return t;
 }
 
-hxColor
+hxsColor
 matlab_to_color (const mxArray* m)
 {
-  hxColor c;
+  hxsColor c;
 
   if (mxGetM(m) != 4 || mxGetN(m) != 1)
     mexErrMsgIdAndTxt("HAPTIX:matlab_to_color", "Expects 4x1 column vector");
@@ -688,7 +688,7 @@ void
 hxgzs_sim_info (int nlhs, mxArray *plhs[],
                int nrhs, const mxArray *prhs[])
 {
-  hxSimInfo h;
+  hxsSimInfo h;
 
   // Request robot information.
   if (hxs_sim_info(&h) != hxOK)
@@ -720,7 +720,7 @@ void
 hxgzs_camera_transform (int nlhs, mxArray *plhs[],
                         int nrhs, const mxArray *prhs[])
 {
-  hxTransform h;
+  hxsTransform h;
 
   if (hxs_camera_transform(&h) != hxOK)
     mexErrMsgIdAndTxt("HAPTIX:hxs_camera_transform", hx_last_result());
@@ -732,7 +732,7 @@ void
 hxgzs_set_camera_transform (int nlhs, mxArray *plhs[],
                             int nrhs, const mxArray *prhs[])
 {
-  hxTransform h;
+  hxsTransform h;
 
   if (nrhs != 1)
     mexErrMsgIdAndTxt("HAPTIX:hxs_set_camera_transform", "Expects 1 argument");
@@ -747,7 +747,7 @@ void
 hxgzs_contacts (int nlhs, mxArray *plhs[],
                 int nrhs, const mxArray *prhs[])
 {
-  hxContactPoints h;
+  hxsContactPoints h;
   char m[hxsMAXNAMESIZE];
 
   if (nrhs != 1)
@@ -794,9 +794,9 @@ hxgzs_set_model_link_state (int nlhs, mxArray *plhs[],
 {
   char m[hxsMAXNAMESIZE];
   char l[hxsMAXNAMESIZE];
-  hxTransform t;
-  hxVector3 lin_vel;
-  hxVector3 ang_vel;
+  hxsTransform t;
+  hxsVector3 lin_vel;
+  hxsVector3 ang_vel;
 
   if (nrhs != 5)
     mexErrMsgIdAndTxt("HAPTIX:hxs_set_model_joint_state", "Expects 5 arguments");
@@ -823,7 +823,7 @@ hxgzs_add_model (int nlhs, mxArray *plhs[],
   char name[hxsMAXNAMESIZE];
   float x, y, z, roll, pitch, yaw;
   int gravity_mode;
-  hxModel model;
+  hxsModel model;
 
   if (nrhs != 5)
     mexErrMsgIdAndTxt("HAPTIX:hxs_add_model", "Expects 5 arguments");
