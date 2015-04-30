@@ -32,6 +32,18 @@ void hxgzs_set_model_link_state (int nlhs, mxArray *plhs[],
                                  int nrhs, const mxArray *prhs[]);
 void hxgzs_add_model (int nlhs, mxArray *plhs[],
                       int nrhs, const mxArray *prhs[]);
+void hxgzs_remove_model (int nlhs, mxArray *plhs[],
+                         int nrhs, const mxArray *prhs[]);
+void hxgzs_model_transform (int nlhs, mxArray *plhs[],
+                            int nrhs, const mxArray *prhs[]);
+void hxgzs_model_gravity_mode (int nlhs, mxArray *plhs[],
+                               int nrhs, const mxArray *prhs[]);
+void hxgzs_set_model_gravity_mode (int nlhs, mxArray *plhs[],
+                                   int nrhs, const mxArray *prhs[]);
+void hxgzs_linear_velocity (int nlhs, mxArray *plhs[],
+                            int nrhs, const mxArray *prhs[]);
+void hxgzs_angular_velocity (int nlhs, mxArray *plhs[],
+                            int nrhs, const mxArray *prhs[]);
 
 // Data structure conversion helpers
 //
@@ -108,6 +120,18 @@ mexFunction (int nlhs, mxArray *plhs[],
     hxgzs_set_model_link_state(nlhs, plhs, nrhs-1, prhs+1);
   else if (!strcmp(funcName, "add_model"))
     hxgzs_add_model(nlhs, plhs, nrhs-1, prhs+1);
+  else if (!strcmp(funcName, "remove_model"))
+    hxgzs_remove_model(nlhs, plhs, nrhs-1, prhs+1);
+  else if (!strcmp(funcName, "model_transform"))
+    hxgzs_model_transform(nlhs, plhs, nrhs-1, prhs+1);
+  else if (!strcmp(funcName, "model_gravity_mode"))
+    hxgzs_model_gravity_mode(nlhs, plhs, nrhs-1, prhs+1);
+  else if (!strcmp(funcName, "set_model_gravity_mode"))
+    hxgzs_set_model_gravity_mode(nlhs, plhs, nrhs-1, prhs+1);
+  else if (!strcmp(funcName, "linear_velocity"))
+    hxgzs_linear_velocity(nlhs, plhs, nrhs-1, prhs+1);
+  else if (!strcmp(funcName, "angular_velocity"))
+    hxgzs_angular_velocity(nlhs, plhs, nrhs-1, prhs+1);
   else
     mexErrMsgIdAndTxt("HAPTIX:hxgz", "Unknown command");
 }
@@ -858,4 +882,118 @@ hxgzs_add_model (int nlhs, mxArray *plhs[],
     mexErrMsgIdAndTxt("HAPTIX:hxs_set_model_link_state", hx_last_result());
 
   plhs[0] = model_to_matlab(&model);
+}
+
+void
+hxgzs_remove_model (int nlhs, mxArray *plhs[],
+                    int nrhs, const mxArray *prhs[])
+{
+  char name[hxsMAXNAMESIZE];
+
+  if (nrhs != 1)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_remove_model", "Expects 1 argument");
+
+  if (mxGetString(prhs[0], name, sizeof(name)))
+    mexErrMsgIdAndTxt("HAPTIX:hxs_remove_model", "Failed to determine name");
+
+  if (hxs_remove_model(name) != hxOK)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_remove_model", hx_last_result());
+}
+
+void
+hxgzs_model_transform (int nlhs, mxArray *plhs[],
+                       int nrhs, const mxArray *prhs[])
+{
+  char name[hxsMAXNAMESIZE];
+  hxsTransform t;
+
+  if (nrhs != 1)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_model_transform", "Expects 1 argument");
+
+  if (mxGetString(prhs[0], name, sizeof(name)))
+    mexErrMsgIdAndTxt("HAPTIX:hxs_model_transform", "Failed to determine name");
+
+  if (hxs_model_transform(name, &t) != hxOK)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_model_transform", hx_last_result());
+
+  plhs[0] = transform_to_matlab(&t);
+}
+
+void
+hxgzs_model_gravity_mode (int nlhs, mxArray *plhs[],
+                          int nrhs, const mxArray *prhs[])
+{
+  char name[hxsMAXNAMESIZE];
+  int g;
+
+  if (nrhs != 1)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_model_gravity_mode", "Expects 1 argument");
+
+  if (mxGetString(prhs[0], name, sizeof(name)))
+    mexErrMsgIdAndTxt("HAPTIX:hxs_model_gravity_mode", "Failed to determine name");
+
+  if (hxs_model_gravity_mode(name, &g) != hxOK)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_model_gravity_mode", hx_last_result());
+
+  mxArray *m = mxCreateDoubleMatrix(1, 1, mxREAL);
+  double *d = mxGetPr(m);
+  d[0] = g;
+
+  plhs[0] = m;
+}
+
+void
+hxgzs_set_model_gravity_mode (int nlhs, mxArray *plhs[],
+                              int nrhs, const mxArray *prhs[])
+{
+  char name[hxsMAXNAMESIZE];
+  int g;
+
+  if (nrhs != 2)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_set_model_gravity_mode", "Expects 2 arguments");
+
+  if (mxGetString(prhs[0], name, sizeof(name)))
+    mexErrMsgIdAndTxt("HAPTIX:hxs_set_model_gravity_mode",
+      "Failed to determine name");
+  double *d = mxGetPr(prhs[1]);
+  g = d[0];
+
+  if (hxs_set_model_gravity_mode(name, g) != hxOK)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_set_model_gravity_mode", hx_last_result());
+}
+
+void
+hxgzs_linear_velocity (int nlhs, mxArray *plhs[],
+                       int nrhs, const mxArray *prhs[])
+{
+  char name[hxsMAXNAMESIZE];
+  hxsVector3 v;
+
+  if (nrhs != 2)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_linear_velocity", "Expects 2 arguments");
+
+  if (mxGetString(prhs[0], name, sizeof(name)))
+    mexErrMsgIdAndTxt("HAPTIX:hxs_linear_velocity", "Failed to determine name");
+  v = matlab_to_vector3(prhs[1]);
+
+  if (hxs_linear_velocity(name, &v) != hxOK)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_linear_velocity", hx_last_result());
+}
+
+void
+hxgzs_angular_velocity (int nlhs, mxArray *plhs[],
+                       int nrhs, const mxArray *prhs[])
+{
+  char name[hxsMAXNAMESIZE];
+  hxsVector3 v;
+
+  if (nrhs != 2)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_angular_velocity", "Expects 2 arguments");
+
+  if (mxGetString(prhs[0], name, sizeof(name)))
+    mexErrMsgIdAndTxt("HAPTIX:hxs_angular_velocity", "Failed to determine name");
+  v = matlab_to_vector3(prhs[1]);
+
+  if (hxs_angular_velocity(name, &v) != hxOK)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_angular_velocity", hx_last_result());
 }
