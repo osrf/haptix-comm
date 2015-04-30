@@ -223,13 +223,11 @@ extern "C" {
   {
     const std::string service = "/haptix/gazebo/hxs_force";
     haptix::comm::msgs::hxParam req;
-    // Bit of a hack
     req.set_name(_modelName);
     req.set_string_value(_linkName);
     req.set_float_value(_duration);
     if (!hxs_convertVector3(_force, req.mutable_vector3()))
       return hxERROR;
-    // TODO: send strings
     return hxs_call(service, __func__, req, haptix::comm::msgs::hxEmpty());
   }
 
