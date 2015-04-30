@@ -2,16 +2,40 @@ set (mex_srcs
      hxgz.c)
 
 set (matlab_files
-       hx_close.m
-       hx_connect.m
-       hx_read_sensors.m
-       hx_robot_info.m
-       hx_update.m
-       hxs_sim_info.m
-       hxs_camera_transform.m
-       hxs_set_camera_transform.m
-       hxs_contacts.m
-       hx_matlab_controller.m)
+  hx_close.m
+  hx_connect.m
+  hx_matlab_controller.m
+  hx_read_sensors.m
+  hx_robot_info.m
+  hxs_add_model.m
+  hxs_angular_velocity.m
+  hxs_camera_transform.m
+  hxs_contacts.m
+  hxs_force.m
+  hxs_is_logging.m
+  hxs_linear_velocity.m
+  hxs_model_collide_mode.m
+  hxs_model_color.m
+  hxs_model_gravity_mode.m
+  hxs_model_transform.m
+  hxs_remove_model.m
+  hxs_reset.m
+  hxs_reset_timer.m
+  hxs_set_camera_transform.m
+  hxs_set_model_collide_mode.m
+  hxs_set_model_color.m
+  hxs_set_model_gravity_mode.m
+  hxs_set_model_joint_state.m
+  hxs_set_model_link_state.m
+  hxs_sim_info.m
+  hxs_start_logging.m
+  hxs_start_timer.m
+  hxs_stop_logging.m
+  hxs_stop_timer.m
+  hxs_timer.m
+  hxs_torque.m
+  hxs_wrench.m
+  hx_update.m)
 
 #
 # Octave generation if support found

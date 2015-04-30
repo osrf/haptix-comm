@@ -1,6 +1,9 @@
-% TODO: document
+%CAMERA_TRANSFORM
+%
+% result = camera_transform()
+%
+%TODO: document
 
-function transform = hxs_camera_transform()
-  transform = hxgz('camera_transform');
+function result = hxs_camera_transform()
+  result = hxgz("camera_transform");
 end
-

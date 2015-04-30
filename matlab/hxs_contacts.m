@@ -1,6 +1,9 @@
-% TODO: document
+%CONTACTS
+%
+% result = contacts()
+%
+%TODO: document
 
-function contacts = hxs_contacts()
-  contacts = hxgz('contacts');
+function result = hxs_contacts()
+  result = hxgz("contacts");
 end
-

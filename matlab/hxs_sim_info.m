@@ -1,5 +1,9 @@
-% TODO: document
+%SIM_INFO
+%
+% result = sim_info()
+%
+%TODO: document
 
-function info = hxs_sim_info()
-  info = hxgz('sim_info');
+function result = hxs_sim_info()
+  result = hxgz("sim_info");
 end
