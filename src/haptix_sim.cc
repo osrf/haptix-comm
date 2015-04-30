@@ -31,16 +31,16 @@
 
 extern "C" {
   //////////////////////////////////////////////////
-  hxResult hxs_siminfo(hxSimInfo *_siminfo)
+  hxResult hxs_sim_info(hxsSimInfo *_siminfo)
   {
-    const std::string service = "/haptix/gazebo/hxs_siminfo";
+    const std::string service = "/haptix/gazebo/hxs_sim_info";
     haptix::comm::msgs::hxEmpty req;
     haptix::comm::msgs::hxSimInfo rep;
     return hxs_call(service, __func__, req, rep, _siminfo, hxs_convertSimInfo);
   }
 
   //////////////////////////////////////////////////
-  hxResult hxs_camera_transform(hxTransform *_transform)
+  hxResult hxs_camera_transform(hxsTransform *_transform)
   {
     const std::string service = "/haptix/gazebo/hxs_camera_transform";
     haptix::comm::msgs::hxEmpty req;
@@ -50,7 +50,7 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
-  hxResult hxs_set_camera_transform(const hxTransform *_transform)
+  hxResult hxs_set_camera_transform(const hxsTransform *_transform)
   {
     const std::string service = "/haptix/gazebo/hxs_set_camera_transform";
     haptix::comm::msgs::hxTransform req;
@@ -63,7 +63,7 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
-  hxResult hxs_contacts(const char *_model, hxContactPoints *_contact)
+  hxResult hxs_contacts(const char *_model, hxsContactPoints *_contact)
   {
     const std::string service = "/haptix/gazebo/hxs_contacts";
     haptix::comm::msgs::hxString req;
@@ -97,8 +97,8 @@ extern "C" {
 
   //////////////////////////////////////////////////
   hxResult hxs_set_model_link_state(const char *_model, const char *_link,
-      const hxTransform *_transform, const hxVector3 *_lin_vel,
-      const hxVector3 *_ang_vel)
+      const hxsTransform *_transform, const hxsVector3 *_lin_vel,
+      const hxsVector3 *_ang_vel)
   {
     if (!_model || !_link)
     {
@@ -117,7 +117,8 @@ extern "C" {
     req.set_name(_model);
     req.add_links();
     req.mutable_links(0)->set_name(_link);
-    if (!hxs_convertTransform(_transform, req.mutable_links(0)->mutable_transform()))
+    if (!hxs_convertTransform(_transform,
+      req.mutable_links(0)->mutable_transform()))
     {
       return hxERROR;
     }
@@ -136,7 +137,7 @@ extern "C" {
   //////////////////////////////////////////////////
   hxResult hxs_add_model(const char *_sdf, const char *_name,
     float _x, float _y, float _z, float _roll, float _pitch, float _yaw,
-    int _gravity_mode, hxModel *_model)
+    int _gravity_mode, hxsModel *_model)
   {
     const std::string service = "/haptix/gazebo/hxs_add_model";
     haptix::comm::msgs::hxParam req;
@@ -165,7 +166,8 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
-  hxResult hxs_model_transform(const char *_name, const hxTransform *_transform)
+  hxResult hxs_model_transform(const char *_name,
+    const hxsTransform *_transform)
   {
     const std::string service = "/haptix/gazebo/hxs_model_transform";
     haptix::comm::msgs::hxParam req;
@@ -182,11 +184,13 @@ extern "C" {
     haptix::comm::msgs::hxString req;
     haptix::comm::msgs::hxInt rep;
     req.set_data(_name);
-    return hxs_call(service, __func__, req, rep, _gravity_mode, hxs_convertScalar);
+    return hxs_call(service, __func__, req, rep, _gravity_mode,
+      hxs_convertScalar);
   }
 
   //////////////////////////////////////////////////
-  hxResult hxs_set_model_gravity_mode(const char *_name, const int _gravity_mode)
+  hxResult hxs_set_model_gravity_mode(const char *_name,
+    const int _gravity_mode)
   {
     const std::string service = "/haptix/gazebo/hxs_set_model_gravity_mode";
     haptix::comm::msgs::hxParam req;
@@ -198,7 +202,7 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
-  hxResult hxs_linear_velocity(const char *_name, const hxVector3 *_lin_vel)
+  hxResult hxs_linear_velocity(const char *_name, const hxsVector3 *_lin_vel)
   {
     const std::string service = "/haptix/gazebo/hxs_linear_velocity";
     haptix::comm::msgs::hxParam req;
@@ -210,7 +214,7 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
-  hxResult hxs_angular_velocity(const char *_name, const hxVector3 *_ang_vel)
+  hxResult hxs_angular_velocity(const char *_name, const hxsVector3 *_ang_vel)
   {
     const std::string service = "/haptix/gazebo/hxs_angular_velocity";
     haptix::comm::msgs::hxParam req;
@@ -223,7 +227,7 @@ extern "C" {
 
   //////////////////////////////////////////////////
   hxResult hxs_force(const char *_modelName, const char *_linkName,
-      const hxVector3 *_force, const float _duration)
+      const hxsVector3 *_force, const float _duration)
   {
     const std::string service = "/haptix/gazebo/hxs_force";
     haptix::comm::msgs::hxParam req;
@@ -240,7 +244,7 @@ extern "C" {
 
   //////////////////////////////////////////////////
   hxResult hxs_torque(const char *_modelName, const char *_linkName,
-      const hxVector3 *_torque, const float _duration)
+      const hxsVector3 *_torque, const float _duration)
   {
     const std::string service = "/haptix/gazebo/hxs_torque";
     haptix::comm::msgs::hxParam req;
@@ -255,7 +259,7 @@ extern "C" {
 
   //////////////////////////////////////////////////
   hxResult hxs_wrench(const char *_modelName, const char *_linkName,
-      const hxWrench *_wrench, const float _duration)
+      const hxsWrench *_wrench, const float _duration)
   {
     const std::string service = "/haptix/gazebo/hxs_wrench";
     haptix::comm::msgs::hxParam req;
@@ -341,5 +345,81 @@ extern "C" {
     haptix::comm::msgs::hxEmpty req;
     haptix::comm::msgs::hxEmpty rep;
     return hxs_call(service, __func__, req, rep);
+  }
+
+  //////////////////////////////////////////////////
+  hxResult hxs_set_model_color(const char *_model, const hxsColor *_color)
+  {
+    const std::string service = "/haptix/gazebo/hxs_set_model_color";
+    haptix::comm::msgs::hxParam req;
+    haptix::comm::msgs::hxEmpty rep;
+
+    req.set_name(_model);
+    req.mutable_color()->set_r(_color->r);
+    req.mutable_color()->set_g(_color->g);
+    req.mutable_color()->set_b(_color->b);
+    req.mutable_color()->set_alpha(_color->alpha);
+    return hxs_call(service, __func__, req, rep);
+  }
+
+  //////////////////////////////////////////////////
+  hxResult hxs_model_color(const char *_model, hxsColor *_color)
+  {
+    const std::string service = "/haptix/gazebo/hxs_model_color";
+    haptix::comm::msgs::hxString req;
+    haptix::comm::msgs::hxColor rep;
+
+    req.set_data(_model);
+    return hxs_call(service, __func__, req, rep, _color, hxs_convertColor);
+  }
+
+  //////////////////////////////////////////////////
+  hxResult hxs_set_model_collide_mode(const char *_model,
+    const hxsCollideMode *_collide_mode)
+  {
+    const std::string service = "/haptix/gazebo/hxs_set_model_collide_mode";
+    haptix::comm::msgs::hxParam req;
+    haptix::comm::msgs::hxEmpty rep;
+
+    if (!_collide_mode)
+    {
+      printf("hxs_set_model_collide_mode() error: NULL collide mode\n");
+      return hxERROR;
+    }
+
+    req.set_name(_model);
+    switch (*_collide_mode)
+    {
+      case hxsNOCOLLIDE:
+        req.mutable_collide_mode()->set_mode(
+          haptix::comm::msgs::hxCollideMode::hxsNOCOLLIDE);
+        break;
+      case hxsDETECTIONONLY:
+        req.mutable_collide_mode()->set_mode(
+          haptix::comm::msgs::hxCollideMode::hxsDETECTIONONLY);
+        break;
+      case hxsCOLLIDE:
+        req.mutable_collide_mode()->set_mode(
+          haptix::comm::msgs::hxCollideMode::hxsCOLLIDE);
+        break;
+      default:
+        printf("hxs_set_model_collide_mode() Unknown collide_mode [%d]\n",
+          *_collide_mode);
+        return hxERROR;
+    }
+    return hxs_call(service, __func__, req, rep);
+  }
+
+  //////////////////////////////////////////////////
+  hxResult hxs_model_collide_mode(const char *_model,
+    hxsCollideMode *_collide_mode)
+  {
+    const std::string service = "/haptix/gazebo/hxs_model_collide_mode";
+    haptix::comm::msgs::hxString req;
+    haptix::comm::msgs::hxCollideMode rep;
+
+    req.set_data(_model);
+    return hxs_call(service, __func__, req, rep, _collide_mode,
+      hxs_convertCollisionMode);
   }
 }

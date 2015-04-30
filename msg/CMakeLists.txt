@@ -1,4 +1,6 @@
 set(msgs
+  hxCollideMode.proto
+  hxColor.proto
   hxCommand.proto
   hxContactPoint.proto
   hxContactPoint_V.proto
@@ -8,10 +10,10 @@ set(msgs
   hxInt.proto
   hxJoint.proto
   hxLink.proto
-  hxQuaternion.proto
   hxModel.proto
-  hxRobot.proto
   hxParam.proto
+  hxQuaternion.proto
+  hxRobot.proto
   hxSensor.proto
   hxSimInfo.proto
   hxString.proto

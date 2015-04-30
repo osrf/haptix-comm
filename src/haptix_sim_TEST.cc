@@ -140,7 +140,7 @@ void setup()
 }
 
 //////////////////////////////////////////////////
-/// \brief Provide a "hxs_siminfo" service.
+/// \brief Provide a "hxs_sim_info" service.
 void onHxsSimInfo(const std::string &_service,
   const haptix::comm::msgs::hxEmpty &/*_req*/,
   haptix::comm::msgs::hxSimInfo &_rep,
@@ -149,7 +149,7 @@ void onHxsSimInfo(const std::string &_service,
   _rep.Clear();
 
   // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_siminfo");
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_sim_info");
 
   // Create some dummy response.
   _rep = simState;
@@ -221,7 +221,6 @@ void onHxsJointState(const std::string &_service,
   haptix::comm::msgs::hxEmpty &_rep,
   bool &_result)
 {
-  // TODO
   _rep.Clear();
   _result = false;
 
@@ -825,6 +824,8 @@ void onHxsSetModelGravity(const std::string &_service,
   haptix::comm::msgs::hxEmpty &/*_rep*/,
   bool &_result)
 {
+  _result = false;
+
   // Check the name of the service received.
   EXPECT_EQ(_service, "/haptix/gazebo/hxs_set_model_gravity_mode");
 
@@ -853,19 +854,134 @@ void onHxsSetModelGravity(const std::string &_service,
 }
 
 //////////////////////////////////////////////////
+/// \brief Provide a "hxs_set_model_color" service.
+void onHxsSetModelColor(const std::string &_service,
+  const haptix::comm::msgs::hxParam &_req,
+  haptix::comm::msgs::hxEmpty &/*_rep*/,
+  bool &_result)
+{
+  _result = false;
+
+  // Check the name of the service received.
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_set_model_color");
+
+  // Sanity check: The message should contain a model name.
+  if (!_req.has_name())
+  {
+    std::cerr << "onHxsSetModelColor() error: Missing name in request"
+              << std::endl;
+    return;
+  }
+
+  // Sanity check: The message should contain a color.
+  if (!_req.has_color())
+  {
+    std::cerr << "onHxsSetModelColor() error: Missing color in request"
+              << std::endl;
+    return;
+  }
+
+  EXPECT_EQ(_req.name(), "model_1");
+  EXPECT_FLOAT_EQ(_req.color().r(), 0.5);
+  EXPECT_FLOAT_EQ(_req.color().g(), 0.6);
+  EXPECT_FLOAT_EQ(_req.color().b(), 0.7);
+  EXPECT_FLOAT_EQ(_req.color().alpha(), 0.8);
+
+  _result = true;
+}
+
+//////////////////////////////////////////////////
+/// \brief Provide a "hxs_model_color" service.
+void onHxsModelColor(const std::string &_service,
+  const haptix::comm::msgs::hxString &_req,
+  haptix::comm::msgs::hxColor &_rep,
+  bool &_result)
+{
+  _rep.Clear();
+  _result = false;
+
+  // Check the name of the service received.
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_model_color");
+
+  EXPECT_EQ(_req.data(), "model_1");
+
+  _rep.set_r(0.1);
+  _rep.set_g(0.2);
+  _rep.set_b(0.3);
+  _rep.set_alpha(0.4);
+
+  _result = true;
+}
+
+//////////////////////////////////////////////////
+/// \brief Provide a "hxs_set_model_collide_mode" service.
+void onHxsSetModelCollideMode(const std::string &_service,
+  const haptix::comm::msgs::hxParam &_req,
+  haptix::comm::msgs::hxEmpty &/*_rep*/,
+  bool &_result)
+{
+  _result = false;
+
+  // Check the name of the service received.
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_set_model_collide_mode");
+
+  // Sanity check: The message should contain a model name.
+  if (!_req.has_name())
+  {
+    std::cerr << "onHxsSetModelCollideMode() error: Missing name in request"
+              << std::endl;
+    return;
+  }
+
+  // Sanity check: The message should contain a collide mode.
+  if (!_req.has_collide_mode())
+  {
+    std::cerr << "onHxsSetModelCollideMode() error: Missing collide mode in "
+              << "request" << std::endl;
+    return;
+  }
+
+  EXPECT_EQ(_req.name(), "model_1");
+  EXPECT_EQ(_req.collide_mode().mode(),
+    haptix::comm::msgs::hxCollideMode::hxsCOLLIDE);
+
+  _result = true;
+}
+
+//////////////////////////////////////////////////
+/// \brief Provide a "hxs_model_collide_mode" service.
+void onHxsModelCollideMode(const std::string &_service,
+  const haptix::comm::msgs::hxString &_req,
+  haptix::comm::msgs::hxCollideMode &_rep,
+  bool &_result)
+{
+  _rep.Clear();
+  _result = false;
+
+  // Check the name of the service received.
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_model_collide_mode");
+
+  EXPECT_EQ(_req.data(), "model_1");
+
+  _rep.set_mode(haptix::comm::msgs::hxCollideMode::hxsDETECTIONONLY);
+
+  _result = true;
+}
+
+//////////////////////////////////////////////////
 /// \brief Check hxs_simInfo.
 TEST(hxsTest, hxs_simInfo)
 {
   setup();
 
   ignition::transport::Node node;
-  hxSimInfo simInfo;
+  hxsSimInfo simInfo;
 
-  // Advertise the "hxs_siminfo" service.
-  node.Advertise("/haptix/gazebo/hxs_siminfo", onHxsSimInfo);
+  // Advertise the "hxs_sim_info" service.
+  node.Advertise("/haptix/gazebo/hxs_sim_info", onHxsSimInfo);
 
   // Request simulation information.
-  ASSERT_EQ(hxs_siminfo(&simInfo), hxOK);
+  ASSERT_EQ(hxs_sim_info(&simInfo), hxOK);
 
   // Check the model information
   ASSERT_EQ(simInfo.model_count, kNumModels);
@@ -910,12 +1026,18 @@ TEST(hxsTest, hxs_simInfo)
       EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].pos, v);
       EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].vel, v + 0.1);
       EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].torque_motor, v + 0.3);
-      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].wrench_reactive.force.x, v + 0.4);
-      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].wrench_reactive.force.y, v + 0.5);
-      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].wrench_reactive.force.z, v + 0.6);
-      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].wrench_reactive.torque.x, v + 0.7);
-      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].wrench_reactive.torque.y, v + 0.8);
-      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].wrench_reactive.torque.z, v + 0.9);
+      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].wrench_reactive.force.x,
+        v + 0.4);
+      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].wrench_reactive.force.y,
+        v + 0.5);
+      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].wrench_reactive.force.z,
+        v + 0.6);
+      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].wrench_reactive.torque.x,
+        v + 0.7);
+      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].wrench_reactive.torque.y,
+        v + 0.8);
+      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].wrench_reactive.torque.z,
+        v + 0.9);
     }
     EXPECT_TRUE(simInfo.models[i].gravity_mode);
   }
@@ -937,7 +1059,7 @@ TEST(hxsTest, hxs_camera_transform)
   setup();
 
   ignition::transport::Node node;
-  hxTransform camInfo;
+  hxsTransform camInfo;
 
   // Advertise the "hxs_camera" service.
   node.Advertise("/haptix/gazebo/hxs_camera_transform", onHxsCamera);
@@ -962,13 +1084,13 @@ TEST(hxsTest, hxs_set_camera_transform)
   setup();
 
   ignition::transport::Node node;
-  hxSimInfo simInfo;
+  hxsSimInfo simInfo;
 
-  // Advertise the "hxs_siminfo" service.
-  node.Advertise("/haptix/gazebo/hxs_siminfo", onHxsSimInfo);
+  // Advertise the "hxs_sim_info" service.
+  node.Advertise("/haptix/gazebo/hxs_sim_info", onHxsSimInfo);
 
   // Request simulation information.
-  ASSERT_EQ(hxs_siminfo(&simInfo), hxOK);
+  ASSERT_EQ(hxs_sim_info(&simInfo), hxOK);
 
   // Advertise the "hxs_camera_transform" service.
   node.Advertise("/haptix/gazebo/hxs_set_camera_transform",
@@ -985,7 +1107,7 @@ TEST(hxsTest, hxs_contacts)
   setup();
 
   ignition::transport::Node node;
-  hxContactPoints contactsInfo;
+  hxsContactPoints contactsInfo;
 
   // Advertise the "hxs_contacts" service.
   node.Advertise("/haptix/gazebo/hxs_contacts", onHxsContactPoints);
@@ -1024,16 +1146,16 @@ TEST(hxsTest, hxs_set_model_joint_state)
   setup();
 
   ignition::transport::Node node;
-  hxSimInfo simInfo;
+  hxsSimInfo simInfo;
 
-  // Advertise the "hxs_siminfo" service.
-  node.Advertise("/haptix/gazebo/hxs_siminfo", onHxsSimInfo);
+  // Advertise the "hxs_sim_info" service.
+  node.Advertise("/haptix/gazebo/hxs_sim_info", onHxsSimInfo);
 
   // Advertise the "hxs_state" service.
   node.Advertise("/haptix/gazebo/hxs_set_model_joint_state", onHxsJointState);
 
   // Request simulation information.
-  ASSERT_EQ(hxs_siminfo(&simInfo), hxOK);
+  ASSERT_EQ(hxs_sim_info(&simInfo), hxOK);
 
   EXPECT_EQ(hxs_set_model_joint_state("model 0", "joint 1", 1.0, 2.0), hxOK);
 }
@@ -1045,19 +1167,19 @@ TEST(hxsTest, hxs_set_model_link_state)
   setup();
 
   ignition::transport::Node node;
-  hxSimInfo simInfo;
+  hxsSimInfo simInfo;
 
-  // Advertise the "hxs_siminfo" service.
-  node.Advertise("/haptix/gazebo/hxs_siminfo", onHxsSimInfo);
+  // Advertise the "hxs_sim_info" service.
+  node.Advertise("/haptix/gazebo/hxs_sim_info", onHxsSimInfo);
 
   // Advertise the "hxs_state" service.
   node.Advertise("/haptix/gazebo/hxs_set_model_link_state", onHxsLinkState);
 
   // Request simulation information.
-  ASSERT_EQ(hxs_siminfo(&simInfo), hxOK);
+  ASSERT_EQ(hxs_sim_info(&simInfo), hxOK);
 
   // TODO
-  hxTransform transform;
+  hxsTransform transform;
   transform.pos.x = 1.0;
   transform.pos.y = 2.0;
   transform.pos.z = 3.0;
@@ -1065,11 +1187,11 @@ TEST(hxsTest, hxs_set_model_link_state)
   transform.orient.x = 5.0;
   transform.orient.y = 6.0;
   transform.orient.z = 7.0;
-  hxVector3 lin_vel;
+  hxsVector3 lin_vel;
   lin_vel.x = 8.0;
   lin_vel.y = 9.0;
   lin_vel.z = 10.0;
-  hxVector3 ang_vel;
+  hxsVector3 ang_vel;
   ang_vel.x = 11.0;
   ang_vel.y = 12.0;
   ang_vel.z = 13.0;
@@ -1087,7 +1209,7 @@ TEST(hxsTest, hxs_add_model)
   ignition::transport::Node node;
   std::string urdf = "fake URDF";
   std::string name = "model 1";
-  hxModel model;
+  hxsModel model;
   float x = 1.0;
   float y = 2.0;
   float z = 3.0;
@@ -1174,16 +1296,16 @@ TEST(hxsTest, hxs_model_transform)
   setup();
 
   ignition::transport::Node node;
-  hxSimInfo simInfo;
+  hxsSimInfo simInfo;
 
-  // Advertise the "hxs_siminfo" service.
-  node.Advertise("/haptix/gazebo/hxs_siminfo", onHxsSimInfo);
+  // Advertise the "hxs_sim_info" service.
+  node.Advertise("/haptix/gazebo/hxs_sim_info", onHxsSimInfo);
 
   // Advertise the "hxs_model_transform" service.
   node.Advertise("/haptix/gazebo/hxs_model_transform", onHxsModelTransform);
 
   // Request simulation information.
-  ASSERT_EQ(hxs_siminfo(&simInfo), hxOK);
+  ASSERT_EQ(hxs_sim_info(&simInfo), hxOK);
 
   // Let's use the transform from the second model.
   ASSERT_EQ(hxs_model_transform("model 1", &simInfo.models[1].transform), hxOK);
@@ -1196,7 +1318,7 @@ TEST(hxsTest, hxs_linear_velocity)
   setup();
 
   ignition::transport::Node node;
-  hxVector3 lin_vel;
+  hxsVector3 lin_vel;
 
   // Advertise the "hxs_linear_velocity" service.
   node.Advertise("/haptix/gazebo/hxs_linear_velocity", onHxsLinearVelocity);
@@ -1215,7 +1337,7 @@ TEST(hxsTest, hxs_angular_velocity)
   setup();
 
   ignition::transport::Node node;
-  hxVector3 ang_vel;
+  hxsVector3 ang_vel;
 
   // Advertise the "hxs_angular_velocity" service.
   node.Advertise("/haptix/gazebo/hxs_angular_velocity", onHxsAngularVelocity);
@@ -1234,17 +1356,17 @@ TEST(hxsTest, hxs_force)
   setup();
 
   ignition::transport::Node node;
-  hxVector3 force;
-  hxSimInfo simInfo;
+  hxsVector3 force;
+  hxsSimInfo simInfo;
 
-  // Advertise the "hxs_siminfo" service.
-  node.Advertise("/haptix/gazebo/hxs_siminfo", onHxsSimInfo);
+  // Advertise the "hxs_sim_info" service.
+  node.Advertise("/haptix/gazebo/hxs_sim_info", onHxsSimInfo);
 
   // Advertise the "hxs_force" service.
   node.Advertise("/haptix/gazebo/hxs_force", onHxsForce);
 
   // Request simulation information.
-  ASSERT_EQ(hxs_siminfo(&simInfo), hxOK);
+  ASSERT_EQ(hxs_sim_info(&simInfo), hxOK);
 
   // Set some force.
   force.x = 5.1;
@@ -1263,17 +1385,17 @@ TEST(hxsTest, hxs_torque)
   setup();
 
   ignition::transport::Node node;
-  hxVector3 torque;
-  hxSimInfo simInfo;
+  hxsVector3 torque;
+  hxsSimInfo simInfo;
 
-  // Advertise the "hxs_siminfo" service.
-  node.Advertise("/haptix/gazebo/hxs_siminfo", onHxsSimInfo);
+  // Advertise the "hxs_sim_info" service.
+  node.Advertise("/haptix/gazebo/hxs_sim_info", onHxsSimInfo);
 
   // Advertise the "hxs_torque" service.
   node.Advertise("/haptix/gazebo/hxs_torque", onHxsTorque);
 
   // Request simulation information.
-  ASSERT_EQ(hxs_siminfo(&simInfo), hxOK);
+  ASSERT_EQ(hxs_sim_info(&simInfo), hxOK);
 
   // Set some force.
   torque.x = 6.1;
@@ -1292,17 +1414,17 @@ TEST(hxsTest, hxs_wrench)
   setup();
 
   ignition::transport::Node node;
-  hxWrench wrench;
-  hxSimInfo simInfo;
+  hxsWrench wrench;
+  hxsSimInfo simInfo;
 
-  // Advertise the "hxs_siminfo" service.
-  node.Advertise("/haptix/gazebo/hxs_siminfo", onHxsSimInfo);
+  // Advertise the "hxs_sim_info" service.
+  node.Advertise("/haptix/gazebo/hxs_sim_info", onHxsSimInfo);
 
   // Advertise the "hxs_wrench" service.
   node.Advertise("/haptix/gazebo/hxs_wrench", onHxsWrench);
 
   // Request simulation information.
-  ASSERT_EQ(hxs_siminfo(&simInfo), hxOK);
+  ASSERT_EQ(hxs_sim_info(&simInfo), hxOK);
 
   // Set some torque/force.
   wrench.force.x = 7.1;
@@ -1462,7 +1584,86 @@ TEST(hxsTest, hxs_set_model_gravity_mode)
   ignition::transport::Node node;
 
   // Advertise the "hxs_set_model_gravity_mode" service.
-  node.Advertise("/haptix/gazebo/hxs_set_model_gravity_mode", onHxsSetModelGravity);
+  node.Advertise("/haptix/gazebo/hxs_set_model_gravity_mode",
+    onHxsSetModelGravity);
 
   ASSERT_EQ(hxs_set_model_gravity_mode("model_1", 1), hxOK);
+}
+
+//////////////////////////////////////////////////
+/// \brief Check hxs_set_model_color.
+TEST(hxsTest, hxs_set_model_color)
+{
+  setup();
+
+  ignition::transport::Node node;
+  hxsColor color;
+
+  // Advertise the "hxs_set_model_color" service.
+  node.Advertise("/haptix/gazebo/hxs_set_model_color", onHxsSetModelColor);
+
+  color.r = 0.5;
+  color.g = 0.6;
+  color.b = 0.7;
+  color.alpha = 0.8;
+
+  ASSERT_EQ(hxs_set_model_color("model_1", &color), hxOK);
+}
+
+//////////////////////////////////////////////////
+/// \brief Check hxs_model_color.
+TEST(hxsTest, hxs_model_color)
+{
+  setup();
+
+  ignition::transport::Node node;
+  hxsColor color;
+
+  // Advertise the "hxs_model_color" service.
+  node.Advertise("/haptix/gazebo/hxs_model_color", onHxsModelColor);
+
+  ASSERT_EQ(hxs_model_color("model_1", &color), hxOK);
+
+  // Check the color received.
+  EXPECT_FLOAT_EQ(color.r, 0.1);
+  EXPECT_FLOAT_EQ(color.g, 0.2);
+  EXPECT_FLOAT_EQ(color.b, 0.3);
+  EXPECT_FLOAT_EQ(color.alpha, 0.4);
+}
+
+//////////////////////////////////////////////////
+/// \brief Check hxs_set_model_collide_mode.
+TEST(hxsTest, hxs_set_model_collide_mode)
+{
+  setup();
+
+  ignition::transport::Node node;
+  hxsCollideMode collideMode;
+
+  // Advertise the "hxs_set_model_collide_mode" service.
+  node.Advertise("/haptix/gazebo/hxs_set_model_collide_mode",
+    onHxsSetModelCollideMode);
+
+  collideMode = hxsCOLLIDE;
+
+  ASSERT_EQ(hxs_set_model_collide_mode("model_1", &collideMode), hxOK);
+}
+
+//////////////////////////////////////////////////
+/// \brief Check hxs_model_collide_mode.
+TEST(hxsTest, hxs_model_collide_mode)
+{
+  setup();
+
+  ignition::transport::Node node;
+  hxsCollideMode collideMode;
+
+  // Advertise the "hxs_model_collide_mode" service.
+  node.Advertise("/haptix/gazebo/hxs_model_collide_mode",
+    onHxsModelCollideMode);
+
+  ASSERT_EQ(hxs_model_collide_mode("model_1", &collideMode), hxOK);
+
+  // Check the collide mode received.
+  EXPECT_EQ(collideMode, hxsDETECTIONONLY);
 }

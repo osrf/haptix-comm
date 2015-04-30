@@ -1,5 +1,9 @@
 package haptix.comm.msgs;
 
+/// \ingroup haptix_comm_msgs
+/// \interface hxEmpty
+/// \brief An Empty message.
+
 message hxEmpty
 {
   optional bool unused = 1;

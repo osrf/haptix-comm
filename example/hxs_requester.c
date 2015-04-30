@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2015 Open Source Robotics Foundation
+ * Copyright (C) 2015 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,12 +25,54 @@
 //////////////////////////////////////////////////
 int main(int argc, char **argv)
 {
-  hxSimInfo simInfo;
+  hxsSimInfo simInfo;
+  hxsTransform cameraTransform;
+  hxsContactPoints contactPoints;
+  hxTime time;
+  hxsColor color;
 
   // Requesting simulation information.
-  if (hxs_siminfo(&simInfo) != hxOK)
+  if (hxs_sim_info(&simInfo) != hxOK)
   {
     printf("hxs_siminfo(): Request error.\n");
+    return -1;
+  }
+
+  if (hxs_camera_transform(&cameraTransform) != hxOK)
+  {
+    printf("hxs_camera_transform(): Request error.\n");
+    return -1;
+  }
+
+  if (hxs_set_camera_transform(&cameraTransform) != hxOK)
+  {
+    printf("hxs_set_camera_transform(): Request error.\n");
+    return -1;
+  }
+
+  if (hxs_contacts("cricket_ball", &contactPoints) != hxOK)
+  {
+    printf("hxs_contacts(): Request error.\n");
+    return -1;
+  }
+
+  // etc. etc.
+
+  /*if (hxs_timer(&time) != hxOK)
+  {
+    printf("hxs_timer(): Request error.\n");
+    return -1;
+  }*/
+
+  if (hxs_model_color("cricket_ball", &color) != hxOK)
+  {
+    printf("hxs_model_color(): Request error.\n");
+    return -1;
+  }
+
+  if (hxs_set_model_color("cricket_ball", &color) != hxOK)
+  {
+    printf("hxs_set_model_color(): Request error.\n");
     return -1;
   }
 

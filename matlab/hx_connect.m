@@ -21,6 +21,7 @@
 % <a href="matlab:
 % web('http://mujoco.org/haptix.html#hxMATLAB')">the MuJoCo HAPTIX site</a>.
 
-function hx_connect()
+% Accept any arguments, but ignore them
+function hx_connect(varargin)
   hxgz('connect');
 end

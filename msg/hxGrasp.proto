@@ -1,22 +1,25 @@
 package haptix.comm.msgs;
 
-// hxGrasp messages are sent to the HaptixControlPlugin (e.g., from the
-// HaptixGuiPlugin) to command pre-defined grasps.  Sending an hxGrasp message
-// with at least one hxGraspValue in it will switch the HaptixControlPlugin into
-// "grasp mode," in which it will ignore direct motor commands for the fingers.
-// To switch out of "grasp mode," send an empty hxGrasp message, with no
-// hxGraspValues in it.
+/// \ingroup haptix_comm_msgs
+/// \interface hxGrasp
+/// \brief hxGrasp messages are sent to the HaptixControlPlugin (e.g., from the
+/// HaptixGuiPlugin) to command pre-defined grasps.  Sending an hxGrasp message
+/// with at least one hxGraspValue in it will switch the HaptixControlPlugin
+/// into "grasp mode," in which it will ignore direct motor commands for the
+/// fingers. To switch out of "grasp mode," send an empty hxGrasp message, with
+/// no hxGraspValues in it.
+
 message hxGrasp
 {
-  // Each hxGraspValue specifies a grasp type by name, along with a scalar in
-  // [0,1] that indicates how much of that grasp to apply.
+  /// \brief  Each hxGraspValue specifies a grasp type by name, along with a
+  /// scalar in [0,1] that indicates how much of that grasp to apply.
   message hxGraspValue
   {
     required string grasp_name = 1;
     required float grasp_value = 2;
   }
 
-  // Multiple hxGraspValues can be sent, with the intent that the receiver will
-  // (somehow) combine / superimpose them.
+  /// \brief Multiple hxGraspValues can be sent, with the intent that the
+  /// receiver will (somehow) combine / superimpose them.
   repeated hxGraspValue grasps = 1;
 }

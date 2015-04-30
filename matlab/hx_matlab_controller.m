@@ -21,7 +21,9 @@ hx_connect();
 
 deviceInfo = hx_robot_info();
 
-while counter < 2000
+while counter < 250
+  cmdSent = tic;
+
   % Initialize the command scalar structure.
   cmd.ref_pos = [];
   cmd.ref_vel_max = [];
@@ -39,7 +41,7 @@ while counter < 2000
 
   % Create a new command based on a sinusoidal wave.
   for n = 0:deviceInfo.motor_count
-    cmd.ref_pos(end + 1) = 0.5 * sin(0.05 * 2.0 * pi * counter * 0.01);
+    cmd.ref_pos(end + 1) = 0.5 * sin(0.05 * 2.0 * pi * counter * 0.08);
     % We could set a desired maximum velocity
     % cmd.ref_vel_max(end + 1) = 1.0;
     % We could set a desired controller position gain
@@ -53,7 +55,11 @@ while counter < 2000
 
   counter = counter + 1;
 
-  pause(0.001);
+  % Busy wait. pause() is not accurate enough on Windows.
+  elapsedCmd = toc(cmdSent);
+  while elapsedCmd < 0.02
+    elapsedCmd = toc(cmdSent);
+  end
 end
 
 hx_close();

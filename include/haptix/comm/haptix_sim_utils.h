@@ -26,6 +26,8 @@
 #include <mutex>
 #include <ignition/transport.hh>
 #include "haptix/comm/haptix.h"
+#include "msg/hxCollideMode.pb.h"
+#include "msg/hxColor.pb.h"
 #include "msg/hxContactPoint_V.pb.h"
 #include "msg/hxEmpty.pb.h"
 #include "msg/hxJoint.pb.h"
@@ -93,15 +95,15 @@ static bool hxs_convertTime(const haptix::comm::msgs::hxTime _in, hxTime *_out)
 }
 //////////////////////////////////////////////////
 /// \internal Private function that converts a protobuf hxVector3 message to a
-/// C struct hxVector3.
+/// C struct hxsVector3.
 /// \param[in] _in Protobuf message.
 /// \param[out] _out C-struct.
 /// \return True if the function succeed or false otherwise.
 static bool hxs_convertVector3(const haptix::comm::msgs::hxVector3 _in,
-  hxVector3 *_out)
+  hxsVector3 *_out)
 {
   // Initialize the C struct.
-  memset(_out, 0, sizeof(hxVector3));
+  memset(_out, 0, sizeof(hxsVector3));
 
   _out->x = _in.x();
   _out->y = _in.y();
@@ -111,12 +113,12 @@ static bool hxs_convertVector3(const haptix::comm::msgs::hxVector3 _in,
 }
 
 //////////////////////////////////////////////////
-/// \internal Private function that converts a C struct hxVector3. to a
+/// \internal Private function that converts a C struct hxsVector3. to a
 /// protobuf hxVector3 message.
 /// \param[in] _in C-struct.
 /// \param[out] _out Protobuf message.
 /// \return True if the function succeed or false otherwise.
-static bool hxs_convertVector3(const hxVector3 *_in,
+static bool hxs_convertVector3(const hxsVector3 *_in,
   haptix::comm::msgs::hxVector3 *_out)
 {
   if (!_in)
@@ -137,15 +139,15 @@ static bool hxs_convertVector3(const hxVector3 *_in,
 
 //////////////////////////////////////////////////
 /// \internal Private function that converts a protobuf hxQuaternion message to
-/// a C struct hxQuaternion.
+/// a C struct hxsQuaternion.
 /// \param[in] _in Protobuf message.
 /// \param[out] _out C-struct.
 /// \return True if the function succeed or false otherwise.
 static bool hxs_convertQuaternion(const haptix::comm::msgs::hxQuaternion _in,
-  hxQuaternion *_out)
+  hxsQuaternion *_out)
 {
   // Initialize the C struct.
-  memset(_out, 0, sizeof(hxQuaternion));
+  memset(_out, 0, sizeof(hxsQuaternion));
 
   _out->w = _in.w();
   _out->x = _in.x();
@@ -156,12 +158,12 @@ static bool hxs_convertQuaternion(const haptix::comm::msgs::hxQuaternion _in,
 }
 
 //////////////////////////////////////////////////
-/// \internal Private function that converts a C struct hxQuaternion to a
+/// \internal Private function that converts a C struct hxsQuaternion to a
 /// protobuf hxQuaternion message.
 /// \param[in] _in C-struct.
 /// \param[out] _out Protobuf message.
 /// \return True if the function succeed or false otherwise.
-static bool hxs_convertQuaternion(const hxQuaternion *_in,
+static bool hxs_convertQuaternion(const hxsQuaternion *_in,
   haptix::comm::msgs::hxQuaternion *_out)
 {
   if (!_in)
@@ -182,16 +184,68 @@ static bool hxs_convertQuaternion(const hxQuaternion *_in,
 }
 
 //////////////////////////////////////////////////
+/// \internal Private function that converts a protobuf hxColor message to
+/// a C struct hxsColor.
+/// \param[in] _in Protobuf message.
+/// \param[out] _out C-struct.
+/// \return True if the function succeed or false otherwise.
+static bool hxs_convertColor(const haptix::comm::msgs::hxColor _in,
+  hxsColor *_out)
+{
+  // Initialize the C struct.
+  memset(_out, 0, sizeof(hxsColor));
+
+  _out->r = _in.r();
+  _out->g = _in.g();
+  _out->b = _in.b();
+  _out->alpha = _in.alpha();
+
+  return true;
+}
+
+//////////////////////////////////////////////////
+/// \internal Private function that converts a protobuf hxCollideMode message
+/// to a C struct hxsCollideMode.
+/// \param[in] _in Protobuf message.
+/// \param[out] _out C-struct.
+/// \return True if the function succeed or false otherwise.
+static bool hxs_convertCollisionMode(
+  const haptix::comm::msgs::hxCollideMode _in, hxsCollideMode *_out)
+{
+  // Initialize the C struct.
+  memset(_out, 0, sizeof(hxsCollideMode));
+
+  switch (_in.mode())
+  {
+    case haptix::comm::msgs::hxCollideMode::hxsNOCOLLIDE:
+      *_out = hxsNOCOLLIDE;
+      break;
+    case haptix::comm::msgs::hxCollideMode::hxsDETECTIONONLY:
+      *_out = hxsDETECTIONONLY;
+      break;
+    case haptix::comm::msgs::hxCollideMode::hxsCOLLIDE:
+      *_out = hxsCOLLIDE;
+      break;
+    default:
+      std::cerr << "hxs_convertCollisionMode() error: Unkown collision mode ["
+                << _in.mode() << "]" << std::endl;
+      return false;
+  }
+
+  return true;
+}
+
+//////////////////////////////////////////////////
 /// \internal Private function that converts a protobuf hxQuaternion message to
-/// a C struct hxQuaternion.
+/// a C struct hxsQuaternion.
 /// \param[in] _in Protobuf message.
 /// \param[out] _out C-struct.
 /// \return True if the function succeed or false otherwise.
 static bool hxs_convertTransform(const haptix::comm::msgs::hxTransform _in,
-  hxTransform *_out)
+  hxsTransform *_out)
 {
   // Initialize the C struct.
-  memset(_out, 0, sizeof(hxTransform));
+  memset(_out, 0, sizeof(hxsTransform));
 
   hxs_convertVector3(_in.pos(), &_out->pos);
   hxs_convertQuaternion(_in.orient(), &_out->orient);
@@ -200,12 +254,12 @@ static bool hxs_convertTransform(const haptix::comm::msgs::hxTransform _in,
 }
 
 //////////////////////////////////////////////////
-/// \internal Private function that converts a C struct hxQuaternion to a
+/// \internal Private function that converts a C struct hxsQuaternion to a
 /// protobuf hxQuaternion message.
 /// \param[in] _in C-struct.
 /// \param[out] _out Protobuf message.
 /// \return True if the function succeed or false otherwise.
-static bool hxs_convertTransform(const hxTransform *_in,
+static bool hxs_convertTransform(const hxsTransform *_in,
   haptix::comm::msgs::hxTransform *_out)
 {
   if (!_in)
@@ -225,15 +279,15 @@ static bool hxs_convertTransform(const hxTransform *_in,
 
 //////////////////////////////////////////////////
 /// \internal Private function that converts a protobuf hxJoint message to a
-/// C struct hxJoint.
+/// C struct hxsJoint.
 /// \param[in] _in Protobuf message.
 /// \param[out] _out C-struct.
 /// \return True if the function succeed or false otherwise.
 static bool hxs_convertJoint(const haptix::comm::msgs::hxJoint _in,
-  hxJoint *_out)
+  hxsJoint *_out)
 {
   // Initialize the C struct.
-  memset(_out, 0, sizeof(hxJoint));
+  memset(_out, 0, sizeof(hxsJoint));
 
   if (_in.name().size() > hxsMAXNAMESIZE - 1)
   {
@@ -248,62 +302,21 @@ static bool hxs_convertJoint(const haptix::comm::msgs::hxJoint _in,
   _out->pos = _in.pos();
   _out->vel = _in.vel();
   _out->torque_motor = _in.torque_motor();
-  hxs_convertVector3(_in.wrench_reactive().force(), &_out->wrench_reactive.force);
-  hxs_convertVector3(_in.wrench_reactive().torque(), &_out->wrench_reactive.torque);
+  hxs_convertVector3(_in.wrench_reactive().force(),
+    &_out->wrench_reactive.force);
+  hxs_convertVector3(_in.wrench_reactive().torque(),
+    &_out->wrench_reactive.torque);
 
   return true;
 }
 
 //////////////////////////////////////////////////
-/// \internal Private function that converts a C struct hxJoint to a
-/// protobuf hxJoint message.
-/// \param[in] _in C-struct.
-/// \param[out] _out Protobuf message.
-/// \return True if the function succeed or false otherwise.
-static bool hxs_convertJoint(const hxJoint *_in,
-  haptix::comm::msgs::hxJoint *_out)
-{
-  if (!_in)
-  {
-    std::cerr << "hxs_convertJoint() error: NULL input" << std::endl;
-    return false;
-  }
-
-  // Initialize the message.
-  _out->Clear();
-
-  _out->set_name(std::string(_in->name));
-  _out->set_pos(_in->pos);
-  _out->set_vel(_in->vel);
-  _out->set_torque_motor(_in->torque_motor);
-  hxs_convertVector3(&_in->wrench_reactive.force, _out->mutable_wrench_reactive()->mutable_force());
-  hxs_convertVector3(&_in->wrench_reactive.torque, _out->mutable_wrench_reactive()->mutable_torque());
-
-  return true;
-}
-
-//////////////////////////////////////////////////
-/// \internal Private function that converts a protobuf hxWrench to a
-/// C struct hxWrench message.
-/// \param[in] _in C-struct.
-/// \param[out] _out Protobuf message.
-/// \return True if the function succeed or false otherwise.
-static bool hxs_convertWrench(const haptix::comm::msgs::hxWrench _in,
-  hxWrench *_out)
-{
-  bool result = true;
-  result &= hxs_convertVector3(_in.force(), &_out->force);
-  result &= hxs_convertVector3(_in.torque(), &_out->torque);
-  return result;
-}
-
-//////////////////////////////////////////////////
-/// \internal Private function that converts a C struct hxWrench to a
+/// \internal Private function that converts a C struct hxsWrench to a
 /// protobuf hxWrench message.
 /// \param[in] _in C-struct.
 /// \param[out] _out Protobuf message.
 /// \return True if the function succeed or false otherwise.
-static bool hxs_convertWrench(const hxWrench *_in,
+static bool hxs_convertWrench(const hxsWrench *_in,
   haptix::comm::msgs::hxWrench *_out)
 {
   bool result = true;
@@ -314,14 +327,14 @@ static bool hxs_convertWrench(const hxWrench *_in,
 
 //////////////////////////////////////////////////
 /// \internal Private function that converts a protobuf hxLink message to a
-/// C struct hxLink.
+/// C struct hxsLink.
 /// \param[in] _in Protobuf message.
 /// \param[out] _out C-struct.
 /// \return True if the function succeed or false otherwise.
-static bool hxs_convertLink(const haptix::comm::msgs::hxLink _in, hxLink *_out)
+static bool hxs_convertLink(const haptix::comm::msgs::hxLink _in, hxsLink *_out)
 {
   // Initialize the C struct.
-  memset(_out, 0, sizeof(hxLink));
+  memset(_out, 0, sizeof(hxsLink));
 
   if (_in.name().size() > hxsMAXNAMESIZE - 1)
   {
@@ -343,43 +356,15 @@ static bool hxs_convertLink(const haptix::comm::msgs::hxLink _in, hxLink *_out)
 }
 
 //////////////////////////////////////////////////
-/// \internal Private function that converts a C struct hxLink to a
-/// protobuf hxLink message.
-/// \param[in] _in C-struct.
-/// \param[out] _out Protobuf message.
-/// \return True if the function succeed or false otherwise.
-static bool hxs_convertLink(const hxLink *_in, haptix::comm::msgs::hxLink *_out)
-{
-  if (!_in)
-  {
-    std::cerr << "hxs_convertLink() error: NULL input" << std::endl;
-    return false;
-  }
-
-  // Initialize the message.
-  _out->Clear();
-
-  _out->set_name(std::string(_in->name));
-  hxs_convertTransform(&_in->transform, _out->mutable_transform());
-  hxs_convertVector3(&_in->lin_vel, _out->mutable_lin_vel());
-  hxs_convertVector3(&_in->ang_vel, _out->mutable_ang_vel());
-  hxs_convertVector3(&_in->lin_acc, _out->mutable_lin_acc());
-  hxs_convertVector3(&_in->ang_acc, _out->mutable_ang_acc());
-
-  return true;
-}
-
-//////////////////////////////////////////////////
 /// \internal Private function that converts a protobuf hxModel message to a
-/// C struct hxModel.
+/// C struct hxsModel.
 /// \param[in] _in Protobuf message.
 /// \param[out] _out C-struct.
 /// \return True if the function succeed or false otherwise.
 static bool hxs_convertModel(const haptix::comm::msgs::hxModel _in,
-  hxModel *_out)
+  hxsModel *_out)
 {
-  // Initialize the C struct.
-  memset(_out, 0, sizeof(hxModel));
+  // Initialize the C struct.  memset(_out, 0, sizeof(hxModel));
 
   if (_in.name().size() > hxsMAXNAMESIZE - 1)
   {
@@ -411,58 +396,16 @@ static bool hxs_convertModel(const haptix::comm::msgs::hxModel _in,
 }
 
 //////////////////////////////////////////////////
-/// \internal Private function that converts a C struct hxModel to a
-/// protobuf hxModel message.
-/// \param[in] _in C-struct.
-/// \param[out] _out Protobuf message.
-/// \return True if the function succeed or false otherwise.
-static bool hxs_convertModel(const hxModel *_in,
-  haptix::comm::msgs::hxModel *_out)
-{
-  if (!_in)
-  {
-    std::cerr << "hxs_convertModel() error: NULL input" << std::endl;
-    return false;
-  }
-
-  // Initialize the message.
-  _out->Clear();
-
-  _out->set_name(_in->name);
-
-  hxs_convertTransform(&(_in->transform), _out->mutable_transform());
-  _out->set_id(_in->id);
-
-  // Create the links.
-  for (int i = 0; i < _in->link_count; ++i)
-  {
-    haptix::comm::msgs::hxLink *link = _out->add_links();
-    hxs_convertLink(&_in->links[i], link);
-  }
-
-  // Create the joints.
-  for (int i = 0; i < _in->joint_count; ++i)
-  {
-    haptix::comm::msgs::hxJoint *joint = _out->add_joints();
-    hxs_convertJoint(&_in->joints[i], joint);
-  }
-
-  _out->set_gravity_mode(_in->gravity_mode);
-
-  return true;
-}
-
-//////////////////////////////////////////////////
 /// \internal Private function that converts a protobuf hxContactPoint_V message
-/// to a C struct hxContactPoints.
+/// to a C struct hxsContactPoints.
 /// \param[in] _in Protobuf message.
 /// \param[out] _out C-struct.
 /// \return True if the function succeed or false otherwise.
 static bool hxs_convertContactPoints(
-  const haptix::comm::msgs::hxContactPoint_V _in, hxContactPoints *_out)
+  const haptix::comm::msgs::hxContactPoint_V _in, hxsContactPoints *_out)
 {
   // Initialize the C struct.
-  memset(_out, 0, sizeof(hxContactPoints));
+  memset(_out, 0, sizeof(hxsContactPoints));
 
   _out->contact_count = _in.contacts_size();
 
@@ -495,8 +438,10 @@ static bool hxs_convertContactPoints(
     hxs_convertVector3(_in.contacts(i).point(), &_out->contacts[i].point);
     hxs_convertVector3(_in.contacts(i).normal(), &_out->contacts[i].normal);
     _out->contacts[i].distance = _in.contacts(i).distance();
-    hxs_convertVector3(_in.contacts(i).wrench().force(), &_out->contacts[i].wrench.force);
-    hxs_convertVector3(_in.contacts(i).wrench().torque(), &_out->contacts[i].wrench.torque);
+    hxs_convertVector3(_in.contacts(i).wrench().force(),
+      &_out->contacts[i].wrench.force);
+    hxs_convertVector3(_in.contacts(i).wrench().torque(),
+      &_out->contacts[i].wrench.torque);
   }
 
   return true;
@@ -504,15 +449,15 @@ static bool hxs_convertContactPoints(
 
 //////////////////////////////////////////////////
 /// \internal Private function that converts a protobuf hxSimInfo message to a
-/// C struct hxSimInfo.
+/// C struct hxsSimInfo.
 /// \param[in] _in Protobuf message.
 /// \param[out] _out C-struct.
 /// \return True if the function succeed or false otherwise.
 static bool hxs_convertSimInfo(const haptix::comm::msgs::hxSimInfo _in,
-  hxSimInfo *_out)
+  hxsSimInfo *_out)
 {
   // Initialize the C struct.
-  memset(_out, 0, sizeof(hxSimInfo));
+  memset(_out, 0, sizeof(hxsSimInfo));
 
   _out->model_count = _in.models_size();
 
@@ -543,7 +488,7 @@ hxResult hxs_call(const std::string &_service,
                   const REQ _req,
                   REP _rep,
                   T _dst,
-                  bool(*_f)(const REP _rep, T _dst)) // NOLINT
+                  bool (*_f)(const REP _rep, T _dst))
 {
   bool result;
   ignition::transport::Node *hxNode = getHxNode();

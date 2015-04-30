@@ -42,7 +42,7 @@ void printState(const hxRobotInfo *_robotInfo, const hxSensor *_sensor)
 {
   int i;
 
-  printf("\tTime: %d %d\n", 
+  printf("\tTime: %d.%09d\n",
     _sensor->time_stamp.sec, _sensor->time_stamp.nsec);
 
   printf("\tMotors:\n");

@@ -1,5 +1,9 @@
 package haptix.comm.msgs;
 
+/// \ingroup haptix_comm_msgs
+/// \interface hxModel
+/// \brief Information about a model.
+
 import "hxJoint.proto";
 import "hxLink.proto";
 import "hxTransform.proto";

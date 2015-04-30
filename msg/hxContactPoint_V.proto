@@ -1,5 +1,9 @@
 package haptix.comm.msgs;
 
+/// \ingroup haptix_comm_msgs
+/// \interface hxContactPoint_V
+/// \brief Information about contacts.
+
 import "hxContactPoint.proto";
 
 message hxContactPoint_V
