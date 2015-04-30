@@ -44,25 +44,56 @@ void hxgzs_linear_velocity (int nlhs, mxArray *plhs[],
                             int nrhs, const mxArray *prhs[]);
 void hxgzs_angular_velocity (int nlhs, mxArray *plhs[],
                             int nrhs, const mxArray *prhs[]);
+void hxgzs_force (int nlhs, mxArray *plhs[],
+                  int nrhs, const mxArray *prhs[]);
+void hxgzs_torque (int nlhs, mxArray *plhs[],
+                   int nrhs, const mxArray *prhs[]);
+void hxgzs_wrench (int nlhs, mxArray *plhs[],
+                   int nrhs, const mxArray *prhs[]);
+void hxgzs_reset (int nlhs, mxArray *plhs[],
+                  int nrhs, const mxArray *prhs[]);
+void hxgzs_reset_timer (int nlhs, mxArray *plhs[],
+                        int nrhs, const mxArray *prhs[]);
+void hxgzs_start_timer (int nlhs, mxArray *plhs[],
+                        int nrhs, const mxArray *prhs[]);
+void hxgzs_stop_timer (int nlhs, mxArray *plhs[],
+                       int nrhs, const mxArray *prhs[]);
+void hxgzs_timer (int nlhs, mxArray *plhs[],
+                  int nrhs, const mxArray *prhs[]);
+void hxgzs_start_logging (int nlhs, mxArray *plhs[],
+                          int nrhs, const mxArray *prhs[]);
+void hxgzs_is_logging (int nlhs, mxArray *plhs[],
+                       int nrhs, const mxArray *prhs[]);
+void hxgzs_stop_logging (int nlhs, mxArray *plhs[],
+                         int nrhs, const mxArray *prhs[]);
+void hxgzs_set_model_color (int nlhs, mxArray *plhs[],
+                            int nrhs, const mxArray *prhs[]);
+void hxgzs_model_color (int nlhs, mxArray *plhs[],
+                        int nrhs, const mxArray *prhs[]);
+void hxgzs_set_model_collide_mode (int nlhs, mxArray *plhs[],
+                                   int nrhs, const mxArray *prhs[]);
+void hxgzs_model_collide_mode (int nlhs, mxArray *plhs[],
+                               int nrhs, const mxArray *prhs[]);
 
 // Data structure conversion helpers
 //
 // haptix-comm types -> MATLAB arrays
-mxArray* sensor_to_matlab (hxSensor* hs);
-mxArray* vector3_to_matlab (hxsVector3* h);
-mxArray* quaternion_to_matlab (hxsQuaternion* h);
-mxArray* transform_to_matlab (hxsTransform* h);
-mxArray* link_to_matlab (hxsLink* h);
-mxArray* wrench_to_matlab (hxsWrench* h);
-mxArray* joint_to_matlab (hxsJoint* h);
-mxArray* model_to_matlab (hxsModel* h);
-mxArray* contactpoints_to_matlab (hxsContactPoints* h);
-mxArray* color_to_matlab (hxsColor* h);
+mxArray* sensor_to_matlab (const hxSensor* hs);
+mxArray* vector3_to_matlab (const hxsVector3* h);
+mxArray* quaternion_to_matlab (const hxsQuaternion* h);
+mxArray* transform_to_matlab (const hxsTransform* h);
+mxArray* link_to_matlab (const hxsLink* h);
+mxArray* wrench_to_matlab (const hxsWrench* h);
+mxArray* joint_to_matlab (const hxsJoint* h);
+mxArray* model_to_matlab (const hxsModel* h);
+mxArray* contactpoints_to_matlab (const hxsContactPoints* h);
+mxArray* color_to_matlab (const hxsColor* h);
 //
 // MATLAB arrays -> haptix-comm types
 hxsVector3 matlab_to_vector3 (const mxArray* m);
 hxsQuaternion matlab_to_quaternion (const mxArray* m);
 hxsTransform matlab_to_transform (const mxArray* m);
+hxsWrench matlab_to_wrench (const mxArray* m);
 hxsColor matlab_to_color (const mxArray* m);
 
 
@@ -91,6 +122,7 @@ mexFunction (int nlhs, mxArray *plhs[],
     g_info_valid = 1;
   }
 
+  // Dispatch to the appropriate function based on the first argument
   char funcName[128];
   if (nrhs < 1)
     mexErrMsgIdAndTxt("HAPTIX:hxgz", "Expects >= 1 argument");
@@ -132,6 +164,34 @@ mexFunction (int nlhs, mxArray *plhs[],
     hxgzs_linear_velocity(nlhs, plhs, nrhs-1, prhs+1);
   else if (!strcmp(funcName, "angular_velocity"))
     hxgzs_angular_velocity(nlhs, plhs, nrhs-1, prhs+1);
+  else if (!strcmp(funcName, "force"))
+    hxgzs_force(nlhs, plhs, nrhs-1, prhs+1);
+  else if (!strcmp(funcName, "torque"))
+    hxgzs_torque(nlhs, plhs, nrhs-1, prhs+1);
+  else if (!strcmp(funcName, "wrench"))
+    hxgzs_wrench(nlhs, plhs, nrhs-1, prhs+1);
+  else if (!strcmp(funcName, "reset"))
+    hxgzs_reset(nlhs, plhs, nrhs-1, prhs+1);
+  else if (!strcmp(funcName, "reset_timer"))
+    hxgzs_reset_timer(nlhs, plhs, nrhs-1, prhs+1);
+  else if (!strcmp(funcName, "start_timer"))
+    hxgzs_start_timer(nlhs, plhs, nrhs-1, prhs+1);
+  else if (!strcmp(funcName, "stop_timer"))
+    hxgzs_stop_timer(nlhs, plhs, nrhs-1, prhs+1);
+  else if (!strcmp(funcName, "start_logging"))
+    hxgzs_start_logging(nlhs, plhs, nrhs-1, prhs+1);
+  else if (!strcmp(funcName, "is_logging"))
+    hxgzs_is_logging(nlhs, plhs, nrhs-1, prhs+1);
+  else if (!strcmp(funcName, "stop_logging"))
+    hxgzs_stop_logging(nlhs, plhs, nrhs-1, prhs+1);
+  else if (!strcmp(funcName, "set_model_color"))
+    hxgzs_set_model_color(nlhs, plhs, nrhs-1, prhs+1);
+  else if (!strcmp(funcName, "model_color"))
+    hxgzs_model_color(nlhs, plhs, nrhs-1, prhs+1);
+  else if (!strcmp(funcName, "set_model_collide_mode"))
+    hxgzs_set_model_collide_mode(nlhs, plhs, nrhs-1, prhs+1);
+  else if (!strcmp(funcName, "model_collide_mode"))
+    hxgzs_model_collide_mode(nlhs, plhs, nrhs-1, prhs+1);
   else
     mexErrMsgIdAndTxt("HAPTIX:hxgz", "Unknown command");
 }
@@ -323,7 +383,7 @@ hxgz_update (int nlhs, mxArray *plhs[],
 }
 
 mxArray*
-sensor_to_matlab (hxSensor* hs)
+sensor_to_matlab (const hxSensor* hs)
 {
   int i;
 
@@ -418,7 +478,7 @@ sensor_to_matlab (hxSensor* hs)
 }
 
 mxArray*
-vector3_to_matlab (hxsVector3* h)
+vector3_to_matlab (const hxsVector3* h)
 {
   mxArray *array = mxCreateDoubleMatrix(3, 1, mxREAL);
   double *data = mxGetPr(array);
@@ -430,7 +490,7 @@ vector3_to_matlab (hxsVector3* h)
 }
 
 mxArray*
-quaternion_to_matlab (hxsQuaternion* h)
+quaternion_to_matlab (const hxsQuaternion* h)
 {
   mxArray *array = mxCreateDoubleMatrix(4, 1, mxREAL);
   double *data = mxGetPr(array);
@@ -443,7 +503,7 @@ quaternion_to_matlab (hxsQuaternion* h)
 }
 
 mxArray*
-transform_to_matlab (hxsTransform* h)
+transform_to_matlab (const hxsTransform* h)
 {
   const char *keys[] = {"pos", "orient"};
   mxArray *s = mxCreateStructMatrix(1, 1, 2, keys);
@@ -458,7 +518,7 @@ transform_to_matlab (hxsTransform* h)
 }
 
 mxArray*
-link_to_matlab (hxsLink* h)
+link_to_matlab (const hxsLink* h)
 {
   const char *keys[] = {"name",
                         "transform",
@@ -486,7 +546,7 @@ link_to_matlab (hxsLink* h)
 }
 
 mxArray*
-wrench_to_matlab (hxsWrench* h)
+wrench_to_matlab (const hxsWrench* h)
 {
   const char *keys[] = {"force", "torque"};
   mxArray *s = mxCreateStructMatrix(1, 1, 2, keys);
@@ -501,7 +561,7 @@ wrench_to_matlab (hxsWrench* h)
 }
 
 mxArray*
-joint_to_matlab (hxsJoint* h)
+joint_to_matlab (const hxsJoint* h)
 {
   const char *keys[] = {"name",
                         "pos",
@@ -539,7 +599,7 @@ joint_to_matlab (hxsJoint* h)
 }
 
 mxArray*
-model_to_matlab (hxsModel* h)
+model_to_matlab (const hxsModel* h)
 {
   const char *keys[] = {"name",
                         "transform",
@@ -587,7 +647,7 @@ model_to_matlab (hxsModel* h)
 }
 
 mxArray*
-contactpoints_to_matlab (hxsContactPoints* h)
+contactpoints_to_matlab (const hxsContactPoints* h)
 {
   const char *keys[] = {"link1",
                         "link2",
@@ -623,7 +683,7 @@ contactpoints_to_matlab (hxsContactPoints* h)
 }
 
 mxArray*
-color_to_matlab (hxsColor* h)
+color_to_matlab (const hxsColor* h)
 {
   mxArray *array = mxCreateDoubleMatrix(4, 1, mxREAL);
   double *data = mxGetPr(array);
@@ -689,6 +749,29 @@ matlab_to_transform (const mxArray* m)
   t.orient = matlab_to_quaternion(v);
 
   return t;
+}
+
+hxsWrench
+matlab_to_wrench (const mxArray* m)
+{
+  hxsWrench w;
+  mxArray* v;
+
+  // Sanity check: Verify that the first input argument is a struct.
+  if (!mxIsStruct(m))
+    mexErrMsgIdAndTxt("HAPTIX:matlab_to_wrench", "Expects struct");
+
+  // Sanity check: Verify that the struct has fields:
+  // pos, orient
+  if (mxGetNumberOfFields(m) != 2)
+    mexErrMsgIdAndTxt("HAPTIX:matlab_to_wrench", "Expects 2 fields");
+
+  v = mxGetField(m, 0, "force");
+  w.force = matlab_to_vector3(v);
+  v = mxGetField(m, 0, "torque");
+  w.torque = matlab_to_vector3(v);
+
+  return w;
 }
 
 hxsColor
@@ -996,4 +1079,253 @@ hxgzs_angular_velocity (int nlhs, mxArray *plhs[],
 
   if (hxs_angular_velocity(name, &v) != hxOK)
     mexErrMsgIdAndTxt("HAPTIX:hxs_angular_velocity", hx_last_result());
+}
+
+void
+hxgzs_force (int nlhs, mxArray *plhs[],
+             int nrhs, const mxArray *prhs[])
+{
+  char name[hxsMAXNAMESIZE];
+  char link[hxsMAXNAMESIZE];
+  hxsVector3 v;
+  float duration;
+
+  if (nrhs != 4)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_force", "Expects 4 arguments");
+
+  if (mxGetString(prhs[0], name, sizeof(name)))
+    mexErrMsgIdAndTxt("HAPTIX:hxs_force", "Failed to determine name");
+  if (mxGetString(prhs[1], link, sizeof(link)))
+    mexErrMsgIdAndTxt("HAPTIX:hxs_force", "Failed to determine link");
+  v = matlab_to_vector3(prhs[2]);
+  double *d = mxGetPr(prhs[3]);
+  duration = d[0];
+
+  if (hxs_force(name, link, &v, duration) != hxOK)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_force", hx_last_result());
+}
+
+void
+hxgzs_torque (int nlhs, mxArray *plhs[],
+             int nrhs, const mxArray *prhs[])
+{
+  char name[hxsMAXNAMESIZE];
+  char link[hxsMAXNAMESIZE];
+  hxsVector3 v;
+  float duration;
+
+  if (nrhs != 4)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_torque", "Expects 4 arguments");
+
+  if (mxGetString(prhs[0], name, sizeof(name)))
+    mexErrMsgIdAndTxt("HAPTIX:hxs_torque", "Failed to determine name");
+  if (mxGetString(prhs[1], link, sizeof(link)))
+    mexErrMsgIdAndTxt("HAPTIX:hxs_torque", "Failed to determine link");
+  v = matlab_to_vector3(prhs[2]);
+  double *d = mxGetPr(prhs[3]);
+  duration = d[0];
+
+  if (hxs_torque(name, link, &v, duration) != hxOK)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_torque", hx_last_result());
+}
+
+void
+hxgzs_wrench (int nlhs, mxArray *plhs[],
+             int nrhs, const mxArray *prhs[])
+{
+  char name[hxsMAXNAMESIZE];
+  char link[hxsMAXNAMESIZE];
+  hxsWrench w;
+  float duration;
+
+  if (nrhs != 4)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_wrench", "Expects 4 arguments");
+
+  if (mxGetString(prhs[0], name, sizeof(name)))
+    mexErrMsgIdAndTxt("HAPTIX:hxs_wrench", "Failed to determine name");
+  if (mxGetString(prhs[1], link, sizeof(link)))
+    mexErrMsgIdAndTxt("HAPTIX:hxs_wrench", "Failed to determine link");
+  w = matlab_to_wrench(prhs[2]);
+  double *d = mxGetPr(prhs[3]);
+  duration = d[0];
+
+  if (hxs_wrench(name, link, &w, duration) != hxOK)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_wrench", hx_last_result());
+}
+
+void
+hxgzs_reset (int nlhs, mxArray *plhs[],
+             int nrhs, const mxArray *prhs[])
+{
+  int reset_limb_pose;
+
+  if (nrhs != 1)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_reset", "Expects 1 argument");
+
+  double *d = mxGetPr(prhs[0]);
+  reset_limb_pose = d[0];
+
+  if (hxs_reset(reset_limb_pose) != hxOK)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_reset", hx_last_result());
+}
+
+void
+hxgzs_reset_timer (int nlhs, mxArray *plhs[],
+                   int nrhs, const mxArray *prhs[])
+{
+  if (hxs_reset_timer() != hxOK)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_reset_timer", hx_last_result());
+}
+
+void
+hxgzs_start_timer (int nlhs, mxArray *plhs[],
+                   int nrhs, const mxArray *prhs[])
+{
+  if (hxs_start_timer() != hxOK)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_start_timer", hx_last_result());
+}
+
+void
+hxgzs_stop_timer (int nlhs, mxArray *plhs[],
+                   int nrhs, const mxArray *prhs[])
+{
+  if (hxs_stop_timer() != hxOK)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_stop_timer", hx_last_result());
+}
+
+void
+hxgzs_timer (int nlhs, mxArray *plhs[],
+             int nrhs, const mxArray *prhs[])
+{
+  hxTime t;
+
+  if (hxs_timer(&t) != hxOK)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_timer", hx_last_result());
+
+  mxArray *m = mxCreateDoubleMatrix(1, 1, mxREAL);
+  double *d = mxGetPr(m);
+  d[0] = t.sec + t.nsec/1e9;
+
+  plhs[0] = m;
+}
+
+void
+hxgzs_start_logging (int nlhs, mxArray *plhs[],
+                     int nrhs, const mxArray *prhs[])
+{
+  char filename[hxsMAXNAMESIZE];
+
+  if (nrhs != 1)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_start_logging", "Expects 1 argument");
+
+  if (mxGetString(prhs[0], filename, sizeof(filename)))
+    mexErrMsgIdAndTxt("HAPTIX:hxs_start_logging", "Failed to determine filename");
+
+  if (hxs_start_logging(filename) != hxOK)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_start_logging", hx_last_result());
+}
+
+void
+hxgzs_is_logging (int nlhs, mxArray *plhs[],
+                  int nrhs, const mxArray *prhs[])
+{
+  int result;
+
+  if (hxs_is_logging(&result) != hxOK)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_is_logging", hx_last_result());
+
+  mxArray *m = mxCreateDoubleMatrix(1, 1, mxREAL);
+  double *d = mxGetPr(m);
+  d[0] = result;
+
+  plhs[0] = m;
+}
+
+void
+hxgzs_stop_logging (int nlhs, mxArray *plhs[],
+                    int nrhs, const mxArray *prhs[])
+{
+  if (hxs_stop_logging() != hxOK)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_stop_logging", hx_last_result());
+}
+
+void
+hxgzs_set_model_color (int nlhs, mxArray *plhs[],
+                       int nrhs, const mxArray *prhs[])
+{
+  char name[hxsMAXNAMESIZE];
+  hxsColor c;
+
+  if (nrhs != 2)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_set_model_color", "Expects 2 arguments");
+
+  if (mxGetString(prhs[0], name, sizeof(name)))
+    mexErrMsgIdAndTxt("HAPTIX:hxs_set_model_color", "Failed to determine name");
+  c = matlab_to_color(prhs[1]);
+
+  if (hxs_set_model_color(name, &c) != hxOK)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_set_model_color", hx_last_result());
+}
+
+void
+hxgzs_model_color (int nlhs, mxArray *plhs[],
+                   int nrhs, const mxArray *prhs[])
+{
+  char name[hxsMAXNAMESIZE];
+  hxsColor c;
+
+  if (nrhs != 1)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_model_color", "Expects 1 argument");
+
+  if (mxGetString(prhs[0], name, sizeof(name)))
+    mexErrMsgIdAndTxt("HAPTIX:hxs_model_color", "Failed to determine name");
+
+  if (hxs_model_color(name, &c) != hxOK)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_model_color", hx_last_result());
+
+  mxArray *m = color_to_matlab(&c);
+  
+  plhs[0] = m;
+}
+
+void
+hxgzs_set_model_collide_mode (int nlhs, mxArray *plhs[],
+                              int nrhs, const mxArray *prhs[])
+{
+  char name[hxsMAXNAMESIZE];
+  hxsCollideMode c;
+
+  if (nrhs != 2)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_set_model_collide_mode", "Expects 2 arguments");
+
+  if (mxGetString(prhs[0], name, sizeof(name)))
+    mexErrMsgIdAndTxt("HAPTIX:hxs_set_model_collide_mode", "Failed to determine name");
+  double *d = mxGetPr(prhs[1]);
+  c = d[0];
+
+  if (hxs_set_model_collide_mode(name, &c) != hxOK)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_set_model_collide_mode", hx_last_result());
+}
+
+void
+hxgzs_model_collide_mode (int nlhs, mxArray *plhs[],
+                          int nrhs, const mxArray *prhs[])
+{
+  char name[hxsMAXNAMESIZE];
+  hxsCollideMode c;
+
+  if (nrhs != 1)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_model_collide_mode", "Expects 1 argument");
+
+  if (mxGetString(prhs[0], name, sizeof(name)))
+    mexErrMsgIdAndTxt("HAPTIX:hxs_model_collide_mode", "Failed to determine name");
+
+  if (hxs_model_collide_mode(name, &c) != hxOK)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_model_collide_mode", hx_last_result());
+
+  mxArray *m = mxCreateDoubleMatrix(1, 1, mxREAL);
+  double *d = mxGetPr(m);
+  d[0] = c;
+  
+  plhs[0] = m;
 }
