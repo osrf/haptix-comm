@@ -73,6 +73,13 @@ template <typename T, typename T2> bool hxs_convertScalar(T _in, T2 *_out)
     std::cerr << "hxs_convertScalar() error: No [data] in msg" << std::endl;
     return false;
   }
+
+  if (!_out)
+  {
+    std::cerr << "hxs_convertScalar() error: NULL output" << std::endl;
+    return false;
+  }
+
   *_out = _in.data();
   return true;
 }
@@ -85,6 +92,12 @@ template <typename T, typename T2> bool hxs_convertScalar(T _in, T2 *_out)
 /// \return True if the function succeed or false otherwise.
 static bool hxs_convertTime(const haptix::comm::msgs::hxTime _in, hxTime *_out)
 {
+  if (!_out)
+  {
+    std::cerr << "hxs_convertTime() error: NULL output" << std::endl;
+    return false;
+  }
+
   // Initialize the C struct.
   memset(_out, 0, sizeof(hxTime));
 
@@ -102,6 +115,12 @@ static bool hxs_convertTime(const haptix::comm::msgs::hxTime _in, hxTime *_out)
 static bool hxs_convertVector3(const haptix::comm::msgs::hxVector3 _in,
   hxsVector3 *_out)
 {
+  if (!_out)
+  {
+    std::cerr << "hxs_convertVector3() error: NULL output" << std::endl;
+    return false;
+  }
+
   // Initialize the C struct.
   memset(_out, 0, sizeof(hxsVector3));
 
@@ -127,6 +146,12 @@ static bool hxs_convertVector3(const hxsVector3 *_in,
     return false;
   }
 
+  if (!_out)
+  {
+    std::cerr << "hxs_convertVector3() error: NULL output" << std::endl;
+    return false;
+  }
+
   // Initialize the protobuf message.
   _out->Clear();
 
@@ -146,6 +171,12 @@ static bool hxs_convertVector3(const hxsVector3 *_in,
 static bool hxs_convertQuaternion(const haptix::comm::msgs::hxQuaternion _in,
   hxsQuaternion *_out)
 {
+  if (!_out)
+  {
+    std::cerr << "hxs_convertQuaternion() error: NULL output" << std::endl;
+    return false;
+  }
+
   // Initialize the C struct.
   memset(_out, 0, sizeof(hxsQuaternion));
 
@@ -172,6 +203,12 @@ static bool hxs_convertQuaternion(const hxsQuaternion *_in,
     return false;
   }
 
+  if (!_out)
+  {
+    std::cerr << "hxs_convertQuaternion() error: NULL output" << std::endl;
+    return false;
+  }
+
   // Initialize the protobuf message.
   _out->Clear();
 
@@ -192,6 +229,12 @@ static bool hxs_convertQuaternion(const hxsQuaternion *_in,
 static bool hxs_convertColor(const haptix::comm::msgs::hxColor _in,
   hxsColor *_out)
 {
+  if (!_out)
+  {
+    std::cerr << "hxs_convertColor() error: NULL output" << std::endl;
+    return false;
+  }
+
   // Initialize the C struct.
   memset(_out, 0, sizeof(hxsColor));
 
@@ -212,6 +255,12 @@ static bool hxs_convertColor(const haptix::comm::msgs::hxColor _in,
 static bool hxs_convertCollisionMode(
   const haptix::comm::msgs::hxCollideMode _in, hxsCollideMode *_out)
 {
+  if (!_out)
+  {
+    std::cerr << "hxs_convertCollisionMode() error: NULL output" << std::endl;
+    return false;
+  }
+
   // Initialize the C struct.
   memset(_out, 0, sizeof(hxsCollideMode));
 
@@ -244,6 +293,12 @@ static bool hxs_convertCollisionMode(
 static bool hxs_convertTransform(const haptix::comm::msgs::hxTransform _in,
   hxsTransform *_out)
 {
+  if (!_out)
+  {
+    std::cerr << "hxs_convertTransform() error: NULL output" << std::endl;
+    return false;
+  }
+
   // Initialize the C struct.
   memset(_out, 0, sizeof(hxsTransform));
 
@@ -268,6 +323,12 @@ static bool hxs_convertTransform(const hxsTransform *_in,
     return false;
   }
 
+  if (!_out)
+  {
+    std::cerr << "hxs_convertTransform() error: NULL output" << std::endl;
+    return false;
+  }
+
   // Initialize the message.
   _out->Clear();
 
@@ -286,6 +347,12 @@ static bool hxs_convertTransform(const hxsTransform *_in,
 static bool hxs_convertJoint(const haptix::comm::msgs::hxJoint _in,
   hxsJoint *_out)
 {
+  if (!_out)
+  {
+    std::cerr << "hxs_convertJoint() error: NULL output" << std::endl;
+    return false;
+  }
+
   // Initialize the C struct.
   memset(_out, 0, sizeof(hxsJoint));
 
@@ -319,6 +386,18 @@ static bool hxs_convertJoint(const haptix::comm::msgs::hxJoint _in,
 static bool hxs_convertWrench(const hxsWrench *_in,
   haptix::comm::msgs::hxWrench *_out)
 {
+  if (!_in)
+  {
+    std::cerr << "hxs_convertWrench() error: NULL input" << std::endl;
+    return false;
+  }
+
+  if (!_out)
+  {
+    std::cerr << "hxs_convertWrench() error: NULL output" << std::endl;
+    return false;
+  }
+
   bool result = true;
   result &= hxs_convertVector3(&_in->force, _out->mutable_force());
   result &= hxs_convertVector3(&_in->torque, _out->mutable_torque());
@@ -333,6 +412,12 @@ static bool hxs_convertWrench(const hxsWrench *_in,
 /// \return True if the function succeed or false otherwise.
 static bool hxs_convertLink(const haptix::comm::msgs::hxLink _in, hxsLink *_out)
 {
+  if (!_out)
+  {
+    std::cerr << "hxs_convertLink() error: NULL output" << std::endl;
+    return false;
+  }
+
   // Initialize the C struct.
   memset(_out, 0, sizeof(hxsLink));
 
@@ -364,8 +449,6 @@ static bool hxs_convertLink(const haptix::comm::msgs::hxLink _in, hxsLink *_out)
 static bool hxs_convertModel(const haptix::comm::msgs::hxModel _in,
   hxsModel *_out)
 {
-  // Initialize the C struct.  memset(_out, 0, sizeof(hxModel));
-
   if (_in.name().size() > hxsMAXNAMESIZE - 1)
   {
     std::cerr << "hxs_convertModel() error: The name of the model ["
@@ -373,6 +456,15 @@ static bool hxs_convertModel(const haptix::comm::msgs::hxModel _in,
               << hxsMAXNAMESIZE << " chars)." << std::endl;
     return false;
   }
+
+  if (!_out)
+  {
+    std::cerr << "hxs_convertModel() error: NULL output" << std::endl;
+    return false;
+  }
+
+  // Initialize the C struct.
+  memset(_out, 0, sizeof(hxsModel));
 
   strncpy(_out->name, _in.name().c_str(), strlen(_in.name().c_str()));
   _out->name[strlen(_in.name().c_str())] = '\0';
@@ -404,6 +496,12 @@ static bool hxs_convertModel(const haptix::comm::msgs::hxModel _in,
 static bool hxs_convertContactPoints(
   const haptix::comm::msgs::hxContactPoint_V _in, hxsContactPoints *_out)
 {
+  if (!_out)
+  {
+    std::cerr << "hxs_convertContactPoints() error: NULL output" << std::endl;
+    return false;
+  }
+
   // Initialize the C struct.
   memset(_out, 0, sizeof(hxsContactPoints));
 
@@ -456,6 +554,12 @@ static bool hxs_convertContactPoints(
 static bool hxs_convertSimInfo(const haptix::comm::msgs::hxSimInfo _in,
   hxsSimInfo *_out)
 {
+  if (!_out)
+  {
+    std::cerr << "hxs_convertSimInfo() error: NULL output" << std::endl;
+    return false;
+  }
+
   // Initialize the C struct.
   memset(_out, 0, sizeof(hxsSimInfo));
 
