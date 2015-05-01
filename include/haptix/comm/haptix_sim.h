@@ -347,8 +347,8 @@ hxResult hxs_set_model_link_state(const char *_model, const char *_link,
 /// \param[out] _model Pointer to the new model.
 /// \return 'hxOK' if the function succeed or an error code otherwise.
 hxResult hxs_add_model(const char *_sdf, const char *_name,
-  float _x, float _y, float _z, float _roll, float _pitch, float _yaw,
-  int _gravity_mode, hxsModel *_model);
+    float _x, float _y, float _z, float _roll, float _pitch, float _yaw,
+    int _gravity_mode, hxsModel *_model);
 
 /// \brief Remove model.
 /// \param[in] _name Name of the model.
