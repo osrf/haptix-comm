@@ -85,28 +85,6 @@ template <typename T, typename T2> bool hxs_convertScalar(T _in, T2 *_out)
 }
 
 //////////////////////////////////////////////////
-/// \internal Private function that converts a protobuf hxTime message to a
-/// C struct hxTime.
-/// \param[in] _in Protobuf message.
-/// \param[out] _out C-struct.
-/// \return True if the function succeed or false otherwise.
-static bool hxs_convertTime(const haptix::comm::msgs::hxTime _in, hxTime *_out)
-{
-  if (!_out)
-  {
-    std::cerr << "hxs_convertTime() error: NULL output" << std::endl;
-    return false;
-  }
-
-  // Initialize the C struct.
-  memset(_out, 0, sizeof(hxTime));
-
-  _out->sec = _in.sec();
-  _out->nsec = _in.nsec();
-
-  return true;
-}
-//////////////////////////////////////////////////
 /// \internal Private function that converts a protobuf hxVector3 message to a
 /// C struct hxsVector3.
 /// \param[in] _in Protobuf message.

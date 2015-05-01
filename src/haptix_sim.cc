@@ -162,16 +162,29 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
-  hxResult hxs_model_transform(const char *_name,
+  hxResult hxs_set_model_transform(const char *_name,
     const hxsTransform *_transform)
   {
-    const std::string service = "/haptix/gazebo/hxs_model_transform";
+    const std::string service = "/haptix/gazebo/hxs_set_model_transform";
     haptix::comm::msgs::hxParam req;
     req.set_name(_name);
     if (!hxs_convertTransform(_transform, req.mutable_transform()))
       return hxERROR;
     return hxs_call(service, __func__, req, haptix::comm::msgs::hxEmpty());
   }
+
+  //////////////////////////////////////////////////
+  hxResult hxs_model_transform(const char *_name, hxsTransform *_transform)
+  {
+    const std::string service = "/haptix/gazebo/hxs_model_transform";
+    haptix::comm::msgs::hxString req;
+    haptix::comm::msgs::hxTransform rep;
+    req.set_data(_name);
+
+    return hxs_call(service, __func__, req, rep, _transform,
+      hxs_convertTransform);
+  }
+
   //////////////////////////////////////////////////
   hxResult hxs_model_gravity_mode(const char *_name, int *_gravity_mode)
   {
@@ -196,9 +209,20 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
-  hxResult hxs_linear_velocity(const char *_name, const hxsVector3 *_lin_vel)
+  hxResult hxs_linear_velocity(const char *_name, hxsVector3 *_velocity)
   {
     const std::string service = "/haptix/gazebo/hxs_linear_velocity";
+    haptix::comm::msgs::hxString req;
+    haptix::comm::msgs::hxVector3 rep;
+    req.set_data(_name);
+    return hxs_call(service, __func__, req, rep, _velocity, hxs_convertVector3);
+  }
+
+  //////////////////////////////////////////////////
+  hxResult hxs_set_linear_velocity(const char *_name,
+    const hxsVector3 *_lin_vel)
+  {
+    const std::string service = "/haptix/gazebo/hxs_set_linear_velocity";
     haptix::comm::msgs::hxParam req;
     req.set_name(_name);
     if (!hxs_convertVector3(_lin_vel, req.mutable_vector3()))
@@ -207,9 +231,20 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
-  hxResult hxs_angular_velocity(const char *_name, const hxsVector3 *_ang_vel)
+  hxResult hxs_angular_velocity(const char *_name, hxsVector3 *_ang_vel)
   {
     const std::string service = "/haptix/gazebo/hxs_angular_velocity";
+    haptix::comm::msgs::hxString req;
+    haptix::comm::msgs::hxVector3 rep;
+    req.set_data(_name);
+    return hxs_call(service, __func__, req, rep, _ang_vel, hxs_convertVector3);
+  }
+
+  //////////////////////////////////////////////////
+  hxResult hxs_set_angular_velocity(const char *_name,
+    const hxsVector3 *_ang_vel)
+  {
+    const std::string service = "/haptix/gazebo/hxs_set_angular_velocity";
     haptix::comm::msgs::hxParam req;
     req.set_name(_name);
     if (!hxs_convertVector3(_ang_vel, req.mutable_vector3()))
@@ -218,10 +253,10 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
-  hxResult hxs_force(const char *_modelName, const char *_linkName,
+  hxResult hxs_apply_force(const char *_modelName, const char *_linkName,
       const hxsVector3 *_force, const float _duration)
   {
-    const std::string service = "/haptix/gazebo/hxs_force";
+    const std::string service = "/haptix/gazebo/hxs_apply_force";
     haptix::comm::msgs::hxParam req;
     req.set_name(_modelName);
     req.set_string_value(_linkName);
@@ -232,10 +267,10 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
-  hxResult hxs_torque(const char *_modelName, const char *_linkName,
+  hxResult hxs_apply_torque(const char *_modelName, const char *_linkName,
       const hxsVector3 *_torque, const float _duration)
   {
-    const std::string service = "/haptix/gazebo/hxs_torque";
+    const std::string service = "/haptix/gazebo/hxs_apply_torque";
     haptix::comm::msgs::hxParam req;
     req.set_name(_modelName);
     req.set_string_value(_linkName);
@@ -246,10 +281,10 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
-  hxResult hxs_wrench(const char *_modelName, const char *_linkName,
+  hxResult hxs_apply_wrench(const char *_modelName, const char *_linkName,
       const hxsWrench *_wrench, const float _duration)
   {
-    const std::string service = "/haptix/gazebo/hxs_wrench";
+    const std::string service = "/haptix/gazebo/hxs_apply_wrench";
     haptix::comm::msgs::hxParam req;
     req.set_name(_modelName);
     req.set_string_value(_linkName);
@@ -266,39 +301,6 @@ extern "C" {
     haptix::comm::msgs::hxInt req;
     req.set_data(_resetLimbPose);
     return hxs_call(service, __func__, req, haptix::comm::msgs::hxEmpty());
-  }
-
-  //////////////////////////////////////////////////
-  hxResult hxs_reset_timer()
-  {
-    const std::string service = "/haptix/gazebo/hxs_reset_timer";
-    return hxs_call(service, __func__, haptix::comm::msgs::hxEmpty(),
-      haptix::comm::msgs::hxEmpty());
-  }
-
-  //////////////////////////////////////////////////
-  hxResult hxs_start_timer()
-  {
-    const std::string service = "/haptix/gazebo/hxs_start_timer";
-    return hxs_call(service, __func__, haptix::comm::msgs::hxEmpty(),
-      haptix::comm::msgs::hxEmpty());
-  }
-
-  //////////////////////////////////////////////////
-  hxResult hxs_stop_timer()
-  {
-    const std::string service = "/haptix/gazebo/hxs_stop_timer";
-    return hxs_call(service, __func__, haptix::comm::msgs::hxEmpty(),
-      haptix::comm::msgs::hxEmpty());
-  }
-
-  //////////////////////////////////////////////////
-  hxResult hxs_timer(hxTime *_time)
-  {
-    const std::string service = "/haptix/gazebo/hxs_timer";
-    haptix::comm::msgs::hxTime rep;
-    return hxs_call(service, __func__, haptix::comm::msgs::hxEmpty(), rep,
-      _time, hxs_convertTime);
   }
 
   //////////////////////////////////////////////////
