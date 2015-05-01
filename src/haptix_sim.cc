@@ -90,6 +90,16 @@ extern "C" {
     req.mutable_joints(0)->set_pos(_pos);
     req.mutable_joints(0)->set_vel(_vel);
 
+    // Set empty required fields
+    req.set_id(0);
+    req.set_gravity_mode(0);
+    hxsTransform tf;
+    hxsWrench wrench;
+    hxs_convertTransform(&tf, req.mutable_transform());
+    hxs_convertWrench(&wrench,
+      req.mutable_joints(0)->mutable_wrench_reactive());
+    req.mutable_joints(0)->set_torque_motor(0);
+
     return hxs_call(service, __func__, req, haptix::comm::msgs::hxEmpty());
   }
 
@@ -127,6 +137,13 @@ extern "C" {
     {
       return hxERROR;
     }
+    req.set_id(0);
+    req.set_gravity_mode(0);
+    hxsTransform tf;
+    hxsVector3 v;
+    hxs_convertTransform(&tf, req.mutable_transform());
+    hxs_convertVector3(&v, req.mutable_links(0)->mutable_lin_acc());
+    hxs_convertVector3(&v, req.mutable_links(0)->mutable_ang_acc());
 
     return hxs_call(service, __func__, req, haptix::comm::msgs::hxEmpty());
   }
