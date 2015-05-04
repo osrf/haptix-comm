@@ -1,0 +1,19 @@
+package haptix.comm.msgs;
+
+/// \ingroup haptix_comm_msgs
+/// \interface hxModel
+/// \brief Information about a model.
+
+import "hxJoint.proto";
+import "hxLink.proto";
+import "hxTransform.proto";
+
+message hxModel
+{
+  required string name           = 1;
+  required hxTransform transform = 2;
+  required uint32 id             = 3;
+  repeated hxLink links          = 4;
+  repeated hxJoint joints        = 5;
+  required bool gravity_mode     = 6;
+}

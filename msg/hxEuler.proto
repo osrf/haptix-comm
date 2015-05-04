@@ -1,0 +1,12 @@
+package haptix.comm.msgs;
+
+/// \ingroup haptix_comm_msgs
+/// \interface hxEuler
+/// \brief Orientation described as roll pitch and yaw angles.
+
+message hxEuler
+{
+  required float roll  = 1;
+  required float pitch = 2;
+  required float yaw   = 3;
+}

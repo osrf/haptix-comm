@@ -1,5 +1,11 @@
 package haptix.comm.msgs;
 
+/// \ingroup haptix_comm_msgs
+/// \interface hxRobot
+/// \brief Robot information.
+/// This message specifies inherent properties of the robot that do not change
+/// during simulation (for example, the number of joints in the robot arm).
+
 message hxRobot
 {
   message hxLimit

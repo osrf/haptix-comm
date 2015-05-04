@@ -1,0 +1,34 @@
+package haptix.comm.msgs;
+
+/// \ingroup haptix_comm_msgs
+/// \interface hxParam
+/// \brief Message used as a parameter in multiple service requests using
+/// ignition transport.
+
+import "hxCollideMode.proto";
+import "hxColor.proto";
+import "hxEuler.proto";
+import "hxJoint.proto";
+import "hxLink.proto";
+import "hxModel.proto";
+import "hxTransform.proto";
+import "hxVector3.proto";
+import "hxWrench.proto";
+
+message hxParam
+{
+  optional uint32 id                      = 1;
+  optional hxVector3 vector3              = 2;
+  optional hxLink link                    = 3;
+  optional hxTransform transform          = 4;
+  optional hxModel model                  = 5;
+  optional hxJoint joint                  = 6;
+  optional hxWrench wrench                = 7;
+  optional float float_value              = 8;
+  optional string string_value            = 9;
+  optional hxEuler orientation            = 10;
+  optional string name                    = 11;
+  optional uint32 gravity_mode            = 12;
+  optional hxColor color                  = 13;
+  optional hxCollideMode collide_mode     = 14;
+}

@@ -1,0 +1,10 @@
+package haptix.comm.msgs;
+
+/// \ingroup haptix_comm_msgs
+/// \interface hxInt
+/// \brief Integer message.
+
+message hxInt
+{
+  required int32 data = 1;
+}

@@ -1,0 +1,16 @@
+package haptix.comm.msgs;
+
+/// \ingroup haptix_comm_msgs
+/// \interface hxJoint
+/// \brief Information about a joint. A joint is a component of a model.
+
+import "hxWrench.proto";
+
+message hxJoint
+{
+  required string name              = 1;
+  required float pos                = 2;
+  required float vel                = 3;
+  required float torque_motor       = 4;
+  required hxWrench wrench_reactive = 5;
+}

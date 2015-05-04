@@ -1,0 +1,18 @@
+package haptix.comm.msgs;
+
+/// \ingroup haptix_comm_msgs
+/// \interface hxLink
+/// \brief Information about a link. A link is a component of a model.
+
+import "hxTransform.proto";
+import "hxVector3.proto";
+
+message hxLink
+{
+  required string name           = 1;
+  required hxTransform transform = 2;
+  required hxVector3 lin_vel     = 3;
+  required hxVector3 ang_vel     = 4;
+  required hxVector3 lin_acc     = 5;
+  required hxVector3 ang_acc     = 6;
+}

@@ -1,0 +1,10 @@
+package haptix.comm.msgs;
+
+/// \ingroup haptix_comm_msgs
+/// \interface hxString
+/// \brief String message.
+
+message hxString
+{
+  required string data = 1;
+}

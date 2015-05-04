@@ -1,0 +1,11 @@
+package haptix.comm.msgs;
+
+/// \ingroup haptix_comm_msgs
+/// \interface hxTime
+/// \brief A message for time data.
+
+message hxTime
+{
+  required uint64 sec = 1;
+  required uint64 nsec = 2;
+}

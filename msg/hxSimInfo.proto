@@ -1,0 +1,14 @@
+package haptix.comm.msgs;
+
+/// \ingroup haptix_comm_msgs
+/// \interface hxSimInfo
+/// \brief Information about the simulation world.
+
+import "hxModel.proto";
+import "hxTransform.proto";
+
+message hxSimInfo
+{
+  repeated hxModel models               = 1;
+  required hxTransform camera_transform = 2;
+}

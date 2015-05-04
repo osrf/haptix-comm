@@ -1,0 +1,19 @@
+package haptix.comm.msgs;
+
+/// \ingroup haptix_comm_msgs
+/// \interface hxContactPoint
+/// \brief Information about a contact point.
+
+import "hxVector3.proto";
+import "hxWrench.proto";
+
+message hxContactPoint
+{
+  required string link1        = 1;
+  required string link2        = 2;
+  required hxVector3 point     = 3;
+  required hxVector3 normal    = 4;
+  required float distance      = 5;
+  required hxVector3 velocity  = 6;
+  required hxWrench wrench     = 8;
+}

@@ -1,8 +1,26 @@
 set(msgs
+  hxCollideMode.proto
+  hxColor.proto
   hxCommand.proto
+  hxContactPoint.proto
+  hxContactPoint_V.proto
+  hxEmpty.proto
+  hxEuler.proto
+  hxGrasp.proto
+  hxInt.proto
+  hxJoint.proto
+  hxLink.proto
+  hxModel.proto
+  hxParam.proto
+  hxQuaternion.proto
   hxRobot.proto
   hxSensor.proto
-  hxGrasp.proto
+  hxSimInfo.proto
+  hxString.proto
+  hxTime.proto
+  hxTransform.proto
+  hxVector3.proto
+  hxWrench.proto
 )
 
 add_executable(haptixmsgs_out generator/HaptixGenerator.cc generator/haptix_generator.cc)
