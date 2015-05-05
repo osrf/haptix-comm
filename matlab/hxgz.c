@@ -1038,15 +1038,16 @@ hxgzs_linear_velocity (int nlhs, mxArray *plhs[],
   char name[hxsMAXNAMESIZE];
   hxsVector3 v;
 
-  if (nrhs != 2)
-    mexErrMsgIdAndTxt("HAPTIX:hxs_linear_velocity", "Expects 2 arguments");
+  if (nrhs != 1)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_linear_velocity", "Expects 1 arguments");
 
   if (mxGetString(prhs[0], name, sizeof(name)))
     mexErrMsgIdAndTxt("HAPTIX:hxs_linear_velocity", "Failed to determine name");
-  v = matlab_to_vector3(prhs[1]);
 
   if (hxs_linear_velocity(name, &v) != hxOK)
     mexErrMsgIdAndTxt("HAPTIX:hxs_linear_velocity", hx_last_result());
+
+  plhs[0] = vector3_to_matlab(&v);
 }
 
 void
@@ -1056,15 +1057,16 @@ hxgzs_angular_velocity (int nlhs, mxArray *plhs[],
   char name[hxsMAXNAMESIZE];
   hxsVector3 v;
 
-  if (nrhs != 2)
-    mexErrMsgIdAndTxt("HAPTIX:hxs_angular_velocity", "Expects 2 arguments");
+  if (nrhs != 1)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_angular_velocity", "Expects 1 arguments");
 
   if (mxGetString(prhs[0], name, sizeof(name)))
     mexErrMsgIdAndTxt("HAPTIX:hxs_angular_velocity", "Failed to determine name");
-  v = matlab_to_vector3(prhs[1]);
 
   if (hxs_angular_velocity(name, &v) != hxOK)
     mexErrMsgIdAndTxt("HAPTIX:hxs_angular_velocity", hx_last_result());
+
+  plhs[0] = vector3_to_matlab(&v);
 }
 
 void
