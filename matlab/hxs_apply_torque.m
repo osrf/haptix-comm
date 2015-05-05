@@ -1,6 +1,6 @@
 %HXS_APPLY_TORQUE Apply torque to a link.
 %
-% apply_torque(model, link, torque, duration)
+% hxs_apply_torque(model, link, torque, duration)
 %
 % Parameters:
 %   model (string) : Name of the model containing the link.

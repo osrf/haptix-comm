@@ -2,7 +2,7 @@
 % to the desired position and velocity. The link
 % acceleration may change based on the constraints of model's dynamic system.
 %
-% set_model_link_state(model, link, transform, lin_vel, ang_vel)
+% hxs_set_model_link_state(model, link, transform, lin_vel, ang_vel)
 %
 % Parameters:
 %   model (string) : Name of the model to set.

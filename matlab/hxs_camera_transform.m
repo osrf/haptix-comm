@@ -1,6 +1,6 @@
 %HXS_CAMERA_TRANSFORM Get information about the simulation camera.
 %
-% result = camera_transform()
+% result = hxs_camera_transform()
 %
 % Return values:
 %   result (transform) : Information about the simulation camera.

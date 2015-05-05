@@ -1,6 +1,6 @@
 %HXS_REMOVE_MODEL Remove model.
 %
-% remove_model(model)
+% hxs_remove_model(model)
 %
 % Parameters:
 %   model (string) : Name of the model.

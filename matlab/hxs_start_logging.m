@@ -1,7 +1,7 @@
 %HXS_START_LOGGING Start recording log file. Only one log file may be recorded at
 % a time.
 %
-% start_logging(filename)
+% hxs_start_logging(filename)
 %
 % Parameters:
 %   filename (string) : Name of the file to log information into.

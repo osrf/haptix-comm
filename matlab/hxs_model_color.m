@@ -1,6 +1,6 @@
 %HXS_MODEL_COLOR Get the color of the model.
 %
-% result = model_color(model)
+% result = hxs_model_color(model)
 %
 % Parameters:
 %   model (string) : Name of the model.

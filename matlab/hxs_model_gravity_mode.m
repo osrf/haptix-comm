@@ -1,6 +1,6 @@
 %MODEL_GRAVITY_MODE Get whether or not this model is affected by gravity.
 %
-% result = model_gravity_mode(model)
+% result = hxs_model_gravity_mode(model)
 %
 % Parameters:
 %   model (string) : Name of the model.

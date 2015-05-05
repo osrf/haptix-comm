@@ -1,6 +1,6 @@
 %HXS_ANGULAR_VELOCITY Get the angular velocity of a model.
 %
-% result = angular_velocity(name)
+% result = hxs_angular_velocity(name)
 %
 % Parameters:
 %   name (string) : Name of the model.

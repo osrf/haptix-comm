@@ -1,6 +1,6 @@
 %HXS_LINEAR_VELOCITY Get the linear velocity of a model.
 %
-% result = linear_velocity(model)
+% result = hxs_linear_velocity(model)
 %
 % Parameters:
 %   model (string) : Name of the model.

@@ -1,6 +1,6 @@
 %HXS_MODEL_COLLIDE_MODE Get the collide mode of the object.
 %
-% result = model_collide_mode(model)
+% result = hxs_model_collide_mode(model)
 %
 % Parameters:
 %   model (string) : Name of the model.

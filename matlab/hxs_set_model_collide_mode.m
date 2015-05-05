@@ -1,6 +1,6 @@
 %HXS_SET_MODEL_COLLIDE_MODE Set the collide mode of the object.
 %
-% set_model_collide_mode(model, collide_mode)
+% hxs_set_model_collide_mode(model, collide_mode)
 %
 % Parameters:
 %   model (string) : Name of the model.

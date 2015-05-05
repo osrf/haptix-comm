@@ -1,6 +1,6 @@
 %HXS_APPLY_WRENCH Apply a wrench to a link.
 %
-% apply_wrench(model, link, wrench, duration)
+% hxs_apply_wrench(model, link, wrench, duration)
 %
 % Parameters:
 %   model (string) : Name of the model containing the link.

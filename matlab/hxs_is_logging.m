@@ -1,6 +1,6 @@
 %HXS_IS_LOGGING Determine if logging is running.
 %
-% result = is_logging()
+% result = hxs_is_logging()
 %
 % Return values:
 %   result (bool) : 1 if logging is running, 0 otherwise.

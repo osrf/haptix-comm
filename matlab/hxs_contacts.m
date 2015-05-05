@@ -1,6 +1,6 @@
 %HXS_CONTACTS Get information about active contacts for a model.
 %
-% result = contacts(model)
+% result = hxs_contacts(model)
 %
 % Parameters:
 %   model (string) : The name of the model to query.

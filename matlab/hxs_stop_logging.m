@@ -1,6 +1,6 @@
 %HXS_STOP_LOGGING Stop recording log file.
 %
-% stop_logging()
+% hxs_stop_logging()
 %
 % See also HXS_SIM_INFO (for data structure definitions).
 %

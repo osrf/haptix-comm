@@ -1,6 +1,6 @@
 %HXS_APPLY_FORCE Apply force to a link.
 %
-% apply_force(model, link, force, duration)
+% hxs_apply_force(model, link, force, duration)
 %
 % Parameters:
 %   model (string) : Name of the model containing the link.

@@ -1,6 +1,6 @@
 %HXS_SIM_INFO
 %
-% result = sim_info()
+% result = hxs_sim_info()
 %
 % Return values:
 %   result: Structure with the following named fields:

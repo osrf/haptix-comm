@@ -1,6 +1,6 @@
 %HXS_SET_MODEL_COLOR Set the color of the model.
 %
-% set_model_color(model, color)
+% hxs_set_model_color(model, color)
 %
 % Parameters:
 %   model (string) : Name of the model.

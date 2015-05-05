@@ -3,7 +3,7 @@
 % torque, and reaction wrench of the joint may change based on the constraints
 % of model's dynamic system.
 %
-% set_model_joint_state(model, joint, position, velocity)
+% hxs_set_model_joint_state(model, joint, position, velocity)
 %
 % Parameters:
 %   model (string) :  Name of the model to set.

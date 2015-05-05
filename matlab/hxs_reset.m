@@ -1,6 +1,6 @@
 %HXS_RESET Send world reset command/Carry over limb pose between world reset.
 %
-% reset(reset_limb_pose)
+% hxs_reset(reset_limb_pose)
 %
 % Parameters:
 %   reset_limb_pose (int) : Non-zero to reset the pose of the limb. 

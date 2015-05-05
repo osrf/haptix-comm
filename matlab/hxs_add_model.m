@@ -1,6 +1,6 @@
 %HXS_ADD_MODEL Add model during runtime.
 %
-% model = add_model(sdf, name, pos, orient, gravity_mode)
+% model = hxs_add_model(sdf, name, pos, orient, gravity_mode)
 %
 % Parameters:
 %   sdf (string) : SDF xml description of the model.

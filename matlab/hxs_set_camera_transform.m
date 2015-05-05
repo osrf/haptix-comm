@@ -1,6 +1,6 @@
 %HXS_SET_CAMERA_TRANSFORM Set camera transform.
 %
-% set_camera_transform(transform)
+% hxs_set_camera_transform(transform)
 %
 % Parameters:
 %   transform (transform) : New camera transform.

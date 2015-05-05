@@ -1,6 +1,6 @@
 %HXS_SET_MODEL_GRAVITY_MODE Set whether or not this model is affected by gravity.
 %
-% set_model_gravity_mode(model, gravity_mode)
+% hxs_set_model_gravity_mode(model, gravity_mode)
 %
 % Parameters:
 %   model (string) : Name of the model. 
