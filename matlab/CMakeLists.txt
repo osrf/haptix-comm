@@ -9,9 +9,12 @@ set (matlab_files
   hx_robot_info.m
   hxs_add_model.m
   hxs_angular_velocity.m
+  hxs_apply_force.m
+  hxs_apply_torque.m
+  hxs_apply_wrench.m
   hxs_camera_transform.m
   hxs_contacts.m
-  hxs_force.m
+  hxs_example.m
   hxs_is_logging.m
   hxs_linear_velocity.m
   hxs_model_collide_mode.m
@@ -20,7 +23,6 @@ set (matlab_files
   hxs_model_transform.m
   hxs_remove_model.m
   hxs_reset.m
-  hxs_reset_timer.m
   hxs_set_camera_transform.m
   hxs_set_model_collide_mode.m
   hxs_set_model_color.m
@@ -29,12 +31,7 @@ set (matlab_files
   hxs_set_model_link_state.m
   hxs_sim_info.m
   hxs_start_logging.m
-  hxs_start_timer.m
   hxs_stop_logging.m
-  hxs_stop_timer.m
-  hxs_timer.m
-  hxs_torque.m
-  hxs_wrench.m
   hx_update.m)
 
 #

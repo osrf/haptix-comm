@@ -1,9 +1,18 @@
-%HXS_LINEAR_VELOCITY
+%HXS_LINEAR_VELOCITY Get the linear velocity of a model.
 %
-% result = linear_velocity()
+% result = linear_velocity(model)
 %
-%TODO: document
+% Parameters:
+%   model (string) : Name of the model.
+%
+% Return values:
+%   result (vector3) : Velocity (m/s).
+%
+% See also HXS_SIM_INFO (for data structure definitions).
+%
+% For more information, see <a href="matlab:
+% web('http://gazebosim.org/haptix')">the Gazebo HAPTIX site</a>.
 
-function hxs_linear_velocity(name, velocity)
-  hxgz("linear_velocity", name, velocity);
+function result = hxs_linear_velocity(model)
+  result = hxgz("linear_velocity", model);
 end

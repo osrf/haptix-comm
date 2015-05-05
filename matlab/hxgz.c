@@ -44,21 +44,13 @@ void hxgzs_linear_velocity (int nlhs, mxArray *plhs[],
                             int nrhs, const mxArray *prhs[]);
 void hxgzs_angular_velocity (int nlhs, mxArray *plhs[],
                             int nrhs, const mxArray *prhs[]);
-void hxgzs_force (int nlhs, mxArray *plhs[],
-                  int nrhs, const mxArray *prhs[]);
-void hxgzs_torque (int nlhs, mxArray *plhs[],
-                   int nrhs, const mxArray *prhs[]);
-void hxgzs_wrench (int nlhs, mxArray *plhs[],
-                   int nrhs, const mxArray *prhs[]);
+void hxgzs_apply_force (int nlhs, mxArray *plhs[],
+                        int nrhs, const mxArray *prhs[]);
+void hxgzs_apply_torque (int nlhs, mxArray *plhs[],
+                         int nrhs, const mxArray *prhs[]);
+void hxgzs_apply_wrench (int nlhs, mxArray *plhs[],
+                         int nrhs, const mxArray *prhs[]);
 void hxgzs_reset (int nlhs, mxArray *plhs[],
-                  int nrhs, const mxArray *prhs[]);
-void hxgzs_reset_timer (int nlhs, mxArray *plhs[],
-                        int nrhs, const mxArray *prhs[]);
-void hxgzs_start_timer (int nlhs, mxArray *plhs[],
-                        int nrhs, const mxArray *prhs[]);
-void hxgzs_stop_timer (int nlhs, mxArray *plhs[],
-                       int nrhs, const mxArray *prhs[]);
-void hxgzs_timer (int nlhs, mxArray *plhs[],
                   int nrhs, const mxArray *prhs[]);
 void hxgzs_start_logging (int nlhs, mxArray *plhs[],
                           int nrhs, const mxArray *prhs[]);
@@ -164,20 +156,14 @@ mexFunction (int nlhs, mxArray *plhs[],
     hxgzs_linear_velocity(nlhs, plhs, nrhs-1, prhs+1);
   else if (!strcmp(funcName, "angular_velocity"))
     hxgzs_angular_velocity(nlhs, plhs, nrhs-1, prhs+1);
-  else if (!strcmp(funcName, "force"))
-    hxgzs_force(nlhs, plhs, nrhs-1, prhs+1);
-  else if (!strcmp(funcName, "torque"))
-    hxgzs_torque(nlhs, plhs, nrhs-1, prhs+1);
-  else if (!strcmp(funcName, "wrench"))
-    hxgzs_wrench(nlhs, plhs, nrhs-1, prhs+1);
+  else if (!strcmp(funcName, "apply_force"))
+    hxgzs_apply_force(nlhs, plhs, nrhs-1, prhs+1);
+  else if (!strcmp(funcName, "apply_torque"))
+    hxgzs_apply_torque(nlhs, plhs, nrhs-1, prhs+1);
+  else if (!strcmp(funcName, "apply_wrench"))
+    hxgzs_apply_wrench(nlhs, plhs, nrhs-1, prhs+1);
   else if (!strcmp(funcName, "reset"))
     hxgzs_reset(nlhs, plhs, nrhs-1, prhs+1);
-  else if (!strcmp(funcName, "reset_timer"))
-    hxgzs_reset_timer(nlhs, plhs, nrhs-1, prhs+1);
-  else if (!strcmp(funcName, "start_timer"))
-    hxgzs_start_timer(nlhs, plhs, nrhs-1, prhs+1);
-  else if (!strcmp(funcName, "stop_timer"))
-    hxgzs_stop_timer(nlhs, plhs, nrhs-1, prhs+1);
   else if (!strcmp(funcName, "start_logging"))
     hxgzs_start_logging(nlhs, plhs, nrhs-1, prhs+1);
   else if (!strcmp(funcName, "is_logging"))
@@ -1082,8 +1068,8 @@ hxgzs_angular_velocity (int nlhs, mxArray *plhs[],
 }
 
 void
-hxgzs_force (int nlhs, mxArray *plhs[],
-             int nrhs, const mxArray *prhs[])
+hxgzs_apply_force (int nlhs, mxArray *plhs[],
+                   int nrhs, const mxArray *prhs[])
 {
   char name[hxsMAXNAMESIZE];
   char link[hxsMAXNAMESIZE];
@@ -1091,23 +1077,23 @@ hxgzs_force (int nlhs, mxArray *plhs[],
   float duration;
 
   if (nrhs != 4)
-    mexErrMsgIdAndTxt("HAPTIX:hxs_force", "Expects 4 arguments");
+    mexErrMsgIdAndTxt("HAPTIX:hxs_apply_force", "Expects 4 arguments");
 
   if (mxGetString(prhs[0], name, sizeof(name)))
-    mexErrMsgIdAndTxt("HAPTIX:hxs_force", "Failed to determine name");
+    mexErrMsgIdAndTxt("HAPTIX:hxs_apply_force", "Failed to determine name");
   if (mxGetString(prhs[1], link, sizeof(link)))
-    mexErrMsgIdAndTxt("HAPTIX:hxs_force", "Failed to determine link");
+    mexErrMsgIdAndTxt("HAPTIX:hxs_apply_force", "Failed to determine link");
   v = matlab_to_vector3(prhs[2]);
   double *d = mxGetPr(prhs[3]);
   duration = d[0];
 
-  if (hxs_force(name, link, &v, duration) != hxOK)
-    mexErrMsgIdAndTxt("HAPTIX:hxs_force", hx_last_result());
+  if (hxs_apply_force(name, link, &v, duration) != hxOK)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_apply_force", hx_last_result());
 }
 
 void
-hxgzs_torque (int nlhs, mxArray *plhs[],
-             int nrhs, const mxArray *prhs[])
+hxgzs_apply_torque (int nlhs, mxArray *plhs[],
+                    int nrhs, const mxArray *prhs[])
 {
   char name[hxsMAXNAMESIZE];
   char link[hxsMAXNAMESIZE];
@@ -1115,23 +1101,23 @@ hxgzs_torque (int nlhs, mxArray *plhs[],
   float duration;
 
   if (nrhs != 4)
-    mexErrMsgIdAndTxt("HAPTIX:hxs_torque", "Expects 4 arguments");
+    mexErrMsgIdAndTxt("HAPTIX:hxs_apply_torque", "Expects 4 arguments");
 
   if (mxGetString(prhs[0], name, sizeof(name)))
-    mexErrMsgIdAndTxt("HAPTIX:hxs_torque", "Failed to determine name");
+    mexErrMsgIdAndTxt("HAPTIX:hxs_apply_torque", "Failed to determine name");
   if (mxGetString(prhs[1], link, sizeof(link)))
-    mexErrMsgIdAndTxt("HAPTIX:hxs_torque", "Failed to determine link");
+    mexErrMsgIdAndTxt("HAPTIX:hxs_apply_torque", "Failed to determine link");
   v = matlab_to_vector3(prhs[2]);
   double *d = mxGetPr(prhs[3]);
   duration = d[0];
 
-  if (hxs_torque(name, link, &v, duration) != hxOK)
-    mexErrMsgIdAndTxt("HAPTIX:hxs_torque", hx_last_result());
+  if (hxs_apply_torque(name, link, &v, duration) != hxOK)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_apply_torque", hx_last_result());
 }
 
 void
-hxgzs_wrench (int nlhs, mxArray *plhs[],
-             int nrhs, const mxArray *prhs[])
+hxgzs_apply_wrench (int nlhs, mxArray *plhs[],
+                    int nrhs, const mxArray *prhs[])
 {
   char name[hxsMAXNAMESIZE];
   char link[hxsMAXNAMESIZE];
@@ -1139,18 +1125,18 @@ hxgzs_wrench (int nlhs, mxArray *plhs[],
   float duration;
 
   if (nrhs != 4)
-    mexErrMsgIdAndTxt("HAPTIX:hxs_wrench", "Expects 4 arguments");
+    mexErrMsgIdAndTxt("HAPTIX:hxs_apply_wrench", "Expects 4 arguments");
 
   if (mxGetString(prhs[0], name, sizeof(name)))
-    mexErrMsgIdAndTxt("HAPTIX:hxs_wrench", "Failed to determine name");
+    mexErrMsgIdAndTxt("HAPTIX:hxs_apply_wrench", "Failed to determine name");
   if (mxGetString(prhs[1], link, sizeof(link)))
-    mexErrMsgIdAndTxt("HAPTIX:hxs_wrench", "Failed to determine link");
+    mexErrMsgIdAndTxt("HAPTIX:hxs_apply_wrench", "Failed to determine link");
   w = matlab_to_wrench(prhs[2]);
   double *d = mxGetPr(prhs[3]);
   duration = d[0];
 
-  if (hxs_wrench(name, link, &w, duration) != hxOK)
-    mexErrMsgIdAndTxt("HAPTIX:hxs_wrench", hx_last_result());
+  if (hxs_apply_wrench(name, link, &w, duration) != hxOK)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_apply_wrench", hx_last_result());
 }
 
 void
@@ -1167,46 +1153,6 @@ hxgzs_reset (int nlhs, mxArray *plhs[],
 
   if (hxs_reset(reset_limb_pose) != hxOK)
     mexErrMsgIdAndTxt("HAPTIX:hxs_reset", hx_last_result());
-}
-
-void
-hxgzs_reset_timer (int nlhs, mxArray *plhs[],
-                   int nrhs, const mxArray *prhs[])
-{
-  if (hxs_reset_timer() != hxOK)
-    mexErrMsgIdAndTxt("HAPTIX:hxs_reset_timer", hx_last_result());
-}
-
-void
-hxgzs_start_timer (int nlhs, mxArray *plhs[],
-                   int nrhs, const mxArray *prhs[])
-{
-  if (hxs_start_timer() != hxOK)
-    mexErrMsgIdAndTxt("HAPTIX:hxs_start_timer", hx_last_result());
-}
-
-void
-hxgzs_stop_timer (int nlhs, mxArray *plhs[],
-                   int nrhs, const mxArray *prhs[])
-{
-  if (hxs_stop_timer() != hxOK)
-    mexErrMsgIdAndTxt("HAPTIX:hxs_stop_timer", hx_last_result());
-}
-
-void
-hxgzs_timer (int nlhs, mxArray *plhs[],
-             int nrhs, const mxArray *prhs[])
-{
-  hxTime t;
-
-  if (hxs_timer(&t) != hxOK)
-    mexErrMsgIdAndTxt("HAPTIX:hxs_timer", hx_last_result());
-
-  mxArray *m = mxCreateDoubleMatrix(1, 1, mxREAL);
-  double *d = mxGetPr(m);
-  d[0] = t.sec + t.nsec/1e9;
-
-  plhs[0] = m;
 }
 
 void
