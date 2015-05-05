@@ -347,19 +347,27 @@ hxResult hxs_set_model_link_state(const char *_model, const char *_link,
 /// \param[out] _model Pointer to the new model.
 /// \return 'hxOK' if the function succeed or an error code otherwise.
 hxResult hxs_add_model(const char *_sdf, const char *_name,
-  float _x, float _y, float _z, float _roll, float _pitch, float _yaw,
-  int _gravity_mode, hxsModel *_model);
+    float _x, float _y, float _z, float _roll, float _pitch, float _yaw,
+    int _gravity_mode, hxsModel *_model);
 
 /// \brief Remove model.
 /// \param[in] _name Name of the model.
 /// \return 'hxOK' if the function succeed or an error code otherwise.
 hxResult hxs_remove_model(const char *_name);
 
-/// \brief Set model pose.
+/// \brief Set model transform (position and orientation in the global
+/// coordinate frame).
 /// \param[in] _name Name of the model.
 /// \param[in] _transform New model transform.
 /// \return 'hxOK' if the function succeed or an error code otherwise.
-hxResult hxs_model_transform(const char *_name, const hxsTransform *_transform);
+hxResult hxs_set_model_transform(const char *_name,
+    const hxsTransform *_transform);
+
+/// \brief Get model transform.
+/// \param[in] _name Name of the model.
+/// \param[out] _transform Current model transform.
+/// \return 'hxOK' if the function succeed or an error code otherwise.
+hxResult hxs_model_transform(const char *_name, hxsTransform *_transform);
 
 /// \brief Get whether or not this model is affected by gravity.
 /// \param[in] _name Name of the model.
@@ -373,17 +381,31 @@ hxResult hxs_model_gravity_mode(const char *_name, int *_gravity_mode);
 /// the model is free-floating.
 hxResult hxs_set_model_gravity_mode(const char *_name, const int _gravity_mode);
 
+/// \brief Get the linear velocity of a model.
+/// \param[in] _name Name of the model.
+/// \param[out] _velocity Velocity (m/s).
+/// \return 'hxOK' if the function succeed or an error code otherwise.
+hxResult hxs_linear_velocity(const char *_name, hxsVector3 *_velocity);
+
 /// \brief Set the linear velocity of a model.
 /// \param[in] _name Name of the model.
 /// \param[in] _velocity Velocity (m/s).
 /// \return 'hxOK' if the function succeed or an error code otherwise.
-hxResult hxs_linear_velocity(const char *_name, const hxsVector3 *_velocity);
+hxResult hxs_set_linear_velocity(const char *_name,
+    const hxsVector3 *_velocity);
+
+/// \brief Get the angular velocity of a model.
+/// \param[in] _name Name of the model.
+/// \param[out] _ang_vel Velocity (rad/s).
+/// \return 'hxOK' if the function succeed or an error code otherwise.
+hxResult hxs_angular_velocity(const char *_name, hxsVector3 *_ang_vel);
 
 /// \brief Set the angular velocity of a model.
 /// \param[in] _name Name of the model.
-/// \param[in] _velocity Velocity (rad/s).
+/// \param[in] _ang_vel Velocity (rad/s).
 /// \return 'hxOK' if the function succeed or an error code otherwise.
-hxResult hxs_angular_velocity(const char *_name, const hxsVector3 *_velocity);
+hxResult hxs_set_angular_velocity(const char *_name,
+  const hxsVector3 *_ang_vel);
 
 /// \brief Apply force to a link.
 /// \param[in] _modelName Name of the model containing the link.
@@ -392,7 +414,7 @@ hxResult hxs_angular_velocity(const char *_name, const hxsVector3 *_velocity);
 /// \param[in] _duration Duration of the force application in seconds. Set to 0
 /// for persistent duration.
 /// \return 'hxOK' if the function succeed or an error code otherwise.
-hxResult hxs_force(const char *_modelName, const char *_linkName,
+hxResult hxs_apply_force(const char *_modelName, const char *_linkName,
     const hxsVector3 *_force, const float _duration);
 
 /// \brief Apply torque to a link.
@@ -402,7 +424,7 @@ hxResult hxs_force(const char *_modelName, const char *_linkName,
 /// \param[in] _duration Duration of the torque application in seconds. Set to 0
 /// for persistent duration.
 /// \return 'hxOK' if the function succeed or an error code otherwise.
-hxResult hxs_torque(const char *_modelName, const char *_linkName,
+hxResult hxs_apply_torque(const char *_modelName, const char *_linkName,
     const hxsVector3 *_torque, const float _duration);
 
 /// \brief Apply a wrench to a link.
@@ -412,31 +434,13 @@ hxResult hxs_torque(const char *_modelName, const char *_linkName,
 /// \param[in] _duration Duration of the torque application in seconds. Set to 0
 /// for persistent duration.
 /// \return 'hxOK' if the function succeed or an error code otherwise.
-hxResult hxs_wrench(const char *_modelName, const char *_linkName,
+hxResult hxs_apply_wrench(const char *_modelName, const char *_linkName,
     const hxsWrench *_wrench, const float _duration);
 
 /// \brief Send world reset command/Carry over limb pose between world reset.
 /// \param[in] _resetLimbPose Non-zero to reset the pose of the limb.
 /// \return 'hxOK' if the function succeed or an error code otherwise.
 hxResult hxs_reset(int _resetLimbPose);
-
-/// \brief Reset on-screen timer.
-/// \return 'hxOK' if the function succeed or an error code otherwise.
-hxResult hxs_reset_timer();
-
-/// \brief Start on-screen timer.
-/// \return 'hxOK' if the function succeed or an error code otherwise.
-hxResult hxs_start_timer();
-
-/// \brief Stop on-screen timer.
-/// \return 'hxOK' if the function succeed or an error code otherwise.
-hxResult hxs_stop_timer();
-
-/// \brief Get the state of the on-screen timer.
-/// \param[out] _time The time represented by the on-screen timer.
-/// \sa hxTime
-/// \return 'hxOK' if the function succeed or an error code otherwise.
-hxResult hxs_timer(hxTime *_time);
 
 /// \brief Start recording log file. Only one log file may be recorded at
 /// a time.
