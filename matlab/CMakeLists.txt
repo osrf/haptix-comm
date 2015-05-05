@@ -23,12 +23,15 @@ set (matlab_files
   hxs_model_transform.m
   hxs_remove_model.m
   hxs_reset.m
+  hxs_set_angular_velocity.m
   hxs_set_camera_transform.m
+  hxs_set_linear_velocity.m
   hxs_set_model_collide_mode.m
   hxs_set_model_color.m
   hxs_set_model_gravity_mode.m
   hxs_set_model_joint_state.m
   hxs_set_model_link_state.m
+  hxs_set_model_transform.m
   hxs_sim_info.m
   hxs_start_logging.m
   hxs_stop_logging.m

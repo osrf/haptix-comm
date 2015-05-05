@@ -78,6 +78,16 @@ wrench = struct("force", [0; 0; 1], "torque", [0; 0; 0.1])
 hxs_apply_wrench("wood_cube_5cm", "link", wrench, 0.1);
 sleep(1.5);
 
+% Move by setting linear velocity
+hxs_set_linear_velocity("wood_cube_5cm", [-0.5; 0; 0]);
+sleep(1.0);
+hxs_set_linear_velocity("wood_cube_5cm", [0; 0; 0]);
+
+% Move by setting angular velocity
+hxs_set_angular_velocity("wood_cube_5cm", [0; 0; 100]);
+sleep(1.0);
+hxs_set_angular_velocity("wood_cube_5cm", [0; 0; 0]);
+
 % Check gravity mode on wooden cube
 gravity_mode = hxs_model_gravity_mode("wood_cube_5cm");
 disp(gravity_mode);
@@ -95,6 +105,10 @@ disp("Cube position:");
 disp(tx.pos);
 disp("Cube orientation:");
 disp(tx.orient);
+% Modify and set the pose
+tx.pos(2) += 0.25;
+tx.orient(2) += pi/4;
+hxs_set_model_transform("wood_cube_5cm", tx);
 
 % Check collide mode on the cube
 collide_mode = hxs_model_collide_mode("wood_cube_5cm");

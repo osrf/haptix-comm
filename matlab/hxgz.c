@@ -36,14 +36,20 @@ void hxgzs_remove_model (int nlhs, mxArray *plhs[],
                          int nrhs, const mxArray *prhs[]);
 void hxgzs_model_transform (int nlhs, mxArray *plhs[],
                             int nrhs, const mxArray *prhs[]);
+void hxgzs_set_model_transform (int nlhs, mxArray *plhs[],
+                                int nrhs, const mxArray *prhs[]);
 void hxgzs_model_gravity_mode (int nlhs, mxArray *plhs[],
                                int nrhs, const mxArray *prhs[]);
 void hxgzs_set_model_gravity_mode (int nlhs, mxArray *plhs[],
                                    int nrhs, const mxArray *prhs[]);
 void hxgzs_linear_velocity (int nlhs, mxArray *plhs[],
                             int nrhs, const mxArray *prhs[]);
+void hxgzs_set_linear_velocity (int nlhs, mxArray *plhs[],
+                                int nrhs, const mxArray *prhs[]);
 void hxgzs_angular_velocity (int nlhs, mxArray *plhs[],
                             int nrhs, const mxArray *prhs[]);
+void hxgzs_set_angular_velocity (int nlhs, mxArray *plhs[],
+                                 int nrhs, const mxArray *prhs[]);
 void hxgzs_apply_force (int nlhs, mxArray *plhs[],
                         int nrhs, const mxArray *prhs[]);
 void hxgzs_apply_torque (int nlhs, mxArray *plhs[],
@@ -148,14 +154,20 @@ mexFunction (int nlhs, mxArray *plhs[],
     hxgzs_remove_model(nlhs, plhs, nrhs-1, prhs+1);
   else if (!strcmp(funcName, "model_transform"))
     hxgzs_model_transform(nlhs, plhs, nrhs-1, prhs+1);
+  else if (!strcmp(funcName, "set_model_transform"))
+    hxgzs_set_model_transform(nlhs, plhs, nrhs-1, prhs+1);
   else if (!strcmp(funcName, "model_gravity_mode"))
     hxgzs_model_gravity_mode(nlhs, plhs, nrhs-1, prhs+1);
   else if (!strcmp(funcName, "set_model_gravity_mode"))
     hxgzs_set_model_gravity_mode(nlhs, plhs, nrhs-1, prhs+1);
   else if (!strcmp(funcName, "linear_velocity"))
     hxgzs_linear_velocity(nlhs, plhs, nrhs-1, prhs+1);
+  else if (!strcmp(funcName, "set_linear_velocity"))
+    hxgzs_set_linear_velocity(nlhs, plhs, nrhs-1, prhs+1);
   else if (!strcmp(funcName, "angular_velocity"))
     hxgzs_angular_velocity(nlhs, plhs, nrhs-1, prhs+1);
+  else if (!strcmp(funcName, "set_angular_velocity"))
+    hxgzs_set_angular_velocity(nlhs, plhs, nrhs-1, prhs+1);
   else if (!strcmp(funcName, "apply_force"))
     hxgzs_apply_force(nlhs, plhs, nrhs-1, prhs+1);
   else if (!strcmp(funcName, "apply_torque"))
@@ -989,6 +1001,24 @@ hxgzs_model_transform (int nlhs, mxArray *plhs[],
 }
 
 void
+hxgzs_set_model_transform (int nlhs, mxArray *plhs[],
+                           int nrhs, const mxArray *prhs[])
+{
+  char name[hxsMAXNAMESIZE];
+  hxsTransform t;
+
+  if (nrhs != 2)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_set_model_transform", "Expects 2 arguments");
+
+  if (mxGetString(prhs[0], name, sizeof(name)))
+    mexErrMsgIdAndTxt("HAPTIX:hxs_set_model_transform", "Failed to determine name");
+  t = matlab_to_transform(prhs[1]);
+
+  if (hxs_set_model_transform(name, &t) != hxOK)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_set_model_transform", hx_last_result());
+}
+
+void
 hxgzs_model_gravity_mode (int nlhs, mxArray *plhs[],
                           int nrhs, const mxArray *prhs[])
 {
@@ -1051,6 +1081,24 @@ hxgzs_linear_velocity (int nlhs, mxArray *plhs[],
 }
 
 void
+hxgzs_set_linear_velocity (int nlhs, mxArray *plhs[],
+                           int nrhs, const mxArray *prhs[])
+{
+  char name[hxsMAXNAMESIZE];
+  hxsVector3 v;
+
+  if (nrhs != 2)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_set_linear_velocity", "Expects 2 arguments");
+
+  if (mxGetString(prhs[0], name, sizeof(name)))
+    mexErrMsgIdAndTxt("HAPTIX:hxs_set_linear_velocity", "Failed to determine name");
+  v = matlab_to_vector3(prhs[1]);
+
+  if (hxs_set_linear_velocity(name, &v) != hxOK)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_set_linear_velocity", hx_last_result());
+}
+
+void
 hxgzs_angular_velocity (int nlhs, mxArray *plhs[],
                        int nrhs, const mxArray *prhs[])
 {
@@ -1067,6 +1115,24 @@ hxgzs_angular_velocity (int nlhs, mxArray *plhs[],
     mexErrMsgIdAndTxt("HAPTIX:hxs_angular_velocity", hx_last_result());
 
   plhs[0] = vector3_to_matlab(&v);
+}
+
+void
+hxgzs_set_angular_velocity (int nlhs, mxArray *plhs[],
+                       int nrhs, const mxArray *prhs[])
+{
+  char name[hxsMAXNAMESIZE];
+  hxsVector3 v;
+
+  if (nrhs != 2)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_set_angular_velocity", "Expects 2 arguments");
+
+  if (mxGetString(prhs[0], name, sizeof(name)))
+    mexErrMsgIdAndTxt("HAPTIX:hxs_set_angular_velocity", "Failed to determine name");
+  v = matlab_to_vector3(prhs[1]);
+
+  if (hxs_set_angular_velocity(name, &v) != hxOK)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_set_angular_velocity", hx_last_result());
 }
 
 void
