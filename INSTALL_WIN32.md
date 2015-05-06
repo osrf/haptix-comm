@@ -2,7 +2,7 @@
 
 ## Supported compilers
 
-At this moment, compilation has been testewd on Windows 7 and is supported 
+At this moment, compilation has been testewd on Windows 7 and is supported
 when using Visual Studio 2013. Patches for other versions are welcome.
 
 ## Note for 64bits installations
@@ -22,15 +22,22 @@ to build and install `ign-transport`.
 1. Add `haptix-comm` to that workspace:
 
     cd ign-ws
+
     hg clone https://bitbucket.org/osrf/haptix-comm
+
     cd haptix-comm
 
 1. Configure and build:
 
     mkdir build
+
     cd build
+
     ..\configure
+
     nmake
+
     nmake install
+
 
 You should now have an installation of `haptix-comm` in `ign-ws/haptix-comm/build/install`.
