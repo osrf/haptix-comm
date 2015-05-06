@@ -1259,7 +1259,6 @@ hxgzs_reset(int nlhs, mxArray *plhs[],
 
   double *d = mxGetPr(prhs[0]);
   reset_limb_pose = d[0];
-  printf("reset_limb_pose: %d\n", reset_limb_pose);
 
   if (hxs_reset(reset_limb_pose) != hxOK)
     mexErrMsgIdAndTxt("HAPTIX:hxs_reset", hx_last_result());
