@@ -29,6 +29,10 @@
 #include "msg/hxTransform.pb.h"
 #include "msg/hxVector3.pb.h"
 
+#ifdef _WIN32
+#define __func__ __FUNCTION__
+#endif
+
 extern "C" {
   //////////////////////////////////////////////////
   hxResult hxs_sim_info(hxsSimInfo *_siminfo)
