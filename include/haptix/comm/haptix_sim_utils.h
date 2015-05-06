@@ -592,6 +592,7 @@ hxResult hxs_call(const std::string &_service,
 
   // Request the service.
   bool executed = hxNode->Request(_service, _req, kTimeout, _rep, result);
+
   if (executed)
   {
     if (result)
