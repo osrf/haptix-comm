@@ -40,7 +40,7 @@ extern "C" {
 #define hxsMAXJOINTS 50
 
 /// \brief Maximum number of models per simulation.
-#define hxsMAXMODELS 40
+#define hxsMAXMODELS 50
 
 /// \brief Maximum number of characters allowed per name.
 #define hxsMAXNAMESIZE 100
