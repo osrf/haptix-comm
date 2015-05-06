@@ -15,8 +15,7 @@ for model_idx = 1:size(info.models)
   disp("Joints:");
   for joint_idx = 1:size(model.joints)
     joint = model.joints(joint_idx).joint;
-    % TODO: this doesn't work yet
-    %disp(joint.name);
+    disp(joint.name);
   end
 end
 

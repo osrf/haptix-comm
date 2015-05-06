@@ -631,7 +631,7 @@ model_to_matlab (const hxsModel* h)
   for(i=0; i<h->link_count; ++i)
     mxSetField(linksArray, i, "link", link_to_matlab(h->links+i));
   for(i=0; i<h->joint_count; ++i)
-    mxSetField(jointsArray, i, "link", joint_to_matlab(h->joints+i));
+    mxSetField(jointsArray, i, "joint", joint_to_matlab(h->joints+i));
   gravityModeData[0] = h->gravity_mode;
 
   mxSetField(s, 0, "name", nameArray);
@@ -962,6 +962,7 @@ hxgzs_add_model (int nlhs, mxArray *plhs[],
                     roll, pitch, yaw, gravity_mode, &model) != hxOK)
     mexErrMsgIdAndTxt("HAPTIX:hxs_set_model_link_state", hx_last_result());
 
+  free(sdf);
   plhs[0] = model_to_matlab(&model);
 }
 
