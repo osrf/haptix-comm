@@ -266,6 +266,12 @@ struct _hxsContactPoints
 typedef struct _hxsContactPoints hxsContactPoints;
 
 /// \brief Simulation information.
+/// IMPORTANT: Any hxsSimInfo variable should be declared in the heap. Declaring
+/// the variable in the stack can cause a stack overflow:
+///
+/// hxsSimInfo *simInfo = (hxsSimInfo*)malloc(sizeof(hxsSimInfo));
+/// ...
+/// free(simInfo);
 struct _hxsSimInfo
 {
   /// \brief Number of models in simulation.
@@ -283,6 +289,12 @@ struct _hxsSimInfo
 
 /// \def hxsSimInfo
 /// \brief Information about the simulation world.
+/// IMPORTANT: Any hxsSimInfo variable should be declared in the heap. Declaring
+/// the variable in the stack can cause a stack overflow:
+///
+/// hxsSimInfo *simInfo = (hxsSimInfo*)malloc(sizeof(hxsSimInfo));
+/// ...
+/// free(simInfo);
 typedef struct _hxsSimInfo hxsSimInfo;
 
 // ---------- API functions ----------
