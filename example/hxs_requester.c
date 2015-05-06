@@ -25,14 +25,14 @@
 //////////////////////////////////////////////////
 int main(int argc, char **argv)
 {
-  hxsSimInfo simInfo;
+  hxsSimInfo *simInfo = (hxsSimInfo*)malloc(sizeof(hxsSimInfo));
   hxsTransform cameraTransform;
   hxsContactPoints contactPoints;
   hxTime time;
   hxsColor color;
 
   // Requesting simulation information.
-  if (hxs_sim_info(&simInfo) != hxOK)
+  if (hxs_sim_info(simInfo) != hxOK)
   {
     printf("hxs_siminfo(): Request error.\n");
     return -1;
@@ -75,6 +75,8 @@ int main(int argc, char **argv)
     printf("hxs_set_model_color(): Request error.\n");
     return -1;
   }
+
+  free(simInfo);
 
   return 0;
 }
