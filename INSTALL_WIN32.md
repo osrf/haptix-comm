@@ -15,17 +15,17 @@ used by the cmake module.
 
 Totally experimental, using pre-compiled binaries in a local workspace.
 
-1. Follow the [ign-transport Windows installation
+* Follow the [ign-transport Windows installation
 instructions](https://bitbucket.org/ignitionrobotics/ign-transport/src/default/INSTALL_WIN32.md?at=win_support)
 to build and install `ign-transport`.
 
-1. Add `haptix-comm` to that workspace:
+* Add `haptix-comm` to that workspace:
 ~~~~
     cd ign-ws
     hg clone https://bitbucket.org/osrf/haptix-comm
     cd haptix-comm
 ~~~~
-1. Configure and build:
+* Configure and build:
 ~~~~
     mkdir build
     cd build
