@@ -817,11 +817,16 @@ void
 hxgzs_sim_info(int nlhs, mxArray *plhs[],
                int nrhs, const mxArray *prhs[])
 {
-  hxsSimInfo h;
+  // This structure is too large to declare on the stack.
+  hxsSimInfo* h;
+  h = (hxsSimInfo*)malloc(sizeof(hxsSimInfo));
 
   // Request robot information.
-  if (hxs_sim_info(&h) != hxOK)
+  if (hxs_sim_info(h) != hxOK)
+  {
+    free(h);
     mexErrMsgIdAndTxt("HAPTIX:hxs_sim_info", hx_last_result());
+  }
 
   // Create a Matlab structure array.
   const char *keys[] = {"models",
@@ -830,19 +835,21 @@ hxgzs_sim_info(int nlhs, mxArray *plhs[],
 
   const char *modelsKeys[] = {"model"};
   mxArray *modelsArray =
-    mxCreateStructMatrix(h.model_count, 1, 1, modelsKeys);
+    mxCreateStructMatrix(h->model_count, 1, 1, modelsKeys);
   mxArray* cameraTransformArray =
-    transform_to_matlab(&(h.camera_transform));
+    transform_to_matlab(&(h->camera_transform));
 
   int i;
-  for (i = 0; i < h.model_count; ++i)
-    mxSetField(modelsArray, i, "model", model_to_matlab(h.models+i));
+  for (i = 0; i < h->model_count; ++i)
+    mxSetField(modelsArray, i, "model", model_to_matlab(h->models+i));
 
   mxSetField(s, 0, "models", modelsArray);
   mxSetField(s, 0, "camera_transform", cameraTransformArray);
 
   // Set the output arguments.
   plhs[0] = s;
+
+  free(h);
 }
 
 void
@@ -1252,6 +1259,7 @@ hxgzs_reset(int nlhs, mxArray *plhs[],
 
   double *d = mxGetPr(prhs[0]);
   reset_limb_pose = d[0];
+  printf("reset_limb_pose: %d\n", reset_limb_pose);
 
   if (hxs_reset(reset_limb_pose) != hxOK)
     mexErrMsgIdAndTxt("HAPTIX:hxs_reset", hx_last_result());

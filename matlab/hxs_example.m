@@ -146,3 +146,10 @@ sleep(1);
 tx = struct("pos", [1; 1; 1], "orient", [1; 0; 0; 0]);
 hxs_set_model_link_state("mpl_haptix_right_forearm", "forearm", tx, [0; 0; 0], [0; 0; 0]);
 sleep(1);
+
+% Move the camera
+hxs_set_camera_transform(new_tx);
+sleep(1);
+% Reset the world, which will move the camera back
+hxs_reset(1);
+sleep(1);
