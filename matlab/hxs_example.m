@@ -120,10 +120,29 @@ sleep(1);
 % Turn collisions back on (won't bring the cube back, of course)
 hxs_set_model_gravity_mode("wood_cube_5cm", collide_mode);
 
-% Add a new model
-% TODO
+% Define a new model.  Here, we're taking the cricket_ball model from:
+%  https://bitbucket.org/osrf/gazebo_models/src/default/cricket_ball/model.sdf
+% and tweaking it slightly (just changing the color from Red to Green).
+sdf = '<sdf version="1.5"> <model name="cricket_ball"> <link name="link"> <pose>0 0 0.0375 0 0 0</pose> <inertial> <mass>0.1467</mass> <inertia> <ixx>8.251875e-05</ixx> <ixy>0</ixy> <ixz>0</ixz> <iyy>8.251875e-05</iyy> <iyz>0</iyz> <izz>8.251875e-05</izz> </inertia> </inertial> <collision name="collision"> <geometry> <sphere> <radius>0.0375</radius> </sphere> </geometry> </collision> <visual name="visual"> <geometry> <sphere> <radius>0.0375</radius> </sphere> </geometry> <material> <script> <uri>file://media/materials/scripts/gazebo.material</uri> <name>Gazebo/Green</name> </script> </material> </visual> </link> </model> </sdf>'
+% Add the new model to the world, at the world origin, 5m off the ground, with
+% gravity enabled.  Then it will drop onto the table.
+hxs_add_model(sdf, "green_cricket_ball", [0; 0; 5], [0; 0; 0], 1);
+sleep(2);
+% Roll the ball to the right
+hxs_apply_torque("green_cricket_ball", "link", [0; 0.05; 0], 0.1)
+sleep(2);
 % Remove the model
-% TODO
+hxs_remove_model("green_cricket_ball");
 
-% Set the state of a wrist joint
-%hxs_set_model_joint_state("mpl_haptix_right_forearm", 
+% Set the state of a wrist joint.  Note that, because there's a controller
+% acting on the wrist, this change will only be transient; the controller will
+% restore the wrist back to the current target position.
+hxs_set_model_joint_state("mpl_haptix_right_forearm", "wristy", 0.5, 0.0);
+sleep(1);
+
+% Set the state of the forearm link.  Similar to setting the joint state above,
+% this change will be transient, due to the controller that acting on the
+% forearm.
+tx = struct("pos", [1; 1; 1], "orient", [1; 0; 0; 0]);
+hxs_set_model_link_state("mpl_haptix_right_forearm", "forearm", tx, [0; 0; 0], [0; 0; 0]);
+sleep(1);
