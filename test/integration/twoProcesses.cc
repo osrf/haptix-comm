@@ -40,7 +40,7 @@ TEST(twoProcesses, SrvTwoProcs)
 {
   // Launch an ignition transport node that will advertise services.
   std::string command = std::string(HX_CMD_PREFIX) + BUILD_DIR +
-    std::string("/test/integration/hx_responser_test 1000&");
+    std::string("/test/integration/hx_responser_test 10000&");
   ASSERT_EQ(std::system(command.c_str()), 0);
 
   hxRobotInfo robotInfo;
