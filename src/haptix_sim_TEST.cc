@@ -241,43 +241,6 @@ void onHxsJointState(const std::string &_service,
 }
 
 //////////////////////////////////////////////////
-/// \brief Provide a "hxs_set_model_link_state" service.
-void onHxsLinkState(const std::string &_service,
-  const haptix::comm::msgs::hxModel &_req,
-  haptix::comm::msgs::hxEmpty &_rep,
-  bool &_result)
-{
-  // TODO
-  _rep.Clear();
-  _result = false;
-
-  // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_set_model_link_state");
-
-  EXPECT_EQ(_req.links_size(), 1);
-
-  EXPECT_EQ(_req.links(0).name(), "link 1");
-
-  EXPECT_FLOAT_EQ(_req.links(0).transform().pos().x(), 1.0f);
-  EXPECT_FLOAT_EQ(_req.links(0).transform().pos().y(), 2.0f);
-  EXPECT_FLOAT_EQ(_req.links(0).transform().pos().z(), 3.0f);
-  EXPECT_FLOAT_EQ(_req.links(0).transform().orient().w(), 4.0f);
-  EXPECT_FLOAT_EQ(_req.links(0).transform().orient().x(), 5.0f);
-  EXPECT_FLOAT_EQ(_req.links(0).transform().orient().y(), 6.0f);
-  EXPECT_FLOAT_EQ(_req.links(0).transform().orient().z(), 7.0f);
-
-  EXPECT_FLOAT_EQ(_req.links(0).lin_vel().x(), 8.0f);
-  EXPECT_FLOAT_EQ(_req.links(0).lin_vel().y(), 9.0f);
-  EXPECT_FLOAT_EQ(_req.links(0).lin_vel().z(), 10.0f);
-
-  EXPECT_FLOAT_EQ(_req.links(0).ang_vel().x(), 11.0f);
-  EXPECT_FLOAT_EQ(_req.links(0).ang_vel().y(), 12.0f);
-  EXPECT_FLOAT_EQ(_req.links(0).ang_vel().z(), 13.0f);
-
-  _result = true;
-}
-
-//////////////////////////////////////////////////
 /// \brief Provide a "hxs_add_model" service.
 void onHxsAddModel(const std::string &_service,
   const haptix::comm::msgs::hxParam &_req,
@@ -855,7 +818,7 @@ void onHxsSetModelGravity(const std::string &_service,
   EXPECT_TRUE(_req.has_name());
   EXPECT_TRUE(_req.has_gravity_mode());
   EXPECT_EQ(_req.name(), "model_1");
-  EXPECT_EQ(_req.gravity_mode(), 1);
+  EXPECT_EQ(_req.gravity_mode(), 1u);
 
   _result = true;
 }
@@ -1169,48 +1132,6 @@ TEST(hxsTest, hxs_set_model_joint_state)
   ASSERT_EQ(hxs_sim_info(simInfo), hxOK);
 
   EXPECT_EQ(hxs_set_model_joint_state("model 0", "joint 1", 1.0f, 2.0f), hxOK);
-
-  delete simInfo;
-}
-
-//////////////////////////////////////////////////
-/// \brief Check hxs_set_model_link_state.
-TEST(hxsTest, hxs_set_model_link_state)
-{
-  setup();
-
-  ignition::transport::Node node;
-  hxsSimInfo *simInfo = new hxsSimInfo();
-
-  // Advertise the "hxs_sim_info" service.
-  node.Advertise("/haptix/gazebo/hxs_sim_info", onHxsSimInfo);
-
-  // Advertise the "hxs_state" service.
-  node.Advertise("/haptix/gazebo/hxs_set_model_link_state", onHxsLinkState);
-
-  // Request simulation information.
-  ASSERT_EQ(hxs_sim_info(simInfo), hxOK);
-
-  // TODO
-  hxsTransform transform;
-  transform.pos.x = 1.0f;
-  transform.pos.y = 2.0f;
-  transform.pos.z = 3.0f;
-  transform.orient.w = 4.0f;
-  transform.orient.x = 5.0f;
-  transform.orient.y = 6.0f;
-  transform.orient.z = 7.0f;
-  hxsVector3 lin_vel;
-  lin_vel.x = 8.0f;
-  lin_vel.y = 9.0f;
-  lin_vel.z = 10.0f;
-  hxsVector3 ang_vel;
-  ang_vel.x = 11.0f;
-  ang_vel.y = 12.0f;
-  ang_vel.z = 13.0f;
-
-  EXPECT_EQ(hxs_set_model_link_state("model 0", "link 1", &transform, &lin_vel,
-      &ang_vel), hxOK);
 
   delete simInfo;
 }

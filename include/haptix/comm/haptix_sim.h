@@ -333,19 +333,6 @@ hxResult hxs_contacts(const char *_model, hxsContactPoints *_contact);
 hxResult hxs_set_model_joint_state(const char *_model, const char *_joint,
     float _pos, float _vel);
 
-/// \brief Set simulation state (position and velocity) of link named "_link"
-/// in model "_model" to the desired position and velocity. The link
-/// acceleration may change based on the constraints of model's dynamic system.
-/// \param[in] _model Name of the model to set.
-/// \param[in] _link Name of the link to set.
-/// \param[in] _transform Desired position and orientation of the link.
-/// \param[in] _lin_vel Desired linear velocity of the link.
-/// \param[in] _ang_vel Desired angular velocity of the link.
-/// \return 'hxOK' if the function succeed or an error code otherwise.
-hxResult hxs_set_model_link_state(const char *_model, const char *_link,
-    const hxsTransform *_transform, const hxsVector3 *_lin_vel,
-    const hxsVector3 *_ang_vel);
-
 /// \brief Add model during runtime.
 /// \param[in] _sdf SDF xml description of the model.
 /// \param[in] _name Model name.
