@@ -3,19 +3,19 @@
 info = hxs_sim_info();
 
 % List the models in the world
-disp('Models:');
+fprintf('Models:\n');
 for model_idx = 1:size(info.models)
   model = info.models(model_idx).model;
-  disp(model.name);
-  disp('Links:');
+  fprintf('  %s\n', model.name);
+  fprintf('    Links:\n');
   for link_idx = 1:size(model.links)
     link = model.links(link_idx).link;
-    disp(link.name);
+    fprintf('      %s\n', link.name);
   end
-  disp('Joints:');
+  fprintf('    Joints:\n');
   for joint_idx = 1:size(model.joints)
     joint = model.joints(joint_idx).joint;
-    disp(joint.name);
+    fprintf('      %s\n', joint.name);
   end
 end
 
