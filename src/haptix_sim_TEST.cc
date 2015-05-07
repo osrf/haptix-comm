@@ -855,7 +855,7 @@ void onHxsSetModelGravity(const std::string &_service,
   EXPECT_TRUE(_req.has_name());
   EXPECT_TRUE(_req.has_gravity_mode());
   EXPECT_EQ(_req.name(), "model_1");
-  EXPECT_EQ(_req.gravity_mode(), 1);
+  EXPECT_EQ(_req.gravity_mode(), 1u);
 
   _result = true;
 }
