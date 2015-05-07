@@ -140,13 +140,6 @@ hxs_remove_model("green_cricket_ball");
 hxs_set_model_joint_state("mpl_haptix_right_forearm", "wristy", 0.5, 0.0);
 sleep(1);
 
-% Set the state of the forearm link.  Similar to setting the joint state above,
-% this change will be transient, due to the controller that acting on the
-% forearm.
-tx = struct("pos", [1; 1; 1], "orient", [1; 0; 0; 0]);
-hxs_set_model_link_state("mpl_haptix_right_forearm", "forearm", tx, [0; 0; 0], [0; 0; 0]);
-sleep(1);
-
 % Move the camera
 hxs_set_camera_transform(new_tx);
 sleep(1);

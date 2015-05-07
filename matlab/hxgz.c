@@ -45,8 +45,6 @@ void hxgzs_contacts(int nlhs, mxArray *plhs[],
                     int nrhs, const mxArray *prhs[]);
 void hxgzs_set_model_joint_state(int nlhs, mxArray *plhs[],
                                  int nrhs, const mxArray *prhs[]);
-void hxgzs_set_model_link_state(int nlhs, mxArray *plhs[],
-                                int nrhs, const mxArray *prhs[]);
 void hxgzs_add_model(int nlhs, mxArray *plhs[],
                      int nrhs, const mxArray *prhs[]);
 void hxgzs_remove_model(int nlhs, mxArray *plhs[],
@@ -163,8 +161,6 @@ mexFunction(int nlhs, mxArray *plhs[],
     hxgzs_contacts(nlhs, plhs, nrhs-1, prhs+1);
   else if (!strcmp(funcName, "set_model_joint_state"))
     hxgzs_set_model_joint_state(nlhs, plhs, nrhs-1, prhs+1);
-  else if (!strcmp(funcName, "set_model_link_state"))
-    hxgzs_set_model_link_state(nlhs, plhs, nrhs-1, prhs+1);
   else if (!strcmp(funcName, "add_model"))
     hxgzs_add_model(nlhs, plhs, nrhs-1, prhs+1);
   else if (!strcmp(funcName, "remove_model"))
@@ -927,34 +923,6 @@ hxgzs_set_model_joint_state(int nlhs, mxArray *plhs[],
 }
 
 void
-hxgzs_set_model_link_state(int nlhs, mxArray *plhs[],
-                            int nrhs, const mxArray *prhs[])
-{
-  char m[hxsMAXNAMESIZE];
-  char l[hxsMAXNAMESIZE];
-  hxsTransform t;
-  hxsVector3 lin_vel;
-  hxsVector3 ang_vel;
-
-  if (nrhs != 5)
-    mexErrMsgIdAndTxt("HAPTIX:hxs_set_model_joint_state",
-      "Expects 5 arguments");
-
-  if (mxGetString(prhs[0], m, sizeof(m)))
-    mexErrMsgIdAndTxt("HAPTIX:hxs_set_model_link_state",
-      "Failed to determine model name");
-  if (mxGetString(prhs[1], l, sizeof(l)))
-    mexErrMsgIdAndTxt("HAPTIX:hxs_set_model_link_state",
-      "Failed to determine link name");
-  t = matlab_to_transform(prhs[2]);
-  lin_vel = matlab_to_vector3(prhs[3]);
-  ang_vel = matlab_to_vector3(prhs[4]);
-
-  if (hxs_set_model_link_state(m, l, &t, &lin_vel, &ang_vel) != hxOK)
-    mexErrMsgIdAndTxt("HAPTIX:hxs_set_model_link_state", hx_last_result());
-}
-
-void
 hxgzs_add_model(int nlhs, mxArray *plhs[],
                  int nrhs, const mxArray *prhs[])
 {
@@ -994,7 +962,7 @@ hxgzs_add_model(int nlhs, mxArray *plhs[],
 
   if (hxs_add_model(sdf, name, x, y, z,
                     roll, pitch, yaw, gravity_mode, &model) != hxOK)
-    mexErrMsgIdAndTxt("HAPTIX:hxs_set_model_link_state", hx_last_result());
+    mexErrMsgIdAndTxt("HAPTIX:hxs_add_model", hx_last_result());
 
   free(sdf);
   plhs[0] = model_to_matlab(&model);
