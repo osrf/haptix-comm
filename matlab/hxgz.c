@@ -36,7 +36,7 @@ void hxgz_update(int nlhs, mxArray *plhs[],
 
 // Simulation-specific functions
 void hxgzs_sim_info(int nlhs, mxArray *plhs[],
-                   int nrhs, const mxArray *prhs[]);
+                    int nrhs, const mxArray *prhs[]);
 void hxgzs_camera_transform(int nlhs, mxArray *plhs[],
                             int nrhs, const mxArray *prhs[]);
 void hxgzs_set_camera_transform(int nlhs, mxArray *plhs[],
@@ -64,7 +64,7 @@ void hxgzs_linear_velocity(int nlhs, mxArray *plhs[],
 void hxgzs_set_linear_velocity(int nlhs, mxArray *plhs[],
                                int nrhs, const mxArray *prhs[]);
 void hxgzs_angular_velocity(int nlhs, mxArray *plhs[],
-                           int nrhs, const mxArray *prhs[]);
+                            int nrhs, const mxArray *prhs[]);
 void hxgzs_set_angular_velocity(int nlhs, mxArray *plhs[],
                                 int nrhs, const mxArray *prhs[]);
 void hxgzs_apply_force(int nlhs, mxArray *plhs[],
@@ -118,7 +118,7 @@ static int g_info_valid = 0;
 
 void
 mexFunction(int nlhs, mxArray *plhs[],
-             int nrhs, const mxArray *prhs[])
+            int nrhs, const mxArray *prhs[])
 {
   // Get the robot info, so that we know how many rows to fill in later in
   // returned sensor data.
@@ -220,7 +220,7 @@ hxgz_connect(int nlhs, mxArray *plhs[],
 
 void
 hxgz_close(int nlhs, mxArray *plhs[],
-            int nrhs, const mxArray *prhs[])
+           int nrhs, const mxArray *prhs[])
 {
   if (hx_close() != hxOK)
     mexErrMsgIdAndTxt("HAPTIX:hx_close", hx_last_result());
@@ -228,7 +228,7 @@ hxgz_close(int nlhs, mxArray *plhs[],
 
 void
 hxgz_read_sensors(int nlhs, mxArray *plhs[],
-                   int nrhs, const mxArray *prhs[])
+                  int nrhs, const mxArray *prhs[])
 {
   hxSensor sensor;
 
@@ -244,7 +244,7 @@ hxgz_read_sensors(int nlhs, mxArray *plhs[],
 
 void
 hxgz_robot_info(int nlhs, mxArray *plhs[],
-             int nrhs, const mxArray *prhs[])
+                int nrhs, const mxArray *prhs[])
 {
   hxRobotInfo robotInfo;
   int i;
@@ -327,7 +327,7 @@ hxgz_robot_info(int nlhs, mxArray *plhs[],
 
 void
 hxgz_update(int nlhs, mxArray *plhs[],
-             int nrhs, const mxArray *prhs[])
+            int nrhs, const mxArray *prhs[])
 {
   hxCommand cmd;
   hxSensor sensor;
@@ -854,7 +854,7 @@ hxgzs_sim_info(int nlhs, mxArray *plhs[],
 
 void
 hxgzs_camera_transform(int nlhs, mxArray *plhs[],
-                        int nrhs, const mxArray *prhs[])
+                       int nrhs, const mxArray *prhs[])
 {
   hxsTransform h;
 
@@ -881,7 +881,7 @@ hxgzs_set_camera_transform(int nlhs, mxArray *plhs[],
 
 void
 hxgzs_contacts(int nlhs, mxArray *plhs[],
-                int nrhs, const mxArray *prhs[])
+               int nrhs, const mxArray *prhs[])
 {
   hxsContactPoints h;
   char m[hxsMAXNAMESIZE];
@@ -900,7 +900,7 @@ hxgzs_contacts(int nlhs, mxArray *plhs[],
 
 void
 hxgzs_set_model_joint_state(int nlhs, mxArray *plhs[],
-                             int nrhs, const mxArray *prhs[])
+                            int nrhs, const mxArray *prhs[])
 {
   char m[hxsMAXNAMESIZE];
   char j[hxsMAXNAMESIZE];
@@ -928,7 +928,7 @@ hxgzs_set_model_joint_state(int nlhs, mxArray *plhs[],
 
 void
 hxgzs_set_model_link_state(int nlhs, mxArray *plhs[],
-                            int nrhs, const mxArray *prhs[])
+                           int nrhs, const mxArray *prhs[])
 {
   char m[hxsMAXNAMESIZE];
   char l[hxsMAXNAMESIZE];
@@ -956,7 +956,7 @@ hxgzs_set_model_link_state(int nlhs, mxArray *plhs[],
 
 void
 hxgzs_add_model(int nlhs, mxArray *plhs[],
-                 int nrhs, const mxArray *prhs[])
+                int nrhs, const mxArray *prhs[])
 {
   char *sdf;
   char name[hxsMAXNAMESIZE];
@@ -994,7 +994,7 @@ hxgzs_add_model(int nlhs, mxArray *plhs[],
 
   if (hxs_add_model(sdf, name, x, y, z,
                     roll, pitch, yaw, gravity_mode, &model) != hxOK)
-    mexErrMsgIdAndTxt("HAPTIX:hxs_set_model_link_state", hx_last_result());
+    mexErrMsgIdAndTxt("HAPTIX:hxs_add_model", hx_last_result());
 
   free(sdf);
   plhs[0] = model_to_matlab(&model);
@@ -1002,7 +1002,7 @@ hxgzs_add_model(int nlhs, mxArray *plhs[],
 
 void
 hxgzs_remove_model(int nlhs, mxArray *plhs[],
-                    int nrhs, const mxArray *prhs[])
+                   int nrhs, const mxArray *prhs[])
 {
   char name[hxsMAXNAMESIZE];
 
@@ -1018,7 +1018,7 @@ hxgzs_remove_model(int nlhs, mxArray *plhs[],
 
 void
 hxgzs_model_transform(int nlhs, mxArray *plhs[],
-                       int nrhs, const mxArray *prhs[])
+                      int nrhs, const mxArray *prhs[])
 {
   char name[hxsMAXNAMESIZE];
   hxsTransform t;
@@ -1037,7 +1037,7 @@ hxgzs_model_transform(int nlhs, mxArray *plhs[],
 
 void
 hxgzs_set_model_transform(int nlhs, mxArray *plhs[],
-                           int nrhs, const mxArray *prhs[])
+                          int nrhs, const mxArray *prhs[])
 {
   char name[hxsMAXNAMESIZE];
   hxsTransform t;
@@ -1056,7 +1056,7 @@ hxgzs_set_model_transform(int nlhs, mxArray *plhs[],
 
 void
 hxgzs_model_gravity_mode(int nlhs, mxArray *plhs[],
-                          int nrhs, const mxArray *prhs[])
+                         int nrhs, const mxArray *prhs[])
 {
   char name[hxsMAXNAMESIZE];
   int g;
@@ -1080,7 +1080,7 @@ hxgzs_model_gravity_mode(int nlhs, mxArray *plhs[],
 
 void
 hxgzs_set_model_gravity_mode(int nlhs, mxArray *plhs[],
-                              int nrhs, const mxArray *prhs[])
+                             int nrhs, const mxArray *prhs[])
 {
   char name[hxsMAXNAMESIZE];
   int g;
@@ -1101,7 +1101,7 @@ hxgzs_set_model_gravity_mode(int nlhs, mxArray *plhs[],
 
 void
 hxgzs_linear_velocity(int nlhs, mxArray *plhs[],
-                       int nrhs, const mxArray *prhs[])
+                      int nrhs, const mxArray *prhs[])
 {
   char name[hxsMAXNAMESIZE];
   hxsVector3 v;
@@ -1120,7 +1120,7 @@ hxgzs_linear_velocity(int nlhs, mxArray *plhs[],
 
 void
 hxgzs_set_linear_velocity(int nlhs, mxArray *plhs[],
-                           int nrhs, const mxArray *prhs[])
+                          int nrhs, const mxArray *prhs[])
 {
   char name[hxsMAXNAMESIZE];
   hxsVector3 v;
@@ -1159,7 +1159,7 @@ hxgzs_angular_velocity(int nlhs, mxArray *plhs[],
 
 void
 hxgzs_set_angular_velocity(int nlhs, mxArray *plhs[],
-                       int nrhs, const mxArray *prhs[])
+                           int nrhs, const mxArray *prhs[])
 {
   char name[hxsMAXNAMESIZE];
   hxsVector3 v;
@@ -1178,7 +1178,7 @@ hxgzs_set_angular_velocity(int nlhs, mxArray *plhs[],
 
 void
 hxgzs_apply_force(int nlhs, mxArray *plhs[],
-                   int nrhs, const mxArray *prhs[])
+                  int nrhs, const mxArray *prhs[])
 {
   char name[hxsMAXNAMESIZE];
   char link[hxsMAXNAMESIZE];
@@ -1202,7 +1202,7 @@ hxgzs_apply_force(int nlhs, mxArray *plhs[],
 
 void
 hxgzs_apply_torque(int nlhs, mxArray *plhs[],
-                    int nrhs, const mxArray *prhs[])
+                   int nrhs, const mxArray *prhs[])
 {
   char name[hxsMAXNAMESIZE];
   char link[hxsMAXNAMESIZE];
@@ -1226,7 +1226,7 @@ hxgzs_apply_torque(int nlhs, mxArray *plhs[],
 
 void
 hxgzs_apply_wrench(int nlhs, mxArray *plhs[],
-                    int nrhs, const mxArray *prhs[])
+                   int nrhs, const mxArray *prhs[])
 {
   char name[hxsMAXNAMESIZE];
   char link[hxsMAXNAMESIZE];
@@ -1250,7 +1250,7 @@ hxgzs_apply_wrench(int nlhs, mxArray *plhs[],
 
 void
 hxgzs_reset(int nlhs, mxArray *plhs[],
-             int nrhs, const mxArray *prhs[])
+            int nrhs, const mxArray *prhs[])
 {
   int reset_limb_pose;
 
@@ -1266,7 +1266,7 @@ hxgzs_reset(int nlhs, mxArray *plhs[],
 
 void
 hxgzs_start_logging(int nlhs, mxArray *plhs[],
-                     int nrhs, const mxArray *prhs[])
+                    int nrhs, const mxArray *prhs[])
 {
   char filename[hxsMAXNAMESIZE];
 
@@ -1283,7 +1283,7 @@ hxgzs_start_logging(int nlhs, mxArray *plhs[],
 
 void
 hxgzs_is_logging(int nlhs, mxArray *plhs[],
-                  int nrhs, const mxArray *prhs[])
+                 int nrhs, const mxArray *prhs[])
 {
   int result;
 
@@ -1299,7 +1299,7 @@ hxgzs_is_logging(int nlhs, mxArray *plhs[],
 
 void
 hxgzs_stop_logging(int nlhs, mxArray *plhs[],
-                    int nrhs, const mxArray *prhs[])
+                   int nrhs, const mxArray *prhs[])
 {
   if (hxs_stop_logging() != hxOK)
     mexErrMsgIdAndTxt("HAPTIX:hxs_stop_logging", hx_last_result());
@@ -1325,7 +1325,7 @@ hxgzs_set_model_color(int nlhs, mxArray *plhs[],
 
 void
 hxgzs_model_color(int nlhs, mxArray *plhs[],
-                   int nrhs, const mxArray *prhs[])
+                  int nrhs, const mxArray *prhs[])
 {
   char name[hxsMAXNAMESIZE];
   hxsColor c;
@@ -1346,7 +1346,7 @@ hxgzs_model_color(int nlhs, mxArray *plhs[],
 
 void
 hxgzs_set_model_collide_mode(int nlhs, mxArray *plhs[],
-                              int nrhs, const mxArray *prhs[])
+                             int nrhs, const mxArray *prhs[])
 {
   char name[hxsMAXNAMESIZE];
   hxsCollideMode c;
@@ -1367,7 +1367,7 @@ hxgzs_set_model_collide_mode(int nlhs, mxArray *plhs[],
 
 void
 hxgzs_model_collide_mode(int nlhs, mxArray *plhs[],
-                          int nrhs, const mxArray *prhs[])
+                         int nrhs, const mxArray *prhs[])
 {
   char name[hxsMAXNAMESIZE];
   hxsCollideMode c;
