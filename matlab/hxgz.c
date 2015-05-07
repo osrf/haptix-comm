@@ -721,8 +721,12 @@ matlab_to_vector3(const mxArray* m)
 {
   hxsVector3 v;
 
-  if (mxGetM(m) != 3 || mxGetN(m) != 1)
-    mexErrMsgIdAndTxt("HAPTIX:matlab_to_vector3", "Expects 3x1 column vector");
+  // Accept column or row (indexing into the underlying C array will work the
+  // same either way).
+  if ((!(mxGetM(m) == 3 && mxGetN(m) == 1)) &&
+       !(mxGetM(m) == 1 && mxGetN(m) == 3))
+    mexErrMsgIdAndTxt("HAPTIX:matlab_to_vector3",
+      "Expects 3x1 column or 1x3 row vector");
 
   double *d = mxGetPr(m);
   v.x = d[0];
@@ -737,9 +741,12 @@ matlab_to_quaternion(const mxArray* m)
 {
   hxsQuaternion q;
 
-  if (mxGetM(m) != 4 || mxGetN(m) != 1)
+  // Accept column or row (indexing into the underlying C array will work the
+  // same either way).
+  if ((!(mxGetM(m) == 4 && mxGetN(m) == 1)) &&
+       !(mxGetM(m) == 1 && mxGetN(m) == 4))
     mexErrMsgIdAndTxt("HAPTIX:matlab_to_quaternion",
-      "Expects 4x1 column vector");
+      "Expects 4x1 column or 1x4 row vector");
 
   double *d = mxGetPr(m);
   q.w = d[0];
@@ -801,8 +808,12 @@ matlab_to_color(const mxArray* m)
 {
   hxsColor c;
 
-  if (mxGetM(m) != 4 || mxGetN(m) != 1)
-    mexErrMsgIdAndTxt("HAPTIX:matlab_to_color", "Expects 4x1 column vector");
+  // Accept column or row (indexing into the underlying C array will work the
+  // same either way).
+  if ((!(mxGetM(m) == 4 && mxGetN(m) == 1)) &&
+       !(mxGetM(m) == 1 && mxGetN(m) == 4))
+    mexErrMsgIdAndTxt("HAPTIX:matlab_to_color",
+      "Expects 4x1 column or 1x4 row vector");
 
   double *d = mxGetPr(m);
   c.r = d[0];

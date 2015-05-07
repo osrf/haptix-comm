@@ -34,7 +34,8 @@ pause(1);
 % Change the table color.
 hxs_set_model_color('table', [1;0;0;1])
 pause(1);
-hxs_set_model_color('table', [0;1;0;1])
+% Row vectors work, too
+hxs_set_model_color('table', [0,1,0,1])
 pause(1);
 hxs_set_model_color('table', [0;0;1;1])
 % Get the color
@@ -80,19 +81,22 @@ pause(1.5);
 % Move by setting linear velocity
 hxs_set_linear_velocity('wood_cube_5cm', [-0.5; 0; 0]);
 pause(1.0);
-hxs_set_linear_velocity('wood_cube_5cm', [0; 0; 0]);
+% Row vectors work, too.
+hxs_set_linear_velocity('wood_cube_5cm', [0, 0, 0]);
 
 % Move by setting angular velocity
 hxs_set_angular_velocity('wood_cube_5cm', [0; 0; 100]);
 pause(1.0);
-hxs_set_angular_velocity('wood_cube_5cm', [0; 0; 0]);
+% Row vectors work, too.
+hxs_set_angular_velocity('wood_cube_5cm', [0, 0, 0]);
 
 % Check gravity mode on wooden cube
 gravity_mode = hxs_model_gravity_mode('wood_cube_5cm');
 disp(gravity_mode);
 % Turn off gravity for cube, then nudge it upward
 hxs_set_model_gravity_mode('wood_cube_5cm', 0);
-hxs_apply_force('wood_cube_5cm', 'link', [0; 0; 0.1], 0.1);
+% Row vectors work, too.
+hxs_apply_force('wood_cube_5cm', 'link', [0, 0, 0.1], 0.1);
 % Let if fly
 pause(1);
 % Bring it back down
