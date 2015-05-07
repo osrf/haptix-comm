@@ -45,12 +45,12 @@ then
   CPPLINT_FILES="$CHECK_FILES"
   QUICK_TMP=`mktemp -t asdfXXXXXXXXXX`
 else
-  CHECK_DIRS="./src ./include ./example ./test/integration ./test/regression ./test/performance ./matlab"
+  CHECK_DIRS="./src ./include ./example ./test/integration ./test/regression ./test/performance"
   if [ $CPPCHECK_LT_157 -eq 1 ]; then
     # cppcheck is older than 1.57, so don't check header files (issue #907)
-    CPPCHECK_FILES=`find $CHECK_DIRS -name "*.cc" -o -name "*.c"`
+    CPPCHECK_FILES=`find $CHECK_DIRS -name "*.cc"`
   else
-    CPPCHECK_FILES=`find $CHECK_DIRS -name "*.cc" -o -name "*.c" -o -name "*.hh"`
+    CPPCHECK_FILES=`find $CHECK_DIRS -name "*.cc" -o -name "*.hh"`
   fi
   CPPLINT_FILES=`\
     find $CHECK_DIRS -name "*.cc" -o -name "*.hh" -o -name "*.c" -o -name "*.h"`
@@ -125,7 +125,6 @@ elif [ $QUICK_CHECK -eq 1 ]; then
   rm $QUICK_TMP
 else
   # Performance, style, portability, and information
-  echo $CPPCHECK_BASE $CPPCHECK_CMD1
   $CPPCHECK_BASE $CPPCHECK_CMD1 2>&1
 
   # Check the configuration
