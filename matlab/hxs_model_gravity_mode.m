@@ -15,5 +15,5 @@
 % web('http://gazebosim.org/haptix')">the Gazebo HAPTIX site</a>.
 
 function result = hxs_model_gravity_mode(model)
-  result = hxgz("model_gravity_mode", model);
+  result = hxgz('model_gravity_mode', model);
 end

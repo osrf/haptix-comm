@@ -17,5 +17,5 @@
 % web('http://gazebosim.org/haptix')">the Gazebo HAPTIX site</a>.
 
 function hxs_set_model_joint_state(model, joint, position, velocity)
-  hxgz("set_model_joint_state", model, joint, position, velocity);
+  hxgz('set_model_joint_state', model, joint, position, velocity);
 end

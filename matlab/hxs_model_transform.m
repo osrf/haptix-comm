@@ -14,5 +14,5 @@
 % web('http://gazebosim.org/haptix')">the Gazebo HAPTIX site</a>.
 
 function result = hxs_model_transform(model)
-  result = hxgz("model_transform", model);
+  result = hxgz('model_transform', model);
 end

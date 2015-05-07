@@ -14,5 +14,5 @@
 % web('http://gazebosim.org/haptix')">the Gazebo HAPTIX site</a>.
 
 function result = hxs_contacts(model)
-  result = hxgz("contacts", model);
+  result = hxgz('contacts', model);
 end

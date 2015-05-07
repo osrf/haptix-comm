@@ -14,5 +14,5 @@
 % web('http://gazebosim.org/haptix')">the Gazebo HAPTIX site</a>.
 
 function result = hxs_angular_velocity(model)
-  result = hxgz("angular_velocity", model);
+  result = hxgz('angular_velocity', model);
 end

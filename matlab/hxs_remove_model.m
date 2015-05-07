@@ -11,5 +11,5 @@
 % web('http://gazebosim.org/haptix')">the Gazebo HAPTIX site</a>.
 
 function hxs_remove_model(model)
-  hxgz("remove_model", model);
+  hxgz('remove_model', model);
 end

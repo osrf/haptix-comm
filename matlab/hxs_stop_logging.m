@@ -8,5 +8,5 @@
 % web('http://gazebosim.org/haptix')">the Gazebo HAPTIX site</a>.
 
 function hxs_stop_logging()
-  hxgz("stop_logging");
+  hxgz('stop_logging');
 end

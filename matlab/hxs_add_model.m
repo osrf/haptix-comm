@@ -18,5 +18,5 @@
 % web('http://gazebosim.org/haptix')">the Gazebo HAPTIX site</a>.
 
 function result = hxs_add_model(sdf, name, pos, orient, gravity_mode)
-  result = hxgz("add_model", sdf, name, pos, orient, gravity_mode);
+  result = hxgz('add_model', sdf, name, pos, orient, gravity_mode);
 end

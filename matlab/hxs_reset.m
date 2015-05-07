@@ -11,5 +11,5 @@
 % web('http://gazebosim.org/haptix')">the Gazebo HAPTIX site</a>.
 
 function hxs_reset(reset_limb_pose)
-  hxgz("reset", reset_limb_pose);
+  hxgz('reset', reset_limb_pose);
 end

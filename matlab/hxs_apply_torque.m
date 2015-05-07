@@ -15,5 +15,5 @@
 % web('http://gazebosim.org/haptix')">the Gazebo HAPTIX site</a>.
 
 function hxs_apply_torque(model, link, torque, duration)
-  hxgz("apply_torque", model, link, torque, duration);
+  hxgz('apply_torque', model, link, torque, duration);
 end

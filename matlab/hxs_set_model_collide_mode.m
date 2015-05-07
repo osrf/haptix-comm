@@ -12,5 +12,5 @@
 % web('http://gazebosim.org/haptix')">the Gazebo HAPTIX site</a>.
 
 function hxs_set_model_collide_mode(model, collide_mode)
-  hxgz("set_model_collide_mode", model, collide_mode);
+  hxgz('set_model_collide_mode', model, collide_mode);
 end

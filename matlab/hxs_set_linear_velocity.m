@@ -12,5 +12,5 @@
 % web('http://gazebosim.org/haptix')">the Gazebo HAPTIX site</a>.
 
 function hxs_set_linear_velocity(model, velocity)
-  hxgz("set_linear_velocity", model, velocity);
+  hxgz('set_linear_velocity', model, velocity);
 end

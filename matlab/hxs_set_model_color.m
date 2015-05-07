@@ -12,5 +12,5 @@
 % web('http://gazebosim.org/haptix')">the Gazebo HAPTIX site</a>.
 
 function hxs_set_model_color(model, color)
-  hxgz("set_model_color", model, color);
+  hxgz('set_model_color', model, color);
 end

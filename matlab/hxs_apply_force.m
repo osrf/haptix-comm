@@ -15,5 +15,5 @@
 % web('http://gazebosim.org/haptix')">the Gazebo HAPTIX site</a>.
 
 function hxs_apply_force(model, link, force, duration)
-  hxgz("apply_force", model, link, force, duration);
+  hxgz('apply_force', model, link, force, duration);
 end

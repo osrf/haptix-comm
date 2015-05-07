@@ -11,5 +11,5 @@
 % web('http://gazebosim.org/haptix')">the Gazebo HAPTIX site</a>.
 
 function result = hxs_is_logging()
-  result = hxgz("is_logging");
+  result = hxgz('is_logging');
 end

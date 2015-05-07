@@ -15,5 +15,5 @@
 % web('http://gazebosim.org/haptix')">the Gazebo HAPTIX site</a>.
 
 function hxs_apply_wrench(model, link, wrench, duration)
-  hxgz("apply_wrench", model, link, wrench, duration);
+  hxgz('apply_wrench', model, link, wrench, duration);
 end

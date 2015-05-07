@@ -12,5 +12,5 @@
 % web('http://gazebosim.org/haptix')">the Gazebo HAPTIX site</a>.
 
 function hxs_start_logging(filename)
-  hxgz("start_logging", filename);
+  hxgz('start_logging', filename);
 end

@@ -11,5 +11,5 @@
 % web('http://gazebosim.org/haptix')">the Gazebo HAPTIX site</a>.
 
 function result = hxs_camera_transform()
-  result = hxgz("camera_transform");
+  result = hxgz('camera_transform');
 end

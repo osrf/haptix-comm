@@ -76,5 +76,5 @@
 %     simulation will generate forces when it collides with other objects.
 
 function result = hxs_sim_info()
-  result = hxgz("sim_info");
+  result = hxgz('sim_info');
 end
