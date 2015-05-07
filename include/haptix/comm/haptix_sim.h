@@ -350,7 +350,8 @@ hxResult hxs_remove_model(const char *_name);
 hxResult hxs_set_model_transform(const char *_name,
     const hxsTransform *_transform);
 
-/// \brief Get model transform.
+/// \brief Get model transform (position and orientation in the global
+/// coordinate frame).
 /// \param[in] _name Name of the model.
 /// \param[out] _transform Current model transform.
 /// \return 'hxOK' if the function succeed or an error code otherwise.
@@ -369,12 +370,17 @@ hxResult hxs_model_gravity_mode(const char *_name, int *_gravity_mode);
 hxResult hxs_set_model_gravity_mode(const char *_name, const int _gravity_mode);
 
 /// \brief Get the linear velocity of a model.
+/// In the case of a model with multiple links, one of the link is designated
+/// as the canonical link of the model. We are returning the linear velocity
+/// of the canonical link's center of mass in the world frame.
 /// \param[in] _name Name of the model.
 /// \param[out] _velocity Velocity (m/s).
 /// \return 'hxOK' if the function succeed or an error code otherwise.
 hxResult hxs_linear_velocity(const char *_name, hxsVector3 *_velocity);
 
 /// \brief Set the linear velocity of a model.
+/// In the case of a model with multiple links, we are setting the
+/// linear velocity of all links center of mass in the world frame.
 /// \param[in] _name Name of the model.
 /// \param[in] _velocity Velocity (m/s).
 /// \return 'hxOK' if the function succeed or an error code otherwise.
@@ -382,12 +388,19 @@ hxResult hxs_set_linear_velocity(const char *_name,
     const hxsVector3 *_velocity);
 
 /// \brief Get the angular velocity of a model.
+/// In the case of a model with multiple links, one of the link is designated
+/// as the canonical link of the model. We are returning the angular velocity
+/// of the canonical link's center of mass in the world frame.
 /// \param[in] _name Name of the model.
 /// \param[out] _ang_vel Velocity (rad/s).
 /// \return 'hxOK' if the function succeed or an error code otherwise.
 hxResult hxs_angular_velocity(const char *_name, hxsVector3 *_ang_vel);
 
 /// \brief Set the angular velocity of a model.
+/// This function does not support models with multiple links, unexpected
+/// behavior will result from using this function with a multi-link model.
+/// For a model with single link, this function call sets the angular velocity
+/// of the link at its center of mass in the world frame.
 /// \param[in] _name Name of the model.
 /// \param[in] _ang_vel Velocity (rad/s).
 /// \return 'hxOK' if the function succeed or an error code otherwise.
