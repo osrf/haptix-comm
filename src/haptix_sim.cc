@@ -108,51 +108,6 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
-  hxResult hxs_set_model_link_state(const char *_model, const char *_link,
-      const hxsTransform *_transform, const hxsVector3 *_lin_vel,
-      const hxsVector3 *_ang_vel)
-  {
-    if (!_model || !_link)
-    {
-      std::cerr << "hxs_state() error: required string is NULL" << std::endl;
-      return hxERROR;
-    }
-    if (!_transform || !_lin_vel || !_ang_vel)
-    {
-      std::cerr << "hxs_state() error: required struct is NULL" << std::endl;
-      return hxERROR;
-    }
-
-    const std::string service = "/haptix/gazebo/hxs_set_model_link_state";
-    haptix::comm::msgs::hxModel req;
-    req.set_name(_model);
-    req.add_links();
-    req.mutable_links(0)->set_name(_link);
-    if (!hxs_convertTransform(_transform,
-      req.mutable_links(0)->mutable_transform()))
-    {
-      return hxERROR;
-    }
-    if (!hxs_convertVector3(_lin_vel, req.mutable_links(0)->mutable_lin_vel()))
-    {
-      return hxERROR;
-    }
-    if (!hxs_convertVector3(_ang_vel, req.mutable_links(0)->mutable_ang_vel()))
-    {
-      return hxERROR;
-    }
-    req.set_id(0);
-    req.set_gravity_mode(0);
-    hxsTransform tf;
-    hxsVector3 v;
-    hxs_convertTransform(&tf, req.mutable_transform());
-    hxs_convertVector3(&v, req.mutable_links(0)->mutable_lin_acc());
-    hxs_convertVector3(&v, req.mutable_links(0)->mutable_ang_acc());
-
-    return hxs_call(service, __func__, req, haptix::comm::msgs::hxEmpty());
-  }
-
-  //////////////////////////////////////////////////
   hxResult hxs_add_model(const char *_sdf, const char *_name,
     float _x, float _y, float _z, float _roll, float _pitch, float _yaw,
     int _gravity_mode, hxsModel *_model)
