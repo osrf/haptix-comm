@@ -1307,7 +1307,7 @@ hxgzs_stop_logging(int nlhs, mxArray *plhs[],
 
 void
 hxgzs_set_model_color(int nlhs, mxArray *plhs[],
-                       int nrhs, const mxArray *prhs[])
+                      int nrhs, const mxArray *prhs[])
 {
   char name[hxsMAXNAMESIZE];
   hxsColor c;
