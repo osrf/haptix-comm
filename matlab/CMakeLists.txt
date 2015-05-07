@@ -30,7 +30,6 @@ set (matlab_files
   hxs_set_model_color.m
   hxs_set_model_gravity_mode.m
   hxs_set_model_joint_state.m
-  hxs_set_model_link_state.m
   hxs_set_model_transform.m
   hxs_sim_info.m
   hxs_start_logging.m
