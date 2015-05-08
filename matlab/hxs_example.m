@@ -122,7 +122,7 @@ hxs_set_model_collide_mode('wood_cube_5cm', 0);
 hxs_apply_force('wood_cube_5cm', 'link', [0; 0; 0.1], 0.1);
 pause(1);
 % Turn collisions back on (won't bring the cube back, of course)
-hxs_set_model_gravity_mode('wood_cube_5cm', collide_mode);
+hxs_set_model_collide_mode('wood_cube_5cm', collide_mode);
 
 % Define a new model.  Here, we're taking the cricket_ball model from:
 %  https://bitbucket.org/osrf/gazebo_models/src/default/cricket_ball/model.sdf
