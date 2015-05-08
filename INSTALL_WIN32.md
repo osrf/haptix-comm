@@ -21,7 +21,7 @@ to build and install `ign-transport`.
 
 * Add `haptix-comm` to that workspace:
 
->~~~~
+> ~~~~
 cd ign-ws
 hg clone https://bitbucket.org/osrf/haptix-comm
 cd haptix-comm
@@ -29,7 +29,7 @@ cd haptix-comm
     
 * Configure and build:
 
->~~~~
+> ~~~~
 mkdir build
 cd build
 ..\configure
