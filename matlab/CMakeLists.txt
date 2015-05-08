@@ -1,6 +1,41 @@
 set (mex_srcs
      hxgz.c)
 
+set (matlab_files
+  hx_close.m
+  hx_connect.m
+  hx_matlab_controller.m
+  hx_read_sensors.m
+  hx_robot_info.m
+  hxs_add_model.m
+  hxs_angular_velocity.m
+  hxs_apply_force.m
+  hxs_apply_torque.m
+  hxs_apply_wrench.m
+  hxs_camera_transform.m
+  hxs_contacts.m
+  hxs_example.m
+  hxs_is_logging.m
+  hxs_linear_velocity.m
+  hxs_model_collide_mode.m
+  hxs_model_color.m
+  hxs_model_gravity_mode.m
+  hxs_model_transform.m
+  hxs_remove_model.m
+  hxs_reset.m
+  hxs_set_angular_velocity.m
+  hxs_set_camera_transform.m
+  hxs_set_linear_velocity.m
+  hxs_set_model_collide_mode.m
+  hxs_set_model_color.m
+  hxs_set_model_gravity_mode.m
+  hxs_set_model_joint_state.m
+  hxs_set_model_transform.m
+  hxs_sim_info.m
+  hxs_start_logging.m
+  hxs_stop_logging.m
+  hx_update.m)
+
 #
 # Octave generation if support found
 #
@@ -24,12 +59,7 @@ if (OCTAVE_SUPPORT_FOUND)
   endforeach()
 
   install(FILES ${OCTAVE_OUTPUT_FILE_SET}
-              hx_close.m
-              hx_connect.m
-              hx_read_sensors.m
-              hx_robot_info.m
-              hx_update.m
-              hx_matlab_controller.m
+              ${matlab_files}
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/haptix-comm/octave)
 
   add_custom_target(octave_generation ALL DEPENDS ${OCTAVE_OUTPUT_FILE_SET})
@@ -103,12 +133,7 @@ if (MATLAB_FOUND)
   endforeach()
 
   install(FILES ${MEX_OUTPUT_FILE_SET}
-                hx_close.m
-                hx_connect.m
-                hx_read_sensors.m
-                hx_robot_info.m
-                hx_update.m
-                hx_matlab_controller.m
+                ${matlab_files}
           DESTINATION ${CMAKE_INSTALL_LIBDIR}/haptix-comm/matlab)
 
   if (WIN32)
