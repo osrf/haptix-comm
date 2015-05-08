@@ -15,7 +15,6 @@
  *
 */
 
-#include <cstdlib>
 #include "gtest/gtest.h"
 #include "haptix/comm/haptix.h"
 #include "msg/hxCommand.pb.h"
