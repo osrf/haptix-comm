@@ -95,7 +95,6 @@ extern "C" {
     req.mutable_joints(0)->set_vel(_vel);
 
     // Set empty required fields
-    req.set_id(0);
     req.set_gravity_mode(0);
     hxsTransform tf;
     hxsWrench wrench;

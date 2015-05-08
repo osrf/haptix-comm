@@ -456,7 +456,6 @@ static bool hxs_convertModel(const haptix::comm::msgs::hxModel _in,
 
   bool result = true;
   result &= hxs_convertTransform(_in.transform(), &(_out->transform));
-  _out->id = _in.id();
   _out->link_count = _in.links_size();
   _out->joint_count = _in.joints_size();
 

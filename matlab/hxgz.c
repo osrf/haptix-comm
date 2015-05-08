@@ -620,7 +620,6 @@ model_to_matlab(const hxsModel* h)
 {
   const char *keys[] = {"name",
                         "transform",
-                        "id",
                         "links",
                         "joints",
                         "gravity_mode"};
@@ -642,10 +641,8 @@ model_to_matlab(const hxsModel* h)
   mxArray *jointsArray = mxCreateStructMatrix(h->joint_count, 1, 1, jointsKeys);
   mxArray *gravityModeArray = mxCreateDoubleMatrix(1, 1, mxREAL);
 
-  double* idData = mxGetPr(idArray);
   double* gravityModeData = mxGetPr(gravityModeArray);
 
-  idData[0] = h->id;
   int i;
   for (i = 0; i < h->link_count; ++i)
     mxSetField(linksArray, i, "link", link_to_matlab(h->links+i));
@@ -655,7 +652,6 @@ model_to_matlab(const hxsModel* h)
 
   mxSetField(s, 0, "name", nameArray);
   mxSetField(s, 0, "transform", transformArray);
-  mxSetField(s, 0, "id", idArray);
   mxSetField(s, 0, "links", linksArray);
   mxSetField(s, 0, "joints", jointsArray);
   mxSetField(s, 0, "gravity_mode", gravityModeArray);

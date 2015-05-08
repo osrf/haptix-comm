@@ -12,8 +12,7 @@ message hxModel
 {
   required string name           = 1;
   required hxTransform transform = 2;
-  required uint32 id             = 3;
-  repeated hxLink links          = 4;
-  repeated hxJoint joints        = 5;
-  required bool gravity_mode     = 6;
+  repeated hxLink links          = 3;
+  repeated hxJoint joints        = 4;
+  required bool gravity_mode     = 5;
 }
