@@ -239,7 +239,6 @@ void onHxsJointState(const std::string &_service,
   _result = true;
 }
 
-
 //////////////////////////////////////////////////
 /// \brief Provide a "hxs_add_model" service.
 void onHxsAddModel(const std::string &_service,
@@ -945,80 +944,82 @@ TEST(hxsTest, hxs_sim_info)
   setup();
 
   ignition::transport::Node node;
-  hxsSimInfo simInfo;
+  hxsSimInfo *simInfo = new hxsSimInfo();
 
   // Advertise the "hxs_sim_info" service.
   node.Advertise("/haptix/gazebo/hxs_sim_info", onHxsSimInfo);
 
   // Request simulation information.
-  ASSERT_EQ(hxs_sim_info(&simInfo), hxOK);
+  ASSERT_EQ(hxs_sim_info(simInfo), hxOK);
 
   // Check the model information
-  ASSERT_EQ(simInfo.model_count, kNumModels);
-  for (int i = 0; i < simInfo.model_count; ++i)
+  ASSERT_EQ(simInfo->model_count, kNumModels);
+  for (int i = 0; i < simInfo->model_count; ++i)
   {
-    EXPECT_FLOAT_EQ(simInfo.models[i].transform.pos.x, i);
-    EXPECT_FLOAT_EQ(simInfo.models[i].transform.pos.y, i + 0.1f);
-    EXPECT_FLOAT_EQ(simInfo.models[i].transform.pos.z, i + 0.2f);
-    EXPECT_FLOAT_EQ(simInfo.models[i].transform.orient.w, i + 0.3f);
-    EXPECT_FLOAT_EQ(simInfo.models[i].transform.orient.x, i + 0.4f);
-    EXPECT_FLOAT_EQ(simInfo.models[i].transform.orient.y, i + 0.5f);
-    EXPECT_FLOAT_EQ(simInfo.models[i].transform.orient.z, i + 0.6f);
-    ASSERT_EQ(simInfo.models[i].link_count, kNumLinksPerModel);
-    for (int j = 0; j < simInfo.models[i].link_count; ++j)
+    EXPECT_FLOAT_EQ(simInfo->models[i].transform.pos.x, i);
+    EXPECT_FLOAT_EQ(simInfo->models[i].transform.pos.y, i + 0.1f);
+    EXPECT_FLOAT_EQ(simInfo->models[i].transform.pos.z, i + 0.2f);
+    EXPECT_FLOAT_EQ(simInfo->models[i].transform.orient.w, i + 0.3f);
+    EXPECT_FLOAT_EQ(simInfo->models[i].transform.orient.x, i + 0.4f);
+    EXPECT_FLOAT_EQ(simInfo->models[i].transform.orient.y, i + 0.5f);
+    EXPECT_FLOAT_EQ(simInfo->models[i].transform.orient.z, i + 0.6f);
+    ASSERT_EQ(simInfo->models[i].link_count, kNumLinksPerModel);
+    for (int j = 0; j < simInfo->models[i].link_count; ++j)
     {
       float v = 10 * i + j;
-      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].transform.pos.x, v);
-      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].transform.pos.y, v + 0.1f);
-      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].transform.pos.z, v + 0.2f);
-      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].transform.orient.w, v + 0.3f);
-      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].transform.orient.x, v + 0.4f);
-      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].transform.orient.y, v + 0.5f);
-      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].transform.orient.z, v + 0.6f);
-      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].lin_vel.x, v + 0.7f);
-      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].lin_vel.y, v + 0.8f);
-      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].lin_vel.z, v + 0.9f);
-      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].ang_vel.x, v + 1.0f);
-      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].ang_vel.y, v + 1.1f);
-      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].ang_vel.z, v + 1.2f);
-      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].lin_acc.x, v + 1.3f);
-      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].lin_acc.y, v + 1.4f);
-      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].lin_acc.z, v + 1.5f);
-      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].ang_acc.x, v + 1.6f);
-      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].ang_acc.y, v + 1.7f);
-      EXPECT_FLOAT_EQ(simInfo.models[i].links[j].ang_acc.z, v + 1.8f);
+      EXPECT_FLOAT_EQ(simInfo->models[i].links[j].transform.pos.x, v);
+      EXPECT_FLOAT_EQ(simInfo->models[i].links[j].transform.pos.y, v + 0.1f);
+      EXPECT_FLOAT_EQ(simInfo->models[i].links[j].transform.pos.z, v + 0.2f);
+      EXPECT_FLOAT_EQ(simInfo->models[i].links[j].transform.orient.w, v + 0.3f);
+      EXPECT_FLOAT_EQ(simInfo->models[i].links[j].transform.orient.x, v + 0.4f);
+      EXPECT_FLOAT_EQ(simInfo->models[i].links[j].transform.orient.y, v + 0.5f);
+      EXPECT_FLOAT_EQ(simInfo->models[i].links[j].transform.orient.z, v + 0.6f);
+      EXPECT_FLOAT_EQ(simInfo->models[i].links[j].lin_vel.x, v + 0.7f);
+      EXPECT_FLOAT_EQ(simInfo->models[i].links[j].lin_vel.y, v + 0.8f);
+      EXPECT_FLOAT_EQ(simInfo->models[i].links[j].lin_vel.z, v + 0.9f);
+      EXPECT_FLOAT_EQ(simInfo->models[i].links[j].ang_vel.x, v + 1.0f);
+      EXPECT_FLOAT_EQ(simInfo->models[i].links[j].ang_vel.y, v + 1.1f);
+      EXPECT_FLOAT_EQ(simInfo->models[i].links[j].ang_vel.z, v + 1.2f);
+      EXPECT_FLOAT_EQ(simInfo->models[i].links[j].lin_acc.x, v + 1.3f);
+      EXPECT_FLOAT_EQ(simInfo->models[i].links[j].lin_acc.y, v + 1.4f);
+      EXPECT_FLOAT_EQ(simInfo->models[i].links[j].lin_acc.z, v + 1.5f);
+      EXPECT_FLOAT_EQ(simInfo->models[i].links[j].ang_acc.x, v + 1.6f);
+      EXPECT_FLOAT_EQ(simInfo->models[i].links[j].ang_acc.y, v + 1.7f);
+      EXPECT_FLOAT_EQ(simInfo->models[i].links[j].ang_acc.z, v + 1.8f);
     }
-    ASSERT_EQ(simInfo.models[i].joint_count, kNumJointsPerModel);
-    for (int j = 0; j < simInfo.models[i].joint_count; ++j)
+    ASSERT_EQ(simInfo->models[i].joint_count, kNumJointsPerModel);
+    for (int j = 0; j < simInfo->models[i].joint_count; ++j)
     {
       float v = 20 * i + j;
-      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].pos, v);
-      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].vel, v + 0.1f);
-      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].torque_motor, v + 0.3f);
-      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].wrench_reactive.force.x,
+      EXPECT_FLOAT_EQ(simInfo->models[i].joints[j].pos, v);
+      EXPECT_FLOAT_EQ(simInfo->models[i].joints[j].vel, v + 0.1f);
+      EXPECT_FLOAT_EQ(simInfo->models[i].joints[j].torque_motor, v + 0.3f);
+      EXPECT_FLOAT_EQ(simInfo->models[i].joints[j].wrench_reactive.force.x,
         v + 0.4f);
-      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].wrench_reactive.force.y,
+      EXPECT_FLOAT_EQ(simInfo->models[i].joints[j].wrench_reactive.force.y,
         v + 0.5f);
-      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].wrench_reactive.force.z,
+      EXPECT_FLOAT_EQ(simInfo->models[i].joints[j].wrench_reactive.force.z,
         v + 0.6f);
-      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].wrench_reactive.torque.x,
+      EXPECT_FLOAT_EQ(simInfo->models[i].joints[j].wrench_reactive.torque.x,
         v + 0.7f);
-      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].wrench_reactive.torque.y,
+      EXPECT_FLOAT_EQ(simInfo->models[i].joints[j].wrench_reactive.torque.y,
         v + 0.8f);
-      EXPECT_FLOAT_EQ(simInfo.models[i].joints[j].wrench_reactive.torque.z,
+      EXPECT_FLOAT_EQ(simInfo->models[i].joints[j].wrench_reactive.torque.z,
         v + 0.9f);
     }
-    EXPECT_TRUE(simInfo.models[i].gravity_mode);
+    EXPECT_TRUE(simInfo->models[i].gravity_mode);
   }
 
   // Check the camera information.
-  EXPECT_FLOAT_EQ(simInfo.camera_transform.pos.x, 30.0f);
-  EXPECT_FLOAT_EQ(simInfo.camera_transform.pos.y, 30.1f);
-  EXPECT_FLOAT_EQ(simInfo.camera_transform.pos.z, 30.2f);
-  EXPECT_FLOAT_EQ(simInfo.camera_transform.orient.w, 30.3f);
-  EXPECT_FLOAT_EQ(simInfo.camera_transform.orient.x, 30.4f);
-  EXPECT_FLOAT_EQ(simInfo.camera_transform.orient.y, 30.5f);
-  EXPECT_FLOAT_EQ(simInfo.camera_transform.orient.z, 30.6f);
+  EXPECT_FLOAT_EQ(simInfo->camera_transform.pos.x, 30.0f);
+  EXPECT_FLOAT_EQ(simInfo->camera_transform.pos.y, 30.1f);
+  EXPECT_FLOAT_EQ(simInfo->camera_transform.pos.z, 30.2f);
+  EXPECT_FLOAT_EQ(simInfo->camera_transform.orient.w, 30.3f);
+  EXPECT_FLOAT_EQ(simInfo->camera_transform.orient.x, 30.4f);
+  EXPECT_FLOAT_EQ(simInfo->camera_transform.orient.y, 30.5f);
+  EXPECT_FLOAT_EQ(simInfo->camera_transform.orient.z, 30.6f);
+
+  delete simInfo;
 }
 
 //////////////////////////////////////////////////
@@ -1053,20 +1054,22 @@ TEST(hxsTest, hxs_set_camera_transform)
   setup();
 
   ignition::transport::Node node;
-  hxsSimInfo simInfo;
+  hxsSimInfo *simInfo = new hxsSimInfo();
 
   // Advertise the "hxs_sim_info" service.
   node.Advertise("/haptix/gazebo/hxs_sim_info", onHxsSimInfo);
 
   // Request simulation information.
-  ASSERT_EQ(hxs_sim_info(&simInfo), hxOK);
+  ASSERT_EQ(hxs_sim_info(simInfo), hxOK);
 
   // Advertise the "hxs_camera_transform" service.
   node.Advertise("/haptix/gazebo/hxs_set_camera_transform",
     onHxsCameraTransform);
 
   // Set a camera transformation similar to the camera in simState.
-  ASSERT_EQ(hxs_set_camera_transform(&simInfo.camera_transform), hxOK);
+  ASSERT_EQ(hxs_set_camera_transform(&(simInfo->camera_transform)), hxOK);
+
+  delete simInfo;
 }
 
 //////////////////////////////////////////////////
@@ -1115,7 +1118,7 @@ TEST(hxsTest, hxs_set_model_joint_state)
   setup();
 
   ignition::transport::Node node;
-  hxsSimInfo simInfo;
+  hxsSimInfo *simInfo = new hxsSimInfo();
 
   // Advertise the "hxs_sim_info" service.
   node.Advertise("/haptix/gazebo/hxs_sim_info", onHxsSimInfo);
@@ -1124,9 +1127,11 @@ TEST(hxsTest, hxs_set_model_joint_state)
   node.Advertise("/haptix/gazebo/hxs_set_model_joint_state", onHxsJointState);
 
   // Request simulation information.
-  ASSERT_EQ(hxs_sim_info(&simInfo), hxOK);
+  ASSERT_EQ(hxs_sim_info(simInfo), hxOK);
 
   EXPECT_EQ(hxs_set_model_joint_state("model 0", "joint 1", 1.0f, 2.0f), hxOK);
+
+  delete simInfo;
 }
 
 //////////////////////////////////////////////////
@@ -1224,7 +1229,7 @@ TEST(hxsTest, hxs_set_model_transform)
   setup();
 
   ignition::transport::Node node;
-  hxsSimInfo simInfo;
+  hxsSimInfo *simInfo = new hxsSimInfo();
 
   // Advertise the "hxs_sim_info" service.
   node.Advertise("/haptix/gazebo/hxs_sim_info", onHxsSimInfo);
@@ -1234,11 +1239,13 @@ TEST(hxsTest, hxs_set_model_transform)
     onHxsSetModelTransform);
 
   // Request simulation information.
-  ASSERT_EQ(hxs_sim_info(&simInfo), hxOK);
+  ASSERT_EQ(hxs_sim_info(simInfo), hxOK);
 
   // Let's use the transform from the second model.
-  ASSERT_EQ(hxs_set_model_transform("model 1", &simInfo.models[1].transform),
+  ASSERT_EQ(hxs_set_model_transform("model 1", &(simInfo->models[1].transform)),
     hxOK);
+
+  delete simInfo;
 }
 
 //////////////////////////////////////////////////
@@ -1386,7 +1393,7 @@ TEST(hxsTest, hxs_apply_force)
 
   ignition::transport::Node node;
   hxsVector3 force;
-  hxsSimInfo simInfo;
+  hxsSimInfo *simInfo = new hxsSimInfo();
 
   // Advertise the "hxs_sim_info" service.
   node.Advertise("/haptix/gazebo/hxs_sim_info", onHxsSimInfo);
@@ -1395,7 +1402,7 @@ TEST(hxsTest, hxs_apply_force)
   node.Advertise("/haptix/gazebo/hxs_apply_force", onHxsApplyForce);
 
   // Request simulation information.
-  ASSERT_EQ(hxs_sim_info(&simInfo), hxOK);
+  ASSERT_EQ(hxs_sim_info(simInfo), hxOK);
 
   // Set some force.
   force.x = 5.1f;
@@ -1403,8 +1410,10 @@ TEST(hxsTest, hxs_apply_force)
   force.z = 5.3f;
 
   // Use the first link of the first model in simState.
-  ASSERT_EQ(hxs_apply_force(simInfo.models[0].name,
-      simInfo.models[0].links[0].name, &force, 0.1), hxOK);
+  ASSERT_EQ(hxs_apply_force(simInfo->models[0].name,
+      simInfo->models[0].links[0].name, &force, 0.1), hxOK);
+
+  delete simInfo;
 }
 
 //////////////////////////////////////////////////
@@ -1415,7 +1424,7 @@ TEST(hxsTest, hxs_apply_torque)
 
   ignition::transport::Node node;
   hxsVector3 torque;
-  hxsSimInfo simInfo;
+  hxsSimInfo *simInfo = new hxsSimInfo();
 
   // Advertise the "hxs_sim_info" service.
   node.Advertise("/haptix/gazebo/hxs_sim_info", onHxsSimInfo);
@@ -1424,7 +1433,7 @@ TEST(hxsTest, hxs_apply_torque)
   node.Advertise("/haptix/gazebo/hxs_apply_torque", onHxsApplyTorque);
 
   // Request simulation information.
-  ASSERT_EQ(hxs_sim_info(&simInfo), hxOK);
+  ASSERT_EQ(hxs_sim_info(simInfo), hxOK);
 
   // Set some force.
   torque.x = 6.1f;
@@ -1432,8 +1441,10 @@ TEST(hxsTest, hxs_apply_torque)
   torque.z = 6.3f;
 
   // Use the first link of the first model in simState.
-  ASSERT_EQ(hxs_apply_torque(simInfo.models[0].name,
-      simInfo.models[0].links[0].name, &torque, 0.1), hxOK);
+  ASSERT_EQ(hxs_apply_torque(simInfo->models[0].name,
+      simInfo->models[0].links[0].name, &torque, 0.1), hxOK);
+
+  delete simInfo;
 }
 
 //////////////////////////////////////////////////
@@ -1444,7 +1455,7 @@ TEST(hxsTest, hxs_apply_wrench)
 
   ignition::transport::Node node;
   hxsWrench wrench;
-  hxsSimInfo simInfo;
+  hxsSimInfo *simInfo = new hxsSimInfo();
 
   // Advertise the "hxs_sim_info" service.
   node.Advertise("/haptix/gazebo/hxs_sim_info", onHxsSimInfo);
@@ -1453,7 +1464,7 @@ TEST(hxsTest, hxs_apply_wrench)
   node.Advertise("/haptix/gazebo/hxs_apply_wrench", onHxsApplyWrench);
 
   // Request simulation information.
-  ASSERT_EQ(hxs_sim_info(&simInfo), hxOK);
+  ASSERT_EQ(hxs_sim_info(simInfo), hxOK);
 
   // Set some torque/force.
   wrench.force.x = 7.1f;
@@ -1464,8 +1475,10 @@ TEST(hxsTest, hxs_apply_wrench)
   wrench.torque.z = 7.6f;
 
   // Use the first link of the first model in simState.
-  ASSERT_EQ(hxs_apply_wrench(simInfo.models[0].name,
-      simInfo.models[0].links[0].name, &wrench, 0.1f), hxOK);
+  ASSERT_EQ(hxs_apply_wrench(simInfo->models[0].name,
+      simInfo->models[0].links[0].name, &wrench, 0.1f), hxOK);
+
+  delete simInfo;
 }
 
 //////////////////////////////////////////////////
