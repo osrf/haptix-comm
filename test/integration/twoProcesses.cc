@@ -22,12 +22,6 @@
 #include "msg/hxSensor.pb.h"
 #include "test_config.h"
 
-#ifdef _WIN32
-#define HX_CMD_PREFIX "start "
-#else
-#define HX_CMD_PREFIX ""
-#endif
-
 std::string partition;
 std::string robotInfoTopic = "/haptix/gazebo/GetRobotInfo";
 std::string updateTopic = "/haptix/gazebo/Update";

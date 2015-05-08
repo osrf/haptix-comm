@@ -1440,7 +1440,7 @@ TEST(hxsTest, hxs_apply_torque)
   // Request simulation information.
   ASSERT_EQ(hxs_sim_info(simInfo), hxOK);
 
-  // Set some force.
+  // Set some torque.
   torque.x = 6.1f;
   torque.y = 6.2f;
   torque.z = 6.3f;
