@@ -34,10 +34,9 @@ std::string robotInfoTopic = "/haptix/gazebo/GetRobotInfo";
 std::string updateTopic = "/haptix/gazebo/Update";
 
 //////////////////////////////////////////////////
-/// \brief Three different nodes running in two different processes. In the
-/// subscriber processs there are two nodes. Both should receive the message.
-/// After some time one of them unsubscribe. After that check that only one
-/// node receives the message.
+/// \brief Two nodes running on two different processes. The node in this test
+/// will exercise the HAPTIX API, whereas the node in the external process will
+/// simulate the HAPTIX Gazebo plugin providing the HAPTIX services.
 TEST(twoProcesses, SrvTwoProcs)
 {
   // Launch an ignition transport node that will advertise services.
@@ -46,9 +45,6 @@ TEST(twoProcesses, SrvTwoProcs)
 
   testing::forkHandlerType pi = testing::forkAndRun(responserPath.c_str(),
     partition.c_str());
-  /*std::string command = std::string(HX_CMD_PREFIX) + BUILD_DIR +
-    std::string("/test/integration/hx_responser_test 10000&");
-  ASSERT_EQ(std::system(command.c_str()), 0);*/
 
   hxRobotInfo robotInfo;
   hxCommand cmd;
