@@ -22,6 +22,7 @@
 #include "msg/hxCommand.pb.h"
 #include "msg/hxRobot.pb.h"
 #include "msg/hxSensor.pb.h"
+#include "test_config.h"
 
 int numMotors = 4;
 int numJoints = 5;
