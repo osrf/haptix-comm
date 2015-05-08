@@ -130,9 +130,9 @@ void onUpdate(const std::string &_service,
 //////////////////////////////////////////////////
 int main(int argc, char **argv)
 {
-  int time = -1;
+  int time = 5000;
 
-  if ( argc > 2 )
+  /*if ( argc > 1 )
   {
     std::cout << "usage: " << argv[0] << " [TIME_MS]";
     return -1;
@@ -150,7 +150,7 @@ int main(int argc, char **argv)
         << std::endl;
       return -1;
     }
-  }
+  }*/
 
   // Create a Haptix transport node.
   ignition::transport::Node node;

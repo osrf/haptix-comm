@@ -21,6 +21,7 @@
 #include "msg/hxCommand.pb.h"
 #include "msg/hxRobot.pb.h"
 #include "msg/hxSensor.pb.h"
+#include "test_config.h"
 
 #ifdef _WIN32
 #define HX_CMD_PREFIX "start "
@@ -28,6 +29,7 @@
 #define HX_CMD_PREFIX ""
 #endif
 
+std::string partition;
 std::string robotInfoTopic = "/haptix/gazebo/GetRobotInfo";
 std::string updateTopic = "/haptix/gazebo/Update";
 
@@ -39,9 +41,14 @@ std::string updateTopic = "/haptix/gazebo/Update";
 TEST(twoProcesses, SrvTwoProcs)
 {
   // Launch an ignition transport node that will advertise services.
-  std::string command = std::string(HX_CMD_PREFIX) + BUILD_DIR +
+  std::string responserPath = testing::portablePathUnion(
+    PROJECT_BINARY_PATH, "test/integration/hx_responser_test");
+
+  testing::forkHandlerType pi = testing::forkAndRun(responserPath.c_str(),
+    partition.c_str());
+  /*std::string command = std::string(HX_CMD_PREFIX) + BUILD_DIR +
     std::string("/test/integration/hx_responser_test 10000&");
-  ASSERT_EQ(std::system(command.c_str()), 0);
+  ASSERT_EQ(std::system(command.c_str()), 0);*/
 
   hxRobotInfo robotInfo;
   hxCommand cmd;
@@ -112,4 +119,20 @@ TEST(twoProcesses, SrvTwoProcs)
   EXPECT_EQ(sensor.time_stamp.nsec, 10);
 
   EXPECT_EQ(hx_close(), hxOK);
+
+  // Need to kill the responser node running on an external process.
+  testing::killFork(pi);
+}
+
+//////////////////////////////////////////////////
+int main(int argc, char **argv)
+{
+  // Get a random partition name.
+  partition = testing::getRandomNumber();
+
+  // Set the partition name for this process.
+  setenv("IGN_PARTITION", partition.c_str(), 1);
+
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }
