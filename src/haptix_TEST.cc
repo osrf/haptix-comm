@@ -164,7 +164,7 @@ void onRead(const std::string &_service,
 /// \brief Check that we can use the C-wrapper.
 TEST(CommTest, BasicUsage)
 {
-  /*ignition::transport::Node node;
+  ignition::transport::Node node;
 
   // Advertise the "getdeviceinfo" service.
   node.Advertise(kRobotInfoTopic, onGetRobotInfo);
@@ -256,7 +256,7 @@ TEST(CommTest, BasicUsage)
     EXPECT_FLOAT_EQ(sensor.imu_angular_vel[i][2], i + 5);
   }
 
-  EXPECT_EQ(hx_close(), hxOK);*/
+  EXPECT_EQ(hx_close(), hxOK);
 }
 
 //////////////////////////////////////////////////
