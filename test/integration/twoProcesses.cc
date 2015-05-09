@@ -23,8 +23,6 @@
 #include "test_config.h"
 
 std::string partition;
-std::string robotInfoTopic = "/haptix/gazebo/GetRobotInfo";
-std::string updateTopic = "/haptix/gazebo/Update";
 
 //////////////////////////////////////////////////
 /// \brief Two nodes running on two different processes. The node in this test
@@ -34,7 +32,7 @@ TEST(twoProcesses, SrvTwoProcs)
 {
   // Launch an ignition transport node that will advertise services.
   std::string responserPath = testing::portablePathUnion(
-    PROJECT_BINARY_PATH, "test/integration/hx_responser_test");
+    PROJECT_BINARY_PATH, "test/integration/INTEGRATION_hx_responser");
 
   testing::forkHandlerType pi = testing::forkAndRun(responserPath.c_str(),
     partition.c_str());
