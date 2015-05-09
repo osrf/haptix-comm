@@ -26,7 +26,6 @@
 #include "msg/hxParam.pb.h"
 #include "msg/hxSimInfo.pb.h"
 #include "msg/hxString.pb.h"
-#include "msg/hxTime.pb.h"
 #include "msg/hxTransform.pb.h"
 #include "test_config.h"
 

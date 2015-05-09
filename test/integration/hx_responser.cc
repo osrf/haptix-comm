@@ -37,25 +37,27 @@
 #include "test_config.h"
 
 /// \brief Global constants.
-const int kNumModels         = 5;
-const int kNumLinksPerModel  = 40;
-const int kNumJointsPerModel = 20;
-const int kNumContactPoints  = 30;
+const int kNumModels          = 5;
+const int kNumLinksPerModel   = 40;
+const int kNumJointsPerModel  = 20;
+const int kNumContactPoints   = 30;
+const int kNumMotors          = 4;
+const int kNumJoints          = 5;
+const int kNumContactSensors  = 6;
+const int kNumIMUs            = 7;
+const float kUpdateRate       = 8.0f;
+const unsigned int kTime_sec  = 9u;
+const unsigned int kTime_nsec = 10u;
 
-int numMotors = 4;
-int numJoints = 5;
-int numContactSensors = 6;
-int numIMUs = 7;
-float updateRate = 8.0;
-unsigned int time_sec = 9;
-unsigned int time_nsec = 10;
+const std::string kDeviceInfoTopic = "/haptix/gazebo/GetRobotInfo";
+const std::string kUpdateTopic     = "/haptix/gazebo/Update";
 
-std::string deviceInfoTopic = "/haptix/gazebo/GetRobotInfo";
-std::string updateTopic = "/haptix/gazebo/Update";
-
+/// \brief Global variables.
 haptix::comm::msgs::hxSimInfo simState;
 haptix::comm::msgs::hxContactPoint_V simContactPointsState;
 
+//////////////////////////////////////////////////
+/// \brief Populate a simulation state and a simulation contact points variables
 void setup()
 {
   simState.Clear();
@@ -963,23 +965,23 @@ void onGetRobotInfo(const std::string &_service,
 {
   _result = true;
 
-  if (_service != deviceInfoTopic)
+  if (_service != "/haptix/gazebo/GetRobotInfo")
     _result = false;
 
-  _rep.set_motor_count(numMotors);
-  _rep.set_joint_count(numJoints);
-  _rep.set_contact_sensor_count(numContactSensors);
-  _rep.set_imu_count(numIMUs);
-  _rep.set_update_rate(updateRate);
+  _rep.set_motor_count(kNumMotors);
+  _rep.set_joint_count(kNumJoints);
+  _rep.set_contact_sensor_count(kNumContactSensors);
+  _rep.set_imu_count(kNumIMUs);
+  _rep.set_update_rate(kUpdateRate);
 
-  for (int i = 0; i < numJoints; ++i)
+  for (int i = 0; i < kNumJoints; ++i)
   {
     haptix::comm::msgs::hxRobot::hxLimit *joint = _rep.add_joint_limit();
     joint->set_minimum(-i);
     joint->set_maximum(i);
   }
 
-  for (int i = 0; i < numMotors; ++i)
+  for (int i = 0; i < kNumMotors; ++i)
   {
     haptix::comm::msgs::hxRobot::hxLimit *motor = _rep.add_motor_limit();
     motor->set_minimum(-i);
@@ -995,7 +997,7 @@ void onUpdate(const std::string &_service,
 {
   _result = true;
 
-  if (_service != updateTopic)
+  if (_service != "/haptix/gazebo/Update")
     _result = false;
 
   // Read the request parameters.
@@ -1011,23 +1013,23 @@ void onUpdate(const std::string &_service,
   }*/
 
   // Create some dummy response.
-  for (int i = 0; i < numMotors; ++i)
+  for (int i = 0; i < kNumMotors; ++i)
   {
     _rep.add_motor_pos(i);
     _rep.add_motor_vel(i + 1);
     _rep.add_motor_torque(i + 2);
   }
 
-  for (int i = 0; i < numJoints; ++i)
+  for (int i = 0; i < kNumJoints; ++i)
   {
     _rep.add_joint_pos(i);
     _rep.add_joint_vel(i + 1);
   }
 
-  for (int i = 0; i < numContactSensors; ++i)
+  for (int i = 0; i < kNumContactSensors; ++i)
     _rep.add_contact(i);
 
-  for (int i = 0; i < numIMUs; ++i)
+  for (int i = 0; i < kNumIMUs; ++i)
   {
     haptix::comm::msgs::imu *linear_acc = _rep.add_imu_linear_acc();
     linear_acc->set_x(i);
@@ -1044,13 +1046,14 @@ void onUpdate(const std::string &_service,
     orientation->set_w(i + 9);
   }
 
-  _rep.mutable_time_stamp()->set_sec(time_sec);
-  _rep.mutable_time_stamp()->set_nsec(time_nsec);
+  _rep.mutable_time_stamp()->set_sec(kTime_sec);
+  _rep.mutable_time_stamp()->set_nsec(kTime_nsec);
 }
 
 //////////////////////////////////////////////////
 int main(int argc, char **argv)
 {
+  // Sanity check: Make sure that a partition name is passed in as an argument.
   if (argc != 2)
   {
     std::cerr << "Partition name has not be passed as argument" << std::endl;
@@ -1059,116 +1062,156 @@ int main(int argc, char **argv)
 
   // Set the partition name for this test.
   setenv("IGN_PARTITION", argv[1], 1);
-
   // Max lifetime of the program.
   int time = 30000;
-
+  // Initialize the test by creating an initial state.
   setup();
 
-  // Create a Haptix transport node.
+   // ---------- HAPTIX API ----------
   ignition::transport::Node node;
 
   // Advertise the "getdeviceinfo" service.
-  if (!node.Advertise(deviceInfoTopic, onGetRobotInfo))
-  {
-    std::cerr << "Error advertising the [" << deviceInfoTopic << "] service."
-              << std::endl;
-  }
+  std::string service = "/haptix/gazebo/GetRobotInfo";
+  if (!node.Advertise(service, onGetRobotInfo))
+    std::cerr << "Error advertising service [" << service << "]." << std::endl;
 
   // Advertise the "update" service.
-  if (!node.Advertise(updateTopic, onUpdate))
-  {
-    std::cerr << "Error advertising the [" << updateTopic << "] service."
-              << std::endl;
-  }
+  service = "/haptix/gazebo/Update";
+  if (!node.Advertise(service, onUpdate))
+    std::cerr << "Error advertising service [" << service << "]." << std::endl;
 
+  // ---------- HAPTIX SIM API ----------
   hxsSimInfo *simInfo = new hxsSimInfo();
 
   // Advertise the "hxs_sim_info" service.
-  node.Advertise("/haptix/gazebo/hxs_sim_info", onHxsSimInfo);
-
-  // Advertise the "hxs_camera" service.
-  node.Advertise("/haptix/gazebo/hxs_camera_transform", onHxsCamera);
+  service = "/haptix/gazebo/hxs_sim_info";
+  if (!node.Advertise(service, onHxsSimInfo))
+    std::cerr << "Error advertising service [" << service << "]." << std::endl;
 
   // Advertise the "hxs_camera_transform" service.
-  node.Advertise("/haptix/gazebo/hxs_set_camera_transform",
-    onHxsCameraTransform);
+  service = "/haptix/gazebo/hxs_camera_transform";
+  if (!node.Advertise(service, onHxsCamera))
+    std::cerr << "Error advertising service [" << service << "]." << std::endl;
+
+  // Advertise the "hxs_set_camera_transform" service.
+  service = "/haptix/gazebo/hxs_set_camera_transform";
+  if (!node.Advertise(service, onHxsCameraTransform))
+    std::cerr << "Error advertising service [" << service << "]." << std::endl;
 
   // Advertise the "hxs_contacts" service.
-  node.Advertise("/haptix/gazebo/hxs_contacts", onHxsContactPoints);
+  service = "/haptix/gazebo/hxs_contacts";
+  if (!node.Advertise(service, onHxsContactPoints))
+    std::cerr << "Error advertising service [" << service << "]." << std::endl;
 
-  // Advertise the "hxs_state" service.
-  node.Advertise("/haptix/gazebo/hxs_set_model_joint_state", onHxsJointState);
+  // Advertise the "hxs_set_model_joint_state" service.
+  service = "/haptix/gazebo/hxs_set_model_joint_state";
+  if (!node.Advertise(service, onHxsJointState))
+    std::cerr << "Error advertising service [" << service << "]." << std::endl;
 
   // Advertise the "hxs_add_model" service.
-  node.Advertise("/haptix/gazebo/hxs_add_model", onHxsAddModel);
+  service = "/haptix/gazebo/hxs_add_model";
+  if (!node.Advertise(service, onHxsAddModel))
+    std::cerr << "Error advertising service [" << service << "]." << std::endl;
 
   // Advertise the "hxs_remove_model" service.
-  node.Advertise("/haptix/gazebo/hxs_remove_model", onHxsRemoveModel);
+  service = "/haptix/gazebo/hxs_remove_model";
+  if (!node.Advertise(service, onHxsRemoveModel))
+    std::cerr << "Error advertising service [" << service << "]." << std::endl;
 
   // Advertise the "hxs_set_model_transform" service.
-  node.Advertise("/haptix/gazebo/hxs_set_model_transform",
-    onHxsSetModelTransform);
+  service = "/haptix/gazebo/hxs_set_model_transform";
+  if (!node.Advertise(service, onHxsSetModelTransform))
+    std::cerr << "Error advertising service [" << service << "]." << std::endl;
 
   // Advertise the "hxs_model_transform" service.
-  node.Advertise("/haptix/gazebo/hxs_model_transform", onHxsModelTransform);
+  service = "/haptix/gazebo/hxs_model_transform";
+  if (!node.Advertise(service, onHxsModelTransform))
+    std::cerr << "Error advertising service [" << service << "]." << std::endl;
 
   // Advertise the "hxs_model_gravity_mode" service.
-  node.Advertise("/haptix/gazebo/hxs_model_gravity_mode", onHxsModelGravity);
+  service = "/haptix/gazebo/hxs_model_gravity_mode";
+  if (!node.Advertise(service, onHxsModelGravity))
+    std::cerr << "Error advertising service [" << service << "]." << std::endl;
 
   // Advertise the "hxs_set_model_gravity_mode" service.
-  node.Advertise("/haptix/gazebo/hxs_set_model_gravity_mode",
-    onHxsSetModelGravity);
+  service = "/haptix/gazebo/hxs_set_model_gravity_mode";
+  if (!node.Advertise(service, onHxsSetModelGravity))
+    std::cerr << "Error advertising service [" << service << "]." << std::endl;
 
   // Advertise the "hxs_linear_velocity" service.
-  node.Advertise("/haptix/gazebo/hxs_linear_velocity",
-    onHxsLinearVelocity);
+  service = "/haptix/gazebo/hxs_linear_velocity";
+  if (!node.Advertise(service, onHxsLinearVelocity))
+    std::cerr << "Error advertising service [" << service << "]." << std::endl;
 
   // Advertise the "hxs_set_linear_velocity" service.
-  node.Advertise("/haptix/gazebo/hxs_set_linear_velocity",
-    onHxsSetLinearVelocity);
+  service = "/haptix/gazebo/hxs_set_linear_velocity";
+  node.Advertise(service, onHxsSetLinearVelocity);
+    std::cerr << "Error advertising service [" << service << "]." << std::endl;
 
   // Advertise the "hxs_angular_velocity" service.
-  node.Advertise("/haptix/gazebo/hxs_angular_velocity", onHxsAngularVelocity);
+  service = "/haptix/gazebo/hxs_angular_velocity";
+  if (!node.Advertise(service, onHxsAngularVelocity))
+    std::cerr << "Error advertising service [" << service << "]." << std::endl;
 
   // Advertise the "hxs_set_angular_velocity" service.
-  node.Advertise("/haptix/gazebo/hxs_set_angular_velocity",
-    onHxsSetAngularVelocity);
+  service = "/haptix/gazebo/hxs_set_angular_velocity";
+  if (!node.Advertise(service, onHxsSetAngularVelocity))
+    std::cerr << "Error advertising service [" << service << "]." << std::endl;
 
   // Advertise the "hxs_apply_force" service.
-  node.Advertise("/haptix/gazebo/hxs_apply_force", onHxsApplyForce);
+  service = "/haptix/gazebo/hxs_apply_force";
+  if (!node.Advertise(service, onHxsApplyForce))
+    std::cerr << "Error advertising service [" << service << "]." << std::endl;
 
   // Advertise the "hxs_apply_torque" service.
-  node.Advertise("/haptix/gazebo/hxs_apply_torque", onHxsApplyTorque);
+  service = "/haptix/gazebo/hxs_apply_torque";
+  if (!node.Advertise(service, onHxsApplyTorque))
+    std::cerr << "Error advertising service [" << service << "]." << std::endl;
 
   // Advertise the "hxs_apply_wrench" service.
-  node.Advertise("/haptix/gazebo/hxs_apply_wrench", onHxsApplyWrench);
+  service = "/haptix/gazebo/hxs_apply_wrench";
+  if (!node.Advertise(service, onHxsApplyWrench))
+    std::cerr << "Error advertising service [" << service << "]." << std::endl;
 
   // Advertise the "hxs_reset" service.
-  node.Advertise("/haptix/gazebo/hxs_reset", onHxsReset);
+  service = "/haptix/gazebo/hxs_reset";
+  if (!node.Advertise(service, onHxsReset))
+    std::cerr << "Error advertising service [" << service << "]." << std::endl;
 
   // Advertise the "hxs_start_logging" service.
-  node.Advertise("/haptix/gazebo/hxs_start_logging", onHxsStartLogging);
+  service = "/haptix/gazebo/hxs_start_logging";
+  if (!node.Advertise(service, onHxsStartLogging))
+    std::cerr << "Error advertising service [" << service << "]." << std::endl;
 
   // Advertise the "hxs_is_logging" service.
-  node.Advertise("/haptix/gazebo/hxs_is_logging", onHxsIsLogging);
+  service = "/haptix/gazebo/hxs_is_logging";
+  if (!node.Advertise(service, onHxsIsLogging))
+    std::cerr << "Error advertising service [" << service << "]." << std::endl;
 
   // Advertise the "hxs_stop_logging" service.
-  node.Advertise("/haptix/gazebo/hxs_stop_logging", onHxsStopLogging);
+  service = "/haptix/gazebo/hxs_stop_logging";
+  if (!node.Advertise(service, onHxsStopLogging))
+    std::cerr << "Error advertising service [" << service << "]." << std::endl;
 
   // Advertise the "hxs_set_model_color" service.
-  node.Advertise("/haptix/gazebo/hxs_set_model_color", onHxsSetModelColor);
+  service = "/haptix/gazebo/hxs_set_model_color";
+  if (!node.Advertise(service, onHxsSetModelColor))
+    std::cerr << "Error advertising service [" << service << "]." << std::endl;
 
   // Advertise the "hxs_model_color" service.
-  node.Advertise("/haptix/gazebo/hxs_model_color", onHxsModelColor);
+  service = "/haptix/gazebo/hxs_model_color";
+  if (!node.Advertise(service, onHxsModelColor))
+    std::cerr << "Error advertising service [" << service << "]." << std::endl;
 
   // Advertise the "hxs_set_model_collide_mode" service.
-  node.Advertise("/haptix/gazebo/hxs_set_model_collide_mode",
-    onHxsSetModelCollideMode);
+  service = "/haptix/gazebo/hxs_set_model_collide_mode";
+  if (!node.Advertise(service, onHxsSetModelCollideMode))
+    std::cerr << "Error advertising service [" << service << "]." << std::endl;
 
   // Advertise the "hxs_model_collide_mode" service.
-  node.Advertise("/haptix/gazebo/hxs_model_collide_mode",
-    onHxsModelCollideMode);
+  service = "/haptix/gazebo/hxs_model_collide_mode";
+  if (!node.Advertise(service, onHxsModelCollideMode))
+    std::cerr << "Error advertising service [" << service << "]." << std::endl;
 
   // Zzzz.
   std::this_thread::sleep_for(std::chrono::milliseconds(time));

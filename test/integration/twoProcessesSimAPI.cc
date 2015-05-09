@@ -35,10 +35,13 @@ const int kNumLinksPerModel  = 40;
 const int kNumJointsPerModel = 20;
 const int kNumContactPoints  = 30;
 
+/// \brief Global variables.
 std::string partition;
 haptix::comm::msgs::hxSimInfo simState;
 haptix::comm::msgs::hxContactPoint_V simContactPointsState;
 
+//////////////////////////////////////////////////
+/// \brief Populate a simulation state and a simulation contact points variables
 void setup()
 {
   simState.Clear();
@@ -145,6 +148,7 @@ void setup()
 /// process will simulate the HAPTIX Gazebo plugin providing the HAPTIX services
 TEST(twoProcessesSimAPI, hxs_sim_info)
 {
+  // Initialize test.
   setup();
 
   // Launch an ignition transport node that will advertise services.
@@ -156,7 +160,7 @@ TEST(twoProcessesSimAPI, hxs_sim_info)
 
   hxsSimInfo *simInfo = new hxsSimInfo();
 
-  // --- hxs_sim_info ---
+  // ---------- hxs_sim_info ----------
   ASSERT_EQ(hxs_sim_info(simInfo), hxOK);
 
   // Check the model information
@@ -227,7 +231,7 @@ TEST(twoProcessesSimAPI, hxs_sim_info)
   EXPECT_FLOAT_EQ(simInfo->camera_transform.orient.y, 30.5f);
   EXPECT_FLOAT_EQ(simInfo->camera_transform.orient.z, 30.6f);
 
-  // --- hxs_camera_transform ---
+  // ---------- hxs_camera_transform ----------
   hxsTransform camInfo;
 
   // Request camera information.
@@ -242,10 +246,10 @@ TEST(twoProcessesSimAPI, hxs_sim_info)
   EXPECT_FLOAT_EQ(camInfo.orient.y, 30.5f);
   EXPECT_FLOAT_EQ(camInfo.orient.z, 30.6f);
 
-  // --- hxs_set_camera_transform ---
+  // ---------- hxs_set_camera_transform ----------
   ASSERT_EQ(hxs_set_camera_transform(&(simInfo->camera_transform)), hxOK);
 
-  // --- hxs_contacts ---
+  // ---------- hxs_contacts ----------
   hxsContactPoints contactsInfo;
 
   // Get the list of contacts for model "model 0".
@@ -274,12 +278,12 @@ TEST(twoProcessesSimAPI, hxs_sim_info)
     EXPECT_FLOAT_EQ(contactsInfo.contacts[i].wrench.torque.z, i + 2.3f);
   }
 
-  // --- hxs_set_model_joint_state ---
+  // ---------- hxs_set_model_joint_state ----------
   hxsModel model;
 
   EXPECT_EQ(hxs_set_model_joint_state("model 0", "joint 1", 1.0f, 2.0f), hxOK);
 
-  // --- hxs_add_model ---
+  // ---------- hxs_add_model ----------
   std::string urdf = "fake URDF";
   std::string name = "model 1";
   float x = 1.0f;
@@ -342,14 +346,14 @@ TEST(twoProcessesSimAPI, hxs_sim_info)
   }
   EXPECT_TRUE(model.gravity_mode);
 
-  // --- hxs_remove_model ---
+  // ---------- hxs_remove_model ----------
   ASSERT_EQ(hxs_remove_model("model 1"), hxOK);
 
-  // --- hxs_set_model_transform ---
+  // ---------- hxs_set_model_transform ----------
   ASSERT_EQ(hxs_set_model_transform("model 1", &(simInfo->models[1].transform)),
     hxOK);
 
-  // --- hxs_model_transform ---
+  // ---------- hxs_model_transform ----------
   hxsTransform transform;
 
   // Request transform for model 1.
@@ -364,15 +368,15 @@ TEST(twoProcessesSimAPI, hxs_sim_info)
   EXPECT_FLOAT_EQ(transform.orient.y, 1.5f);
   EXPECT_FLOAT_EQ(transform.orient.z, 1.6f);
 
-  // --- hxs_model_gravity_mode ---
+  // ---------- hxs_model_gravity_mode ----------
   int gravity_mode = 0;
   ASSERT_EQ(hxs_model_gravity_mode("model_1", &gravity_mode), hxOK);
   EXPECT_EQ(gravity_mode, 1);
 
-  // --- hxs_set_model_gravity_mode
+  // ---------- hxs_set_model_gravity_mode ----------
   ASSERT_EQ(hxs_set_model_gravity_mode("model_1", 1), hxOK);
 
-  // --- hxs_linear_velocity ---
+  // ---------- hxs_linear_velocity ----------
   hxsVector3 lin_vel;
   ASSERT_EQ(hxs_linear_velocity("model 1", &lin_vel), hxOK);
 
@@ -381,14 +385,14 @@ TEST(twoProcessesSimAPI, hxs_sim_info)
   EXPECT_FLOAT_EQ(lin_vel.y, 1.1f);
   EXPECT_FLOAT_EQ(lin_vel.z, 1.2f);
 
-  // --- hxs_set_linear_velocity ---
+  // ---------- hxs_set_linear_velocity ----------
   lin_vel.x = 1.0f;
   lin_vel.y = 1.1f;
   lin_vel.z = 1.2f;
 
   ASSERT_EQ(hxs_set_linear_velocity("model 1", &lin_vel), hxOK);
 
-  // --- hxs_angular_velocity ---
+  // ---------- hxs_angular_velocity ----------
   hxsVector3 ang_vel;
   ASSERT_EQ(hxs_angular_velocity("model 1", &ang_vel), hxOK);
 
@@ -397,7 +401,7 @@ TEST(twoProcessesSimAPI, hxs_sim_info)
   EXPECT_FLOAT_EQ(ang_vel.y, 2.1f);
   EXPECT_FLOAT_EQ(ang_vel.z, 2.2f);
 
-  // --- hxs_set_angular_velocity ---
+  // ---------- hxs_set_angular_velocity ----------
   ang_vel = {0.0f, 0.0f, 0.0f};
 
   ang_vel.x = 2.0f;
@@ -406,7 +410,7 @@ TEST(twoProcessesSimAPI, hxs_sim_info)
 
   ASSERT_EQ(hxs_set_angular_velocity("model 1", &ang_vel), hxOK);
 
-  // --- hxs_apply_force ---
+  // ---------- hxs_apply_force ----------
   hxsVector3 force;
 
   // Set some force.
@@ -418,7 +422,7 @@ TEST(twoProcessesSimAPI, hxs_sim_info)
   ASSERT_EQ(hxs_apply_force(simInfo->models[0].name,
       simInfo->models[0].links[0].name, &force, 0.1), hxOK);
 
-  // --- hxs_apply_torque ---
+  // ---------- hxs_apply_torque ----------
   hxsVector3 torque;
 
   // Set some torque.
@@ -430,7 +434,7 @@ TEST(twoProcessesSimAPI, hxs_sim_info)
   ASSERT_EQ(hxs_apply_torque(simInfo->models[0].name,
       simInfo->models[0].links[0].name, &torque, 0.1), hxOK);
 
-  // --- hxs_apply_wrench ---
+  // ---------- hxs_apply_wrench ----------
   hxsWrench wrench;
 
   // Set some torque/force.
@@ -445,15 +449,15 @@ TEST(twoProcessesSimAPI, hxs_sim_info)
   ASSERT_EQ(hxs_apply_wrench(simInfo->models[0].name,
       simInfo->models[0].links[0].name, &wrench, 0.1f), hxOK);
 
-  // --- hxs_reset ---
+  // ---------- hxs_reset ----------
   int resetLimbPose = 1;
   ASSERT_EQ(hxs_reset(resetLimbPose), hxOK);
 
-  // --- hxs_start_logging ---
+  // ---------- hxs_start_logging ----------
   std::string filename = "a filename";
   ASSERT_EQ(hxs_start_logging(filename.c_str()), hxOK);
 
-  // --- hxs_is_logging ---
+  // ---------- hxs_is_logging ----------
   int isLogging;
 
   ASSERT_EQ(hxs_is_logging(&isLogging), hxOK);
@@ -461,10 +465,10 @@ TEST(twoProcessesSimAPI, hxs_sim_info)
   // Verify the result.
   EXPECT_EQ(isLogging, 1);
 
-  // --- hxs_stop_logging ---
+  // ---------- hxs_stop_logging ----------
   ASSERT_EQ(hxs_stop_logging(), hxOK);
 
-  // --- hxs_set_model_color ---
+  // ---------- hxs_set_model_color ----------
   hxsColor color;
 
   color.r = 0.5f;
@@ -474,7 +478,7 @@ TEST(twoProcessesSimAPI, hxs_sim_info)
 
   ASSERT_EQ(hxs_set_model_color("model_1", &color), hxOK);
 
-  // --- hxs_model_color ---
+  // ---------- hxs_model_color ----------
   ASSERT_EQ(hxs_model_color("model_1", &color), hxOK);
 
   // Check the color received.
@@ -483,17 +487,17 @@ TEST(twoProcessesSimAPI, hxs_sim_info)
   EXPECT_FLOAT_EQ(color.b, 0.3f);
   EXPECT_FLOAT_EQ(color.alpha, 0.4f);
 
-  // --- hxs_set_model_collide_mode ---
+  // ---------- hxs_set_model_collide_mode ----------
   hxsCollideMode collideMode = hxsCOLLIDE;
   ASSERT_EQ(hxs_set_model_collide_mode("model_1", &collideMode), hxOK);
 
-  // --- hxs_model_collide_mode ---
+  // ---------- hxs_model_collide_mode ----------
   ASSERT_EQ(hxs_model_collide_mode("model_1", &collideMode), hxOK);
 
   // Check the collide mode received.
   EXPECT_EQ(collideMode, hxsDETECTIONONLY);
 
-  // --- Teardown ---
+  // Teardown.
   delete simInfo;
   // Need to kill the responser node running on an external process.
   testing::killFork(pi);
