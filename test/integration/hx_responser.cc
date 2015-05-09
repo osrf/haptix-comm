@@ -1067,7 +1067,7 @@ int main(int argc, char **argv)
   // Initialize the test by creating an initial state.
   setup();
 
-   // ---------- HAPTIX API ----------
+  // ---------- HAPTIX API ----------
   ignition::transport::Node node;
 
   // Advertise the "getdeviceinfo" service.
