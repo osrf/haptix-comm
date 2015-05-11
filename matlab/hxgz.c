@@ -623,7 +623,7 @@ model_to_matlab(const hxsModel* h)
                         "links",
                         "joints",
                         "gravity_mode"};
-  mxArray *s = mxCreateStructMatrix(1, 1, 6, keys);
+  mxArray *s = mxCreateStructMatrix(1, 1, 5, keys);
 
   mxArray *nameArray = mxCreateString(h->name);
   mxArray *transformArray = transform_to_matlab(&(h->transform));
