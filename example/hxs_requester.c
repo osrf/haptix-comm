@@ -51,17 +51,17 @@ int main(int argc, char **argv)
     return -1;
   }
   printf("Models:\n");
-  for (i = 0; i < sim_info->model_count; i++)
+  for (i = 0; i < sim_info->model_count; ++i)
   {
     model = sim_info->models[i];
     printf("\t%s\n", model.name);
     printf("\tLinks:\n");
-    for (j = 0; j < model.link_count; j++)
+    for (j = 0; j < model.link_count; ++j)
     {
       link = model.links[j];
       printf("\t\t%s\n", link.name);
     }
-    for (j = 0; j < model.joint_count; j++)
+    for (j = 0; j < model.joint_count; ++j)
     {
       printf("\tJoints:\n");
       joint = model.joints[j];
@@ -184,7 +184,7 @@ int main(int argc, char **argv)
     return -1;
   }
   printf("Contact points:\n");
-  for (i = 0; i < contacts.contact_count; i++)
+  for (i = 0; i < contacts.contact_count; ++i)
   {
     printf("\tContact %d:\n", i);
     printf("\t\tLink 1: %s\n", contacts.contacts[i].link1);
