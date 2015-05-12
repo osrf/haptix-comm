@@ -32,6 +32,7 @@ int main(int argc, char **argv)
   hxsModel model;
   hxsJoint joint;
   hxsLink link;
+  hxsContactPoints contacts;
   hxsTransform transform, camera_transform, new_transform;
   hxsVector3 lin_vel, ang_vel, force, torque;
   hxsWrench wrench;
@@ -154,6 +155,38 @@ int main(int argc, char **argv)
   }
   printf("Table color: %f, %f, %f, %f\n",
       color.r, color.b, color.g, color.alpha);
+
+  force.x = 0;
+  force.y = 0;
+  force.z = -1;
+
+  if (hxs_apply_force("wood_cube_5cm", "link", &force, 0.001) != hxOK)
+  {
+    printf("hxs_apply_force(): Request error.\n");
+    return -1;
+  }
+
+#ifdef _WIN32
+  Sleep(1)
+#else
+  usleep(100);
+#endif
+
+  if (hxs_contacts("wood_cube_5cm", &contacts) != hxOK)
+  {
+    printf("hxs_contacts(): Request error.\n");
+    return -1;
+  }
+  printf("Contact points:\n");
+  for (i = 0; i < contacts.contact_count; i++)
+  {
+    printf("\tContact %d:\n", i);
+    printf("\t\tLink 1: %s\n", contacts.contacts[i].link1);
+    printf("\t\tLink 2: %s\n", contacts.contacts[i].link2);
+    hxsVector3 point = contacts.contacts[i].point;
+    printf("\t\tContact point: %f, %f, %f\n", point.x, point.y, point.z);
+    printf("\t\tContact penetration depth: %f\n", contacts.contacts[i].distance);
+  }
 
   printf("Sliding cube:\n");
   if (hxs_linear_velocity("wood_cube_5cm", &lin_vel) != hxOK)
