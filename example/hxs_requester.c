@@ -15,6 +15,7 @@
  *
 */
 
+#include <stdlib.h>
 #include <stdio.h>
 #include <haptix/comm/haptix_sim.h>
 #include <time.h>
@@ -28,7 +29,9 @@
 //////////////////////////////////////////////////
 int main(int argc, char **argv)
 {
-  hxsSimInfo sim_info;
+  // Variable declaration
+  // hxsSimInfo is a large struct. Don't declare it on the stack.
+  hxsSimInfo *sim_info = (hxsSimInfo*) malloc(sizeof(hxsSimInfo));
   hxsModel model;
   hxsJoint joint;
   hxsLink link;
@@ -41,15 +44,16 @@ int main(int argc, char **argv)
   int i, j;
 
   // List the models in the world and print their links and joints.
-  if (hxs_sim_info(&sim_info) != hxOK)
+  if (hxs_sim_info(sim_info) != hxOK)
   {
     printf("hxs_sim_info(): Request error.\n");
+    free(sim_info);
     return -1;
   }
   printf("Models:\n");
-  for (i = 0; i < sim_info.model_count; i++)
+  for (i = 0; i < sim_info->model_count; i++)
   {
-    model = sim_info.models[i];
+    model = sim_info->models[i];
     printf("\t%s\n", model.name);
     printf("\tLinks:\n");
     for (j = 0; j < model.link_count; j++)
@@ -64,6 +68,8 @@ int main(int argc, char **argv)
       printf("\t\t%s\n", joint.name);
     }
   }
+  // Free hxsSimInfo pointer because it's not used after this point
+  free(sim_info);
 
   // Get the user camera transform.
   if (hxs_camera_transform(&camera_transform) != hxOK)
@@ -248,7 +254,7 @@ int main(int argc, char **argv)
   }
   printf("Angular velocity of cube before torque: %f, %f, %f\n",
       ang_vel.x, ang_vel.y, ang_vel.z);
-  // Apply a small force for 0.2 seconds
+  // Apply a small torque for 0.1 seconds
   torque.x = 0;
   torque.y = 0;
   torque.z = 0.1;
