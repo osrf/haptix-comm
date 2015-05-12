@@ -144,6 +144,10 @@ hxs_remove_model('green_cricket_ball');
 hxs_set_model_joint_state('mpl_haptix_right_forearm', 'wristy', 0.5, 0.0);
 pause(1);
 
+% Set the position of the arm. Note that if the motion tracking device is
+% active and unpaused, this change will be transient.
+hxs_set_model_transform('mpl_haptix_right_forearm', 1.0, 0, 1.5, 0, 0, 0)
+
 % Move the camera
 hxs_set_camera_transform(new_tx);
 pause(1);
