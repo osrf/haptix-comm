@@ -22,6 +22,7 @@
 #include "msg/hxCommand.pb.h"
 #include "msg/hxRobot.pb.h"
 #include "msg/hxSensor.pb.h"
+#include "test_config.h"
 
 int numMotors = 4;
 int numJoints = 5;
@@ -130,27 +131,17 @@ void onUpdate(const std::string &_service,
 //////////////////////////////////////////////////
 int main(int argc, char **argv)
 {
-  int time = -1;
-
-  if ( argc > 2 )
+  if (argc != 2)
   {
-    std::cout << "usage: " << argv[0] << " [TIME_MS]";
+    std::cerr << "Partition name has not be passed as argument" << std::endl;
     return -1;
   }
-  else if (argc == 2)
-  {
-    try
-    {
-      // Read the time parameter.
-      time = std::stoi(argv[1]);
-    }
-    catch(const std::invalid_argument &ex)
-    {
-      std::cerr << "<TIME_MS> argument must be a positive integer."
-        << std::endl;
-      return -1;
-    }
-  }
+
+  // Set the partition name for this test.
+  setenv("IGN_PARTITION", argv[1], 1);
+
+  // Max lifetime of the program.
+  int time = 5000;
 
   // Create a Haptix transport node.
   ignition::transport::Node node;
@@ -169,13 +160,6 @@ int main(int argc, char **argv)
               << std::endl;
   }
 
-  if (time != -1)
-    std::this_thread::sleep_for(std::chrono::milliseconds(time));
-  else
-  {
-    // Zzzz.
-    printf("Accepting service calls. Press [ENTER] to exit.\n");
-    getchar();
-  }
+  // Zzzz.
+  std::this_thread::sleep_for(std::chrono::milliseconds(time));
 }
-

@@ -21,6 +21,7 @@
 #include "msg/hxCommand.pb.h"
 #include "msg/hxRobot.pb.h"
 #include "msg/hxSensor.pb.h"
+#include "test_config.h"
 
 static const std::string RobotInfoTopic = "/haptix/gazebo/GetRobotInfo";
 static const std::string UpdateTopic     = "/haptix/gazebo/Update";
@@ -30,6 +31,8 @@ static const int NumMotors         = 4;
 static const int NumJoints         = 5;
 static const int NumContactSensors = 6;
 static const int NumIMUs           = 7;
+
+std::string partition;
 
 //////////////////////////////////////////////////
 /// \brief Provide a "GetRobotInfo" service.
@@ -254,4 +257,17 @@ TEST(CommTest, BasicUsage)
   }
 
   EXPECT_EQ(hx_close(), hxOK);
+}
+
+//////////////////////////////////////////////////
+int main(int argc, char **argv)
+{
+  // Get a random partition name.
+  partition = testing::getRandomNumber();
+
+  // Set the partition name for this process.
+  setenv("IGN_PARTITION", partition.c_str(), 1);
+
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }
