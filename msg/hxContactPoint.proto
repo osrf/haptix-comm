@@ -14,6 +14,5 @@ message hxContactPoint
   required hxVector3 point     = 3;
   required hxVector3 normal    = 4;
   required float distance      = 5;
-  required hxVector3 velocity  = 6;
-  required hxWrench wrench     = 8;
+  required hxWrench wrench     = 6;
 }

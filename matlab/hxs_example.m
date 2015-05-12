@@ -43,6 +43,22 @@ color = hxs_model_color('table');
 disp('Table color:');
 disp(color)
 
+% Get contact information for the cube after it collides with the table
+% Applying a force here induces a collision
+hxs_apply_force('wood_cube_5cm', 'link', [0, 0, -1], 0.1);
+pause(0.05);
+contacts = hxs_contacts('wood_cube_5cm');
+disp('Contact points:')
+for contact_idx = 1:size(contacts)
+  fprintf('  Contact %d:\n', contact_idx);
+  fprintf('    Link 1: %s\n', contacts(contact_idx).link1);
+  fprintf('    Link 2: %s\n', contacts(contact_idx).link2);
+  point = contacts(contact_idx).point;
+  fprintf('    Contact point: %f, %f, %f\n', point(1), point(2), point(3));
+  fprintf('    Contact penetration depth: %f\n', contacts(contact_idx).distance);
+end
+pause(1);
+
 % Apply force to the small wooden cube, moving it sideways.
 % Show linear velocity before, during, and afterward
 disp('Sliding cube:')
@@ -97,7 +113,7 @@ disp(gravity_mode);
 hxs_set_model_gravity_mode('wood_cube_5cm', 0);
 % Row vectors work, too.
 hxs_apply_force('wood_cube_5cm', 'link', [0, 0, 0.1], 0.1);
-% Let if fly
+% Let it fly
 pause(1);
 % Bring it back down
 hxs_set_model_gravity_mode('wood_cube_5cm', gravity_mode);
@@ -116,7 +132,7 @@ hxs_set_model_transform('wood_cube_5cm', tx);
 % Check collide mode on the cube
 collide_mode = hxs_model_collide_mode('wood_cube_5cm');
 disp(collide_mode);
-% Let it drop through the world
+% Let it drop through the table
 hxs_set_model_collide_mode('wood_cube_5cm', 0);
 % Hack: apply a small force to disturb the cube to make it actually fall.
 hxs_apply_force('wood_cube_5cm', 'link', [0; 0; 0.1], 0.1);
@@ -146,7 +162,8 @@ pause(1);
 
 % Set the position of the arm. Note that if the motion tracking device is
 % active and unpaused, this change will be transient.
-hxs_set_model_transform('mpl_haptix_right_forearm', 1.0, 0, 1.5, 0, 0, 0)
+arm_tx = struct('pos', [1.0, 0, 1.5], 'orient', [1, 0, 0, 0]);
+hxs_set_model_transform('mpl_haptix_right_forearm', arm_tx)
 
 % Move the camera
 hxs_set_camera_transform(new_tx);
