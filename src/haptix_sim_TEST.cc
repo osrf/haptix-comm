@@ -28,6 +28,7 @@
 #include "msg/hxString.pb.h"
 #include "msg/hxTime.pb.h"
 #include "msg/hxTransform.pb.h"
+#include "test_config.h"
 
 /// \brief Global constants.
 const int kNumModels         = 5;
@@ -36,6 +37,7 @@ const int kNumJointsPerModel = 20;
 const int kNumContactPoints  = 30;
 
 /// \brief Global variables.
+std::string partition;
 haptix::comm::msgs::hxSimInfo simState;
 haptix::comm::msgs::hxContactPoint_V simContactPointsState;
 
@@ -1616,4 +1618,17 @@ TEST(hxsTest, hxs_model_collide_mode)
 
   // Check the collide mode received.
   EXPECT_EQ(collideMode, hxsDETECTIONONLY);
+}
+
+//////////////////////////////////////////////////
+int main(int argc, char **argv)
+{
+  // Get a random partition name.
+  partition = testing::getRandomNumber();
+
+  // Set the partition name for this process.
+  setenv("IGN_PARTITION", partition.c_str(), 1);
+
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }
