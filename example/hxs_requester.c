@@ -88,7 +88,7 @@ int main(int argc, char **argv)
     return -1;
   }
 #ifdef _WIN32
-  Sleep(1000)
+  Sleep(1000);
 #else
   sleep(1);
 #endif
@@ -100,7 +100,7 @@ int main(int argc, char **argv)
     return -1;
   }
 #ifdef _WIN32
-  Sleep(1000)
+  Sleep(1000);
 #else
   sleep(1);
 #endif
@@ -116,7 +116,7 @@ int main(int argc, char **argv)
     return -1;
   }
 #ifdef _WIN32
-  Sleep(1000)
+  Sleep(1000);
 #else
   sleep(1);
 #endif
@@ -128,11 +128,11 @@ int main(int argc, char **argv)
   color.alpha = 1;
   if (hxs_set_model_color("table", &color) != hxOK)
   {
-    printf("hxs_set_model_color(): Request error.\n");
+    printf("hxs_set_model_color(): Request error.\n");  
     return -1;
   }
 #ifdef _WIN32
-  Sleep(1000)
+  Sleep(1000);
 #else
   sleep(1);
 #endif
@@ -148,7 +148,7 @@ int main(int argc, char **argv)
     return -1;
   }
 #ifdef _WIN32
-  Sleep(1000)
+  Sleep(1000);
 #else
   sleep(1);
 #endif
@@ -173,7 +173,7 @@ int main(int argc, char **argv)
   }
 
 #ifdef _WIN32
-  Sleep(1)
+  Sleep(1);
 #else
   usleep(100);
 #endif
@@ -214,7 +214,7 @@ int main(int argc, char **argv)
     return -1;
   }
 #ifdef _WIN32
-  Sleep(50)
+  Sleep(50);
 #else
   usleep(50000);
 #endif
@@ -228,7 +228,7 @@ int main(int argc, char **argv)
       lin_vel.x, lin_vel.y, lin_vel.z);
 
 #ifdef _WIN32
-  Sleep(10000)
+  Sleep(1000);
 #else
   sleep(1);
 #endif
@@ -242,7 +242,7 @@ int main(int argc, char **argv)
       lin_vel.x, lin_vel.y, lin_vel.z);
 
 #ifdef _WIN32
-  Sleep(10000)
+  Sleep(1000);
 #else
   sleep(1);
 #endif
@@ -266,7 +266,7 @@ int main(int argc, char **argv)
   }
 
 #ifdef _WIN32
-  Sleep(50)
+  Sleep(50);
 #else
   usleep(50000);
 #endif
@@ -280,7 +280,7 @@ int main(int argc, char **argv)
       ang_vel.x, ang_vel.y, ang_vel.z);
 
 #ifdef _WIN32
-  Sleep(1000)
+  Sleep(1000);
 #else
   sleep(1);
 #endif
@@ -307,7 +307,7 @@ int main(int argc, char **argv)
   }
 
 #ifdef _WIN32
-  Sleep(1000)
+  Sleep(1000);
 #else
   sleep(1);
 #endif
@@ -364,7 +364,7 @@ int main(int argc, char **argv)
       transform.orient.x, transform.orient.y, transform.orient.z);
 
 #ifdef _WIN32
-  Sleep(1000)
+  Sleep(1000);
 #else
   sleep(1);
 #endif
@@ -379,7 +379,12 @@ int main(int argc, char **argv)
     printf("hxs_model_transform(): Request error.\n");
     return -1;
   }
+
+#ifdef _WIN32
+  Sleep(1000);
+#else
   sleep(1);
+#endif
 
   // Get the model's collide mode
   if (hxs_model_collide_mode("wood_cube_5cm", &collide_mode))
@@ -406,7 +411,7 @@ int main(int argc, char **argv)
   }
 
 #ifdef _WIN32
-  Sleep(1000)
+  Sleep(1000);
 #else
   sleep(1);
 #endif
@@ -430,7 +435,7 @@ int main(int argc, char **argv)
   }
 
 #ifdef _WIN32
-  Sleep(1000)
+  Sleep(1000);
 #else
   sleep(1);
 #endif
@@ -487,7 +492,7 @@ int main(int argc, char **argv)
   }
 
 #ifdef _WIN32
-  Sleep(2000)
+  Sleep(2000);
 #else
   sleep(2);
 #endif
@@ -510,7 +515,7 @@ int main(int argc, char **argv)
   }
 
 #ifdef _WIN32
-  Sleep(1000)
+  Sleep(1000);
 #else
   sleep(1);
 #endif
@@ -534,7 +539,8 @@ int main(int argc, char **argv)
   }
 
 #ifdef _WIN32
-  Sleep(1000)
+  Sleep(1000);
+#else
   sleep(1);
 #endif
 
