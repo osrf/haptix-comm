@@ -128,9 +128,6 @@ void setup()
     contact->mutable_normal()->set_y(i + 0.6f);
     contact->mutable_normal()->set_z(i + 0.7f);
     contact->set_distance(i + 1.4f);
-    contact->mutable_velocity()->set_x(i + 1.5f);
-    contact->mutable_velocity()->set_y(i + 1.6f);
-    contact->mutable_velocity()->set_z(i + 1.7f);
     contact->mutable_wrench()->mutable_force()->set_x(i + 1.8f);
     contact->mutable_wrench()->mutable_force()->set_y(i + 1.9f);
     contact->mutable_wrench()->mutable_force()->set_z(i + 2.0f);
