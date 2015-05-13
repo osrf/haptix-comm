@@ -190,8 +190,9 @@ int main(int argc, char **argv)
     printf("\t\tLink 1: %s\n", contacts.contacts[i].link1);
     printf("\t\tLink 2: %s\n", contacts.contacts[i].link2);
     hxsVector3 point = contacts.contacts[i].point;
-    printf("\t\tContact point: %f, %f, %f\n", point.x, point.y, point.z);
-    printf("\t\tContact penetration depth: %f\n", contacts.contacts[i].distance);
+    printf("\t\tContact:\n");
+    printf("\t\t\tpoint: %f, %f, %f\n", point.x, point.y, point.z);
+    printf("\t\t\tpenetration depth: %f\n", contacts.contacts[i].distance);
   }
 
   printf("Sliding cube:\n");
@@ -438,7 +439,45 @@ int main(int argc, char **argv)
   //  https://bitbucket.org/osrf/gazebo_models/src/default/cricket_ball/model.sdf
   // and tweaking it slightly (just changing the color from Red to Green).
 
-  char sdf[1024] = "<sdf version=\"1.5\"> <model name=\"cricket_ball\"> <link name=\"link\"> <pose>0 0 0.0375 0 0 0</pose> <inertial> <mass>0.1467</mass> <inertia> <ixx>8.251875e-05</ixx> <ixy>0</ixy> <ixz>0</ixz> <iyy>8.251875e-05</iyy> <iyz>0</iyz> <izz>8.251875e-05</izz> </inertia> </inertial> <collision name=\"collision\"> <geometry> <sphere> <radius>0.0375</radius> </sphere> </geometry> </collision> <visual name=\"visual\"> <geometry> <sphere> <radius>0.0375</radius> </sphere> </geometry> <material> <script> <uri>file://media/materials/scripts/gazebo.material</uri> <name>Gazebo/Green</name> </script> </material> </visual> </link> </model> </sdf>";
+  char sdf[1024] =
+    "<sdf version=\"1.5\">"
+    "  <model name=\"cricket_ball\">"
+    "    <link name=\"link\">"
+    "      <pose>0 0 0.0375 0 0 0</pose>"
+    "      <inertial>"
+    "        <mass>0.1467</mass>"
+    "        <inertia>"
+    "          <ixx>8.251875e-05</ixx>"
+    "          <ixy>0</ixy>"
+    "          <ixz>0</ixz>"
+    "          <iyy>8.251875e-05</iyy>"
+    "          <iyz>0</iyz>"
+    "          <izz>8.251875e-05</izz>"
+    "        </inertia>"
+    "      </inertial>"
+    "      <collision name=\"collision\">"
+    "        <geometry>"
+    "          <sphere>"
+    "            <radius>0.0375</radius>"
+    "          </sphere>"
+    "        </geometry>"
+    "      </collision>"
+    "      <visual name=\"visual\">"
+    "        <geometry>"
+    "          <sphere>"
+    "            <radius>0.0375</radius>"
+    "          </sphere>"
+    "        </geometry>"
+    "        <material>"
+    "          <script>"
+    "            <uri>file://media/materials/scripts/gazebo.material</uri>"
+    "            <name>Gazebo/Green</name>"
+    "          </script>"
+    "        </material>"
+    "      </visual>"
+    "    </link>"
+    "  </model>"
+    "</sdf>";
 
   if (hxs_add_model(sdf, "green_cricket_ball", 0, 0, 5, 0, 0, 0, 1, &model)
       != hxOK)
