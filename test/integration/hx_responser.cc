@@ -76,7 +76,6 @@ void setup()
     model->mutable_transform()->mutable_orient()->set_x(i + 0.4f);
     model->mutable_transform()->mutable_orient()->set_y(i + 0.5f);
     model->mutable_transform()->mutable_orient()->set_z(i + 0.6f);
-    model->set_id(i);
     // Links.
     for (int j = 0; j < kNumLinksPerModel; ++j)
     {
