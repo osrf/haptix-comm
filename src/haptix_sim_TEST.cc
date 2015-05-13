@@ -58,7 +58,6 @@ void setup()
     model->mutable_transform()->mutable_orient()->set_x(i + 0.4f);
     model->mutable_transform()->mutable_orient()->set_y(i + 0.5f);
     model->mutable_transform()->mutable_orient()->set_z(i + 0.6f);
-    model->set_id(i);
     // Links.
     for (int j = 0; j < kNumLinksPerModel; ++j)
     {
@@ -965,7 +964,6 @@ TEST(hxsTest, hxs_sim_info)
     EXPECT_FLOAT_EQ(simInfo->models[i].transform.orient.x, i + 0.4f);
     EXPECT_FLOAT_EQ(simInfo->models[i].transform.orient.y, i + 0.5f);
     EXPECT_FLOAT_EQ(simInfo->models[i].transform.orient.z, i + 0.6f);
-    EXPECT_FLOAT_EQ(simInfo->models[i].id, i);
     ASSERT_EQ(simInfo->models[i].link_count, kNumLinksPerModel);
     for (int j = 0; j < simInfo->models[i].link_count; ++j)
     {
@@ -1169,7 +1167,6 @@ TEST(hxsTest, hxs_add_model)
   EXPECT_FLOAT_EQ(model.transform.orient.x, 0.4f);
   EXPECT_FLOAT_EQ(model.transform.orient.y, 0.5f);
   EXPECT_FLOAT_EQ(model.transform.orient.z, 0.6f);
-  EXPECT_FLOAT_EQ(model.id, 0);
   ASSERT_EQ(model.link_count, kNumLinksPerModel);
   for (int i = 0; i < model.link_count; ++i)
   {
