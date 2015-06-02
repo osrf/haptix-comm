@@ -26,7 +26,6 @@
 #include "msg/hxParam.pb.h"
 #include "msg/hxSimInfo.pb.h"
 #include "msg/hxString.pb.h"
-#include "msg/hxTime.pb.h"
 #include "msg/hxTransform.pb.h"
 #include "test_config.h"
 
@@ -1434,7 +1433,7 @@ TEST(hxsTest, hxs_apply_torque)
   // Request simulation information.
   ASSERT_EQ(hxs_sim_info(simInfo), hxOK);
 
-  // Set some force.
+  // Set some torque.
   torque.x = 6.1f;
   torque.y = 6.2f;
   torque.z = 6.3f;
