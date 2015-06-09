@@ -32,5 +32,4 @@ ign_install_library(${PROJECT_NAME_LOWER})
 
 add_dependencies(${PROJECT_NAME_LOWER}
   gtest gtest_main
-  protobuf_compilation
 )

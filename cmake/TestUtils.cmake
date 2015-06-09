@@ -15,7 +15,7 @@ macro (ign_build_tests)
     add_executable(${BINARY_NAME} ${GTEST_SOURCE_file})
 
     add_dependencies(${BINARY_NAME}
-      lib${PROJECT_NAME_LOWER}
+      ${PROJECT_NAME_LOWER}
       gtest gtest_main
       )
 
