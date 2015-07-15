@@ -24,7 +24,8 @@ tx = hxs_camera_transform();
 % Move and rotate the user camera pose
 new_tx = tx;
 new_tx.pos(3) = new_tx.pos(3) + 1;
-new_tx.orient(1)= new_tx.orient(1) + pi/4;
+% assign equvalent of Euler angles rpy(0, 0, M_PI)
+new_tx.orient(1)= [0 1 0 0]';
 hxs_set_camera_transform(new_tx);
 % Restore the original camera pose
 pause(1);
