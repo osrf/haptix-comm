@@ -43,6 +43,8 @@ void hxgzs_set_camera_transform(int nlhs, mxArray *plhs[],
                                 int nrhs, const mxArray *prhs[]);
 void hxgzs_contacts(int nlhs, mxArray *plhs[],
                     int nrhs, const mxArray *prhs[]);
+void hxgzs_model_joint_state(int nlhs, mxArray *plhs[],
+                             int nrhs, const mxArray *prhs[]);
 void hxgzs_set_model_joint_state(int nlhs, mxArray *plhs[],
                                  int nrhs, const mxArray *prhs[]);
 void hxgzs_add_model(int nlhs, mxArray *plhs[],
@@ -159,6 +161,8 @@ mexFunction(int nlhs, mxArray *plhs[],
     hxgzs_set_camera_transform(nlhs, plhs, nrhs-1, prhs+1);
   else if (!strcmp(funcName, "contacts"))
     hxgzs_contacts(nlhs, plhs, nrhs-1, prhs+1);
+  else if (!strcmp(funcName, "model_joint_state"))
+    hxgzs_model_joint_state(nlhs, plhs, nrhs-1, prhs+1);
   else if (!strcmp(funcName, "set_model_joint_state"))
     hxgzs_set_model_joint_state(nlhs, plhs, nrhs-1, prhs+1);
   else if (!strcmp(funcName, "add_model"))
@@ -899,6 +903,29 @@ hxgzs_contacts(int nlhs, mxArray *plhs[],
     mexErrMsgIdAndTxt("HAPTIX:hxs_contacts", hx_last_result());
 
   plhs[0] = contactpoints_to_matlab(&h);
+}
+
+void
+hxgzs_model_joint_state(int nlhs, mxArray *plhs[],
+                            int nrhs, const mxArray *prhs[])
+{
+  char m[hxsMAXNAMESIZE];
+  hxsModel model;
+
+  if (nrhs != 1)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_model_joint_state",
+      "Expects 1 arguments");
+
+  if (mxGetString(prhs[0], m, sizeof(m)))
+    mexErrMsgIdAndTxt("HAPTIX:hxs_model_joint_state",
+      "Failed to determine model name");
+
+  // call gazebo world sim api to get joint state
+  if (hxs_model_joint_state(m, &model) != hxOK)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_model_joint_state", hx_last_result());
+
+  // convert to matlab array element
+  plhs[0] = model_to_matlab(&model);
 }
 
 void

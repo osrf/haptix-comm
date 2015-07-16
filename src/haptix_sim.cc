@@ -77,9 +77,9 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
-  hxResult hxs_model_joint_state(const char *_model, hxsModel *_state)
+  hxResult hxs_model_joint_state(const char *_name, hxsModel *_model)
   {
-    if (!_model)
+    if (!_name)
     {
       std::cerr << "hxs_state() error: required string is NULL" << std::endl;
       return hxERROR;
@@ -87,10 +87,16 @@ extern "C" {
 
     const std::string service = "/haptix/gazebo/hxs_model_joint_state";
     haptix::comm::msgs::hxModel req;
-    req.set_name(_model);
+    req.set_name(_name);
+
+    // Set empty required fields
+    req.set_gravity_mode(0);
+    hxsTransform tf;
+    hxs_convertTransform(&tf, req.mutable_transform());
+
     haptix::comm::msgs::hxModel rep;
 
-    return hxs_call(service, __func__, req, rep, _state, hxs_convertModel);
+    return hxs_call(service, __func__, req, rep, _model, hxs_convertModel);
   }
 
   //////////////////////////////////////////////////
