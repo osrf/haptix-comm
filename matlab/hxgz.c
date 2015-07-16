@@ -619,6 +619,40 @@ joint_to_matlab(const hxsJoint* h)
   return s;
 }
 
+hxsModel
+matlab_to_model(const mxArray* m)
+{
+  hxsModel s;
+
+  // Sanity check: Verify that the first input argument is a struct.
+  if (!mxIsStruct(m))
+    mexErrMsgIdAndTxt("HAPTIX:matlab_to_model", "Expects struct");
+
+  // Sanity check: Verify that the struct has fields:
+  // pos, orient
+  if (mxGetNumberOfFields(m) != 2)
+    mexErrMsgIdAndTxt("HAPTIX:matlab_to_model", "Expects 2 fields");
+
+  if (mxGetString(m, s.name, sizeof(s.name)))
+    mexErrMsgIdAndTxt("HAPTIX:hxs_model_joint_state",
+      "Failed to determine model name");
+
+  int nj = *mxGetPr(mxGetField(m, 0, "joint_count"));
+  s.joint_count = nj;
+  int i;
+  for (i = 0; i < s.joint_count; ++i)
+  {
+    mxArray *j = mxGetField(m, i, "joints");
+    if (mxGetString(j, s.joints[i].name, sizeof(s.joints[i].name)))
+      mexErrMsgIdAndTxt("HAPTIX:hxs_model_joint_state",
+        "Failed to determine joint name");
+    s.joints[i].pos = *mxGetPr(mxGetField(j, 0, "pos"));
+    s.joints[i].vel = *mxGetPr(mxGetField(j, 0, "vel"));
+  }
+
+  return s;
+}
+
 mxArray*
 model_to_matlab(const hxsModel* h)
 {
