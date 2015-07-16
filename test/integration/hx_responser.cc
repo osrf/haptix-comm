@@ -232,6 +232,60 @@ void onHxsContactPoints(const std::string &_service,
 //////////////////////////////////////////////////
 /// \brief Provide a "hxs_set_model_joint_state" service.
 void onHxsJointState(const std::string &_service,
+  const haptix::comm::msgs::hxString &_req,
+  haptix::comm::msgs::hxModel &_rep,
+  bool &_result)
+{
+  _rep.Clear();
+  _result = false;
+
+  // Check the name of the service received.
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_model_joint_state");
+
+  // Verify the request.
+
+  EXPECT_EQ(_req.data(), "model 0");
+
+  _rep.set_name(_req.data());
+
+  _rep.add_joints();
+  _rep.mutable_joints(0)->set_pos(3.0);
+  _rep.mutable_joints(0)->set_vel(4.0);
+
+  // set required fields
+  _rep.mutable_joints(0)->set_name("joint 1");
+  _rep.mutable_joints(0)->set_torque_motor(5.0);
+  // w.mutable_force()->set_force(v);
+  // w.mutable_force()->set_torque(v);
+  haptix::comm::msgs::hxWrench *w =
+    _rep.mutable_joints(0)->mutable_wrench_reactive();
+  haptix::comm::msgs::hxVector3 *f = w->mutable_force();
+  haptix::comm::msgs::hxVector3 *t = w->mutable_torque();
+  f->set_x(11);
+  f->set_y(21);
+  f->set_z(31);
+  t->set_x(12);
+  t->set_y(22);
+  t->set_z(32);
+  haptix::comm::msgs::hxTransform *tf =
+    _rep.mutable_transform();
+  haptix::comm::msgs::hxVector3 *tfv = tf->mutable_pos();
+  haptix::comm::msgs::hxQuaternion *tfq = tf->mutable_orient();
+  tfv->set_x(13);
+  tfv->set_y(23);
+  tfv->set_z(33);
+  tfq->set_w(14);
+  tfq->set_x(24);
+  tfq->set_y(34);
+  tfq->set_z(44);
+  _rep.set_gravity_mode(0);
+
+  _result = true;
+}
+
+//////////////////////////////////////////////////
+/// \brief Provide a "hxs_set_model_joint_state" service.
+void onHxsSetJointState(const std::string &_service,
   const haptix::comm::msgs::hxModel &_req,
   haptix::comm::msgs::hxEmpty &_rep,
   bool &_result)
@@ -1099,9 +1153,14 @@ int main(int argc, char **argv)
   if (!node.Advertise(service, onHxsContactPoints))
     std::cerr << "Error advertising service [" << service << "]." << std::endl;
 
+  // Advertise the "hxs_model_joint_state" service.
+  service = "/haptix/gazebo/hxs_model_joint_state";
+  if (!node.Advertise(service, onHxsJointState))
+    std::cerr << "Error advertising service [" << service << "]." << std::endl;
+
   // Advertise the "hxs_set_model_joint_state" service.
   service = "/haptix/gazebo/hxs_set_model_joint_state";
-  if (!node.Advertise(service, onHxsJointState))
+  if (!node.Advertise(service, onHxsSetJointState))
     std::cerr << "Error advertising service [" << service << "]." << std::endl;
 
   // Advertise the "hxs_add_model" service.
