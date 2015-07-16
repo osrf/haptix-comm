@@ -86,13 +86,8 @@ extern "C" {
     }
 
     const std::string service = "/haptix/gazebo/hxs_model_joint_state";
-    haptix::comm::msgs::hxModel req;
-    req.set_name(_name);
-
-    // Set empty required fields
-    req.set_gravity_mode(0);
-    hxsTransform tf;
-    hxs_convertTransform(&tf, req.mutable_transform());
+    haptix::comm::msgs::hxString req;
+    req.set_data(_name);
 
     haptix::comm::msgs::hxModel rep;
 
