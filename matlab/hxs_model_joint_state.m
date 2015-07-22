@@ -1,4 +1,4 @@
-%HXS_MODEL_TRANSFORM Get model transform.
+%HXS_MODEL_JOINT_STATE Get state of a model.
 %
 % result = hxs_model_joint_state(model)
 %
