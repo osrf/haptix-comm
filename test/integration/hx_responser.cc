@@ -230,7 +230,7 @@ void onHxsContactPoints(const std::string &_service,
 }
 
 //////////////////////////////////////////////////
-/// \brief Provide a "hxs_set_model_joint_state" service.
+/// \brief Provide a "hxs_model_joint_state" service.
 void onHxsJointState(const std::string &_service,
   const haptix::comm::msgs::hxString &_req,
   haptix::comm::msgs::hxModel &_rep,
@@ -243,9 +243,9 @@ void onHxsJointState(const std::string &_service,
   EXPECT_EQ(_service, "/haptix/gazebo/hxs_model_joint_state");
 
   // Verify the request.
-
   EXPECT_EQ(_req.data(), "model 0");
 
+  // Create a response.
   _rep.set_name(_req.data());
 
   _rep.add_joints();
@@ -297,7 +297,6 @@ void onHxsSetJointState(const std::string &_service,
   EXPECT_EQ(_service, "/haptix/gazebo/hxs_set_model_joint_state");
 
   // Verify the request.
-
   EXPECT_EQ(_req.name(), "model 0");
 
   EXPECT_EQ(_req.joints_size(), 1);
