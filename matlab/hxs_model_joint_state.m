@@ -1,6 +1,6 @@
 %HXS_MODEL_TRANSFORM Get model transform.
 %
-% result = hxs_model_transform(model)
+% result = hxs_model_joint_state(model)
 %
 % Parameters:
 %   model (string) : Name of the model.
