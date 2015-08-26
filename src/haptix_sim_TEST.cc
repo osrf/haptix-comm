@@ -212,8 +212,30 @@ void onHxsContactPoints(const std::string &_service,
 }
 
 //////////////////////////////////////////////////
+/// \brief Provide a "hxs_model_joint_state" service.
+void onHxsModelJointState(const std::string &_service,
+  const haptix::comm::msgs::hxString &_req,
+  haptix::comm::msgs::hxModel &_rep,
+  bool &_result)
+{
+  _rep.Clear();
+  _result = false;
+
+  // Check the name of the service received.
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_model_joint_state");
+
+  // Verify the request.
+  EXPECT_EQ(_req.data(), "model 0");
+
+  // Return the first model as an answer.
+  _rep = simState.models(0);
+
+  _result = true;
+}
+
+//////////////////////////////////////////////////
 /// \brief Provide a "hxs_set_model_joint_state" service.
-void onHxsJointState(const std::string &_service,
+void onHxsSetModelJointState(const std::string &_service,
   const haptix::comm::msgs::hxModel &_req,
   haptix::comm::msgs::hxEmpty &_rep,
   bool &_result)
@@ -1110,26 +1132,85 @@ TEST(hxsTest, hxs_contacts)
 }
 
 //////////////////////////////////////////////////
+/// \brief Check hxs_model_joint_state.
+TEST(hxsTest, hxs_model_joint_state)
+{
+  setup();
+
+  ignition::transport::Node node;
+  hxsModel model;
+
+  // Advertise the "hxs_sim_info" service.
+  node.Advertise("/haptix/gazebo/hxs_sim_info", onHxsSimInfo);
+
+  // Advertise the "hxs_model_joint_state" service.
+  node.Advertise("/haptix/gazebo/hxs_model_joint_state", onHxsModelJointState);
+
+  // Request the state of a model.
+  EXPECT_EQ(hxs_model_joint_state("model 0", &model), hxOK);
+
+  // Verify that the received model matches the first model in simState.
+  EXPECT_FLOAT_EQ(model.transform.pos.x, 0.0f);
+  EXPECT_FLOAT_EQ(model.transform.pos.y, 0.1f);
+  EXPECT_FLOAT_EQ(model.transform.pos.z, 0.2f);
+  EXPECT_FLOAT_EQ(model.transform.orient.w, 0.3f);
+  EXPECT_FLOAT_EQ(model.transform.orient.x, 0.4f);
+  EXPECT_FLOAT_EQ(model.transform.orient.y, 0.5f);
+  EXPECT_FLOAT_EQ(model.transform.orient.z, 0.6f);
+  ASSERT_EQ(model.link_count, kNumLinksPerModel);
+  for (int i = 0; i < model.link_count; ++i)
+  {
+    float v = i;
+    EXPECT_FLOAT_EQ(model.links[i].transform.pos.x, v);
+    EXPECT_FLOAT_EQ(model.links[i].transform.pos.y, v + 0.1f);
+    EXPECT_FLOAT_EQ(model.links[i].transform.pos.z, v + 0.2f);
+    EXPECT_FLOAT_EQ(model.links[i].transform.orient.w, v + 0.3f);
+    EXPECT_FLOAT_EQ(model.links[i].transform.orient.x, v + 0.4f);
+    EXPECT_FLOAT_EQ(model.links[i].transform.orient.y, v + 0.5f);
+    EXPECT_FLOAT_EQ(model.links[i].transform.orient.z, v + 0.6f);
+    EXPECT_FLOAT_EQ(model.links[i].lin_vel.x, v + 0.7f);
+    EXPECT_FLOAT_EQ(model.links[i].lin_vel.y, v + 0.8f);
+    EXPECT_FLOAT_EQ(model.links[i].lin_vel.z, v + 0.9f);
+    EXPECT_FLOAT_EQ(model.links[i].ang_vel.x, v + 1.0f);
+    EXPECT_FLOAT_EQ(model.links[i].ang_vel.y, v + 1.1f);
+    EXPECT_FLOAT_EQ(model.links[i].ang_vel.z, v + 1.2f);
+    EXPECT_FLOAT_EQ(model.links[i].lin_acc.x, v + 1.3f);
+    EXPECT_FLOAT_EQ(model.links[i].lin_acc.y, v + 1.4f);
+    EXPECT_FLOAT_EQ(model.links[i].lin_acc.z, v + 1.5f);
+    EXPECT_FLOAT_EQ(model.links[i].ang_acc.x, v + 1.6f);
+    EXPECT_FLOAT_EQ(model.links[i].ang_acc.y, v + 1.7f);
+    EXPECT_FLOAT_EQ(model.links[i].ang_acc.z, v + 1.8f);
+  }
+  ASSERT_EQ(model.joint_count, kNumJointsPerModel);
+  for (int i = 0; i < model.joint_count; ++i)
+  {
+    float v = i;
+    EXPECT_FLOAT_EQ(model.joints[i].pos, v);
+    EXPECT_FLOAT_EQ(model.joints[i].vel, v + 0.1f);
+    EXPECT_FLOAT_EQ(model.joints[i].torque_motor, v + 0.3f);
+    EXPECT_FLOAT_EQ(model.joints[i].wrench_reactive.force.x, v + 0.4f);
+    EXPECT_FLOAT_EQ(model.joints[i].wrench_reactive.force.y, v + 0.5f);
+    EXPECT_FLOAT_EQ(model.joints[i].wrench_reactive.force.z, v + 0.6f);
+    EXPECT_FLOAT_EQ(model.joints[i].wrench_reactive.torque.x, v + 0.7f);
+    EXPECT_FLOAT_EQ(model.joints[i].wrench_reactive.torque.y, v + 0.8f);
+    EXPECT_FLOAT_EQ(model.joints[i].wrench_reactive.torque.z, v + 0.9f);
+  }
+  EXPECT_TRUE(model.gravity_mode);
+}
+
+//////////////////////////////////////////////////
 /// \brief Check hxs_set_model_joint_state.
 TEST(hxsTest, hxs_set_model_joint_state)
 {
   setup();
 
   ignition::transport::Node node;
-  hxsSimInfo *simInfo = new hxsSimInfo();
 
-  // Advertise the "hxs_sim_info" service.
-  node.Advertise("/haptix/gazebo/hxs_sim_info", onHxsSimInfo);
-
-  // Advertise the "hxs_state" service.
-  node.Advertise("/haptix/gazebo/hxs_set_model_joint_state", onHxsJointState);
-
-  // Request simulation information.
-  ASSERT_EQ(hxs_sim_info(simInfo), hxOK);
+  // Advertise the "hxs_set_model_joint_state" service.
+  node.Advertise("/haptix/gazebo/hxs_set_model_joint_state",
+      onHxsSetModelJointState);
 
   EXPECT_EQ(hxs_set_model_joint_state("model 0", "joint 1", 1.0f, 2.0f), hxOK);
-
-  delete simInfo;
 }
 
 //////////////////////////////////////////////////

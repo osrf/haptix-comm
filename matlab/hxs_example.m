@@ -155,6 +155,10 @@ pause(2);
 % Remove the model
 hxs_remove_model('green_cricket_ball');
 
+% Get the state of a wrist joint.
+joint_state = hxs_model_joint_state('mpl_haptix_right_forearm')
+pause(1);
+
 % Set the state of a wrist joint.  Note that, because there's a controller
 % acting on the wrist, this change will only be transient; the controller will
 % restore the wrist back to the current target position.
