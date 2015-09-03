@@ -127,7 +127,7 @@ disp('Cube orientation:');
 disp(tx.orient);
 % Modify and set the pose
 tx.pos(2) = tx.pos(2) + 0.25;
-% define a 90 deg rotation about yaw (z) axis
+% define a 45 deg rotation about yaw (z) axis
 tx.orient = [cos(pi/8) 0 0 sin(pi/8)]';
 hxs_set_model_transform('wood_cube_5cm', tx);
 
