@@ -25,7 +25,7 @@ tx = hxs_camera_transform();
 new_tx = tx;
 new_tx.pos(3) = new_tx.pos(3) + 1;
 % assign equvalent of Euler angles rpy(0, 0, M_PI)
-new_tx.orient(1)= [0 1 0 0]';
+new_tx.orient = [0 1 0 0]';
 hxs_set_camera_transform(new_tx);
 % Restore the original camera pose
 pause(1);
@@ -155,6 +155,10 @@ hxs_apply_torque('green_cricket_ball', 'link', [0; 0.05; 0], 0.1)
 pause(2);
 % Remove the model
 hxs_remove_model('green_cricket_ball');
+
+% Get the state of a wrist joint.
+joint_state = hxs_model_joint_state('mpl_haptix_right_forearm')
+pause(1);
 
 % Set the state of a wrist joint.  Note that, because there's a controller
 % acting on the wrist, this change will only be transient; the controller will

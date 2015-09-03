@@ -278,6 +278,16 @@ TEST(twoProcessesSimAPI, hxs_sim_info)
 
   EXPECT_EQ(hxs_set_model_joint_state("model 0", "joint 1", 1.0f, 2.0f), hxOK);
 
+  // ---------- hxs_model_joint_state ----------
+  hxsModel jointState;
+  EXPECT_EQ(hxs_model_joint_state("model 0", &jointState), hxOK);
+  EXPECT_EQ(jointState.joint_count, 1);
+  for (int i = 0; i < jointState.joint_count; ++i)
+  {
+    EXPECT_FLOAT_EQ(jointState.joints[i].pos, 3.0f);
+    EXPECT_FLOAT_EQ(jointState.joints[i].vel, 4.0f);
+  }
+
   // ---------- hxs_add_model ----------
   std::string urdf = "fake URDF";
   std::string name = "model 1";

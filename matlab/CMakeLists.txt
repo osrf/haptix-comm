@@ -20,6 +20,7 @@ set (matlab_files
   hxs_model_collide_mode.m
   hxs_model_color.m
   hxs_model_gravity_mode.m
+  hxs_model_joint_state.m
   hxs_model_transform.m
   hxs_remove_model.m
   hxs_reset.m

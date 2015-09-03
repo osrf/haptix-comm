@@ -318,6 +318,13 @@ hxResult hxs_set_camera_transform(const hxsTransform *_transform);
 /// \return 'hxOK' if the function succeed or an error code otherwise.
 hxResult hxs_contacts(const char *_model, hxsContactPoints *_contact);
 
+/// \brief Get simulation state (position and velocity) of joint named "_joint"
+/// in model "_model". Where state is defined by position and velocity.
+/// \param[in] _model Name of the model to set.
+/// \param[out] _state a hxsModel data structure containing joints states.
+/// \return 'hxOK' if the function succeed or an error code otherwise.
+hxResult hxs_model_joint_state(const char *_model, hxsModel *_state);
+
 /// \brief Set simulation state (position and velocity) of joint named "_joint"
 /// in model "_model" to the desired position and velocity. The acceleration,
 /// torque, and reaction wrench of the joint may change based on the constraints
