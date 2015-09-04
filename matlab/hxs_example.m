@@ -149,11 +149,25 @@ sdf = '<sdf version="1.5"> <model name="cricket_ball"> <link name="link"> <pose>
 % gravity enabled.  Then it will drop onto the table.
 hxs_add_model(sdf, 'green_cricket_ball', [0; 0; 5], [0; 0; 0], 1);
 pause(2);
+% Define and add a constraint
+constraint_sdf = '<sdf version="1.5"> <joint name="cricket_ball_constraint" type="revolute"> <parent>world</parent> <child>green_cricket_ball</child> <axis> <xyz>0 1 0</xyz> </axis> </joint> </sdf>';
+hxs_add_constraint(constraint_sdf, 'green_cricket_ball');
+pause(2);
+% Add the new model to the world, at the world origin, 5m off the ground, with
+% gravity enabled.  Then it will drop onto the table.
+hxs_add_model(sdf, 'green_cricket_ball', [0; 0; 5], [0; 0; 0], 1);
 % Roll the ball to the right
 hxs_apply_torque('green_cricket_ball', 'link', [0; 0.05; 0], 0.1)
 pause(2);
+% Remove constraint
+hxs_remove_constraint('cricket_ball_constraint', 'green_cricket_ball');
+pause(2);
 % Remove the model
 hxs_remove_model('green_cricket_ball');
+
+% Test adding and removing constraints
+hxs_add_constraint('green_cricket_ball');
+hxs_remove_constraint('green_cricket_ball');
 
 % Get the state of a wrist joint.
 joint_state = hxs_model_joint_state('mpl_haptix_right_forearm')

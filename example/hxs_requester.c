@@ -497,6 +497,46 @@ int main(int argc, char **argv)
   sleep(2);
 #endif
 
+  char sdf_constraint[1024] =
+    "<sdf version=\"1.5\">"
+    "  <joint name=\"cricket_ball_constraint\" type=\"prismatic\">"
+    "    <parent>world</parent>"
+    "    <child>green_cricket_ball</child>"
+    "    <pose>0 0 0 0 0 0</pose>"
+    "    <axis>"
+    "      <xyz>0 0 1</xyz>"
+    "      <dynamics>>"
+    "        <damping>0.1</damping>"
+    "      </dynamics>"
+    "    </axis>"
+    "  </joint>"
+    "</sdf>";
+  if (hxs_add_constraint(sdf_constraint, "green_cricket_ball")
+      != hxOK)
+  {
+    printf("hxs_add_constraint(): Request error.\n");
+    return -1;
+  }
+
+#ifdef _WIN32
+  Sleep(2000);
+#else
+  sleep(2);
+#endif
+
+  if (hxs_remove_constraint(sdf, "cricket_ball_constraint")
+      != hxOK)
+  {
+    printf("hxs_remove_constraint(): Request error.\n");
+    return -1;
+  }
+
+#ifdef _WIN32
+  Sleep(2000);
+#else
+  sleep(2);
+#endif
+
   // Remove the model
   if (hxs_remove_model("green_cricket_ball") != hxOK)
   {

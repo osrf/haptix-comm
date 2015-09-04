@@ -398,20 +398,19 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
-  hxResult hxs_add_constraint(const char *_sdf, hxsModel *_model)
+  hxResult hxs_add_constraint(const char *_sdf, const char *_model)
   {
-    /* something to the effect of below
-    joint = _world->GetPhysicsEngine()->CreateJoint(
-      _type, _model);
-    joint->Attach(_link1, _link2);
-    joint->Load(_sdf);
-    joint->Init();
-    */
+    const std::string service = "/haptix/gazebo/hxs_add_constraint";
+    haptix::comm::msgs::hxParam req;
+    req.set_string_value(_sdf);
+    req.set_name(_model);
+    return hxs_call(service, __func__, req, haptix::comm::msgs::hxEmpty());
 
+    /* in handsim plugin, something to the effect of below
     std::string name;
     std::string parentName;
     std::string childName;
-    /*
+
     if (_sdf->HasElement("name"))
       name = _sdf->Get<std::string>("name");
     else
@@ -420,14 +419,26 @@ extern "C" {
     if (_sdf->HasElement("parent"))
       parentName = _sdf->Get<std::string>("parent");
     else
-    */
       return hxERROR;
+
+    joint = _world->GetPhysicsEngine()->CreateJoint(
+      _type, _model);
+    joint->Attach(_link1, _link2);
+    joint->Load(_sdf);
+    joint->Init();
+    */
   }
 
   //////////////////////////////////////////////////
-  hxResult hxs_remove_constraint(const char *_name)
+  hxResult hxs_remove_constraint(const char *_name, const char *_model)
   {
-    /*
+    const std::string service = "/haptix/gazebo/hxs_remove_constraint";
+    haptix::comm::msgs::hxParam req;
+    req.set_string_value(_name);
+    req.set_name(_model);
+    return hxs_call(service, __func__, req, haptix::comm::msgs::hxEmpty());
+
+    /* in handsim world plugin,
     bool paused = this->world->IsPaused();
     this->world->SetPaused(true);
     if (_joint)
@@ -445,6 +456,5 @@ extern "C" {
     }
     this->world->SetPaused(paused);
     */
-    return hxERROR;
   }
 }

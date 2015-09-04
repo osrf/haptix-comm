@@ -1390,3 +1390,48 @@ hxgzs_model_collide_mode(int nlhs, mxArray *plhs[],
 
   plhs[0] = m;
 }
+
+void
+hxgzs_add_constraint(int nlhs, mxArray *plhs[],
+                int nrhs, const mxArray *prhs[])
+{
+  char *sdf;
+  char name[hxsMAXNAMESIZE];
+
+  if (nrhs != 2)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_add_constraint", "Expects 2 arguments");
+
+  size_t sdfLen = mxGetN(prhs[0]) + 1;
+  sdf = (char*)calloc(sdfLen, sizeof(char*));
+  if (mxGetString(prhs[0], sdf, sdfLen))
+    mexErrMsgIdAndTxt("HAPTIX:hxs_add_constraint", "Failed to determine sdf");
+  if (mxGetString(prhs[1], name, sizeof(name)))
+    mexErrMsgIdAndTxt("HAPTIX:hxs_add_constraint", "Failed to determine name");
+
+  if (hxs_add_constraint(sdf, name) != hxOK)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_add_constraint", hx_last_result());
+
+  free(sdf);
+}
+
+void
+hxgzs_remove_constraint(int nlhs, mxArray *plhs[],
+                   int nrhs, const mxArray *prhs[])
+{
+  char name[hxsMAXNAMESIZE];
+  char model[hxsMAXNAMESIZE];
+
+  if (nrhs != 2)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_remove_constraint", "Expects 1 argument");
+
+  if (mxGetString(prhs[0], name, sizeof(name)))
+    mexErrMsgIdAndTxt("HAPTIX:hxs_remove_constraint",
+    "Failed to determine constraint name");
+
+  if (mxGetString(prhs[1], model, sizeof(model)))
+    mexErrMsgIdAndTxt("HAPTIX:hxs_remove_constraint",
+    "Failed to determine model name");
+
+  if (hxs_remove_constraint(name, model) != hxOK)
+    mexErrMsgIdAndTxt("HAPTIX:hxs_remove_constraint", hx_last_result());
+}

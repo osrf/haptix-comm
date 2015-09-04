@@ -7,6 +7,7 @@ set (matlab_files
   hx_matlab_controller.m
   hx_read_sensors.m
   hx_robot_info.m
+  hxs_add_constraint.m
   hxs_add_model.m
   hxs_angular_velocity.m
   hxs_apply_force.m
@@ -22,6 +23,7 @@ set (matlab_files
   hxs_model_gravity_mode.m
   hxs_model_joint_state.m
   hxs_model_transform.m
+  hxs_remove_constraint.m
   hxs_remove_model.m
   hxs_reset.m
   hxs_set_angular_velocity.m
