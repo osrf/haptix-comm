@@ -6,7 +6,7 @@
 @set build_type=Release
 @if not "%1"=="" set build_type=%1
 
-@set build_bitness=32
+@set build_bitness=64
 @if not "%2"=="" set build_bitness=%2
 
 @set MATLAB_PATH=C:\Program Files\MATLAB\R2014b
@@ -14,7 +14,7 @@
 @if "%build_bitness%"=="32" set MATLAB_PATH=C:\Program Files (x86)\MATLAB\R2014b
 
 @echo Configuring for build type %build_type%
-cmake -DCMAKE_PREFIX_PATH="..\ign-transport\build\install\%build_type%"^
+cmake -DCMAKE_PREFIX_PATH="..\ign-transport\build\install\%build_type%/lib/cmake/ignition-transport0"^
       -DPROTOBUF_SRC_ROOT_FOLDER="..\..\protobuf-2.6.0-win%build_bitness%-vc12"^
       -DCPPZMQ_HEADER_PATH="..\cppzmq"^
       -DZeroMQ_ROOT_DIR="..\ZeroMQ 3.2.4"^
