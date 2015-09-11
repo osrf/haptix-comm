@@ -26,7 +26,7 @@ include (${project_cmake_dir}/Utils.cmake)
 ########################################
 # Package Creation:
 
-# If on windows, generate a file called version which host the current 
+# If on windows, generate a file called version which host the current
 # version to be used by releasing scripts
 if (MSVC)
   file(WRITE ${PROJECT_BINARY_DIR}/VERSION ${PROJECT_VERSION_FULL})
@@ -284,7 +284,7 @@ else (build_errors)
   set(PKG_NAME ${PROJECT_NAME_UPPER})
   set(PKG_LIBRARIES ${PROJECT_NAME_LOWER} ${PROJECT_MSGS_NAME})
 
-  set(PKG_DEPENDS)
+  set(PKG_DEPENDS ignition-transport0)
 
   configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/cmake/haptix-config.cmake.in"
