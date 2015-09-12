@@ -53,7 +53,7 @@ int main(int argc, char **argv)
     // Send a Sync message every 10ms.
     // ID = 0x080
     // Length = 0 bytes.
-    port->write_cstr("t4560");
+    port->write_cstr("t0800\r");
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
   }
 

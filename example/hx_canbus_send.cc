@@ -68,30 +68,37 @@ void waitForSync()
       continue;
     }
 
-
+    uint8_t buffer[50];
+    auto len = port->read_block(buffer, sizeof(buffer));
     std::string msg;
-    char delimiter = '\r';
-    bool delimiterFound = false;
+    for (auto i = 0; i < len - 1; ++i)
+      msg += static_cast<char>(buffer[i]);
 
-    while (!delimiterFound)
-    {
-      uint8_t buffer[1];
-      auto res = ::read(port->fd, &buffer[0], 1);
-      if (res == 0)
-      {
-        std::cerr << "Reading error" << std::endl;
-        return;
-      }
-
-      char c = static_cast<char>(buffer[0]);
-      if (c == delimiter)
-        delimiterFound = true;
-      else
-        msg += c;
-    }
+    //std::string msg;
+    //char delimiter = '\r';
+    //bool delimiterFound = false;
+//
+    //while (!delimiterFound)
+    //{
+    //  uint8_t buffer[1];
+    //  auto res = ::read(port->fd, &buffer[0], 1);
+    //  if (res == 0)
+    //  {
+    //    std::cerr << "Reading error" << std::endl;
+    //    return;
+    //  }
+//
+    //  char c = static_cast<char>(buffer[0]);
+    //  if (c == '\r')
+    //    delimiterFound = true;
+    //  else
+    //    msg += c;
+//
+    //  std::cout << c << std::endl;
+    //}
 
     // Check if this was a SYNC or something else.
-    syncReceived = (msg.find("t" + kSync) != std::string::npos);
+    syncReceived = (msg.find("t080") != std::string::npos);
   }
 }
 
@@ -173,8 +180,8 @@ int main(int argc, char **argv)
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
   // Flush tx buffers.
-  while (port->is_ok())
-  {
+  //while (port->is_ok())
+  //{
     // Arm inputs.
     uint16_t handOpen        = 0;
     uint16_t handClose       = 0;
@@ -187,9 +194,9 @@ int main(int argc, char **argv)
     uint16_t modeSelectCmd   = 0;
 
     // Read the command/value to send.
-    uint16_t option;
-    uint16_t input;
-    showMenu(option, input);
+    uint16_t option = 1;
+    uint16_t input = 5;
+    //showMenu(option, input);
 
     // Update the CAN #id and input.
     switch (option)
@@ -266,6 +273,7 @@ int main(int argc, char **argv)
     }
     strncat(aci1Msg, "\r", 2);
 
+    /*
     // Fill aci2Msg with the #ID and data length (8).
     char aci2Msg[50] = {0};
     snprintf(aci2Msg, sizeof(aci2Msg), "t%x8", kACI2);
@@ -291,30 +299,31 @@ int main(int argc, char **argv)
       strncat(aci3Msg, hexByte, 2);
     }
     strncat(aci3Msg, "\r", 2);
+    */
 
     // Wait for the SYNC message.
-    //waitForSync();
+    waitForSync();
     std::cout << "Sync received, sending inputs:" << std::endl;
     std::cout << "ACI1: " << aci1Msg << std::endl;
-    std::cout << "ACI2: " << aci2Msg << std::endl;
-    std::cout << "ACI3: " << aci3Msg << std::endl;
+    //std::cout << "ACI2: " << aci2Msg << std::endl;
+    //std::cout << "ACI3: " << aci3Msg << std::endl;
 
     // Send CAN messages.
     port->write_cstr(aci1Msg);
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    port->write_cstr("E\r");
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    port->write_cstr(aci2Msg);
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    port->write_cstr("E\r");
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    port->write_cstr(aci3Msg);
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    port->write_cstr("E\r");
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    //port->write_cstr("E\r");
+    //std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    //port->write_cstr(aci2Msg);
+    //std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    //port->write_cstr("E\r");
+    //std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    //port->write_cstr(aci3Msg);
+    //std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    //port->write_cstr("E\r");
+    //std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-    std::cout << "Press [ENTER] for send another command" << std::endl;
-    getchar();
+    //std::cout << "Press [ENTER] for send another command" << std::endl;
+    //getchar();
 
     // Send some data.
     // Example:
@@ -326,7 +335,7 @@ int main(int argc, char **argv)
     // Ref: http://www.easysync-ltd.com/userfiles/editor/file/support/datasheets/DS_USB2-F-7x01(2).pdf
     //port->write_cstr("t21080123456789ABCDEF\r");
     //std::this_thread::sleep_for(std::chrono::milliseconds(100));
-  }
+  //}
 
   tearDown();
 
