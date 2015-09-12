@@ -45,43 +45,16 @@ int main(int argc, char **argv)
   port->write_cstr("O\r");
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
+  port->write_cstr("E\r");
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
   while (port->is_ok() && !gDone)
   {
-    struct pollfd ufds[1];
-    memset(ufds, 0, sizeof(ufds));
-    ufds[0].fd = port->fd;
-    ufds[0].events = POLLIN;
-
-    // Poll every 500 milliseconds
-    int pollReturnCode = poll(ufds, 1, 500);
-    if (pollReturnCode == -1)
-    {
-      continue;
-    }
-    else if (pollReturnCode == 0)
-    {
-      // Timeout occurred
-      continue;
-    }
-    else if (!(ufds[0].revents && POLLIN))
-    {
-      std::cerr << "Received out of band message in poll" << std::endl;
-      continue;
-    }
-
-    uint8_t buffer[1];
-    auto res = ::read(port->fd, &buffer[0], 1);
-    if (res == 0)
-    {
-      std::cerr << "Reading error" << std::endl;
-      continue;
-    }
-
-    for (int i = 0; i < res; ++i)
-      std::cout << static_cast<char>(buffer[i]);
-
-    if (buffer[0] == '\r')
-      std::cout << std::endl;
+    // Send a Sync message every 10ms.
+    // ID = 0x080
+    // Length = 0 bytes.
+    port->write_cstr("t4560");
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
   }
 
   // Close device.

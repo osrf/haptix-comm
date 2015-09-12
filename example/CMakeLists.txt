@@ -93,6 +93,8 @@ add_executable(hx_canbus_send hx_canbus_send.cc lightweightserial.cpp)
 
 add_executable(hx_canbus_receive hx_canbus_receive.cc lightweightserial.cpp)
 
+add_executable(hx_fake_arm hx_fake_arm.cc lightweightserial.cpp)
+
 if (MSVC)
 # Copy the ZMQ DLLs.
   add_custom_command(TARGET requester POST_BUILD
