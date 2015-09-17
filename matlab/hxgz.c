@@ -1422,7 +1422,7 @@ hxgzs_remove_constraint(int nlhs, mxArray *plhs[],
   char model[hxsMAXNAMESIZE];
 
   if (nrhs != 2)
-    mexErrMsgIdAndTxt("HAPTIX:hxs_remove_constraint", "Expects 1 argument");
+    mexErrMsgIdAndTxt("HAPTIX:hxs_remove_constraint", "Expects 2 argument");
 
   if (mxGetString(prhs[0], name, sizeof(name)))
     mexErrMsgIdAndTxt("HAPTIX:hxs_remove_constraint",
