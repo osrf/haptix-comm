@@ -518,8 +518,6 @@ TEST(twoProcessesSimAPI, hxs_sim_info)
   ASSERT_EQ(hxs_add_constraint(constraint_sdf.c_str(), model_name.c_str()),
             hxOK);
 
-  /// \TODO: Verify that the new constraint
-
   // ---------- hxs_remove_constraint ----------
   ASSERT_EQ(hxs_remove_constraint("cricket_ball_constraint", "model 1"), hxOK);
 
