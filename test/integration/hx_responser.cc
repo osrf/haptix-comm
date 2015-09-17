@@ -1018,7 +1018,7 @@ void onHxsAddConstraint(const std::string &_service,
   // Check the name of the service received.
   EXPECT_EQ(_service, "/haptix/gazebo/hxs_add_constraint");
 
-  // Sanity check: The message should contain a string with the urdf.
+  // Sanity check: The message should contain a string with the sdf.
   if (!_req.has_string_value())
   {
     std::cerr << "onHxsAddConstraint() error: Missing "
@@ -1064,7 +1064,7 @@ void onHxsRemoveConstraint(const std::string &_service,
   // Check the name of the service received.
   EXPECT_EQ(_service, "/haptix/gazebo/hxs_remove_constraint");
 
-  // Sanity check: The message should contain a string with the urdf.
+  // Sanity check: The message should contain a constraint/joint name.
   if (!_req.has_string_value())
   {
     std::cerr << "onHxsAddConstraint() error: Missing "
