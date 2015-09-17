@@ -505,12 +505,12 @@ hxResult hxs_model_collide_mode(const char *_model,
 
 /// \brief Dynamically add constraint between two links during runtime.
 /// \param[in] _sdf SDF of the joint to be created.
-/// \param[out] _model Pointer to the new model.
+/// \param[in] _model Name of parent model of the joint constraint.
 /// \return 'hxOK' if the function succeed or an error code otherwise.
 hxResult hxs_add_constraint(const char *_sdf, const char *_model);
 
 /// \brief Remove constraint.
-/// \param[in] _name Name of the joint constraint.
+/// \param[in] _name Name of the joint/constraint to be removed.
 /// \param[in] _model Name of parent model of the joint constraint.
 /// \return 'hxOK' if the function succeed or an error code otherwise.
 hxResult hxs_remove_constraint(const char *_name, const char *_model);
