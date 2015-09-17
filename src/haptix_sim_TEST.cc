@@ -969,7 +969,7 @@ void onHxsAddConstraint(const std::string &_service,
   // Check the name of the service received.
   EXPECT_EQ(_service, "/haptix/gazebo/hxs_add_constraint");
 
-  // Sanity check: The message should contain a string with the urdf.
+  // Sanity check: The message should contain a string with the sdf.
   if (!_req.has_string_value())
   {
     std::cerr << "onHxsAddConstraint() error: Missing constraint sdf in request"
@@ -1004,7 +1004,7 @@ void onHxsRemoveConstraint(const std::string &_service,
   // Check the name of the service received.
   EXPECT_EQ(_service, "/haptix/gazebo/hxs_remove_constraint");
 
-  // Sanity check: The message should contain a string with the urdf.
+  // Sanity check: The message should contain the name of the joint/constraint.
   if (!_req.has_string_value())
   {
     std::cerr << "onHxsRemoveConstraint() error:"
@@ -1022,7 +1022,7 @@ void onHxsRemoveConstraint(const std::string &_service,
   }
 
   // Verify the request.
-  EXPECT_EQ(_req.string_value(), "fake SDF");
+  EXPECT_EQ(_req.string_value(), "fake constraint");
   EXPECT_EQ(_req.name(), "model 1");
 
   _result = true;
@@ -1796,7 +1796,7 @@ TEST(hxsTest, hxs_remove_constraint)
   // Advertise the "hxs_remove_constraint" service.
   node.Advertise("/haptix/gazebo/hxs_remove_constraint", onHxsRemoveConstraint);
 
-  ASSERT_EQ(hxs_remove_constraint("fake SDF", "model 1"), hxOK);
+  ASSERT_EQ(hxs_remove_constraint("fake constraint", "model 1"), hxOK);
 }
 
 //////////////////////////////////////////////////
