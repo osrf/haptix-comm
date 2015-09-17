@@ -523,7 +523,7 @@ int main(int argc, char **argv)
   sleep(2);
 #endif
 
-  if (hxs_remove_constraint(sdf, "cricket_ball_constraint") != hxOK)
+  if (hxs_remove_constraint("cricket_ball_constraint", "green_cricket_ball") != hxOK)
   {
     printf("hxs_remove_constraint(): Request error.\n");
     return -1;
