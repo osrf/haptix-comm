@@ -152,13 +152,15 @@ hxs_add_model(sdf, 'green_cricket_ball', [0; 0; 5], [0; 0; 0], 1);
 pause(2);
 % Define and add a constraint
 constraint_sdf = '<sdf version="1.5"> <joint name="cricket_ball_constraint" type="revolute"> <parent>world</parent> <child>green_cricket_ball</child> <axis> <xyz>0 1 0</xyz> </axis> </joint> </sdf>';
-hxs_add_constraint(constraint_sdf, 'green_cricket_ball');
+% Enable when there's an implementation of hxs_add_constraint in Gazebo.
+% hxs_add_constraint(constraint_sdf, 'green_cricket_ball');
 pause(2);
 % Roll the ball to the right
 hxs_apply_torque('green_cricket_ball', 'link', [0; 0.05; 0], 0.1)
 pause(2);
 % Remove constraint
-hxs_remove_constraint('cricket_ball_constraint', 'green_cricket_ball');
+% Enable when there's an implementation of hxs_remove_constraint in Gazebo.
+% hxs_remove_constraint('cricket_ball_constraint', 'green_cricket_ball');
 pause(2);
 % Remove the model
 hxs_remove_model('green_cricket_ball');

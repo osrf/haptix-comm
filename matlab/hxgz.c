@@ -89,6 +89,10 @@ void hxgzs_set_model_collide_mode(int nlhs, mxArray *plhs[],
                                   int nrhs, const mxArray *prhs[]);
 void hxgzs_model_collide_mode(int nlhs, mxArray *plhs[],
                               int nrhs, const mxArray *prhs[]);
+void hxgzs_add_constraint(int nlhs, mxArray *plhs[],
+                          int nrhs, const mxArray *prhs[]);
+void hxgzs_remove_constraint(int nlhs, mxArray *plhs[],
+                             int nrhs, const mxArray *prhs[]);
 
 // Data structure conversion helpers
 //
@@ -207,6 +211,10 @@ mexFunction(int nlhs, mxArray *plhs[],
     hxgzs_set_model_collide_mode(nlhs, plhs, nrhs-1, prhs+1);
   else if (!strcmp(funcName, "model_collide_mode"))
     hxgzs_model_collide_mode(nlhs, plhs, nrhs-1, prhs+1);
+  else if (!strcmp(funcName, "add_constraint"))
+    hxgzs_add_constraint(nlhs, plhs, nrhs-1, prhs+1);
+  else if (!strcmp(funcName, "remove_constraint"))
+    hxgzs_remove_constraint(nlhs, plhs, nrhs-1, prhs+1);
   else
     mexErrMsgIdAndTxt("HAPTIX:hxgz", "Unknown command");
 }
@@ -1393,7 +1401,7 @@ hxgzs_model_collide_mode(int nlhs, mxArray *plhs[],
 
 void
 hxgzs_add_constraint(int nlhs, mxArray *plhs[],
-                int nrhs, const mxArray *prhs[])
+                     int nrhs, const mxArray *prhs[])
 {
   char *sdf;
   char name[hxsMAXNAMESIZE];
@@ -1416,7 +1424,7 @@ hxgzs_add_constraint(int nlhs, mxArray *plhs[],
 
 void
 hxgzs_remove_constraint(int nlhs, mxArray *plhs[],
-                   int nrhs, const mxArray *prhs[])
+                        int nrhs, const mxArray *prhs[])
 {
   char name[hxsMAXNAMESIZE];
   char model[hxsMAXNAMESIZE];
