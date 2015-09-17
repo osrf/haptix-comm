@@ -515,11 +515,12 @@ TEST(twoProcessesSimAPI, hxs_sim_info)
   std::string model_name = "model 1";
 
   // Create a new constraint.
-  ASSERT_EQ(hxs_add_constraint(constraint_sdf.c_str(), model_name.c_str()), hxOK);
+  ASSERT_EQ(hxs_add_constraint(constraint_sdf.c_str(), model_name.c_str()),
+            hxOK);
 
   /// \TODO: Verify that the new constraint
 
-  // ---------- hxs_remove_model ----------
+  // ---------- hxs_remove_constraint ----------
   ASSERT_EQ(hxs_remove_constraint("cricket_ball_constraint", "model 1"), hxOK);
 
   // Teardown.
