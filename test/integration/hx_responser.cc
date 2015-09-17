@@ -1034,8 +1034,19 @@ void onHxsAddConstraint(const std::string &_service,
     return;
   }
 
+  std::string constraint_sdf =
+    "<sdf version=\"1.5\">"
+    "  <joint name=\"cricket_ball_constraint\" type=\"revolute\">"
+    "    <parent>world</parent>"
+    "    <child>green_cricket_ball</child>"
+    "    <axis>"
+    "      <xyz>0 1 0</xyz>"
+    "    </axis>"
+    "  </joint>"
+    "</sdf>";
+
   // Verify the request.
-  EXPECT_EQ(_req.string_value(), "fake URDF");
+  EXPECT_EQ(_req.string_value(), constraint_sdf);
   EXPECT_EQ(_req.name(), "model 1");
 
   _result = true;
@@ -1070,7 +1081,7 @@ void onHxsRemoveConstraint(const std::string &_service,
   }
 
   // Verify the request.
-  EXPECT_EQ(_req.string_value(), "fake URDF");
+  EXPECT_EQ(_req.string_value(), "cricket_ball_constraint");
   EXPECT_EQ(_req.name(), "model 1");
 
   _result = true;
@@ -1269,7 +1280,7 @@ int main(int argc, char **argv)
 
   // Advertise the "hxs_set_linear_velocity" service.
   service = "/haptix/gazebo/hxs_set_linear_velocity";
-  node.Advertise(service, onHxsSetLinearVelocity);
+  if (!node.Advertise(service, onHxsSetLinearVelocity))
     std::cerr << "Error advertising service [" << service << "]." << std::endl;
 
   // Advertise the "hxs_angular_velocity" service.

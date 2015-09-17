@@ -128,7 +128,7 @@ int main(int argc, char **argv)
   color.alpha = 1;
   if (hxs_set_model_color("table", &color) != hxOK)
   {
-    printf("hxs_set_model_color(): Request error.\n");  
+    printf("hxs_set_model_color(): Request error.\n");
     return -1;
   }
 #ifdef _WIN32
@@ -511,8 +511,7 @@ int main(int argc, char **argv)
     "    </axis>"
     "  </joint>"
     "</sdf>";
-  if (hxs_add_constraint(sdf_constraint, "green_cricket_ball")
-      != hxOK)
+  if (hxs_add_constraint(sdf_constraint, "green_cricket_ball") != hxOK)
   {
     printf("hxs_add_constraint(): Request error.\n");
     return -1;
@@ -524,8 +523,7 @@ int main(int argc, char **argv)
   sleep(2);
 #endif
 
-  if (hxs_remove_constraint(sdf, "cricket_ball_constraint")
-      != hxOK)
+  if (hxs_remove_constraint(sdf, "cricket_ball_constraint") != hxOK)
   {
     printf("hxs_remove_constraint(): Request error.\n");
     return -1;
