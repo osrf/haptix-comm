@@ -151,9 +151,10 @@ sdf = '<sdf version="1.5"> <model name="cricket_ball"> <link name="link"> <pose>
 hxs_add_model(sdf, 'green_cricket_ball', [0; 0; 5], [0; 0; 0], 1);
 pause(2);
 % Define and add a constraint
-constraint_sdf = '<sdf version="1.5"> <joint name="cricket_ball_constraint" type="revolute"> <parent>world</parent> <child>green_cricket_ball</child> <axis> <xyz>0 1 0</xyz> </axis> </joint> </sdf>';
+constraint_sdf = '<sdf version="1.5"> <joint name="test_constraint" type="revolute"> <parent>table::link</parent> <child>wood_cube_5cm::link</child> <axis> <xyz>0 1 0</xyz> </axis> </joint> </sdf>';
+constraint_sdf = '<sdf version="1.5"> <joint name="test_constraint1" type="revolute"> <parent>world</parent> <child>wood_cube_5cm::link</child> <axis> <xyz>0 1 0</xyz> </axis> </joint> </sdf>';
 % Enable when there's an implementation of hxs_add_constraint in Gazebo.
-% hxs_add_constraint(constraint_sdf, 'green_cricket_ball');
+hxs_add_constraint(constraint_sdf, 'wood_cube_5cm');
 pause(2);
 % Roll the ball to the right
 hxs_apply_torque('green_cricket_ball', 'link', [0; 0.05; 0], 0.1)
