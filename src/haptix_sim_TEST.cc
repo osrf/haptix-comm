@@ -958,6 +958,77 @@ void onHxsModelCollideMode(const std::string &_service,
 }
 
 //////////////////////////////////////////////////
+/// \brief Provide a "hxs_add_constraint" service.
+void onHxsAddConstraint(const std::string &_service,
+  const haptix::comm::msgs::hxParam &_req,
+  haptix::comm::msgs::hxEmpty &/*_rep*/,
+  bool &_result)
+{
+  _result = false;
+
+  // Check the name of the service received.
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_add_constraint");
+
+  // Sanity check: The message should contain a string with the sdf.
+  if (!_req.has_string_value())
+  {
+    std::cerr << "onHxsAddConstraint() error: Missing constraint sdf in request"
+              << std::endl;
+    return;
+  }
+
+  // Sanity check: The message should contain a string with the model name.
+  if (!_req.has_name())
+  {
+    std::cerr << "onHxsAddConstraint() error: Missing model name in request"
+              << std::endl;
+    return;
+  }
+
+  // Verify the request.
+  EXPECT_EQ(_req.string_value(), "fake SDF");
+  EXPECT_EQ(_req.name(), "model 1");
+
+  _result = true;
+}
+
+//////////////////////////////////////////////////
+/// \brief Provide a "hxs_remove_constraint" service.
+void onHxsRemoveConstraint(const std::string &_service,
+  const haptix::comm::msgs::hxParam &_req,
+  haptix::comm::msgs::hxEmpty &/*_rep*/,
+  bool &_result)
+{
+  _result = false;
+
+  // Check the name of the service received.
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_remove_constraint");
+
+  // Sanity check: The message should contain the name of the joint/constraint.
+  if (!_req.has_string_value())
+  {
+    std::cerr << "onHxsRemoveConstraint() error:"
+              << " Missing constraint name in request"
+              << std::endl;
+    return;
+  }
+
+  // Sanity check: The message should contain a string with the model name.
+  if (!_req.has_name())
+  {
+    std::cerr << "onHxsRemoveConstraint() error: Missing model name in request"
+              << std::endl;
+    return;
+  }
+
+  // Verify the request.
+  EXPECT_EQ(_req.string_value(), "fake constraint");
+  EXPECT_EQ(_req.name(), "model 1");
+
+  _result = true;
+}
+
+//////////////////////////////////////////////////
 /// \brief Check hxs_sim_info.
 TEST(hxsTest, hxs_sim_info)
 {
@@ -1698,6 +1769,34 @@ TEST(hxsTest, hxs_model_collide_mode)
 
   // Check the collide mode received.
   EXPECT_EQ(collideMode, hxsDETECTIONONLY);
+}
+
+//////////////////////////////////////////////////
+/// \brief Check hxs_add_constraint.
+TEST(hxsTest, hxs_add_constraint)
+{
+  setup();
+
+  ignition::transport::Node node;
+
+  // Advertise the "hxs_add_constraint" service.
+  node.Advertise("/haptix/gazebo/hxs_add_constraint", onHxsAddConstraint);
+
+  ASSERT_EQ(hxs_add_constraint("fake SDF", "model 1"), hxOK);
+}
+
+//////////////////////////////////////////////////
+/// \brief Check hxs_remove_constraint.
+TEST(hxsTest, hxs_remove_constraint)
+{
+  setup();
+
+  ignition::transport::Node node;
+
+  // Advertise the "hxs_remove_constraint" service.
+  node.Advertise("/haptix/gazebo/hxs_remove_constraint", onHxsRemoveConstraint);
+
+  ASSERT_EQ(hxs_remove_constraint("fake constraint", "model 1"), hxOK);
 }
 
 //////////////////////////////////////////////////

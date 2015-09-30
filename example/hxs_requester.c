@@ -128,7 +128,7 @@ int main(int argc, char **argv)
   color.alpha = 1;
   if (hxs_set_model_color("table", &color) != hxOK)
   {
-    printf("hxs_set_model_color(): Request error.\n");  
+    printf("hxs_set_model_color(): Request error.\n");
     return -1;
   }
 #ifdef _WIN32
@@ -488,6 +488,44 @@ int main(int argc, char **argv)
       != hxOK)
   {
     printf("hxs_add_model(): Request error.\n");
+    return -1;
+  }
+
+#ifdef _WIN32
+  Sleep(2000);
+#else
+  sleep(2);
+#endif
+
+  char sdf_constraint[1024] =
+    "<sdf version=\"1.5\">"
+    "  <joint name=\"cricket_ball_constraint\" type=\"prismatic\">"
+    "    <parent>world</parent>"
+    "    <child>green_cricket_ball</child>"
+    "    <pose>0 0 0 0 0 0</pose>"
+    "    <axis>"
+    "      <xyz>0 0 1</xyz>"
+    "      <dynamics>>"
+    "        <damping>0.1</damping>"
+    "      </dynamics>"
+    "    </axis>"
+    "  </joint>"
+    "</sdf>";
+  if (hxs_add_constraint(sdf_constraint, "green_cricket_ball") != hxOK)
+  {
+    printf("hxs_add_constraint(): Request error.\n");
+    return -1;
+  }
+
+#ifdef _WIN32
+  Sleep(2000);
+#else
+  sleep(2);
+#endif
+
+  if (hxs_remove_constraint("cricket_ball_constraint", "green_cricket_ball") != hxOK)
+  {
+    printf("hxs_remove_constraint(): Request error.\n");
     return -1;
   }
 

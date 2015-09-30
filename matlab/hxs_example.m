@@ -150,11 +150,22 @@ sdf = '<sdf version="1.5"> <model name="cricket_ball"> <link name="link"> <pose>
 % gravity enabled.  Then it will drop onto the table.
 hxs_add_model(sdf, 'green_cricket_ball', [0; 0; 5], [0; 0; 0], 1);
 pause(2);
+% Define and add a constraint
+constraint_sdf = '<sdf version="1.5"> <joint name="test_constraint" type="revolute"> <parent>table::link</parent> <child>wood_cube_5cm::link</child> <axis> <xyz>0 1 0</xyz> </axis> </joint> </sdf>';
+constraint_sdf = '<sdf version="1.5"> <joint name="test_constraint1" type="revolute"> <parent>world</parent> <child>wood_cube_5cm::link</child> <axis> <xyz>0 1 0</xyz> </axis> </joint> </sdf>';
+% Enable when there's an implementation of hxs_add_constraint in Gazebo.
+hxs_add_constraint(constraint_sdf, 'wood_cube_5cm');
+pause(2);
 % Roll the ball to the right
 hxs_apply_torque('green_cricket_ball', 'link', [0; 0.05; 0], 0.1)
 pause(2);
+% Remove constraint
+% Enable when there's an implementation of hxs_remove_constraint in Gazebo.
+% hxs_remove_constraint('cricket_ball_constraint', 'green_cricket_ball');
+pause(2);
 % Remove the model
 hxs_remove_model('green_cricket_ball');
+pause(2);
 
 % Get the state of a wrist joint.
 joint_state = hxs_model_joint_state('mpl_haptix_right_forearm')

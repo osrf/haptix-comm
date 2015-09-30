@@ -396,4 +396,24 @@ extern "C" {
     return hxs_call(service, __func__, req, rep, _collide_mode,
       hxs_convertCollisionMode);
   }
+
+  //////////////////////////////////////////////////
+  hxResult hxs_add_constraint(const char *_sdf, const char *_model)
+  {
+    const std::string service = "/haptix/gazebo/hxs_add_constraint";
+    haptix::comm::msgs::hxParam req;
+    req.set_string_value(_sdf);
+    req.set_name(_model);
+    return hxs_call(service, __func__, req, haptix::comm::msgs::hxEmpty());
+  }
+
+  //////////////////////////////////////////////////
+  hxResult hxs_remove_constraint(const char *_name, const char *_model)
+  {
+    const std::string service = "/haptix/gazebo/hxs_remove_constraint";
+    haptix::comm::msgs::hxParam req;
+    req.set_string_value(_name);
+    req.set_name(_model);
+    return hxs_call(service, __func__, req, haptix::comm::msgs::hxEmpty());
+  }
 }

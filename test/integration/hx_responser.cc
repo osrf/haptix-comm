@@ -1007,6 +1007,87 @@ void onHxsModelCollideMode(const std::string &_service,
 }
 
 //////////////////////////////////////////////////
+/// \brief Provide a "hxs_add_constraint" service.
+void onHxsAddConstraint(const std::string &_service,
+  const haptix::comm::msgs::hxParam &_req,
+  haptix::comm::msgs::hxEmpty &/*_rep*/,
+  bool &_result)
+{
+  _result = false;
+
+  // Check the name of the service received.
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_add_constraint");
+
+  // Sanity check: The message should contain a string with the sdf.
+  if (!_req.has_string_value())
+  {
+    std::cerr << "onHxsAddConstraint() error: Missing "
+              << " constraint sdf in request" << std::endl;
+    return;
+  }
+
+  // Sanity check: The message should contain a string with the model name.
+  if (!_req.has_name())
+  {
+    std::cerr << "onHxsAddConstraint() error: Missing model name in request"
+              << std::endl;
+    return;
+  }
+
+  std::string constraint_sdf =
+    "<sdf version=\"1.5\">"
+    "  <joint name=\"cricket_ball_constraint\" type=\"revolute\">"
+    "    <parent>world</parent>"
+    "    <child>green_cricket_ball</child>"
+    "    <axis>"
+    "      <xyz>0 1 0</xyz>"
+    "    </axis>"
+    "  </joint>"
+    "</sdf>";
+
+  // Verify the request.
+  EXPECT_EQ(_req.string_value(), constraint_sdf);
+  EXPECT_EQ(_req.name(), "model 1");
+
+  _result = true;
+}
+
+//////////////////////////////////////////////////
+/// \brief Provide a "hxs_remove_constraint" service.
+void onHxsRemoveConstraint(const std::string &_service,
+  const haptix::comm::msgs::hxParam &_req,
+  haptix::comm::msgs::hxEmpty &/*_rep*/,
+  bool &_result)
+{
+  _result = false;
+
+  // Check the name of the service received.
+  EXPECT_EQ(_service, "/haptix/gazebo/hxs_remove_constraint");
+
+  // Sanity check: The message should contain a constraint/joint name.
+  if (!_req.has_string_value())
+  {
+    std::cerr << "onHxsAddConstraint() error: Missing "
+              << " constraint name in request" << std::endl;
+    return;
+  }
+
+  // Sanity check: The message should contain a string with the model name.
+  if (!_req.has_name())
+  {
+    std::cerr << "onHxsAddConstraint() error: Missing model name in request"
+              << std::endl;
+    return;
+  }
+
+  // Verify the request.
+  EXPECT_EQ(_req.string_value(), "cricket_ball_constraint");
+  EXPECT_EQ(_req.name(), "model 1");
+
+  _result = true;
+}
+
+//////////////////////////////////////////////////
 /// \brief Provide a service.
 void onGetRobotInfo(const std::string &_service,
   const haptix::comm::msgs::hxRobot &/*_req*/,
@@ -1199,7 +1280,7 @@ int main(int argc, char **argv)
 
   // Advertise the "hxs_set_linear_velocity" service.
   service = "/haptix/gazebo/hxs_set_linear_velocity";
-  node.Advertise(service, onHxsSetLinearVelocity);
+  if (!node.Advertise(service, onHxsSetLinearVelocity))
     std::cerr << "Error advertising service [" << service << "]." << std::endl;
 
   // Advertise the "hxs_angular_velocity" service.
@@ -1265,6 +1346,16 @@ int main(int argc, char **argv)
   // Advertise the "hxs_model_collide_mode" service.
   service = "/haptix/gazebo/hxs_model_collide_mode";
   if (!node.Advertise(service, onHxsModelCollideMode))
+    std::cerr << "Error advertising service [" << service << "]." << std::endl;
+
+  // Advertise the "hxs_add_constraint" service.
+  service = "/haptix/gazebo/hxs_add_constraint";
+  if (!node.Advertise(service, onHxsAddConstraint))
+    std::cerr << "Error advertising service [" << service << "]." << std::endl;
+
+  // Advertise the "hxs_remove_constraint" service.
+  service = "/haptix/gazebo/hxs_remove_constraint";
+  if (!node.Advertise(service, onHxsRemoveConstraint))
     std::cerr << "Error advertising service [" << service << "]." << std::endl;
 
   // Zzzz.

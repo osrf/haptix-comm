@@ -501,6 +501,26 @@ TEST(twoProcessesSimAPI, hxs_sim_info)
   // Check the collide mode received.
   EXPECT_EQ(collideMode, hxsDETECTIONONLY);
 
+  // ---------- hxs_add_constraint ----------
+  std::string constraint_sdf =
+    "<sdf version=\"1.5\">"
+    "  <joint name=\"cricket_ball_constraint\" type=\"revolute\">"
+    "    <parent>world</parent>"
+    "    <child>green_cricket_ball</child>"
+    "    <axis>"
+    "      <xyz>0 1 0</xyz>"
+    "    </axis>"
+    "  </joint>"
+    "</sdf>";
+  std::string model_name = "model 1";
+
+  // Create a new constraint.
+  ASSERT_EQ(hxs_add_constraint(constraint_sdf.c_str(), model_name.c_str()),
+            hxOK);
+
+  // ---------- hxs_remove_constraint ----------
+  ASSERT_EQ(hxs_remove_constraint("cricket_ball_constraint", "model 1"), hxOK);
+
   // Teardown.
   delete simInfo;
   // Need to kill the responser node running on an external process.
