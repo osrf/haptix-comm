@@ -89,6 +89,9 @@ target_link_libraries(joints_stress ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPOR
 add_executable(hxs_requester hxs_requester.c)
 target_link_libraries(hxs_requester ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARIES} ${EXTRA_LIBRARIES})
 
+add_executable(hxs_example hxs_example.c)
+target_link_libraries(hxs_example ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARIES} ${EXTRA_LIBRARIES})
+
 if (MSVC)
 # Copy the ZMQ DLLs.
   add_custom_command(TARGET requester POST_BUILD
