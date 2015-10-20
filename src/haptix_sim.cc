@@ -297,12 +297,12 @@ extern "C" {
   }
 
   //////////////////////////////////////////////////
-  hxResult hxs_start_logging(const char *_filename)
+  hxResult hxs_start_logging(const char *_dirname)
   {
     const std::string service = "/haptix/gazebo/hxs_start_logging";
     haptix::comm::msgs::hxString req;
 
-    req.set_data(std::string(_filename));
+    req.set_data(std::string(_dirname));
     return hxs_call(service, __func__, req, haptix::comm::msgs::hxEmpty());
   }
 

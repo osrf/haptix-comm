@@ -137,8 +137,14 @@ int main(int argc, char **argv)
   // Print the robot information.
   printRobotInfo(&robotInfo);
 
+  // Uncomment this block for start logging.
+  // if (hxs_start_logging("/tmp/log/") != hxOK)
+  //   printf("hxs_start_logging(): error.\n");
+
+  int steps = 0;
+
   // Send commands at ~100Hz.
-  while (running == 1)
+  while (steps < 3000)
   {
     // Create a new command based on a sinusoidal wave.
     for (i = 0; i < robotInfo.motor_count; ++i)
@@ -175,6 +181,8 @@ int main(int argc, char **argv)
     if (++counter == 10000)
       counter = 0;
 
+    ++steps;
+
     // Here is where you would do your other work, such as reading from EMG
     // sensors, decoding that data, computing your next control command,
     // etc.  In this example, we're just sleeping for 10ms.
@@ -193,6 +201,10 @@ int main(int argc, char **argv)
     usleep(sleeptime_us);
 #endif
   }
+
+  // Uncomment this block for stop logging.
+  // if (hxs_stop_logging() != hxOK)
+  //   printf("hxs_stop_logging(): error.\n");
 
   // Disconnect from the simulator / hardware
   if (hx_close() != hxOK)

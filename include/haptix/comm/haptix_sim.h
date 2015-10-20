@@ -460,9 +460,9 @@ hxResult hxs_reset(int _resetLimbPose);
 
 /// \brief Start recording log file. Only one log file may be recorded at
 /// a time.
-/// \param[in] _filename Name of the file to log information into.
+/// \param[in] _dirname Path to the directory where the log file is created.
 /// \return 'hxOK' if the function succeed or an error code otherwise.
-hxResult hxs_start_logging(const char *_filename);
+hxResult hxs_start_logging(const char *_dirname);
 
 /// \brief Determine if logging is running.
 /// \param[out] _result 1 if logging is running.
