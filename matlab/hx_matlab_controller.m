@@ -22,7 +22,7 @@ hx_connect();
 deviceInfo = hx_robot_info();
 
 % Uncomment this block for start logging.
-hxs_start_logging('/tmp/log/')
+% hxs_start_logging('/tmp/log/')
 
 while counter < 250
   cmdSent = tic;
@@ -66,6 +66,6 @@ while counter < 250
 end
 
 % Uncomment this block for stop logging.
-hxs_stop_logging()
+% hxs_stop_logging()
 
 hx_close();
