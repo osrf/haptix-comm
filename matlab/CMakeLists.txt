@@ -79,8 +79,8 @@ if (MATLAB_FOUND)
 
   # TODO: save check to be sure that variables needed for the hack
   # below is working
-  if (NOT DEFINED ignition-transport_DIR)
-     BUILD_ERROR("MATLAB support found but there is no ignition-transport_DIR variable")
+  if (NOT DEFINED ignition-transport0_DIR)
+     BUILD_ERROR("MATLAB support found but there is no ignition-transport0_DIR variable")
   endif()
 
   if(WIN32)
@@ -107,8 +107,8 @@ if (MATLAB_FOUND)
     # several paths separated by an space which will break this whole
     # mex hack.
 
-    # ignition-transport_DIR points to the cmake module location
-    set (mex_ignition_transport_root ${ignition-transport_DIR}/../../..)
+    # ignition-transport0_DIR points to the cmake module location
+    set (mex_ignition_transport_root ${ignition-transport0_DIR}/../../..)
     set (mex_ignition_transport_include ${mex_ignition_transport_root}/include)
     set (mex_ignition_transport_lib ${mex_ignition_transport_root}/lib)
 
