@@ -116,7 +116,7 @@ if (MATLAB_FOUND)
         ${ZeroMQ_LIBRARY_RELEASE} -I${CMAKE_SOURCE_DIR}/include -L${CMAKE_BINARY_DIR}/src
         -L${CMAKE_BINARY_DIR}/msg -lhaptix-comm -lhaptix-msgs
         -I${mex_ignition_transport_include} -L${mex_ignition_transport_lib}
-        -lignition-transport)
+        -lignition-transport0)
 
     if (WIN32)
       # Add Windows-specific libs
