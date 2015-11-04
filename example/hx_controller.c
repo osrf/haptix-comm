@@ -144,7 +144,7 @@ int main(int argc, char **argv)
     for (i = 0; i < robotInfo.motor_count; ++i)
     {
       // Set the desired position of this motor
-      cmd.ref_pos[i] = 0.5 * sin(0.05 * 2.0 * M_PI * counter * 0.01);
+      cmd.ref_pos[i] = 350 * 0.5 * sin(0.05 * 2.0 * M_PI * counter * 0.01);
       // We could set a desired maximum velocity
       // cmd.ref_vel_max[i] = 1.0;
       // We could set a desired controller position gain
