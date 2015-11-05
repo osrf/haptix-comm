@@ -26,7 +26,7 @@ endif()
 
 if(NOT MATLAB_MEX_PATH)
   set (MATLAB_FOUND 0)
-  BUILD_WARNING("MATLAB mex compiler not found - no mex file generation")
+  BUILD_WARNING("MATLAB mex compiler not found, will not build mex bindings for Matlab")
 else()
 
   if (NOT WIN32)
@@ -48,7 +48,7 @@ else()
        "mex.h"
        ${MATLAB_ROOT}/extern/include)
   else ()
-    BUILD_WARNING("MATLAB mex compiler not found - no mex file generation")
+    BUILD_WARNING("MATLAB mex compiler not found, will not build mex bindings for Matlab")
   endif()
 
 endif()
