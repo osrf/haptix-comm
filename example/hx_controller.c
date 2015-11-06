@@ -137,7 +137,7 @@ int main(int argc, char **argv)
   // Print the robot information.
   printRobotInfo(&robotInfo);
 
-  // Uncomment this block for start logging.
+  // Uncomment this block to start logging.
   // if (hxs_start_logging("/tmp/log/") != hxOK)
   //   printf("hxs_start_logging(): error.\n");
 
@@ -202,7 +202,7 @@ int main(int argc, char **argv)
 #endif
   }
 
-  // Uncomment this block for stop logging.
+  // Uncomment this block to stop logging.
   // if (hxs_stop_logging() != hxOK)
   //   printf("hxs_stop_logging(): error.\n");
 
