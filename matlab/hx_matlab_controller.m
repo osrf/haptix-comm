@@ -21,7 +21,7 @@ hx_connect();
 
 deviceInfo = hx_robot_info();
 
-% Uncomment this block for start logging.
+% Uncomment this block to start logging.
 % hxs_start_logging('/tmp/log/')
 
 while counter < 250
@@ -65,7 +65,7 @@ while counter < 250
   end
 end
 
-% Uncomment this block for stop logging.
+% Uncomment this block to stop logging.
 % hxs_stop_logging()
 
 hx_close();
