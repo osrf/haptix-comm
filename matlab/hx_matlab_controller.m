@@ -44,7 +44,7 @@ while counter < 250
 
   % Create a new command based on a sinusoidal wave.
   for n = 0:deviceInfo.motor_count
-    cmd.ref_pos(end + 1) = 0.5 * sin(0.05 * 2.0 * pi * counter * 0.08);
+    cmd.ref_pos(end + 1) = 350 * 0.5 * sin(0.05 * 2.0 * pi * counter * 0.08);
     % We could set a desired maximum velocity
     % cmd.ref_vel_max(end + 1) = 1.0;
     % We could set a desired controller position gain

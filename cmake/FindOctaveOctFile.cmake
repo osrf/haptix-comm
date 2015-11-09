@@ -2,9 +2,10 @@ find_program(MKOCTFILE mkoctfile)
 
 if (MKOCTFILE)
     set(OCTAVE_SUPPORT_FOUND TRUE)
-    message(STATUS "Octave found. mkoctfile at ${MKOCTFILE}")
+    message(STATUS "Octave mex compiler found.  "
+                   "Generating mex files for octave"
+                   " with mkoctfile at ${MKOCTFILE}")
 else()
     set(OCTAVE_SUPPORT_FOUND FALSE)
-    message(STATUS "Octave not found (unable to locate mkoctfile)")
-    BUILD_WARNING("Octave not found. Not generating octave bindings")
+    BUILD_WARNING("Octave mex file compiler not found, did you forget to install liboctave-dev?")
 endif()
