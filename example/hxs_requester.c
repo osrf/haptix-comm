@@ -17,6 +17,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <haptix/comm/haptix_sim.h>
 #include <time.h>
 
@@ -42,6 +43,7 @@ int main(int argc, char **argv)
   hxsColor color;
   hxsCollideMode collide_mode;
   int i, j;
+  char hand_name[254], hand_joint_name[254];
 
   // List the models in the world and print their links and joints.
   if (hxs_sim_info(sim_info) != hxOK)
@@ -55,6 +57,14 @@ int main(int argc, char **argv)
   {
     model = sim_info->models[i];
     printf("\t%s\n", model.name);
+    if (strcmp(model.name, "mpl_haptix_right_forearm") == 0 ||
+        strcmp(model.name, "luke_hand_description") == 0)
+    {
+      strcpy(hand_name, model.name);
+      strcpy(hand_joint_name, model.joints[1].name);
+      printf("\t\tHand: %s\n", hand_name);
+      printf("\t\tHand Joint: %s\n", hand_joint_name);
+    }
     printf("\tLinks:\n");
     for (j = 0; j < model.link_count; ++j)
     {
@@ -545,7 +555,7 @@ int main(int argc, char **argv)
   // Set the state of a wrist joint.  Note that, because there's a controller
   // acting on the wrist, this change will only be transient; the controller will
   // restore the wrist back to the current target position.
-  if (hxs_set_model_joint_state("mpl_haptix_right_forearm", "wristy", 0.5, 0.0)
+  if (hxs_set_model_joint_state(hand_name, hand_joint_name, 0.5, 0.0)
       != hxOK)
   {
     printf("hxs_set_model_joint_state(): Request error.\n");
@@ -563,7 +573,7 @@ int main(int argc, char **argv)
   transform.pos.x = 1.0;
   transform.pos.y = 0;
   transform.pos.z = 1.5;
-  if (hxs_set_model_transform("mpl_haptix_right_forearm", &transform) != hxOK)
+  if (hxs_set_model_transform(hand_name, &transform) != hxOK)
   {
     printf("hxs_set_model_transform(): Request error.\n");
     return -1;
