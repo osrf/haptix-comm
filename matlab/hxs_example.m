@@ -7,6 +7,11 @@ fprintf('Models:\n');
 for model_idx = 1:size(info.models)
   model = info.models(model_idx).model;
   fprintf('  %s\n', model.name);
+  if (strcmp(model.name, 'mpl_haptix_right_forearm') ||
+      strcmp(model.name, 'luke_hand_description')),
+    hand = model.name;
+    hand_joint = model.joints(2).joint.name;
+  end,
   fprintf('    Links:\n');
   for link_idx = 1:size(model.links)
     link = model.links(link_idx).link;
@@ -167,19 +172,19 @@ hxs_remove_model('green_cricket_ball');
 pause(2);
 
 % Get the state of a wrist joint.
-joint_state = hxs_model_joint_state('mpl_haptix_right_forearm')
+joint_state = hxs_model_joint_state(hand)
 pause(1);
 
 % Set the state of a wrist joint.  Note that, because there's a controller
 % acting on the wrist, this change will only be transient; the controller will
 % restore the wrist back to the current target position.
-hxs_set_model_joint_state('mpl_haptix_right_forearm', 'wristy', 0.5, 0.0);
+hxs_set_model_joint_state(hand, hand_joint, 0.5, 0.0);
 pause(1);
 
 % Set the position of the arm. Note that if the motion tracking device is
 % active and unpaused, this change will be transient.
 arm_tx = struct('pos', [1.0, 0, 1.5], 'orient', [1, 0, 0, 0]);
-hxs_set_model_transform('mpl_haptix_right_forearm', arm_tx)
+hxs_set_model_transform(hand, arm_tx)
 
 % Move the camera
 hxs_set_camera_transform(new_tx);
