@@ -138,15 +138,11 @@ void setup()
 
 //////////////////////////////////////////////////
 /// \brief Provide a "hxs_sim_info" service.
-void onHxsSimInfo(const std::string &_service,
-  const haptix::comm::msgs::hxEmpty &/*_req*/,
+void onHxsSimInfo(const haptix::comm::msgs::hxEmpty &/*_req*/,
   haptix::comm::msgs::hxSimInfo &_rep,
   bool &_result)
 {
   _rep.Clear();
-
-  // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_sim_info");
 
   // Create some dummy response.
   _rep = simState;
@@ -156,15 +152,11 @@ void onHxsSimInfo(const std::string &_service,
 
 //////////////////////////////////////////////////
 /// \brief Provide a "hxs_camera_transform" service.
-void onHxsCamera(const std::string &_service,
-  const haptix::comm::msgs::hxEmpty &/*_req*/,
+void onHxsCamera(const haptix::comm::msgs::hxEmpty &/*_req*/,
   haptix::comm::msgs::hxTransform &_rep,
   bool &_result)
 {
   _rep.Clear();
-
-  // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_camera_transform");
 
   // Create some dummy response.
   _rep = simState.camera_transform();
@@ -174,15 +166,11 @@ void onHxsCamera(const std::string &_service,
 
 //////////////////////////////////////////////////
 /// \brief Provide a "hxs_set_camera_transform" service.
-void onHxsCameraTransform(const std::string &_service,
-  const haptix::comm::msgs::hxTransform &_req,
+void onHxsCameraTransform(const haptix::comm::msgs::hxTransform &_req,
   haptix::comm::msgs::hxEmpty &_rep,
   bool &_result)
 {
   _rep.Clear();
-
-  // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_set_camera_transform");
 
   std::string msg1, msg2;
 
@@ -195,15 +183,11 @@ void onHxsCameraTransform(const std::string &_service,
 
 //////////////////////////////////////////////////
 /// \brief Provide a "hxs_contacts" service.
-void onHxsContactPoints(const std::string &_service,
-  const haptix::comm::msgs::hxString &/*_req*/,
+void onHxsContactPoints(const haptix::comm::msgs::hxString &/*_req*/,
   haptix::comm::msgs::hxContactPoint_V &_rep,
   bool &_result)
 {
   _rep.Clear();
-
-  // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_contacts");
 
   // Create some dummy response.
   _rep = simContactPointsState;
@@ -213,16 +197,12 @@ void onHxsContactPoints(const std::string &_service,
 
 //////////////////////////////////////////////////
 /// \brief Provide a "hxs_model_joint_state" service.
-void onHxsModelJointState(const std::string &_service,
-  const haptix::comm::msgs::hxString &_req,
+void onHxsModelJointState(const haptix::comm::msgs::hxString &_req,
   haptix::comm::msgs::hxModel &_rep,
   bool &_result)
 {
   _rep.Clear();
   _result = false;
-
-  // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_model_joint_state");
 
   // Verify the request.
   EXPECT_EQ(_req.data(), "model 0");
@@ -235,19 +215,14 @@ void onHxsModelJointState(const std::string &_service,
 
 //////////////////////////////////////////////////
 /// \brief Provide a "hxs_set_model_joint_state" service.
-void onHxsSetModelJointState(const std::string &_service,
-  const haptix::comm::msgs::hxModel &_req,
+void onHxsSetModelJointState(const haptix::comm::msgs::hxModel &_req,
   haptix::comm::msgs::hxEmpty &_rep,
   bool &_result)
 {
   _rep.Clear();
   _result = false;
 
-  // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_set_model_joint_state");
-
   // Verify the request.
-
   EXPECT_EQ(_req.name(), "model 0");
 
   EXPECT_EQ(_req.joints_size(), 1);
@@ -261,16 +236,12 @@ void onHxsSetModelJointState(const std::string &_service,
 
 //////////////////////////////////////////////////
 /// \brief Provide a "hxs_add_model" service.
-void onHxsAddModel(const std::string &_service,
-  const haptix::comm::msgs::hxParam &_req,
+void onHxsAddModel(const haptix::comm::msgs::hxParam &_req,
   haptix::comm::msgs::hxModel &_rep,
   bool &_result)
 {
   _rep.Clear();
   _result = false;
-
-  // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_add_model");
 
   // Sanity check: The message should contain a string with the urdf.
   if (!_req.has_string_value())
@@ -330,15 +301,11 @@ void onHxsAddModel(const std::string &_service,
 
 //////////////////////////////////////////////////
 /// \brief Provide a "hxs_remove_model" service.
-void onHxsRemoveModel(const std::string &_service,
-  const haptix::comm::msgs::hxString &_req,
+void onHxsRemoveModel(const haptix::comm::msgs::hxString &_req,
   haptix::comm::msgs::hxEmpty &_rep,
   bool &_result)
 {
   _rep.Clear();
-
-  // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_remove_model");
 
   // Verify the request.
   EXPECT_EQ(_req.data(), "model 1");
@@ -348,16 +315,12 @@ void onHxsRemoveModel(const std::string &_service,
 
 //////////////////////////////////////////////////
 /// \brief Provide a "hxs_set_model_transform" service.
-void onHxsSetModelTransform(const std::string &_service,
-  const haptix::comm::msgs::hxParam &_req,
+void onHxsSetModelTransform(const haptix::comm::msgs::hxParam &_req,
   haptix::comm::msgs::hxEmpty &_rep,
   bool &_result)
 {
   _rep.Clear();
   _result = false;
-
-  // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_set_model_transform");
 
   // Sanity check: The message should contain a name.
   if (!_req.has_name())
@@ -389,16 +352,12 @@ void onHxsSetModelTransform(const std::string &_service,
 
 //////////////////////////////////////////////////
 /// \brief Provide a "hxs_model_transform" service.
-void onHxsModelTransform(const std::string &_service,
-  const haptix::comm::msgs::hxString &_req,
+void onHxsModelTransform(const haptix::comm::msgs::hxString &_req,
   haptix::comm::msgs::hxTransform &_rep,
   bool &_result)
 {
   _rep.Clear();
   _result = false;
-
-  // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_model_transform");
 
   // Verify the name.
   EXPECT_EQ(_req.data(), "model 1");
@@ -411,16 +370,12 @@ void onHxsModelTransform(const std::string &_service,
 
 //////////////////////////////////////////////////
 /// \brief Provide a "hxs_linear_velocity" service.
-void onHxsLinearVelocity(const std::string &_service,
-  const haptix::comm::msgs::hxString &_req,
+void onHxsLinearVelocity(const haptix::comm::msgs::hxString &_req,
   haptix::comm::msgs::hxVector3 &_rep,
   bool &_result)
 {
   _rep.Clear();
   _result = false;
-
-  // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_linear_velocity");
 
   // Verify the name.
   EXPECT_EQ(_req.data(), "model 1");
@@ -434,16 +389,12 @@ void onHxsLinearVelocity(const std::string &_service,
 
 //////////////////////////////////////////////////
 /// \brief Provide a "hxs_set_linear_velocity" service.
-void onHxsSetLinearVelocity(const std::string &_service,
-  const haptix::comm::msgs::hxParam &_req,
+void onHxsSetLinearVelocity(const haptix::comm::msgs::hxParam &_req,
   haptix::comm::msgs::hxEmpty &_rep,
   bool &_result)
 {
   _rep.Clear();
   _result = false;
-
-  // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_set_linear_velocity");
 
   // Sanity check: The message should contain a name.
   if (!_req.has_name())
@@ -474,16 +425,12 @@ void onHxsSetLinearVelocity(const std::string &_service,
 
 //////////////////////////////////////////////////
 /// \brief Provide a "hxs_angular_velocity" service.
-void onHxsAngularVelocity(const std::string &_service,
-  const haptix::comm::msgs::hxString &_req,
+void onHxsAngularVelocity(const haptix::comm::msgs::hxString &_req,
   haptix::comm::msgs::hxVector3 &_rep,
   bool &_result)
 {
   _rep.Clear();
   _result = false;
-
-  // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_angular_velocity");
 
   // Verify the name.
   EXPECT_EQ(_req.data(), "model 1");
@@ -497,16 +444,12 @@ void onHxsAngularVelocity(const std::string &_service,
 
 //////////////////////////////////////////////////
 /// \brief Provide a "hxs_set_angular_velocity" service.
-void onHxsSetAngularVelocity(const std::string &_service,
-  const haptix::comm::msgs::hxParam &_req,
+void onHxsSetAngularVelocity(const haptix::comm::msgs::hxParam &_req,
   haptix::comm::msgs::hxEmpty &_rep,
   bool &_result)
 {
   _rep.Clear();
   _result = false;
-
-  // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_set_angular_velocity");
 
   // Sanity check: The message should contain a name.
   if (!_req.has_name())
@@ -537,16 +480,12 @@ void onHxsSetAngularVelocity(const std::string &_service,
 
 //////////////////////////////////////////////////
 /// \brief Provide a "hxs_apply_force" service.
-void onHxsApplyForce(const std::string &_service,
-  const haptix::comm::msgs::hxParam &_req,
+void onHxsApplyForce(const haptix::comm::msgs::hxParam &_req,
   haptix::comm::msgs::hxEmpty &_rep,
   bool &_result)
 {
   _rep.Clear();
   _result = false;
-
-  // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_apply_force");
 
   // Sanity check: The message should contain a model name.
   if (!_req.has_name())
@@ -597,16 +536,12 @@ void onHxsApplyForce(const std::string &_service,
 
 //////////////////////////////////////////////////
 /// \brief Provide a "hxs_apply_torque" service.
-void onHxsApplyTorque(const std::string &_service,
-  const haptix::comm::msgs::hxParam &_req,
+void onHxsApplyTorque(const haptix::comm::msgs::hxParam &_req,
   haptix::comm::msgs::hxEmpty &_rep,
   bool &_result)
 {
   _rep.Clear();
   _result = false;
-
-  // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_apply_torque");
 
   // Sanity check: The message should contain a model name.
   if (!_req.has_name())
@@ -657,16 +592,12 @@ void onHxsApplyTorque(const std::string &_service,
 
 //////////////////////////////////////////////////
 /// \brief Provide a "hxs_apply_wrench" service.
-void onHxsApplyWrench(const std::string &_service,
-  const haptix::comm::msgs::hxParam &_req,
+void onHxsApplyWrench(const haptix::comm::msgs::hxParam &_req,
   haptix::comm::msgs::hxEmpty &_rep,
   bool &_result)
 {
   _rep.Clear();
   _result = false;
-
-  // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_apply_wrench");
 
   // Sanity check: The message should contain a model name.
   if (!_req.has_name())
@@ -721,15 +652,11 @@ void onHxsApplyWrench(const std::string &_service,
 
 //////////////////////////////////////////////////
 /// \brief Provide a "hxs_reset" service.
-void onHxsReset(const std::string &_service,
-  const haptix::comm::msgs::hxInt &_req,
+void onHxsReset(const haptix::comm::msgs::hxInt &_req,
   haptix::comm::msgs::hxEmpty &_rep,
   bool &_result)
 {
   _rep.Clear();
-
-  // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_reset");
 
   // Verify the value received.
   EXPECT_EQ(_req.data(), 1);
@@ -739,15 +666,11 @@ void onHxsReset(const std::string &_service,
 
 //////////////////////////////////////////////////
 /// \brief Provide a "hxs_start_logging" service.
-void onHxsStartLogging(const std::string &_service,
-  const haptix::comm::msgs::hxString &_req,
+void onHxsStartLogging(const haptix::comm::msgs::hxString &_req,
   haptix::comm::msgs::hxEmpty &_rep,
   bool &_result)
 {
   _rep.Clear();
-
-  // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_start_logging");
 
   // Check the filename received.
   EXPECT_EQ(_req.data(), "a filename");
@@ -757,15 +680,11 @@ void onHxsStartLogging(const std::string &_service,
 
 //////////////////////////////////////////////////
 /// \brief Provide a "hxs_is_logging" service.
-void onHxsIsLogging(const std::string &_service,
-  const haptix::comm::msgs::hxEmpty &/*_req*/,
+void onHxsIsLogging(const haptix::comm::msgs::hxEmpty &/*_req*/,
   haptix::comm::msgs::hxInt &_rep,
   bool &_result)
 {
   _rep.Clear();
-
-  // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_is_logging");
 
   // Set the response.
   _rep.set_data(1);
@@ -775,30 +694,22 @@ void onHxsIsLogging(const std::string &_service,
 
 //////////////////////////////////////////////////
 /// \brief Provide a "hxs_stop_logging" service.
-void onHxsStopLogging(const std::string &_service,
-  const haptix::comm::msgs::hxEmpty &/*_req*/,
+void onHxsStopLogging(const haptix::comm::msgs::hxEmpty &/*_req*/,
   haptix::comm::msgs::hxEmpty &_rep,
   bool &_result)
 {
   _rep.Clear();
-
-  // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_stop_logging");
 
   _result = true;
 }
 
 //////////////////////////////////////////////////
 /// \brief Provide a "hxs_model_gravity_mode" service.
-void onHxsModelGravity(const std::string &_service,
-  const haptix::comm::msgs::hxString &_req,
+void onHxsModelGravity(const haptix::comm::msgs::hxString &_req,
   haptix::comm::msgs::hxInt &_rep,
   bool &_result)
 {
   _rep.Clear();
-
-  // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_model_gravity_mode");
 
   EXPECT_EQ(_req.data(), "model_1");
   _rep.set_data(1);
@@ -808,15 +719,11 @@ void onHxsModelGravity(const std::string &_service,
 
 //////////////////////////////////////////////////
 /// \brief Provide a "hxs_set_gravity_mode" service.
-void onHxsSetModelGravity(const std::string &_service,
-  const haptix::comm::msgs::hxParam &_req,
+void onHxsSetModelGravity(const haptix::comm::msgs::hxParam &_req,
   haptix::comm::msgs::hxEmpty &/*_rep*/,
   bool &_result)
 {
   _result = false;
-
-  // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_set_model_gravity_mode");
 
   // Sanity check: The message should contain a model name.
   if (!_req.has_name())
@@ -844,15 +751,11 @@ void onHxsSetModelGravity(const std::string &_service,
 
 //////////////////////////////////////////////////
 /// \brief Provide a "hxs_set_model_color" service.
-void onHxsSetModelColor(const std::string &_service,
-  const haptix::comm::msgs::hxParam &_req,
+void onHxsSetModelColor(const haptix::comm::msgs::hxParam &_req,
   haptix::comm::msgs::hxEmpty &/*_rep*/,
   bool &_result)
 {
   _result = false;
-
-  // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_set_model_color");
 
   // Sanity check: The message should contain a model name.
   if (!_req.has_name())
@@ -881,16 +784,12 @@ void onHxsSetModelColor(const std::string &_service,
 
 //////////////////////////////////////////////////
 /// \brief Provide a "hxs_model_color" service.
-void onHxsModelColor(const std::string &_service,
-  const haptix::comm::msgs::hxString &_req,
+void onHxsModelColor(const haptix::comm::msgs::hxString &_req,
   haptix::comm::msgs::hxColor &_rep,
   bool &_result)
 {
   _rep.Clear();
   _result = false;
-
-  // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_model_color");
 
   EXPECT_EQ(_req.data(), "model_1");
 
@@ -904,15 +803,11 @@ void onHxsModelColor(const std::string &_service,
 
 //////////////////////////////////////////////////
 /// \brief Provide a "hxs_set_model_collide_mode" service.
-void onHxsSetModelCollideMode(const std::string &_service,
-  const haptix::comm::msgs::hxParam &_req,
+void onHxsSetModelCollideMode(const haptix::comm::msgs::hxParam &_req,
   haptix::comm::msgs::hxEmpty &/*_rep*/,
   bool &_result)
 {
   _result = false;
-
-  // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_set_model_collide_mode");
 
   // Sanity check: The message should contain a model name.
   if (!_req.has_name())
@@ -939,16 +834,12 @@ void onHxsSetModelCollideMode(const std::string &_service,
 
 //////////////////////////////////////////////////
 /// \brief Provide a "hxs_model_collide_mode" service.
-void onHxsModelCollideMode(const std::string &_service,
-  const haptix::comm::msgs::hxString &_req,
+void onHxsModelCollideMode(const haptix::comm::msgs::hxString &_req,
   haptix::comm::msgs::hxCollideMode &_rep,
   bool &_result)
 {
   _rep.Clear();
   _result = false;
-
-  // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_model_collide_mode");
 
   EXPECT_EQ(_req.data(), "model_1");
 
@@ -959,15 +850,11 @@ void onHxsModelCollideMode(const std::string &_service,
 
 //////////////////////////////////////////////////
 /// \brief Provide a "hxs_add_constraint" service.
-void onHxsAddConstraint(const std::string &_service,
-  const haptix::comm::msgs::hxParam &_req,
+void onHxsAddConstraint(const haptix::comm::msgs::hxParam &_req,
   haptix::comm::msgs::hxEmpty &/*_rep*/,
   bool &_result)
 {
   _result = false;
-
-  // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_add_constraint");
 
   // Sanity check: The message should contain a string with the sdf.
   if (!_req.has_string_value())
@@ -994,15 +881,11 @@ void onHxsAddConstraint(const std::string &_service,
 
 //////////////////////////////////////////////////
 /// \brief Provide a "hxs_remove_constraint" service.
-void onHxsRemoveConstraint(const std::string &_service,
-  const haptix::comm::msgs::hxParam &_req,
+void onHxsRemoveConstraint(const haptix::comm::msgs::hxParam &_req,
   haptix::comm::msgs::hxEmpty &/*_rep*/,
   bool &_result)
 {
   _result = false;
-
-  // Check the name of the service received.
-  EXPECT_EQ(_service, "/haptix/gazebo/hxs_remove_constraint");
 
   // Sanity check: The message should contain the name of the joint/constraint.
   if (!_req.has_string_value())
