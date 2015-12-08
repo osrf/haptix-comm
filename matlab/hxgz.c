@@ -349,7 +349,7 @@ hxgz_update(int nlhs, mxArray *plhs[],
     mexErrMsgIdAndTxt("HAPTIX:hx_update", "Expects struct");
 
   // Sanity check: Verify that the struct has fields:
-  // ref_pos, ref_vel_max, gain_pos and gain_vel, plus the
+  // ref_pos, ref_vel, ref_vel_max, gain_pos and gain_vel, plus the
   // *_enabled flag for each one.
   if (mxGetNumberOfFields(prhs[0]) != 8)
     mexErrMsgIdAndTxt("HAPTIX:hx_update", "Expects 8 fields");
@@ -364,6 +364,16 @@ hxgz_update(int nlhs, mxArray *plhs[],
   v = mxGetField(prhs[0], 0, "ref_pos_enabled");
   data = mxGetPr(v);
   cmd.ref_pos_enabled = data[0];
+
+  v = mxGetField(prhs[0], 0, "ref_vel");
+  data = mxGetPr(v);
+  cmdSize = mxGetDimensions(v);
+  for (i = 0; (i < cmdSize[1]) && (i < hxMAXMOTOR); ++i)
+    cmd.ref_vel[i] = data[i];
+
+  v = mxGetField(prhs[0], 0, "ref_vel_enabled");
+  data = mxGetPr(v);
+  cmd.ref_vel_enabled = data[0];
 
   v = mxGetField(prhs[0], 0, "ref_vel_max");
   data = mxGetPr(v);

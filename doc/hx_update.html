@@ -83,9 +83,13 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 <span class="comment">%       the motors (rad).</span>
 <span class="comment">%     ref_pos_enabled (bool) : If true, then the values in ref_pos should be</span>
 <span class="comment">%       used; otherwise, they should be ignored.</span>
-<span class="comment">%     ref_vel_max (float array) : An N by 1 (or 1 by N) array of desired maximum</span>
+<span class="comment">%     ref_vel (float array) : An N by 1 (or 1 by N) array of desired maximum</span>
 <span class="comment">%       angular velocities for the motors (rad/s).</span>
-<span class="comment">%     ref_vel_max_enabled (bool) : If true, then the values in ref_vel_max</span>
+<span class="comment">%     ref_vel_enabled (bool) : If true, then the values in ref_vel</span>
+<span class="comment">%       should be used; otherwise, they should be ignored.</span>
+<span class="comment">%     ref_vel_max (float array) : DEPRECATED by ref_vel. An N by 1 (or 1 by N) array of desired maximum</span>
+<span class="comment">%       angular velocities for the motors (rad/s).</span>
+<span class="comment">%     ref_vel_max_enabled (bool) : DEPRECATED by ref_vel_enabled. If true, then the values in ref_vel_max</span>
 <span class="comment">%       should be used; otherwise, they should be ignored.</span>
 <span class="comment">%     gain_pos (float array) : An N by 1 (or 1 by N) array of position gains to</span>
 <span class="comment">%       be applied to the internal controller (Nm/rad).</span>
@@ -153,9 +157,13 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 %       the motors (rad).
 %     ref_pos_enabled (bool) : If true, then the values in ref_pos should be
 %       used; otherwise, they should be ignored.
-%     ref_vel_max (float array) : An N by 1 (or 1 by N) array of desired maximum
+%     ref_vel (float array) : An N by 1 (or 1 by N) array of desired maximum
 %       angular velocities for the motors (rad/s).
-%     ref_vel_max_enabled (bool) : If true, then the values in ref_vel_max
+%     ref_vel_enabled (bool) : If true, then the values in ref_vel
+%       should be used; otherwise, they should be ignored.
+%     ref_vel_max (float array) : DEPRECATED by ref_vel. An N by 1 (or 1 by N) array of desired maximum
+%       angular velocities for the motors (rad/s).
+%     ref_vel_max_enabled (bool) : DEPRECATED by ref_vel_enabled. If true, then the values in ref_vel_max
 %       should be used; otherwise, they should be ignored.
 %     gain_pos (float array) : An N by 1 (or 1 by N) array of position gains to
 %       be applied to the internal controller (Nm/rad).

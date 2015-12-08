@@ -157,6 +157,7 @@ int main(int argc, char **argv)
       // Set the desired position of this motor
       cmd.ref_pos[i] = amplitude * sin(frequency * 2.0 * M_PI * counter);
       // We could set a desired maximum velocity
+      // cmd.ref_vel[i] = 1.0;
       // cmd.ref_vel_max[i] = 1.0;
       // We could set a desired controller position gain
       // cmd.gain_pos[i] = 1.0;
@@ -165,6 +166,8 @@ int main(int argc, char **argv)
     }
     // Indicate that the positions we set should be used.
     cmd.ref_pos_enabled = 1;
+    // We're not setting it, so indicate that ref_vel should be ignored.
+    cmd.ref_vel_enabled = 0;
     // We're not setting it, so indicate that ref_vel_max should be ignored.
     cmd.ref_vel_max_enabled = 0;
     // We're not setting it, so indicate that gain_pos should be ignored.
