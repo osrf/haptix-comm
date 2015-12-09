@@ -15,7 +15,7 @@
 %       the motors (rad).
 %     ref_pos_enabled (bool) : If true, then the values in ref_pos should be
 %       used; otherwise, they should be ignored.
-%     ref_vel (float array) : An N by 1 (or 1 by N) array of desired maximum
+%     ref_vel (float array) : An N by 1 (or 1 by N) array of desired
 %       angular velocities for the motors (rad/s).
 %     ref_vel_enabled (bool) : If true, then the values in ref_vel
 %       should be used; otherwise, they should be ignored.
