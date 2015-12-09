@@ -246,7 +246,7 @@ struct _hxCommand
   /// An array of floats of size #hxMAXMOTOR. Entries 0 through
   /// hxRobotInfo::nmotors-1 contain the desired angular positions for each
   /// motor.
-  /// \sa ref_pos_count
+  /// \sa joint_count
   float ref_pos[hxMAXMOTOR];
 
   /// \brief A value <= 0 disables ref_pos, any other value enables
@@ -258,7 +258,19 @@ struct _hxCommand
   /// An array of floats of size #hxMAXMOTOR. Entries 0 through
   /// hxRobotInfo::nmotors-1 contain the desired angular velocities for each
   /// motor.
-  /// \sa ref_vel_max_count
+  /// \sa joint_count
+  float ref_vel[hxMAXMOTOR];
+
+  /// \brief A value <= 0 disables ref_vel, any other value enables
+  /// ref_vel.
+  /// \sa ref_vel
+  int ref_vel_enabled;
+
+  /// \brief Target reference velocities (rad/s).
+  /// An array of floats of size #hxMAXMOTOR. Entries 0 through
+  /// hxRobotInfo::nmotors-1 contain the desired angular velocities for each
+  /// motor.
+  /// \sa joint_count
   float ref_vel_max[hxMAXMOTOR];
 
   /// \brief A value <= 0 disables ref_vel_max, any other value enables
@@ -270,7 +282,7 @@ struct _hxCommand
   /// An array of floats of size #hxMAXMOTOR. Entries 0 through
   /// hxRobotInfo::nmotors-1 contain the position gain that will be
   /// applied during the update phase of the model controller.
-  /// \sa gain_pos_count
+  /// \sa joint_count
   float gain_pos[hxMAXMOTOR];
 
   /// \brief A value <= 0 disables gain_pos, any other value enables
@@ -282,7 +294,7 @@ struct _hxCommand
   /// An array of floats of size #hxMAXMOTOR. Entries 0 through
   /// hxRobotInfo::nmotors-1 contain the velocity gain that will be
   /// applied during the update phase of the model controller.
-  /// \sa gain_vel_count
+  /// \sa joint_count
   float gain_vel[hxMAXMOTOR];
 
   /// \brief A value <= 0 disables gain_vel, any other value enables

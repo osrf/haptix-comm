@@ -105,6 +105,7 @@ int main(int argc, char **argv)
   for (i = 0; i < robotInfo.motor_count; ++i)
   {
     cmd.ref_pos[i] = i;
+    cmd.ref_vel[i] = i + 1;
     cmd.ref_vel_max[i] = i + 1;
     cmd.gain_pos[i] = i + 2;
     cmd.gain_vel[i] = i + 3;

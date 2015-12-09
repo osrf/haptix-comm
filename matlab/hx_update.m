@@ -15,9 +15,13 @@
 %       the motors (rad).
 %     ref_pos_enabled (bool) : If true, then the values in ref_pos should be
 %       used; otherwise, they should be ignored.
-%     ref_vel_max (float array) : An N by 1 (or 1 by N) array of desired maximum
+%     ref_vel (float array) : An N by 1 (or 1 by N) array of desired
 %       angular velocities for the motors (rad/s).
-%     ref_vel_max_enabled (bool) : If true, then the values in ref_vel_max
+%     ref_vel_enabled (bool) : If true, then the values in ref_vel
+%       should be used; otherwise, they should be ignored.
+%     ref_vel_max (float array) : DEPRECATED by ref_vel.  An N by 1 (or 1 by N) array of desired maximum
+%       angular velocities for the motors (rad/s).
+%     ref_vel_max_enabled (bool) : DEPRECATED by ref_vel_enabled.  If true, then the values in ref_vel_max
 %       should be used; otherwise, they should be ignored.
 %     gain_pos (float array) : An N by 1 (or 1 by N) array of position gains to
 %       be applied to the internal controller (Nm/rad).
@@ -67,6 +71,9 @@ function sensor = hx_update(command)
   % If necessary, convert to row vectors, which is what hx_update expects
   if(isfield(command, 'ref_pos') && size(command.ref_pos, 1) > size(command.ref_pos, 2))
     command.ref_pos = command.ref_pos';
+  end
+  if(isfield(command, 'ref_vel') && size(command.ref_vel, 1) > size(command.ref_vel, 2))
+    command.ref_vel = command.ref_vel';
   end
   if(isfield(command, 'ref_vel_max') && size(command.ref_vel_max, 1) > size(command.ref_vel_max, 2))
     command.ref_vel_max = command.ref_vel_max';
