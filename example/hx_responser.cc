@@ -38,14 +38,10 @@ static const std::string SensorInfoTopic = "/haptix/gazebo/Read";
 
 //////////////////////////////////////////////////
 /// \brief Provide a "getRobotInfo" service.
-void onGetRobotInfo(const std::string &_service,
-  const haptix::comm::msgs::hxRobot &/*_req*/,
+void onGetRobotInfo(const haptix::comm::msgs::hxRobot &/*_req*/,
   haptix::comm::msgs::hxRobot &_rep, bool &_result)
 {
   _result = true;
-
-  if (_service != RobotInfoTopic)
-    _result = false;
 
   _rep.Clear();
 
@@ -65,14 +61,10 @@ void onGetRobotInfo(const std::string &_service,
 
 //////////////////////////////////////////////////
 /// \brief Provide an "Update" service.
-void onUpdate(const std::string &_service,
-  const haptix::comm::msgs::hxCommand &/*_req*/,
+void onUpdate(const haptix::comm::msgs::hxCommand &/*_req*/,
   haptix::comm::msgs::hxSensor &_rep, bool &_result)
 {
   _result = true;
-
-  if (_service != UpdateTopic)
-    _result = false;
 
   // Read the request parameters.
   // Debug output.
@@ -122,14 +114,10 @@ void onUpdate(const std::string &_service,
 
 //////////////////////////////////////////////////
 /// \brief Provide a "sensor update" service.
-void onSensorRequest(const std::string &_service,
-  const haptix::comm::msgs::hxSensor &/*_unused*/,
+void onSensorRequest(const haptix::comm::msgs::hxSensor &/*_unused*/,
   haptix::comm::msgs::hxSensor &_rep, bool &_result)
 {
   _result = true;
-
-  if (_service != SensorInfoTopic)
-    _result = false;
 
   _rep.Clear();
 
