@@ -36,15 +36,11 @@ std::string partition;
 
 //////////////////////////////////////////////////
 /// \brief Provide a "GetRobotInfo" service.
-void onGetRobotInfo(const std::string &_service,
-  const haptix::comm::msgs::hxRobot &/*_req*/,
+void onGetRobotInfo(const haptix::comm::msgs::hxRobot &/*_req*/,
   haptix::comm::msgs::hxRobot &_rep,
   bool &_result)
 {
   _rep.Clear();
-
-  // Check the name of the service received.
-  EXPECT_EQ(_service, kRobotInfoTopic);
 
   // Create some dummy response.
   _rep.set_motor_count(kNumMotors);
@@ -64,15 +60,11 @@ void onGetRobotInfo(const std::string &_service,
 
 //////////////////////////////////////////////////
 /// \brief Provide an "Update" service.
-void onUpdate(const std::string &_service,
-  const haptix::comm::msgs::hxCommand &_req,
+void onUpdate(const haptix::comm::msgs::hxCommand &_req,
   haptix::comm::msgs::hxSensor &_rep,
   bool &_result)
 {
   _rep.Clear();
-
-  // Check the name of the service received.
-  EXPECT_EQ(_service, kUpdateTopic);
 
   // Read the request parameters.
   ASSERT_EQ(_req.ref_pos_size(), hxMAXMOTOR);
@@ -119,15 +111,11 @@ void onUpdate(const std::string &_service,
 
 //////////////////////////////////////////////////
 /// \brief Provide a "Read" service.
-void onRead(const std::string &_service,
-  const haptix::comm::msgs::hxSensor &/*_req*/,
+void onRead(const haptix::comm::msgs::hxSensor &/*_req*/,
   haptix::comm::msgs::hxSensor &_rep,
   bool &_result)
 {
   _rep.Clear();
-
-  // Check the name of the service received.
-  EXPECT_EQ(_service, kReadTopic);
 
   // Create some dummy response.
   for (int i = 0; i < kNumMotors; ++i)
