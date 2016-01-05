@@ -29,12 +29,15 @@ while counter < 250
 
   % Initialize the command scalar structure.
   cmd.ref_pos = [];
+  cmd.ref_vel = [];
   cmd.ref_vel_max = [];
   cmd.gain_pos = [];
   cmd.gain_vel = [];
 
   % Indicate that the positions we set should be used.
   cmd.ref_pos_enabled = 1;
+  % We're not setting it, so indicate that ref_vel should be ignored.
+  cmd.ref_vel_enabled = 0;
   % We're not setting it, so indicate that ref_vel_max should be ignored.
   cmd.ref_vel_max_enabled = 0;
   % We're not setting it, so indicate that gain_pos should be ignored.
@@ -46,6 +49,7 @@ while counter < 250
   for n = 0:deviceInfo.motor_count
     cmd.ref_pos(end + 1) = 350 * 0.5 * sin(0.05 * 2.0 * pi * counter * 0.08);
     % We could set a desired maximum velocity
+    % cmd.ref_vel(end + 1) = 1.0;
     % cmd.ref_vel_max(end + 1) = 1.0;
     % We could set a desired controller position gain
     % cmd.gain_pos(end + 1) = 1.0;

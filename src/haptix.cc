@@ -207,11 +207,13 @@ extern "C" {
     for (int i = 0; i < hxMAXMOTOR; ++i)
     {
       req.add_ref_pos(_command->ref_pos[i]);
+      req.add_ref_vel(_command->ref_vel[i]);
       req.add_ref_vel_max(_command->ref_vel_max[i]);
       req.add_gain_pos(_command->gain_pos[i]);
       req.add_gain_vel(_command->gain_vel[i]);
     }
     req.set_ref_pos_enabled(_command->ref_pos_enabled);
+    req.set_ref_vel_enabled(_command->ref_vel_enabled);
     req.set_ref_vel_max_enabled(_command->ref_vel_max_enabled);
     req.set_gain_pos_enabled(_command->gain_pos_enabled);
     req.set_gain_vel_enabled(_command->gain_vel_enabled);

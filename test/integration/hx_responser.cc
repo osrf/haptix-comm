@@ -1014,6 +1014,7 @@ void onUpdate(const haptix::comm::msgs::hxCommand &/*_req*/,
     std::cout << "\tMotor " << i << ":" << std::endl;
     std::cout << "\t\t" << _req.ref_pos(i) << std::endl;
     std::cout << "\t\t" << _req.ref_vel(i) << std::endl;
+    std::cout << "\t\t" << _req.ref_vel_max(i) << std::endl;
     std::cout << "\t\t" << _req.gain_pos(i) << std::endl;
     std::cout << "\t\t" << _req.gain_vel(i) << std::endl;
   }*/
