@@ -351,8 +351,8 @@ hxgz_update(int nlhs, mxArray *plhs[],
   // Sanity check: Verify that the struct has fields:
   // ref_pos, ref_vel, ref_vel_max, gain_pos and gain_vel, plus the
   // *_enabled flag for each one.
-  if (mxGetNumberOfFields(prhs[0]) != 8)
-    mexErrMsgIdAndTxt("HAPTIX:hx_update", "Expects 8 fields");
+  if (mxGetNumberOfFields(prhs[0]) != 10)
+    mexErrMsgIdAndTxt("HAPTIX:hx_update", "Expects 10 fields");
 
   // Set the hxCommand struct.
   v = mxGetField(prhs[0], 0, "ref_pos");
