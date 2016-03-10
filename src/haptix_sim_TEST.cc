@@ -981,7 +981,7 @@ TEST(hxsTest, hxs_sim_info)
       EXPECT_FLOAT_EQ(simInfo->models[i].joints[j].wrench_reactive.torque.z,
         v + 0.9f);
     }
-    EXPECT_EQ(simInfo->models[i].gravity_mode, 1u);
+    EXPECT_EQ(simInfo->models[i].gravity_mode, 1);
   }
 
   // Check the camera information.
@@ -1149,7 +1149,7 @@ TEST(hxsTest, hxs_model_joint_state)
     EXPECT_FLOAT_EQ(model.joints[i].wrench_reactive.torque.y, v + 0.8f);
     EXPECT_FLOAT_EQ(model.joints[i].wrench_reactive.torque.z, v + 0.9f);
   }
-  EXPECT_EQ(model.gravity_mode, 1u);
+  EXPECT_EQ(model.gravity_mode, 1);
 }
 
 //////////////////////////////////////////////////
@@ -1237,7 +1237,7 @@ TEST(hxsTest, hxs_add_model)
     EXPECT_FLOAT_EQ(model.joints[i].wrench_reactive.torque.y, v + 0.8f);
     EXPECT_FLOAT_EQ(model.joints[i].wrench_reactive.torque.z, v + 0.9f);
   }
-  EXPECT_EQ(model.gravity_mode, 1u);
+  EXPECT_EQ(model.gravity_mode, 1);
 }
 
 //////////////////////////////////////////////////

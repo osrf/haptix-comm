@@ -214,7 +214,7 @@ TEST(twoProcessesSimAPI, hxs_sim_info)
       EXPECT_FLOAT_EQ(simInfo->models[i].joints[j].wrench_reactive.torque.z,
         v + 0.9f);
     }
-    EXPECT_EQ(simInfo->models[i].gravity_mode, 1u);
+    EXPECT_EQ(simInfo->models[i].gravity_mode, 1);
   }
 
   // Check the camera information.
@@ -348,7 +348,7 @@ TEST(twoProcessesSimAPI, hxs_sim_info)
     EXPECT_FLOAT_EQ(model.joints[i].wrench_reactive.torque.y, v + 0.8f);
     EXPECT_FLOAT_EQ(model.joints[i].wrench_reactive.torque.z, v + 0.9f);
   }
-  EXPECT_EQ(model.gravity_mode, 1u);
+  EXPECT_EQ(model.gravity_mode, 1);
 
   // ---------- hxs_remove_model ----------
   ASSERT_EQ(hxs_remove_model("model 1"), hxOK);
