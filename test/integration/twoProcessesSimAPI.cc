@@ -214,7 +214,7 @@ TEST(twoProcessesSimAPI, hxs_sim_info)
       EXPECT_FLOAT_EQ(simInfo->models[i].joints[j].wrench_reactive.torque.z,
         v + 0.9f);
     }
-    EXPECT_TRUE(simInfo->models[i].gravity_mode);
+    EXPECT_EQ(simInfo->models[i].gravity_mode, 1u);
   }
 
   // Check the camera information.
@@ -348,7 +348,7 @@ TEST(twoProcessesSimAPI, hxs_sim_info)
     EXPECT_FLOAT_EQ(model.joints[i].wrench_reactive.torque.y, v + 0.8f);
     EXPECT_FLOAT_EQ(model.joints[i].wrench_reactive.torque.z, v + 0.9f);
   }
-  EXPECT_TRUE(model.gravity_mode);
+  EXPECT_EQ(model.gravity_mode, 1u);
 
   // ---------- hxs_remove_model ----------
   ASSERT_EQ(hxs_remove_model("model 1"), hxOK);
@@ -424,7 +424,7 @@ TEST(twoProcessesSimAPI, hxs_sim_info)
 
   // Use the first link of the first model in simState.
   ASSERT_EQ(hxs_apply_force(simInfo->models[0].name,
-      simInfo->models[0].links[0].name, &force, 0.1), hxOK);
+      simInfo->models[0].links[0].name, &force, 0.1f), hxOK);
 
   // ---------- hxs_apply_torque ----------
   hxsVector3 torque;
@@ -436,7 +436,7 @@ TEST(twoProcessesSimAPI, hxs_sim_info)
 
   // Use the first link of the first model in simState.
   ASSERT_EQ(hxs_apply_torque(simInfo->models[0].name,
-      simInfo->models[0].links[0].name, &torque, 0.1), hxOK);
+      simInfo->models[0].links[0].name, &torque, 0.1f), hxOK);
 
   // ---------- hxs_apply_wrench ----------
   hxsWrench wrench;

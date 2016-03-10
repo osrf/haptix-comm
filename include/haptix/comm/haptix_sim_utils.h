@@ -21,9 +21,11 @@
 #ifndef __HAPTIX_SIM_UTILS_API_HAPTIX_H__
 #define __HAPTIX_SIM_UTILS_API_HAPTIX_H__
 
+#include <cstdio>
+#include <cstring>
 #include <iostream>
-#include <string>
 #include <mutex>
+#include <string>
 #include <ignition/transport.hh>
 #include "haptix/comm/haptix.h"
 #include "msg/hxCollideMode.pb.h"
@@ -344,7 +346,8 @@ static bool hxs_convertJoint(const haptix::comm::msgs::hxJoint _in,
     return false;
   }
 
-  strncpy(_out->name, _in.name().c_str(), strlen(_in.name().c_str()));
+  strncpy_s(_out->name, hxsMAXNAMESIZE,
+      _in.name().c_str(), strlen(_in.name().c_str()));
   _out->name[strlen(_in.name().c_str())] = '\0';
   _out->pos = _in.pos();
   _out->vel = _in.vel();
@@ -412,7 +415,8 @@ static bool hxs_convertLink(const haptix::comm::msgs::hxLink _in, hxsLink *_out)
     return false;
   }
 
-  strncpy(_out->name, _in.name().c_str(), strlen(_in.name().c_str()));
+  strncpy_s(_out->name, hxsMAXNAMESIZE,
+      _in.name().c_str(), strlen(_in.name().c_str()));
   _out->name[strlen(_in.name().c_str())] = '\0';
 
   bool result = true;
@@ -451,7 +455,8 @@ static bool hxs_convertModel(const haptix::comm::msgs::hxModel _in,
   // Initialize the C struct.
   memset(_out, 0, sizeof(hxsModel));
 
-  strncpy(_out->name, _in.name().c_str(), strlen(_in.name().c_str()));
+  strncpy_s(_out->name, hxsMAXNAMESIZE, 
+      _in.name().c_str(), strlen(_in.name().c_str()));
   _out->name[strlen(_in.name().c_str())] = '\0';
 
   bool result = true;
@@ -512,12 +517,12 @@ static bool hxs_convertContactPoints(
       return false;
     }
 
-    strncpy(_out->contacts[i].link1, _in.contacts(i).link1().c_str(),
-      strlen(_in.contacts(i).link1().c_str()));
+    strncpy_s(_out->contacts[i].link1, hxsMAXNAMESIZE,
+      _in.contacts(i).link1().c_str(), strlen(_in.contacts(i).link1().c_str()));
     _out->contacts[i].link1[strlen(_in.contacts(i).link1().c_str())] = '\0';
 
-    strncpy(_out->contacts[i].link2, _in.contacts(i).link2().c_str(),
-      strlen(_in.contacts(i).link2().c_str()));
+    strncpy_s(_out->contacts[i].link2, hxsMAXNAMESIZE, 
+      _in.contacts(i).link2().c_str(), strlen(_in.contacts(i).link2().c_str()));
     _out->contacts[i].link2[strlen(_in.contacts(i).link2().c_str())] = '\0';
 
     result &= hxs_convertVector3(_in.contacts(i).point(),

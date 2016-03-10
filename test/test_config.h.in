@@ -102,9 +102,9 @@ namespace testing
     PROCESS_INFORMATION processInfo;
 
     char cmd[500];
-    strcpy(cmd, _command);
-    strcat(cmd, " ");
-    strcat(cmd, _partition);
+    strcpy_s(cmd, _command);
+    strcat_s(cmd, " ");
+    strcat_s(cmd, _partition);
 
     if (!CreateProcess(NULL, const_cast<LPSTR>(cmd), NULL, NULL, TRUE, 0, NULL, NULL, &info, &processInfo))
     {
