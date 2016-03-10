@@ -158,7 +158,8 @@ int main(int argc, char **argv)
       // Set the desired position of this motor
       if (i == currentMotor)
       {
-        cmd.ref_pos[i] = amplitude * sin(frequency * 2.0 * M_PI * counter);
+        cmd.ref_pos[i] = (float)(amplitude *
+          sin(frequency * 2.0 * M_PI * counter));
       }
       else
       {
@@ -217,7 +218,7 @@ int main(int argc, char **argv)
     // executed by the limb).
     unsigned int sleeptime_us = 10000;
 #ifdef _WIN32
-    Sleep(sleeptime_us / 1e3);
+    Sleep((DWORD)(sleeptime_us / 1e3));
 #else
     usleep(sleeptime_us);
 #endif

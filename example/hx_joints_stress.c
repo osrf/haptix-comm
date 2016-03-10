@@ -155,7 +155,8 @@ int main(int argc, char **argv)
     for (i = 0; i < robotInfo.motor_count; ++i)
     {
       // Set the desired position of this motor
-      cmd.ref_pos[i] = amplitude * sin(frequency * 2.0 * M_PI * counter);
+      cmd.ref_pos[i] = (float)(amplitude *
+        sin(frequency * 2.0 * M_PI * counter));
       // We could set a desired maximum velocity
       // cmd.ref_vel[i] = 1.0;
       // cmd.ref_vel_max[i] = 1.0;
@@ -202,7 +203,7 @@ int main(int argc, char **argv)
     // executed by the limb).
     unsigned int sleeptime_us = 10000;
 #ifdef _WIN32
-    Sleep(sleeptime_us / 1e3);
+    Sleep((DWORD)(sleeptime_us / 1e3));
 #else
     usleep(sleeptime_us);
 #endif

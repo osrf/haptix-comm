@@ -60,8 +60,13 @@ int main(int argc, char **argv)
     if (strcmp(model.name, "mpl_haptix_right_forearm") == 0 ||
         strcmp(model.name, "luke_hand_description") == 0)
     {
+#ifdef _MSC_VER
+      strcpy_s(hand_name, sizeof(hand_name), model.name);
+      strcpy_s(hand_joint_name, sizeof(hand_joint_name), model.joints[1].name);
+#else
       strcpy(hand_name, model.name);
       strcpy(hand_joint_name, model.joints[1].name);
+#endif
       printf("\t\tHand: %s\n", hand_name);
       printf("\t\tHand Joint: %s\n", hand_joint_name);
     }
@@ -91,7 +96,7 @@ int main(int argc, char **argv)
   // Rotate and translate the camera.
   new_transform = camera_transform;
   new_transform.pos.z = new_transform.pos.z + 1;
-  new_transform.orient.w = new_transform.orient.w + M_PI/4;
+  new_transform.orient.w = (float)(new_transform.orient.w + M_PI/4);
   if (hxs_set_camera_transform(&new_transform) != hxOK)
   {
     printf("hxs_set_camera_transform(): Request error.\n");
@@ -176,7 +181,7 @@ int main(int argc, char **argv)
   force.y = 0;
   force.z = -1;
 
-  if (hxs_apply_force("wood_cube_5cm", "link", &force, 0.001) != hxOK)
+  if (hxs_apply_force("wood_cube_5cm", "link", &force, 0.001f) != hxOK)
   {
     printf("hxs_apply_force(): Request error.\n");
     return -1;
@@ -218,7 +223,7 @@ int main(int argc, char **argv)
   force.x = -1.0;
   force.y = 0;
   force.z = 0;
-  if (hxs_apply_force("wood_cube_5cm", "link", &force, 0.2) != hxOK)
+  if (hxs_apply_force("wood_cube_5cm", "link", &force, 0.2f) != hxOK)
   {
     printf("hxs_apply_force(): Request error.\n");
     return -1;
@@ -268,8 +273,8 @@ int main(int argc, char **argv)
   // Apply a small torque for 0.1 seconds
   torque.x = 0;
   torque.y = 0;
-  torque.z = 0.1;
-  if (hxs_apply_torque("wood_cube_5cm", "link", &torque, 0.1) != hxOK)
+  torque.z = 0.1f;
+  if (hxs_apply_torque("wood_cube_5cm", "link", &torque, 0.1f) != hxOK)
   {
     printf("hxs_apply_torque(): Request error.\n");
     return -1;
@@ -309,8 +314,8 @@ int main(int argc, char **argv)
   wrench.force.z = 1;
   wrench.torque.x = 0;
   wrench.torque.y = 0;
-  wrench.torque.z = 0.1;
-  if (hxs_apply_wrench("wood_cube_5cm", "link", &wrench, 0.1) != hxOK)
+  wrench.torque.z = 0.1f;
+  if (hxs_apply_wrench("wood_cube_5cm", "link", &wrench, 0.1f) != hxOK)
   {
     printf("hxs_apply_wrench(): Request error.\n");
     return -1;
@@ -383,7 +388,7 @@ int main(int argc, char **argv)
   transform.pos.x = 0;
   transform.pos.y = 1.0;
   transform.pos.z = 1.5;
-  transform.orient.w = M_PI/4;
+  transform.orient.w = (float)(M_PI/4);
   if (hxs_set_model_transform("wood_cube_5cm", &transform) != hxOK)
   {
     printf("hxs_model_transform(): Request error.\n");
@@ -437,8 +442,8 @@ int main(int argc, char **argv)
   // The cube won't fall immediately; nudge it through the table
   force.x = 0;
   force.y = 0;
-  force.z = -0.1;
-  if (hxs_apply_force("wood_cube_5cm", "link", &force, 0.1) != hxOK)
+  force.z = -0.1f;
+  if (hxs_apply_force("wood_cube_5cm", "link", &force, 0.1f) != hxOK)
   {
     printf("hxs_apply_force(): Request error.\n");
     return -1;
