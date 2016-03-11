@@ -61,8 +61,8 @@ void onGetRobotInfo(const haptix::comm::msgs::hxRobot &/*_req*/,
   for (int i = 0; i < jointCount; ++i)
   {
     haptix::comm::msgs::hxRobot::hxLimit *joint = _rep.add_joint_limit();
-    joint->set_minimum((float)(-i));
-    joint->set_maximum((float)(i));
+    joint->set_minimum(static_cast<float>(-i));
+    joint->set_maximum(static_cast<float>(i));
   }
 }
 
@@ -90,30 +90,30 @@ void onUpdate(const haptix::comm::msgs::hxCommand &/*_req*/,
   // Create some dummy response.
   for (int i = 0; i < motorCount; ++i)
   {
-    _rep.add_motor_pos((float)(i));
-    _rep.add_motor_vel((float)(i + 1));
-    _rep.add_motor_torque((float)(i + 2));
+    _rep.add_motor_pos(static_cast<float>(i));
+    _rep.add_motor_vel(static_cast<float>(i + 1));
+    _rep.add_motor_torque(static_cast<float>(i + 2));
   }
 
   for (int i = 0; i < jointCount; ++i)
   {
-    _rep.add_joint_pos((float)(i));
-    _rep.add_joint_vel((float)(i + 1));
+    _rep.add_joint_pos(static_cast<float>(i));
+    _rep.add_joint_vel(static_cast<float>(i + 1));
   }
 
   for (int i = 0; i < contactSensorCount; ++i)
-    _rep.add_contact((float)(i));
+    _rep.add_contact(static_cast<float>(i));
 
   for (int i = 0; i < imuCount; ++i)
   {
     haptix::comm::msgs::imu *linear_acc = _rep.add_imu_linear_acc();
-    linear_acc->set_x((float)(i));
-    linear_acc->set_y((float)(i + 1));
-    linear_acc->set_z((float)(i + 2));
+    linear_acc->set_x(static_cast<float>(i));
+    linear_acc->set_y(static_cast<float>(i + 1));
+    linear_acc->set_z(static_cast<float>(i + 2));
     haptix::comm::msgs::imu *angvel = _rep.add_imu_angular_vel();
-    angvel->set_x((float)(i + 3));
-    angvel->set_y((float)(i + 4));
-    angvel->set_z((float)(i + 5));
+    angvel->set_x(static_cast<float>(i + 3));
+    angvel->set_y(static_cast<float>(i + 4));
+    angvel->set_z(static_cast<float>(i + 5));
   }
   _rep.mutable_time_stamp()->set_sec(time_sec);
   _rep.mutable_time_stamp()->set_nsec(time_nsec);
@@ -131,30 +131,30 @@ void onSensorRequest(const haptix::comm::msgs::hxSensor &/*_unused*/,
   // Create some dummy response.
   for (int i = 0; i < motorCount; ++i)
   {
-    _rep.add_motor_pos((float)(i));
-    _rep.add_motor_vel((float)(i + 1));
-    _rep.add_motor_torque((float)(i + 2));
+    _rep.add_motor_pos(static_cast<float>(i));
+    _rep.add_motor_vel(static_cast<float>(i + 1));
+    _rep.add_motor_torque(static_cast<float>(i + 2));
   }
 
   for (int i = 0; i < jointCount; ++i)
   {
-    _rep.add_joint_pos((float)(i));
-    _rep.add_joint_vel((float)(i + 1));
+    _rep.add_joint_pos(static_cast<float>(i));
+    _rep.add_joint_vel(static_cast<float>(i + 1));
   }
 
   for (int i = 0; i < contactSensorCount; ++i)
-    _rep.add_contact((float)(i));
+    _rep.add_contact(static_cast<float>(i));
 
   for (int i = 0; i < imuCount; ++i)
   {
     haptix::comm::msgs::imu *linear_acc = _rep.add_imu_linear_acc();
-    linear_acc->set_x((float)(i));
-    linear_acc->set_y((float)(i + 1));
-    linear_acc->set_z((float)(i + 2));
+    linear_acc->set_x(static_cast<float>(i));
+    linear_acc->set_y(static_cast<float>(i + 1));
+    linear_acc->set_z(static_cast<float>(i + 2));
     haptix::comm::msgs::imu *angvel = _rep.add_imu_angular_vel();
-    angvel->set_x((float)(i + 3));
-    angvel->set_y((float)(i + 4));
-    angvel->set_z((float)(i + 5));
+    angvel->set_x(static_cast<float>(i + 3));
+    angvel->set_y(static_cast<float>(i + 4));
+    angvel->set_z(static_cast<float>(i + 5));
   }
   _rep.mutable_time_stamp()->set_sec(time_sec);
   _rep.mutable_time_stamp()->set_nsec(time_nsec);
