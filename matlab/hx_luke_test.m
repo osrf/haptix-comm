@@ -16,7 +16,7 @@
 %
 
 counter = 0;
-motor_index = 1;
+motor_index = 0;
 
 hx_connect();
 
@@ -47,7 +47,13 @@ while motor_index <= 6
     cmd.gain_vel_enabled = 0;
 
     % Create a new command based on a sinusoidal wave.
-    cmd.ref_pos(motor_index) = 350 * 0.5 * sin(0.05 * 2.0 * pi * counter * 0.08);
+    for n = 0:deviceInfo.motor_count
+      if n == motor_index
+        cmd.ref_pos(end + 1) = 350 * 0.5 * sin(0.05 * 2.0 * pi * counter * 0.08);
+      else
+        cmd.ref_pos(end + 1) = 0.0
+      end
+    end
 
     % Send the new joint command and receive the state update.
     state = hx_update(cmd);
