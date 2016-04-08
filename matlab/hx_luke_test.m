@@ -67,6 +67,22 @@ while motor_index <= 6
     end
   end
 
+  % Zero joints.
+  cmd.ref_pos = [];
+  for n = 0:deviceInfo.motor_count
+    cmd.ref_pos(end + 1) = 0.0
+  end
+
+  % Send the new joint command and receive the state update.
+  state = hx_update(cmd);
+
+  if motor_index < 2
+    elapsedCmd = toc(cmdSent);
+    while elapsedCmd < 1.0
+      elapsedCmd = toc(cmdSent);
+    end
+  end
+
   counter = 0;
   motor_index = motor_index + 1;
 
