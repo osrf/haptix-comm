@@ -212,11 +212,11 @@ extern "C" {
       req.add_gain_pos(_command->gain_pos[i]);
       req.add_gain_vel(_command->gain_vel[i]);
     }
-    req.set_ref_pos_enabled(_command->ref_pos_enabled);
-    req.set_ref_vel_enabled(_command->ref_vel_enabled);
-    req.set_ref_vel_max_enabled(_command->ref_vel_max_enabled);
-    req.set_gain_pos_enabled(_command->gain_pos_enabled);
-    req.set_gain_vel_enabled(_command->gain_vel_enabled);
+    req.set_ref_pos_enabled(_command->ref_pos_enabled == 1);
+    req.set_ref_vel_enabled(_command->ref_vel_enabled == 1);
+    req.set_ref_vel_max_enabled(_command->ref_vel_max_enabled == 1);
+    req.set_gain_pos_enabled(_command->gain_pos_enabled == 1);
+    req.set_gain_vel_enabled(_command->gain_vel_enabled == 1);
 
     // Request the service.
     std::string service = "/" + ProjectTopic + "/" + RobotTopics[g_target] +

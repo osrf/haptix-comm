@@ -27,6 +27,15 @@ add_executable(haptixmsgs_out generator/HaptixGenerator.cc generator/haptix_gene
 
 target_link_libraries(haptixmsgs_out ${PROTOBUF_LIBRARY} ${PROTOBUF_PROTOC_LIBRARY})
 
+if (MSVC)
+  # Suppress Protobuf message generation warnings.
+  target_compile_options(haptixmsgs_out
+    PUBLIC /wd4018 /wd4100 /wd4127 /wd4244 /wd4267 /wd4512)
+
+  # Suppress the "decorated name length exceed" warning (inside the STL).
+  target_compile_options(haptixmsgs_out PUBLIC "/wd4503")
+endif()
+
 if (UNIX)
   target_link_libraries(haptixmsgs_out pthread)
 endif()
@@ -65,6 +74,15 @@ ign_add_static_library(${PROJECT_MSGS_NAME} ${PROTO_SRCS})
 target_link_libraries(${PROJECT_MSGS_NAME} ${PROTOBUF_LIBRARY} ${PROTOBUF_PROTOC_LIBRARY})
 ign_install_library(${PROJECT_MSGS_NAME})
 add_dependencies(${PROJECT_MSGS_NAME} haptixmsgs_out)
+
+if (MSVC)
+  # Suppress Protobuf message generation warnings.
+  target_compile_options(${PROJECT_MSGS_NAME}
+    PUBLIC /wd4018 /wd4100 /wd4125 /wd4127 /wd4244 /wd4267 /wd4512)
+
+  # Suppress the "decorated name length exceed" warning (inside the STL).
+  target_compile_options(${PROJECT_MSGS_NAME} PUBLIC "/wd4503")
+endif()
 
 # Install the generated protobuf messages.
 install(FILES ${PROTO_HDRS} ${PROTO_SRCS} DESTINATION ${INCLUDE_INSTALL_DIR}/comm/msg)

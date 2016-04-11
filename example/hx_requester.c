@@ -104,11 +104,11 @@ int main(int argc, char **argv)
   // Create a command.
   for (i = 0; i < robotInfo.motor_count; ++i)
   {
-    cmd.ref_pos[i] = i;
-    cmd.ref_vel[i] = i + 1;
-    cmd.ref_vel_max[i] = i + 1;
-    cmd.gain_pos[i] = i + 2;
-    cmd.gain_vel[i] = i + 3;
+    cmd.ref_pos[i] = (float)(i);
+    cmd.ref_vel[i] = (float)(i + 1);
+    cmd.ref_vel_max[i] = (float)(i + 1);
+    cmd.gain_pos[i] = (float)(i + 2);
+    cmd.gain_vel[i] = (float)(i + 3);
   }
 
   // Send commands at ~100Hz.
@@ -142,7 +142,7 @@ int main(int argc, char **argv)
 
     unsigned int sleeptime_us = 10000;
 #ifdef _WIN32
-    Sleep(sleeptime_us / 1e3);
+    Sleep((DWORD)(sleeptime_us / 1e3));
 #else
     usleep(sleeptime_us);
 #endif

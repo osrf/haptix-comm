@@ -20,9 +20,16 @@
 #include <stdio.h>
 #include <ignition/transport.hh>
 #include <haptix/comm/haptix.h>
+
+#ifdef _MSC_VER
+#pragma warning(push, 0)
+#endif
 #include <haptix/comm/msg/hxCommand.pb.h>
 #include <haptix/comm/msg/hxRobot.pb.h>
 #include <haptix/comm/msg/hxSensor.pb.h>
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 static const int motorCount         = 4;
 static const int jointCount         = 5;
@@ -54,8 +61,8 @@ void onGetRobotInfo(const haptix::comm::msgs::hxRobot &/*_req*/,
   for (int i = 0; i < jointCount; ++i)
   {
     haptix::comm::msgs::hxRobot::hxLimit *joint = _rep.add_joint_limit();
-    joint->set_minimum(-i);
-    joint->set_maximum(i);
+    joint->set_minimum(static_cast<float>(-i));
+    joint->set_maximum(static_cast<float>(i));
   }
 }
 
@@ -83,30 +90,30 @@ void onUpdate(const haptix::comm::msgs::hxCommand &/*_req*/,
   // Create some dummy response.
   for (int i = 0; i < motorCount; ++i)
   {
-    _rep.add_motor_pos(i);
-    _rep.add_motor_vel(i + 1);
-    _rep.add_motor_torque(i + 2);
+    _rep.add_motor_pos(static_cast<float>(i));
+    _rep.add_motor_vel(static_cast<float>(i + 1));
+    _rep.add_motor_torque(static_cast<float>(i + 2));
   }
 
   for (int i = 0; i < jointCount; ++i)
   {
-    _rep.add_joint_pos(i);
-    _rep.add_joint_vel(i + 1);
+    _rep.add_joint_pos(static_cast<float>(i));
+    _rep.add_joint_vel(static_cast<float>(i + 1));
   }
 
   for (int i = 0; i < contactSensorCount; ++i)
-    _rep.add_contact(i);
+    _rep.add_contact(static_cast<float>(i));
 
   for (int i = 0; i < imuCount; ++i)
   {
     haptix::comm::msgs::imu *linear_acc = _rep.add_imu_linear_acc();
-    linear_acc->set_x(i);
-    linear_acc->set_y(i + 1);
-    linear_acc->set_z(i + 2);
+    linear_acc->set_x(static_cast<float>(i));
+    linear_acc->set_y(static_cast<float>(i + 1));
+    linear_acc->set_z(static_cast<float>(i + 2));
     haptix::comm::msgs::imu *angvel = _rep.add_imu_angular_vel();
-    angvel->set_x(i + 3);
-    angvel->set_y(i + 4);
-    angvel->set_z(i + 5);
+    angvel->set_x(static_cast<float>(i + 3));
+    angvel->set_y(static_cast<float>(i + 4));
+    angvel->set_z(static_cast<float>(i + 5));
   }
   _rep.mutable_time_stamp()->set_sec(time_sec);
   _rep.mutable_time_stamp()->set_nsec(time_nsec);
@@ -124,30 +131,30 @@ void onSensorRequest(const haptix::comm::msgs::hxSensor &/*_unused*/,
   // Create some dummy response.
   for (int i = 0; i < motorCount; ++i)
   {
-    _rep.add_motor_pos(i);
-    _rep.add_motor_vel(i + 1);
-    _rep.add_motor_torque(i + 2);
+    _rep.add_motor_pos(static_cast<float>(i));
+    _rep.add_motor_vel(static_cast<float>(i + 1));
+    _rep.add_motor_torque(static_cast<float>(i + 2));
   }
 
   for (int i = 0; i < jointCount; ++i)
   {
-    _rep.add_joint_pos(i);
-    _rep.add_joint_vel(i + 1);
+    _rep.add_joint_pos(static_cast<float>(i));
+    _rep.add_joint_vel(static_cast<float>(i + 1));
   }
 
   for (int i = 0; i < contactSensorCount; ++i)
-    _rep.add_contact(i);
+    _rep.add_contact(static_cast<float>(i));
 
   for (int i = 0; i < imuCount; ++i)
   {
     haptix::comm::msgs::imu *linear_acc = _rep.add_imu_linear_acc();
-    linear_acc->set_x(i);
-    linear_acc->set_y(i + 1);
-    linear_acc->set_z(i + 2);
+    linear_acc->set_x(static_cast<float>(i));
+    linear_acc->set_y(static_cast<float>(i + 1));
+    linear_acc->set_z(static_cast<float>(i + 2));
     haptix::comm::msgs::imu *angvel = _rep.add_imu_angular_vel();
-    angvel->set_x(i + 3);
-    angvel->set_y(i + 4);
-    angvel->set_z(i + 5);
+    angvel->set_x(static_cast<float>(i + 3));
+    angvel->set_y(static_cast<float>(i + 4));
+    angvel->set_z(static_cast<float>(i + 5));
   }
   _rep.mutable_time_stamp()->set_sec(time_sec);
   _rep.mutable_time_stamp()->set_nsec(time_nsec);
@@ -170,7 +177,7 @@ int main(int argc, char **argv)
       // Read the time parameter.
       time = std::stoi(argv[1]);
     }
-    catch(const std::invalid_argument &_ex)
+    catch(const std::invalid_argument &/*_ex*/)
     {
       std::cerr << "<TIME_MS> argument must be a positive integer."
                 << std::endl;

@@ -90,7 +90,10 @@ add_executable(hxs_requester hxs_requester.c)
 target_link_libraries(hxs_requester ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARIES} ${EXTRA_LIBRARIES})
 
 if (MSVC)
-# Copy the ZMQ DLLs.
+  # Suppress the "decorated name length exceed" warning (inside the STL).
+  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4503")
+  
+  # Copy the ZMQ DLLs.
   add_custom_command(TARGET requester POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
       "../../../ZeroMQ 3.2.4/bin/libzmq-v120-mt-3_2_4.dll"

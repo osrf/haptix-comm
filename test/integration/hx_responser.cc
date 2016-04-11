@@ -341,7 +341,7 @@ void onHxsAddModel(const haptix::comm::msgs::hxParam &_req,
   EXPECT_FLOAT_EQ(_req.orientation().roll(), 4.0f);
   EXPECT_FLOAT_EQ(_req.orientation().pitch(), 5.0f);
   EXPECT_FLOAT_EQ(_req.orientation().yaw(), 6.0f);
-  EXPECT_TRUE(_req.gravity_mode());
+  EXPECT_EQ(_req.gravity_mode(), 1u);
 
   // Return the first model of simState as an answer.
   _rep = simState.models(0);

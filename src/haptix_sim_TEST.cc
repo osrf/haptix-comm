@@ -291,7 +291,7 @@ void onHxsAddModel(const haptix::comm::msgs::hxParam &_req,
   EXPECT_FLOAT_EQ(_req.orientation().roll(), 4.0f);
   EXPECT_FLOAT_EQ(_req.orientation().pitch(), 5.0f);
   EXPECT_FLOAT_EQ(_req.orientation().yaw(), 6.0f);
-  EXPECT_TRUE(_req.gravity_mode());
+  EXPECT_EQ(_req.gravity_mode(), 1u);
 
   // Return the first model of simState as an answer.
   _rep = simState.models(0);
@@ -981,7 +981,7 @@ TEST(hxsTest, hxs_sim_info)
       EXPECT_FLOAT_EQ(simInfo->models[i].joints[j].wrench_reactive.torque.z,
         v + 0.9f);
     }
-    EXPECT_TRUE(simInfo->models[i].gravity_mode);
+    EXPECT_EQ(simInfo->models[i].gravity_mode, 1);
   }
 
   // Check the camera information.
@@ -1149,7 +1149,7 @@ TEST(hxsTest, hxs_model_joint_state)
     EXPECT_FLOAT_EQ(model.joints[i].wrench_reactive.torque.y, v + 0.8f);
     EXPECT_FLOAT_EQ(model.joints[i].wrench_reactive.torque.z, v + 0.9f);
   }
-  EXPECT_TRUE(model.gravity_mode);
+  EXPECT_EQ(model.gravity_mode, 1);
 }
 
 //////////////////////////////////////////////////
@@ -1237,7 +1237,7 @@ TEST(hxsTest, hxs_add_model)
     EXPECT_FLOAT_EQ(model.joints[i].wrench_reactive.torque.y, v + 0.8f);
     EXPECT_FLOAT_EQ(model.joints[i].wrench_reactive.torque.z, v + 0.9f);
   }
-  EXPECT_TRUE(model.gravity_mode);
+  EXPECT_EQ(model.gravity_mode, 1);
 }
 
 //////////////////////////////////////////////////
@@ -1444,7 +1444,7 @@ TEST(hxsTest, hxs_apply_force)
 
   // Use the first link of the first model in simState.
   ASSERT_EQ(hxs_apply_force(simInfo->models[0].name,
-      simInfo->models[0].links[0].name, &force, 0.1), hxOK);
+      simInfo->models[0].links[0].name, &force, 0.1f), hxOK);
 
   delete simInfo;
 }
@@ -1475,7 +1475,7 @@ TEST(hxsTest, hxs_apply_torque)
 
   // Use the first link of the first model in simState.
   ASSERT_EQ(hxs_apply_torque(simInfo->models[0].name,
-      simInfo->models[0].links[0].name, &torque, 0.1), hxOK);
+      simInfo->models[0].links[0].name, &torque, 0.1f), hxOK);
 
   delete simInfo;
 }
