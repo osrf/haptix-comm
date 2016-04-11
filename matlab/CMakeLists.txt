@@ -4,6 +4,7 @@ set (mex_srcs
 set (matlab_files
   hx_close.m
   hx_connect.m
+  hx_luke_test.m
   hx_matlab_controller.m
   hx_read_sensors.m
   hx_robot_info.m
