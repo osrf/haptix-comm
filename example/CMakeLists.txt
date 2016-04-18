@@ -89,10 +89,13 @@ target_link_libraries(joints_stress ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPOR
 add_executable(hxs_requester hxs_requester.c)
 target_link_libraries(hxs_requester ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARIES} ${EXTRA_LIBRARIES})
 
+add_executable(hx_luke_test hx_luke_test.cc)
+target_link_libraries(hx_luke_test ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARIES} ${EXTRA_LIBRARIES})
+
 if (MSVC)
   # Suppress the "decorated name length exceed" warning (inside the STL).
   set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4503")
-  
+
   # Copy the ZMQ DLLs.
   add_custom_command(TARGET requester POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
