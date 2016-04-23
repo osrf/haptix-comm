@@ -30,6 +30,14 @@ else ()
   link_directories(${ZeroMQ_LIBRARY_DIRS})
 endif ()
 
+########################################
+# Find Gazebo
+find_package(Gazebo QUIET REQUIRED)
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${gazebo_CXX_FLAGS}")
+
+include_directories(${GAZEBO_INCLUDE_DIRS})
+link_directories(${GAZEBO_LIBRARY_DIRS})
+
 #################################################
 # Find cppzeromq header (shipped together with zeromq in debian/ubuntu but
 # different upstream projects and tarballs)
@@ -91,6 +99,9 @@ target_link_libraries(hxs_requester ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPOR
 
 add_executable(hx_luke_test hx_luke_test.cc)
 target_link_libraries(hx_luke_test ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARIES} ${EXTRA_LIBRARIES})
+
+add_executable(validation_controller validationController.cc)
+target_link_libraries(validation_controller ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARIES} ${EXTRA_LIBRARIES} ${GAZEBO_LIBRARIES})
 
 add_executable(compare compare.cc)
 
