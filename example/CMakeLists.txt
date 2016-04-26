@@ -101,7 +101,7 @@ add_executable(hx_luke_test hx_luke_test.cc)
 target_link_libraries(hx_luke_test ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARIES} ${EXTRA_LIBRARIES})
 
 add_executable(validation_controller validationController.cc)
-target_link_libraries(validation_controller ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARIES} ${EXTRA_LIBRARIES} ${GAZEBO_LIBRARIES})
+target_link_libraries(validation_controller ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARIES} ${EXTRA_LIBRARIES} ${GAZEBO_LIBRARIES} ValidationPlugin)
 
 add_executable(compare compare.cc)
 
