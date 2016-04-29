@@ -103,6 +103,12 @@ target_link_libraries(hx_luke_test ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPORT
 add_executable(validation_controller validationController.cc)
 target_link_libraries(validation_controller ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARIES} ${EXTRA_LIBRARIES} ${GAZEBO_LIBRARIES} ValidationPlugin)
 
+add_executable(step_response step_response.cc)
+target_link_libraries(step_response ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARIES} ${EXTRA_LIBRARIES} ${GAZEBO_LIBRARIES} ValidationPlugin)
+
+add_executable(sinusoidal sinusoidal.cc)
+target_link_libraries(sinusoidal ${HAPTIX-COMM_LIBRARIES} ${IGNITION-TRANSPORT_LIBRARIES} ${PROTOBUF_LIBRARY} ${ZeroMQ_LIBRARIES} ${EXTRA_LIBRARIES} ${GAZEBO_LIBRARIES} ValidationPlugin)
+
 add_executable(compare compare.cc)
 
 if (MSVC)

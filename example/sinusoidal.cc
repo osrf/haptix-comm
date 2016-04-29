@@ -21,15 +21,48 @@
 #include <haptix/comm/haptix.h>
 
 /// \brief
-class WristLimitValidation : public gazebo::ValidationController
+class SinusoidalValidation : public gazebo::ValidationController
 {
 
-  public: WristLimitValidation(const std::string &_filePrefix, const bool _reference,
-                               const int _motorIndex)
+  public: SinusoidalValidation(const std::string &_filePrefix, const bool _reference,
+                               const int _motorIndex, const double _freq)
     : ValidationController(_reference),
       filePrefix(_filePrefix),
-      motorIndex(_motorIndex)
+      motorIndex(_motorIndex),
+      frequency(_freq)
   {
+    switch (this->motorIndex)
+    {
+      case 0:
+        this->yOffset = -10;
+        this->amplitude = 110;
+        break;
+      case 1:
+        this->amplitude = 40;
+        break;
+      case 2:
+        this->yOffset = 35;
+        this->amplitude = 30;
+        break;
+      case 3:
+        this->yOffset = 50;
+        this->amplitude = 40;
+        break;
+      case 4:
+        this->yOffset = 45;
+        this->amplitude = 30;
+        break;
+      case 5:
+        this->yOffset = 35;
+        this->amplitude = 25;
+        break;
+      default:
+        std::cout << "Incorrect motor index [" << this->motorIndex << "]"
+                  << std::endl;   
+        this->amplitude = 0;
+    };
+    double t = 1.0 / this->frequency;
+    this->x = -2.0 * t;
   }
 
   //////////////////////////////////////////////////
@@ -52,6 +85,8 @@ class WristLimitValidation : public gazebo::ValidationController
     // Set the desired position of this motor
     for (auto i = 0; i < 6; ++i)
       cmd.ref_pos[i] = 0.0;
+
+    cmd.ref_pos[this->motorIndex] = this->yOffset;
 
     // Send the new joint command and receive the state update.
     if (hx_update(&cmd, &sensor) != hxOK)
@@ -78,14 +113,13 @@ class WristLimitValidation : public gazebo::ValidationController
     std::cout << "InitializeRun" << std::endl;
     std::string filename = this->filePrefix + "_motor" +
       std::to_string(this->motorIndex) + "_run" + std::to_string(this->counter)
-      + ".log";
+      + "_freq" + std::to_string(this->frequency) + ".log";
     if (this->logFile.is_open())
       this->logFile.close();
 
     this->logFile.open(filename);
 
     ++this->counter;
-    this->step = 0;
 
     this->initialT = -1;
   };
@@ -106,6 +140,7 @@ class WristLimitValidation : public gazebo::ValidationController
     cmd.gain_pos_enabled = 0;
     // We're not setting it, so indicate that gain_vel should be ignored.
     cmd.gain_vel_enabled = 0;
+    // Set the desired position of this motor
 
     if (hx_read_sensors(&sensor) != hxOK)
     {
@@ -122,11 +157,12 @@ class WristLimitValidation : public gazebo::ValidationController
     this->currentT = (static_cast<double>(sensor.time_stamp.sec) +
         static_cast<double>(sensor.time_stamp.nsec) / 1e9) - this->initialT;
 
-    // Set the desired position of this motor
     for (auto i = 0; i < 6; ++i)
       cmd.ref_pos[i] = 0.0;
-    cmd.ref_pos[this->motorIndex] =static_cast<float>(
-        350 * 0.5 * sin(0.05 * 2.0 * M_PI * this->step * 0.08));
+
+    cmd.ref_pos[this->motorIndex] = static_cast<float>(
+      this->yOffset + this->amplitude * sin(2 * M_PI * this->frequency *
+      this->currentT));
 
     // Send the new joint command and receive the state update.
     if (hx_update(&cmd, &sensor) != hxOK)
@@ -171,22 +207,21 @@ class WristLimitValidation : public gazebo::ValidationController
                   << cmd.ref_pos[this->motorIndex] << " "
                   << sensor.joint_pos[jointIndex] << std::endl;
 
-    ++this->step;
-
     usleep(20000);
   }
 
   //////////////////////////////////////////////////
   bool Running() const
   {
-    return this->step < 250;
+    double period = 1.0 / this->frequency;
+    return this->currentT <= 5 * period;
   }
 
   /// \brief Run counter.
   unsigned int counter = 0;
 
   /// \brief ToDo.
-  int step = 0;
+  int x;
 
   /// \brief ToDo.
   std::ofstream logFile;
@@ -198,6 +233,15 @@ class WristLimitValidation : public gazebo::ValidationController
   int motorIndex;
 
   /// \brief ToDo.
+  double amplitude;
+
+  /// \brief ToDo.
+  double frequency;
+
+  /// \brief ToDo.
+  double yOffset = 0;
+
+  /// \brief ToDo.
   double initialT;
 
   /// \brief ToDo.
@@ -207,21 +251,24 @@ class WristLimitValidation : public gazebo::ValidationController
 //////////////////////////////////////////////////
 void usage()
 {
-  std::cout << "validationController [--reference] <file_prefix> <motor_index>" << std::endl;
+  std::cout << "sinusoidal [--reference] <file_prefix> <motor_index>"
+            << " <freq>" << std::endl;
   std::cout << "   <motor_index> : [0-5]" << std::endl;
+  std::cout << "   <freq> : A positive value (Hz)" << std::endl;
 }
 
 //////////////////////////////////////////////////
 int main(int argc, char **argv)
 {
-  if (argc < 3 || argc > 4)
+  if (argc < 4 || argc > 5)
   {
     usage();
     return -1;
   }
 
-  if ((argc == 3 && std::string(argv[1]) == "--reference") ||
-      (argc == 3 && std::string(argv[2]) == "--reference"))
+  if ((argc == 4 && std::string(argv[1]) == "--reference") ||
+      (argc == 4 && std::string(argv[2]) == "--reference") ||
+      (argc == 4 && std::string(argv[3]) == "--reference"))
   {
     usage();
     return -1;
@@ -230,38 +277,49 @@ int main(int argc, char **argv)
   std::string prefix;
   int motorIndex;
   bool reference = false;
-  if (argc == 3)
+  double freq;
+  if (argc == 4)
   {
     prefix = argv[1];
     motorIndex = std::stoi(argv[2]);
+    freq = std::stod(argv[3]);
   }
-  else if (argc == 4)
+  else if (argc == 5)
   {
     reference = true;
     if (std::string(argv[1]) == "--reference")
     {
       prefix = argv[2];
       motorIndex = std::stoi(argv[3]); 
+      freq = std::stod(argv[4]);
     }
     else if (std::string(argv[2]) == "--reference")
     {
       prefix = argv[1];
       motorIndex = std::stoi(argv[3]);
+      freq = std::stod(argv[4]);
     }
     else if (std::string(argv[3]) == "--reference")
     {
       prefix = argv[1];
       motorIndex = std::stoi(argv[2]);
+      freq = std::stod(argv[4]);
+    }
+    else if (std::string(argv[4]) == "--reference")
+    {
+      prefix = argv[1];
+      motorIndex = std::stoi(argv[2]);
+      freq = std::stod(argv[3]);
     }
   }
 
-  if (motorIndex < 0 || motorIndex > 5)
+  if (motorIndex < 0 || motorIndex > 5 || freq <= 0)
   {
     usage();
     return -1;
   }
 
-  WristLimitValidation controller(prefix, reference, motorIndex);
+  SinusoidalValidation controller(prefix, reference, motorIndex, freq);
   controller.Start();
 
   return 0;

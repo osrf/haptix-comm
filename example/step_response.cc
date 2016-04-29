@@ -21,10 +21,10 @@
 #include <haptix/comm/haptix.h>
 
 /// \brief
-class WristLimitValidation : public gazebo::ValidationController
+class StepResponseValidation : public gazebo::ValidationController
 {
 
-  public: WristLimitValidation(const std::string &_filePrefix, const bool _reference,
+  public: StepResponseValidation(const std::string &_filePrefix, const bool _reference,
                                const int _motorIndex)
     : ValidationController(_reference),
       filePrefix(_filePrefix),
@@ -85,7 +85,6 @@ class WristLimitValidation : public gazebo::ValidationController
     this->logFile.open(filename);
 
     ++this->counter;
-    this->step = 0;
 
     this->initialT = -1;
   };
@@ -106,6 +105,7 @@ class WristLimitValidation : public gazebo::ValidationController
     cmd.gain_pos_enabled = 0;
     // We're not setting it, so indicate that gain_vel should be ignored.
     cmd.gain_vel_enabled = 0;
+    // Set the desired position of this motor
 
     if (hx_read_sensors(&sensor) != hxOK)
     {
@@ -122,11 +122,78 @@ class WristLimitValidation : public gazebo::ValidationController
     this->currentT = (static_cast<double>(sensor.time_stamp.sec) +
         static_cast<double>(sensor.time_stamp.nsec) / 1e9) - this->initialT;
 
-    // Set the desired position of this motor
+    double target;
+    switch (this->motorIndex)
+    {
+      case 0:
+        if (this->currentState->timer.GetElapsed() < gazebo::common::Time(3.0))
+          target = -120;
+        else if (this->currentState->timer.GetElapsed() < gazebo::common::Time(6.0))
+          target = 0;
+        else if (this->currentState->timer.GetElapsed() < gazebo::common::Time(9.0))
+          target = 100;
+        else
+          target = 0;
+        break;
+      case 1:
+        if (this->currentState->timer.GetElapsed() < gazebo::common::Time(3.0))
+          target = -40;
+        else if (this->currentState->timer.GetElapsed() < gazebo::common::Time(6.0))
+          target = 0;
+        else if (this->currentState->timer.GetElapsed() < gazebo::common::Time(9.0))
+          target = 40;
+        else
+          target = 0;
+        break;
+      case 2:
+        if (this->currentState->timer.GetElapsed() < gazebo::common::Time(3.0))
+          target = 10;
+        else if (this->currentState->timer.GetElapsed() < gazebo::common::Time(6.0))
+          target = 0;
+        else if (this->currentState->timer.GetElapsed() < gazebo::common::Time(9.0))
+          target = 60;
+        else
+          target = 0;
+        break;
+      case 3:
+        if (this->currentState->timer.GetElapsed() < gazebo::common::Time(3.0))
+          target = 20;
+        else if (this->currentState->timer.GetElapsed() < gazebo::common::Time(6.0))
+          target = 0;
+        else if (this->currentState->timer.GetElapsed() < gazebo::common::Time(9.0))
+          target = 80;
+        else
+          target = 0;
+        break;
+      case 4:
+        if (this->currentState->timer.GetElapsed() < gazebo::common::Time(3.0))
+          target = 15;
+        else if (this->currentState->timer.GetElapsed() < gazebo::common::Time(6.0))
+          target = 0;
+        else if (this->currentState->timer.GetElapsed() < gazebo::common::Time(9.0))
+          target = 75;
+        else
+          target = 0;
+        break;
+      case 5:
+        if (this->currentState->timer.GetElapsed() < gazebo::common::Time(3.0))
+          target = 10;
+        else if (this->currentState->timer.GetElapsed() < gazebo::common::Time(6.0))
+          target = 0;
+        else if (this->currentState->timer.GetElapsed() < gazebo::common::Time(9.0))
+          target = 60;
+        else
+          target = 0;
+        break;
+      default:
+        std::cout << "Incorrect motor index [" << this->motorIndex << "]"
+                  << std::endl;   
+        return;
+    };
+
     for (auto i = 0; i < 6; ++i)
       cmd.ref_pos[i] = 0.0;
-    cmd.ref_pos[this->motorIndex] =static_cast<float>(
-        350 * 0.5 * sin(0.05 * 2.0 * M_PI * this->step * 0.08));
+    cmd.ref_pos[this->motorIndex] = target;
 
     // Send the new joint command and receive the state update.
     if (hx_update(&cmd, &sensor) != hxOK)
@@ -134,9 +201,6 @@ class WristLimitValidation : public gazebo::ValidationController
       std::cerr << "hx_update(): Request error" << std::endl;
       return;
     }
-
-    // Write time in the log file.
-    this->logFile << this->currentT;
 
     int jointIndex;
     switch (this->motorIndex)
@@ -167,11 +231,9 @@ class WristLimitValidation : public gazebo::ValidationController
 
     // Write the log file.
     // # <time> <motor_index> <joint_index> <command> <state> 
-    this->logFile << " " << this->motorIndex << " " << jointIndex << " "
+    this->logFile << this->currentT << " " << this->motorIndex << " " << jointIndex << " "
                   << cmd.ref_pos[this->motorIndex] << " "
                   << sensor.joint_pos[jointIndex] << std::endl;
-
-    ++this->step;
 
     usleep(20000);
   }
@@ -179,14 +241,11 @@ class WristLimitValidation : public gazebo::ValidationController
   //////////////////////////////////////////////////
   bool Running() const
   {
-    return this->step < 250;
+    return (this->currentState->timer.GetElapsed() < gazebo::common::Time(15.0));
   }
 
   /// \brief Run counter.
   unsigned int counter = 0;
-
-  /// \brief ToDo.
-  int step = 0;
 
   /// \brief ToDo.
   std::ofstream logFile;
@@ -207,7 +266,7 @@ class WristLimitValidation : public gazebo::ValidationController
 //////////////////////////////////////////////////
 void usage()
 {
-  std::cout << "validationController [--reference] <file_prefix> <motor_index>" << std::endl;
+  std::cout << "step_response [--reference] <file_prefix> <motor_index>" << std::endl;
   std::cout << "   <motor_index> : [0-5]" << std::endl;
 }
 
@@ -261,7 +320,7 @@ int main(int argc, char **argv)
     return -1;
   }
 
-  WristLimitValidation controller(prefix, reference, motorIndex);
+  StepResponseValidation controller(prefix, reference, motorIndex);
   controller.Start();
 
   return 0;
