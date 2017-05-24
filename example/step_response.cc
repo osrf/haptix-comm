@@ -17,6 +17,11 @@
 
 #include <iostream>
 #include <fstream>
+#include <functional>
+#include <mutex>
+#include <gazebo/common/Time.hh>
+#include <gazebo/msgs/msgs.hh>
+#include <gazebo/transport/transport.hh>
 #include <gazebo/plugins/validation/ValidationController.hh>
 #include <haptix/comm/haptix.h>
 
@@ -126,68 +131,68 @@ class StepResponseValidation : public gazebo::ValidationController
     switch (this->motorIndex)
     {
       case 0:
-        if (this->currentState->timer.GetElapsed() < gazebo::common::Time(3.0))
+        if (this->currentT < 3.0)
           target = -120;
-        else if (this->currentState->timer.GetElapsed() < gazebo::common::Time(6.0))
+        else if (this->currentT < 6.0)
           target = 0;
-        else if (this->currentState->timer.GetElapsed() < gazebo::common::Time(9.0))
+        else if (this->currentT < 9.0)
           target = 100;
         else
           target = 0;
         break;
       case 1:
-        if (this->currentState->timer.GetElapsed() < gazebo::common::Time(3.0))
+        if (this->currentT < 3.0)
           target = -40;
-        else if (this->currentState->timer.GetElapsed() < gazebo::common::Time(6.0))
+        else if (this->currentT < 6.0)
           target = 0;
-        else if (this->currentState->timer.GetElapsed() < gazebo::common::Time(9.0))
+        else if (this->currentT < 9.0)
           target = 40;
         else
           target = 0;
         break;
       case 2:
-        if (this->currentState->timer.GetElapsed() < gazebo::common::Time(3.0))
+        if (this->currentT < 3.0)
           target = 10;
-        else if (this->currentState->timer.GetElapsed() < gazebo::common::Time(6.0))
+        else if (this->currentT < 6.0)
           target = 0;
-        else if (this->currentState->timer.GetElapsed() < gazebo::common::Time(9.0))
+        else if (this->currentT < 9.0)
           target = 60;
         else
           target = 0;
         break;
       case 3:
-        if (this->currentState->timer.GetElapsed() < gazebo::common::Time(3.0))
+        if (this->currentT < 3.0)
           target = 20;
-        else if (this->currentState->timer.GetElapsed() < gazebo::common::Time(6.0))
+        else if (this->currentT < 6.0)
           target = 0;
-        else if (this->currentState->timer.GetElapsed() < gazebo::common::Time(9.0))
+        else if (this->currentT < 9.0)
           target = 80;
         else
           target = 0;
         break;
       case 4:
-        if (this->currentState->timer.GetElapsed() < gazebo::common::Time(3.0))
+        if (this->currentT < 3.0)
           target = 15;
-        else if (this->currentState->timer.GetElapsed() < gazebo::common::Time(6.0))
+        else if (this->currentT < 6.0)
           target = 0;
-        else if (this->currentState->timer.GetElapsed() < gazebo::common::Time(9.0))
+        else if (this->currentT < 9.0)
           target = 75;
         else
           target = 0;
         break;
       case 5:
-        if (this->currentState->timer.GetElapsed() < gazebo::common::Time(3.0))
+        if (this->currentT < 3.0)
           target = 10;
-        else if (this->currentState->timer.GetElapsed() < gazebo::common::Time(6.0))
+        else if (this->currentT < 6.0)
           target = 0;
-        else if (this->currentState->timer.GetElapsed() < gazebo::common::Time(9.0))
+        else if (this->currentT < 9.0)
           target = 60;
         else
           target = 0;
         break;
       default:
         std::cout << "Incorrect motor index [" << this->motorIndex << "]"
-                  << std::endl;   
+                  << std::endl;
         return;
     };
 
@@ -225,12 +230,12 @@ class StepResponseValidation : public gazebo::ValidationController
         break;
       default:
         std::cout << "Incorrect motor index [" << this->motorIndex << "]"
-                  << std::endl;   
+                  << std::endl;
         return;
     };
 
     // Write the log file.
-    // # <time> <motor_index> <joint_index> <command> <state> 
+    // # <time> <motor_index> <joint_index> <command> <state>
     this->logFile << this->currentT << " " << this->motorIndex << " " << jointIndex << " "
                   << cmd.ref_pos[this->motorIndex] << " "
                   << sensor.joint_pos[jointIndex] << std::endl;
@@ -300,7 +305,7 @@ int main(int argc, char **argv)
     if (std::string(argv[1]) == "--reference")
     {
       prefix = argv[2];
-      motorIndex = std::stoi(argv[3]); 
+      motorIndex = std::stoi(argv[3]);
     }
     else if (std::string(argv[2]) == "--reference")
     {

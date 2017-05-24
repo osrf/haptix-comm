@@ -112,14 +112,14 @@ namespace validation
         if (!more)
           return 0;
 
-        for (unsigned int i = 1; i < values1.size(); ++i)
-        {
-          double v1 = std::stod(values1.at(i));
-          double v2 = std::stod(values2.at(i));
-          double prevV2 = std::stod(prevValues2.at(i));
+        //for (unsigned int i = 1; i < values1.size(); ++i)
+        //{
+          double v1 = std::stod(values1.at(4));
+          double v2 = std::stod(values2.at(4));
+          double prevV2 = std::stod(prevValues2.at(4));
           error += compare(t1, v1, t2, v2, prevT2, prevV2);
           ++counter;
-        }
+        //}
       }
 
       prevValues1 = values1;
@@ -141,10 +141,25 @@ namespace validation
 }
 
 //////////////////////////////////////////////////
+void usage()
+{
+  std::cout << "compare <ref_file> <sim_file> <max_error>" << std::endl;
+}
+
+//////////////////////////////////////////////////
 int main(int argc, char **argv)
 {
-  const double kMaxError = 30.0;
+  if (argc != 4)
+  {
+    usage();
+    return -1;
+  }
+
+  std::string refFile = argv[1];
+  std::string simFile = argv[2];
+  double maxError = std::stod(argv[3]);
+
   double normError = validation::compareFiles(
-    "validation_1.log", "validation_2.log", kMaxError);
+    simFile, refFile, maxError);
   std::cout << "Normalized error: " << normError << std::endl;
 }
