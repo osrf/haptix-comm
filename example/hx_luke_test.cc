@@ -161,10 +161,13 @@ int main(int argc, char **argv)
       // Create a new command based on a sinusoidal wave.
       for (i = 0; i < robotInfo.motor_count; ++i)
       {
-        if (i == motorIndex)
+        if (i == motorIndex || true)
         {
           // Set the desired position of this motor
-          cmd.ref_pos[i] = (float)(350 * 0.5 *
+          // cmd.ref_pos[i] = (float)(350 * 0.5 *
+          //   sin(0.05 * 2.0 * M_PI * counter * 0.08));
+
+          cmd.ref_pos[i] = (float)(180 * 0.5 *
             sin(0.05 * 2.0 * M_PI * counter * 0.08));
         }
         else
@@ -208,8 +211,8 @@ int main(int argc, char **argv)
       logFile << std::endl;
 
       // Debug output: Print the state.
-      //if (!(counter % 100))
-      //  printState(&robotInfo, &sensor);
+      if (!(counter % 100))
+        printState(&robotInfo, &sensor);
 
       if (++counter == 10000)
         counter = 0;

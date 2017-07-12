@@ -13,7 +13,7 @@ link_directories(${HAPTIX-COMM_LIBRARY_DIRS})
 
 ########################################
 # Find the Ignition_Transport library
-find_package(ignition-transport3 QUIET REQUIRED)
+find_package(ignition-transport1 QUIET REQUIRED)
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${IGNITION-TRANSPORT_CXX_FLAGS}")
 
 include_directories(${IGNITION-TRANSPORT_INCLUDE_DIRS})

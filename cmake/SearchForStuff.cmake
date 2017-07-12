@@ -31,7 +31,7 @@ endif()
 
 ########################################
 # Find the Ignition_Transport library
-set(IGNITION_TRANSPORT_MAJOR_VERSION 3)
+set(IGNITION_TRANSPORT_MAJOR_VERSION 1)
 set(IGNITION_TRANSPORT_PACKAGE "ignition-transport${IGNITION_TRANSPORT_MAJOR_VERSION}")
 find_package("${IGNITION_TRANSPORT_PACKAGE}" QUIET REQUIRED)
 if (NOT ${IGNITION_TRANSPORT_PACKAGE}_FOUND)
